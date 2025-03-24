@@ -54,6 +54,8 @@ public class User implements UserDetails {
         @ManyToOne
         private User updatedBy;
 
+
+
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
                 Set<GrantedAuthority> authorities = new HashSet<>(roles);
