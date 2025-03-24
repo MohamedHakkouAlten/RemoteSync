@@ -1,4 +1,4 @@
-package com.alten.remotesync.domain.userRole.model;
+package com.alten.remotesync.domain.role.model;
 
 import com.alten.remotesync.domain.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;

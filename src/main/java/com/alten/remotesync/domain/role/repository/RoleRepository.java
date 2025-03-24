@@ -1,4 +1,4 @@
-package com.alten.remotesync.domain.userRole.repository;
+package com.alten.remotesync.domain.role.repository;
 
 public class RoleRepository {
 }
