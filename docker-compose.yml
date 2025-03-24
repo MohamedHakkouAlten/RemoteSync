@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: remotesync
       MYSQL_USER: alten
       MYSQL_PASSWORD: alten
+    ports:
+      - "3306:3306"
     networks:
       custom_network:
         ipv4_address: 172.28.0.2

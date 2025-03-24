@@ -26,6 +26,6 @@ public class Role implements GrantedAuthority {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Privilege> privileges;
     
-    @ManyToMany @JsonIgnore
+    @ManyToMany(mappedBy = "roles") @JsonIgnore
     private List<User> users;
 }
