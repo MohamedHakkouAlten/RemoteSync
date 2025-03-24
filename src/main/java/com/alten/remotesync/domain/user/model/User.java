@@ -1,23 +1,27 @@
 package com.alten.remotesync.domain.user.model;
 
+import com.alten.remotesync.domain.role.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
-
+public class User implements UserDetails {
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private UUID id;
+        @UuidGenerator
+        private UUID userId;
 
         private String firstName;
         private String lastName;
@@ -27,22 +31,35 @@ public class User {
 
         private String password;
         private String username;
+
+        @Column(unique = true, nullable = false)
         private Long reference;
+
         private String phoneNumber;
+
+        @ManyToMany(fetch = FetchType.LAZY)
+        protected List<Role> roles;
 
         private boolean isDeleted;
 
-        @Temporal(TemporalType.TIMESTAMP)
-        private Date createdAt;
+        @CreationTimestamp
+        private LocalDateTime createdAt;
 
-        @Temporal(TemporalType.TIMESTAMP)
-        private Date updatedAt;
+        @UpdateTimestamp
+        private LocalDateTime updatedAt;
 
         @ManyToOne
-        @JoinColumn(name = "created_by")
         private User createdBy;
 
         @ManyToOne
-        @JoinColumn(name = "updated_by")
         private User updatedBy;
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+                Set<GrantedAuthority> authorities = new HashSet<>(roles);
+                for (Role role : roles) {
+                        authorities.addAll(role.getPrivileges());
+                }
+                return authorities;
+        }
 }
