@@ -17,7 +17,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Rotation {
-
     @Id
     @UuidGenerator
     private UUID rotationId;
