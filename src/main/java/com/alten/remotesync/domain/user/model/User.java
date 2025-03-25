@@ -1,8 +1,12 @@
 package com.alten.remotesync.domain.user.model;
 
+import com.alten.remotesync.domain.client.model.Client;
 import com.alten.remotesync.domain.log.model.Log;
 import com.alten.remotesync.domain.notification.model.Notification;
+import com.alten.remotesync.domain.project.model.Project;
+import com.alten.remotesync.domain.report.model.Report;
 import com.alten.remotesync.domain.role.model.Role;
+import com.alten.remotesync.domain.subFactory.model.SubFactory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,6 +66,26 @@ public class User implements UserDetails {
         @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Notification> notifications;
 
+        @OneToMany(mappedBy = "createdBy")
+        private List<Client> createdClients;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Client> updatedClients;
+
+        @OneToMany(mappedBy = "createdBy")
+        private List<Project> createdProjects;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Project> updatedProjects;
+
+        @OneToMany(mappedBy = "createdBy")
+        private List<Report> createdReports;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Report> updatedReports;
+
+        @ManyToOne
+        private SubFactory subFactory;
 
 
         @Override
