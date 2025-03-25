@@ -101,35 +101,31 @@ public class JwtService {
 
     // Extract the authorities (roles/permissions) from the JWT token and convert them into a collection of GrantedAuthority objects.
     public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
-        Claims claims = extractAllClaims(token);  // Extract all claims from the token
+        Claims claims = extractAllClaims(token);
 
-        // Filter the claims to only include those related to authorities (roles or permissions).
-        Map<String, Object> authoritiesClaims = claims.entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().startsWith("ROLE_") || entry.getKey().contains(":"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
-        // Convert the claims to a collection of GrantedAuthority objects (roles or permissions).
-        return authoritiesClaims.entrySet()
-                .stream()
-                .flatMap(entry -> {
-                    // Check if the value is a Map, which might indicate that the entry contains authority details.
-                    if (entry.getValue() instanceof Map<?, ?> tempMap) {
-                        Map<String, Object> privilege = new HashMap<>();
-                        // Extract authority information from the nested map.
-                        for (Map.Entry<?, ?> e : tempMap.entrySet()) {
-                            if (e.getKey() instanceof String) {
-                                privilege.put((String) e.getKey(), e.getValue());
+        // Extract roles (keys starting with "ROLE_")
+        claims.forEach((key, value) -> {
+            if (key.startsWith("ROLE_") && value instanceof Map<?, ?> roleData) {
+                authorities.add(new SimpleGrantedAuthority(key)); // Add role itself
+
+                // Extract privileges from role
+                Object privilegesObj = roleData.get("privileges");
+                if (privilegesObj instanceof List<?> privilegesList) {
+                    privilegesList.forEach(privilege -> {
+                        if (privilege instanceof Map<?, ?> privilegeData) {
+                            Object privilegeAuthority = privilegeData.get("authority");
+                            if (privilegeAuthority instanceof String authority) {
+                                authorities.add(new SimpleGrantedAuthority(authority));
                             }
                         }
-                        // If the authority is found, create a SimpleGrantedAuthority with that authority.
-                        return privilege.containsKey("authority") ?
-                                Stream.of(new SimpleGrantedAuthority((String) privilege.get("authority"))) : Stream.empty();
-                    }
-                    // If the entry is not a map, treat it as a simple authority and create a SimpleGrantedAuthority for it.
-                    return Stream.of(new SimpleGrantedAuthority(entry.getKey()));
-                })
-                .collect(Collectors.toList());  // Collect the authorities into a list
+                    });
+                }
+            }
+        });
+
+        return authorities;
     }
 
     // Extract all claims from the token by parsing it using the secret key.
