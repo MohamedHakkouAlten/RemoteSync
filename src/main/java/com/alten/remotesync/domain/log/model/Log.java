@@ -1,5 +1,6 @@
 package com.alten.remotesync.domain.log.model;
 
+import com.alten.remotesync.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,24 +17,24 @@ import java.util.UUID;
 public class Log {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @CreationTimestamp
     private LocalDateTime timestamp;
 
     private String ipAddress;
-
     private String actionType;
 
     @Enumerated(EnumType.STRING)
     private LogStatus status;
 
     private String userAgent;
-
     private String entityType;
-
     private String actionDetails;
+    private UUID entityId;
 
-    private UUID entityID;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

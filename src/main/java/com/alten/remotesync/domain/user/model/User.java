@@ -1,5 +1,7 @@
 package com.alten.remotesync.domain.user.model;
 
+import com.alten.remotesync.domain.log.model.Log;
+import com.alten.remotesync.domain.notification.model.Notification;
 import com.alten.remotesync.domain.role.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,6 +56,11 @@ public class User implements UserDetails {
         @ManyToOne
         private User updatedBy;
 
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Log> logs;
+
+        @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Notification> notifications;
 
 
         @Override

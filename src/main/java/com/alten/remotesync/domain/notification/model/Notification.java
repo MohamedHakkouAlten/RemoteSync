@@ -1,5 +1,6 @@
 package com.alten.remotesync.domain.notification.model;
 
+import com.alten.remotesync.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,11 +17,10 @@ import java.util.UUID;
 public class Notification {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     private String title;
-
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -28,4 +28,8 @@ public class Notification {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User receiver;
 }
