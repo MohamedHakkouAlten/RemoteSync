@@ -1,5 +1,8 @@
 package com.alten.remotesync.domain.user.model;
 
+import com.alten.remotesync.domain.client.model.Client;
+import com.alten.remotesync.domain.project.model.Project;
+import com.alten.remotesync.domain.report.model.Report;
 import com.alten.remotesync.domain.role.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -55,6 +58,23 @@ public class User implements UserDetails {
         private User updatedBy;
 
 
+        @OneToMany(mappedBy = "createdBy")
+        private List<Client> createdClients;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Client> updatedClients;
+
+        @OneToMany(mappedBy = "createdBy")
+        private List<Project> createdProjects;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Project> updatedProjects;
+
+        @OneToMany(mappedBy = "createdBy")
+        private List<Report> createdReports;
+
+        @OneToMany(mappedBy = "updatedBy")
+        private List<Report> updatedReports;
 
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
