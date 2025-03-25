@@ -5,6 +5,7 @@ import com.alten.remotesync.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,9 +17,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Log {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @UuidGenerator
     private UUID id;
 
     private UUID entityId;
