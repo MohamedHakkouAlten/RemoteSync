@@ -1,9 +1,6 @@
 package com.alten.remotesync.domain.user.model;
 
-import com.alten.remotesync.domain.log.model.Log;
-import com.alten.remotesync.domain.notification.model.Notification;
 import com.alten.remotesync.domain.role.model.Role;
-import com.alten.remotesync.domain.subFactory.model.SubFactory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,9 +40,6 @@ public class User implements UserDetails {
         @ManyToMany(fetch = FetchType.LAZY)
         protected List<Role> roles;
 
-        @ManyToOne
-        private SubFactory subFactory;
-
         private boolean isDeleted;
 
         @CreationTimestamp
@@ -60,11 +54,6 @@ public class User implements UserDetails {
         @ManyToOne
         private User updatedBy;
 
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Log> logs;
-
-        @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Notification> notifications;
 
 
         @Override
