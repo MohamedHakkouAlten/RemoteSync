@@ -1,5 +1,6 @@
 package com.alten.remotesync.domain.notification.model;
 
+import com.alten.remotesync.domain.notification.enumeration.NotificationStatus;
 import com.alten.remotesync.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,5 @@ public class Notification {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User receiver;
 }

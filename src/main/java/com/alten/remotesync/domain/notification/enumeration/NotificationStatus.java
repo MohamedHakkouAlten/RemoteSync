@@ -1,4 +1,4 @@
-package com.alten.remotesync.domain.notification.model;
+package com.alten.remotesync.domain.notification.enumeration;
 
 public enum NotificationStatus {
     URGENT,

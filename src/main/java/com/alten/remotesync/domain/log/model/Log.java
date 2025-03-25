@@ -1,5 +1,6 @@
 package com.alten.remotesync.domain.log.model;
 
+import com.alten.remotesync.domain.log.enumeration.LogStatus;
 import com.alten.remotesync.domain.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,8 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    private UUID entityId;
+
     @CreationTimestamp
     private LocalDateTime timestamp;
 
@@ -32,9 +35,7 @@ public class Log {
     private String userAgent;
     private String entityType;
     private String actionDetails;
-    private UUID entityId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
