@@ -1,5 +1,6 @@
 package com.alten.remotesync.domain.project.model;
 
+import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.client.model.Client;
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.domain.user.model.User;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,4 +38,7 @@ public class Project {
 
     @ManyToOne
     private Client owner;
+
+    @OneToMany(mappedBy = "assignedRotationId.project")
+    private List<AssignedRotation> projectAssignedRotations;
 }

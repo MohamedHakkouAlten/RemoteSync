@@ -1,5 +1,7 @@
 package com.alten.remotesync.domain.user.model;
 
+import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
+import com.alten.remotesync.domain.assignedRotation.model.embeddable.AssignedRotationId;
 import com.alten.remotesync.domain.client.model.Client;
 import com.alten.remotesync.domain.log.model.Log;
 import com.alten.remotesync.domain.notification.model.Notification;
@@ -65,6 +67,9 @@ public class User implements UserDetails {
 
         @OneToMany(mappedBy = "updatedBy")
         private List<Report> updatedReports;
+
+        @OneToMany(mappedBy = "assignedRotationId.user")
+        private List<AssignedRotation> userAssignedRotations;
 
         @ManyToOne
         private SubFactory subFactory;
