@@ -1,7 +1,10 @@
 package com.alten.remotesync.domain.rotation.model;
 
+import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
+import com.alten.remotesync.domain.assignedRotation.model.embeddable.AssignedRotationId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,4 +28,7 @@ public class Rotation {
     private Date endDate;
     private List<Date> customDates;
     private int rotationSequence;
+
+    @OneToMany(mappedBy = "assignedRotationId.rotation")
+    private List<AssignedRotation> rotationAssignedRotations;
 }
