@@ -1,7 +1,7 @@
 package com.alten.remotesync.domain.rotation.model;
 
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
-import com.alten.remotesync.domain.assignedRotation.model.embeddable.AssignedRotationId;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -14,6 +14,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -26,9 +27,11 @@ public class Rotation {
     private String name;
     private Date startDate;
     private Date endDate;
+
+    @ElementCollection
     private List<Date> customDates;
     private int rotationSequence;
 
-    @OneToMany(mappedBy = "assignedRotationId.rotation")
+    @OneToMany(mappedBy = "rotation")
     private List<AssignedRotation> rotationAssignedRotations;
 }
