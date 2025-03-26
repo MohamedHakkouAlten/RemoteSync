@@ -29,16 +29,4 @@ public class Factory {
 
     @OneToMany(mappedBy = "factory")
     private List<SubFactory> subFactoryList;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @ManyToOne
-    private User createdBy;
-
-    @ManyToOne
-    private User updatedBy;
 }
