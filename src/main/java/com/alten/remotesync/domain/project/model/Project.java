@@ -34,17 +34,6 @@ public class Project {
 
     private boolean isDeleted;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @ManyToOne
-    private User createdBy;
-
-    @ManyToOne
-    private User updatedBy;
-
     @ManyToOne
     private Client owner;
 }

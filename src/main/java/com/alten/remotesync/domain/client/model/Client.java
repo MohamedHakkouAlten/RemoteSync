@@ -33,17 +33,6 @@ public class Client {
     private String sector;
     private boolean isDeleted;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @ManyToOne
-    private User createdBy;
-
-    @ManyToOne
-    private User updatedBy;
-
     @OneToMany(mappedBy = "owner")
     private List<Project> clientProjects;
 }

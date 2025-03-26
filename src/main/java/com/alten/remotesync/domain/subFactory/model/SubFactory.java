@@ -36,16 +36,4 @@ public class SubFactory {
 
     @OneToMany(mappedBy = "subFactory")
     private List<User> subFactoryUsers;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-    @ManyToOne
-    private User createdBy;
-
-    @ManyToOne
-    private User updatedBy;
 }

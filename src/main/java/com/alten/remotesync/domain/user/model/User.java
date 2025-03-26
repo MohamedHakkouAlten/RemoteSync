@@ -54,29 +54,11 @@ public class User implements UserDetails {
         @UpdateTimestamp
         private LocalDateTime updatedAt;
 
-        @ManyToOne
-        private User createdBy;
-
-        @ManyToOne
-        private User updatedBy;
-
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Log> logs;
 
         @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Notification> notifications;
-
-        @OneToMany(mappedBy = "createdBy")
-        private List<Client> createdClients;
-
-        @OneToMany(mappedBy = "updatedBy")
-        private List<Client> updatedClients;
-
-        @OneToMany(mappedBy = "createdBy")
-        private List<Project> createdProjects;
-
-        @OneToMany(mappedBy = "updatedBy")
-        private List<Project> updatedProjects;
 
         @OneToMany(mappedBy = "createdBy")
         private List<Report> createdReports;
