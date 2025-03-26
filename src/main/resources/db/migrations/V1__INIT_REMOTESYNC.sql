@@ -1,31 +1,37 @@
+CREATE TABLE assigned_rotation
+(
+    rotation_assignment_status VARCHAR(255) NULL,
+    override_date              datetime NULL,
+    created_at                 datetime NULL,
+    updated_at                 datetime NULL,
+    created_by_user_id         BINARY(16)   NULL,
+    updated_by_user_id         BINARY(16)   NULL,
+    user_user_id               BINARY(16)   NOT NULL,
+    rotation_rotation_id       BINARY(16)   NOT NULL,
+    project_project_id         BINARY(16)   NOT NULL,
+    CONSTRAINT pk_assignedrotation PRIMARY KEY (user_user_id, rotation_rotation_id, project_project_id)
+);
+
 CREATE TABLE client
 (
-    client_id          BINARY(16)   NOT NULL,
-    label              VARCHAR(255) NULL,
-    ice                VARCHAR(255) NULL,
-    address            VARCHAR(255) NULL,
-    email              VARCHAR(255) NULL,
-    name               VARCHAR(255) NULL,
-    sector             VARCHAR(255) NULL,
-    is_deleted         BIT(1) NOT NULL,
-    created_at         datetime NULL,
-    updated_at         datetime NULL,
-    created_by_user_id BINARY(16)   NULL,
-    updated_by_user_id BINARY(16)   NULL,
+    client_id  BINARY(16)   NOT NULL,
+    label      VARCHAR(255) NULL,
+    ice        VARCHAR(255) NULL,
+    address    VARCHAR(255) NULL,
+    email      VARCHAR(255) NULL,
+    name       VARCHAR(255) NULL,
+    sector     VARCHAR(255) NULL,
+    is_deleted BIT(1) NOT NULL,
     CONSTRAINT pk_client PRIMARY KEY (client_id)
 );
 
 CREATE TABLE factory
 (
-    factory_id         BINARY(16)   NOT NULL,
-    label              VARCHAR(255) NOT NULL,
-    city               VARCHAR(255) NULL,
-    address            VARCHAR(255) NULL,
-    is_deleted         BIT(1)       NOT NULL,
-    created_at         datetime NULL,
-    updated_at         datetime NULL,
-    created_by_user_id BINARY(16)   NULL,
-    updated_by_user_id BINARY(16)   NULL,
+    factory_id BINARY(16)   NOT NULL,
+    label      VARCHAR(255) NOT NULL,
+    city       VARCHAR(255) NULL,
+    address    VARCHAR(255) NULL,
+    is_deleted BIT(1)       NOT NULL,
     CONSTRAINT pk_factory PRIMARY KEY (factory_id)
 );
 
@@ -64,17 +70,13 @@ CREATE TABLE privilege
 
 CREATE TABLE project
 (
-    project_id         BINARY(16)   NOT NULL,
-    label              VARCHAR(255) NULL,
-    titre              VARCHAR(255) NULL,
-    status             VARCHAR(255) NULL,
-    dead_line          datetime NULL,
-    is_deleted         BIT(1) NOT NULL,
-    created_at         datetime NULL,
-    updated_at         datetime NULL,
-    created_by_user_id BINARY(16)   NULL,
-    updated_by_user_id BINARY(16)   NULL,
-    owner_client_id    BINARY(16)   NULL,
+    project_id      BINARY(16)   NOT NULL,
+    label           VARCHAR(255) NULL,
+    titre           VARCHAR(255) NULL,
+    status          VARCHAR(255) NULL,
+    dead_line       datetime NULL,
+    is_deleted      BIT(1) NOT NULL,
+    owner_client_id BINARY(16)   NULL,
     CONSTRAINT pk_project PRIMARY KEY (project_id)
 );
 
@@ -112,9 +114,14 @@ CREATE TABLE rotation
     name              VARCHAR(255) NULL,
     start_date        datetime NULL,
     end_date          datetime NULL,
-    custom_dates      VARBINARY(255) NULL,
     rotation_sequence INT NOT NULL,
     CONSTRAINT pk_rotation PRIMARY KEY (rotation_id)
+);
+
+CREATE TABLE rotation_custom_dates
+(
+    rotation_rotation_id BINARY(16) NOT NULL,
+    custom_dates         datetime NULL
 );
 
 CREATE TABLE sub_factory
@@ -125,10 +132,6 @@ CREATE TABLE sub_factory
     title              VARCHAR(255) NULL,
     is_deleted         BIT(1) NOT NULL,
     factory_factory_id BINARY(16)   NULL,
-    created_at         datetime NULL,
-    updated_at         datetime NULL,
-    created_by_user_id BINARY(16)   NULL,
-    updated_by_user_id BINARY(16)   NULL,
     CONSTRAINT pk_subfactory PRIMARY KEY (sub_factoryid)
 );
 
@@ -145,8 +148,6 @@ CREATE TABLE user
     is_deleted                BIT(1)       NOT NULL,
     created_at                datetime NULL,
     updated_at                datetime NULL,
-    created_by_user_id        BINARY(16)   NULL,
-    updated_by_user_id        BINARY(16)   NULL,
     sub_factory_sub_factoryid BINARY(16)   NULL,
     CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
@@ -166,17 +167,20 @@ ALTER TABLE user
 ALTER TABLE user
     ADD CONSTRAINT uc_user_reference UNIQUE (`reference`);
 
-ALTER TABLE client
-    ADD CONSTRAINT FK_CLIENT_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
+ALTER TABLE assigned_rotation
+    ADD CONSTRAINT FK_ASSIGNEDROTATION_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
 
-ALTER TABLE client
-    ADD CONSTRAINT FK_CLIENT_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
+ALTER TABLE assigned_rotation
+    ADD CONSTRAINT FK_ASSIGNEDROTATION_ON_PROJECT_PROJECTID FOREIGN KEY (project_project_id) REFERENCES project (project_id);
 
-ALTER TABLE factory
-    ADD CONSTRAINT FK_FACTORY_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
+ALTER TABLE assigned_rotation
+    ADD CONSTRAINT FK_ASSIGNEDROTATION_ON_ROTATION_ROTATIONID FOREIGN KEY (rotation_rotation_id) REFERENCES rotation (rotation_id);
 
-ALTER TABLE factory
-    ADD CONSTRAINT FK_FACTORY_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
+ALTER TABLE assigned_rotation
+    ADD CONSTRAINT FK_ASSIGNEDROTATION_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
+
+ALTER TABLE assigned_rotation
+    ADD CONSTRAINT FK_ASSIGNEDROTATION_ON_USER_USERID FOREIGN KEY (user_user_id) REFERENCES user (user_id);
 
 ALTER TABLE log
     ADD CONSTRAINT FK_LOG_ON_USER_USERID FOREIGN KEY (user_user_id) REFERENCES user (user_id);
@@ -185,13 +189,7 @@ ALTER TABLE notification
     ADD CONSTRAINT FK_NOTIFICATION_ON_RECEIVER_USERID FOREIGN KEY (receiver_user_id) REFERENCES user (user_id);
 
 ALTER TABLE project
-    ADD CONSTRAINT FK_PROJECT_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
-
-ALTER TABLE project
     ADD CONSTRAINT FK_PROJECT_ON_OWNER_CLIENTID FOREIGN KEY (owner_client_id) REFERENCES client (client_id);
-
-ALTER TABLE project
-    ADD CONSTRAINT FK_PROJECT_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
 
 ALTER TABLE report
     ADD CONSTRAINT FK_REPORT_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
@@ -200,28 +198,19 @@ ALTER TABLE report
     ADD CONSTRAINT FK_REPORT_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
 
 ALTER TABLE sub_factory
-    ADD CONSTRAINT FK_SUBFACTORY_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
-
-ALTER TABLE sub_factory
     ADD CONSTRAINT FK_SUBFACTORY_ON_FACTORY_FACTORYID FOREIGN KEY (factory_factory_id) REFERENCES factory (factory_id);
-
-ALTER TABLE sub_factory
-    ADD CONSTRAINT FK_SUBFACTORY_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
-
-ALTER TABLE user
-    ADD CONSTRAINT FK_USER_ON_CREATEDBY_USERID FOREIGN KEY (created_by_user_id) REFERENCES user (user_id);
 
 ALTER TABLE user
     ADD CONSTRAINT FK_USER_ON_SUBFACTORY_SUBFACTORYID FOREIGN KEY (sub_factory_sub_factoryid) REFERENCES sub_factory (sub_factoryid);
-
-ALTER TABLE user
-    ADD CONSTRAINT FK_USER_ON_UPDATEDBY_USERID FOREIGN KEY (updated_by_user_id) REFERENCES user (user_id);
 
 ALTER TABLE role_privileges
     ADD CONSTRAINT fk_rolpri_on_privilege FOREIGN KEY (privileges_privilege_id) REFERENCES privilege (privilege_id);
 
 ALTER TABLE role_privileges
     ADD CONSTRAINT fk_rolpri_on_role FOREIGN KEY (roles_role_id) REFERENCES `role` (role_id);
+
+ALTER TABLE rotation_custom_dates
+    ADD CONSTRAINT fk_rotation_customdates_on_rotation FOREIGN KEY (rotation_rotation_id) REFERENCES rotation (rotation_id);
 
 ALTER TABLE user_roles
     ADD CONSTRAINT fk_userol_on_role FOREIGN KEY (roles_role_id) REFERENCES `role` (role_id);

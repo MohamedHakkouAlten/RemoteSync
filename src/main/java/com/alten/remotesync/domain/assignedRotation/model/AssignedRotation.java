@@ -20,16 +20,25 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class AssignedRotation {
-
     @EmbeddedId
     private AssignedRotationId assignedRotationId;
 
+    @ManyToOne
+    @MapsId("userId")
+    private User user;
+
+    @ManyToOne
+    @MapsId("rotationId")
+    private Rotation rotation;
+
+    @ManyToOne
+    @MapsId("projectId")
+    private Project project;
 
     @Enumerated(EnumType.STRING)
     private RotationAssignmentStatus rotationAssignmentStatus;
 
     private Date overrideDate;
-
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -42,5 +51,4 @@ public class AssignedRotation {
 
     @ManyToOne
     private User updatedBy;
-
 }

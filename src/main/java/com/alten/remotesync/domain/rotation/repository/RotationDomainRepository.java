@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface RotationDomaineRepository extends JpaRepository<Rotation, UUID> {
+public interface RotationDomainRepository extends JpaRepository<Rotation, UUID> {
 }
