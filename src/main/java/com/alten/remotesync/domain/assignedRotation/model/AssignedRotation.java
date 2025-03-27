@@ -32,7 +32,6 @@ public class AssignedRotation {
     private Rotation rotation;
 
     @ManyToOne
-    @MapsId("projectId")
     private Project project;
 
     @Enumerated(EnumType.STRING)

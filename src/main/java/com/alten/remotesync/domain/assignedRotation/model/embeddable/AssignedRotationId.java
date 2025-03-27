@@ -14,6 +14,4 @@ public class AssignedRotationId {
     private UUID userId;
 
     private UUID rotationId;
-
-    private UUID projectId;
 }
