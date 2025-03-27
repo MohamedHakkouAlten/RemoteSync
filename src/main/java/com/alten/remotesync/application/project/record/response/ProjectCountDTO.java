@@ -1,4 +1,6 @@
 package com.alten.remotesync.application.project.record.response;
 
-public class TEST {
+public record ProjectCountDTO(
+        int ProjectsCount
+) {
 }

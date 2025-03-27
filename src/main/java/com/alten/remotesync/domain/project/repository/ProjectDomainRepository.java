@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
+    int countProjectByOwner_ClientId(UUID clientId);
 }
