@@ -50,5 +50,4 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     Optional<Page<Project>> fetchAssociateOldProjectsByClient(@Param("userId") UUID userId,@Param("clientId") UUID clientId,Pageable pageable);
 
 
-
 }
