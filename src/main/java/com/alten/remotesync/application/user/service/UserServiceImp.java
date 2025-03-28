@@ -15,13 +15,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Component
 @RequiredArgsConstructor
+@Service
 public class UserServiceImp implements UserService {
 
     private final UserDomainRepository userDomainRepository;
@@ -29,7 +29,6 @@ public class UserServiceImp implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserDomainRepository userRepository;
     private final UserDetailsServiceImp userDetailsService;
 
     @Override
@@ -44,17 +43,19 @@ public class UserServiceImp implements UserService {
     public UserProfileDTO updateMyProfile(UUID userId, UpdateUserProfileDTO updateUserProfileDTO) {
         User user = userDomainRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        if (updateUserProfileDTO.password() != null) {
+            user.setPassword(passwordEncoder.encode(updateUserProfileDTO.password()));
+        }
+
         user.setFirstName(updateUserProfileDTO.firstName());
         user.setLastName(updateUserProfileDTO.lastName());
         user.setEmail(updateUserProfileDTO.email());
         user.setPhoneNumber(updateUserProfileDTO.phoneNumber());
-        user.setPassword(passwordEncoder.encode(updateUserProfileDTO.password()));
+
         User updatedUser = userDomainRepository.save(user);
         return userMapper.toUserProfileDTO(updatedUser);
     }
-
-
-
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
@@ -70,12 +71,9 @@ public class UserServiceImp implements UserService {
             }
             String accessToken = jwtService.generateAccessToken(user);
 
-
             return new LoginResponseDTO(accessToken);
         } catch (BadCredentialsException e) {
             throw new RuntimeException("Invalid credentials", e);
         }
     }
-
-
 }
