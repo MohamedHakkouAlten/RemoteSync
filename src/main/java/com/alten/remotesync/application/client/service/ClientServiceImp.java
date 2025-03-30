@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class ClientServiceImp implements ClientService {
 }
