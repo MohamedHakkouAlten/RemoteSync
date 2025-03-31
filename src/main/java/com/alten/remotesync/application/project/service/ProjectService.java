@@ -8,9 +8,9 @@ import com.alten.remotesync.application.project.record.response.ProjectsCountDTO
 import com.alten.remotesync.application.project.record.response.ProjectDTO;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public interface ProjectService {
+    ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO);
 
     PagedProjectDTO getAssociateOldProjects(PagedGlobalIdDTO pagedGlobalIdDTO);
 

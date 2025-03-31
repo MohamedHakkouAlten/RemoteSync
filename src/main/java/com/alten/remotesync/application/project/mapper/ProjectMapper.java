@@ -1,6 +1,5 @@
 package com.alten.remotesync.application.project.mapper;
 
-
 import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;
 import com.alten.remotesync.application.project.record.response.ProjectDTO;
 import com.alten.remotesync.domain.project.model.Project;

@@ -1,10 +1,7 @@
 package com.alten.remotesync.application.project.record.response;
 
-
 import com.alten.remotesync.domain.client.model.Client;
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
-
-
 
 import java.util.Date;
 import java.util.UUID;

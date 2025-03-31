@@ -1,10 +1,11 @@
 package com.alten.remotesync.application.factory.service;
 
-import lombok.NoArgsConstructor;
+import com.alten.remotesync.domain.factory.repository.FactoryDomainRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FactoryServiceImp implements FactoryService{
+public class FactoryServiceImp implements FactoryService {
+    private final FactoryDomainRepository factoryDomainRepository;
 }
