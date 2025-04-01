@@ -1,11 +1,11 @@
 package com.alten.remotesync.application.client.service;
 
-import lombok.NoArgsConstructor;
+import com.alten.remotesync.domain.client.repository.ClientDomainRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class ClientServiceImp implements ClientService {
+    private final ClientDomainRepository clientDomainRepository;
 }
