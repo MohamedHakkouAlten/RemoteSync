@@ -14,6 +14,16 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
+    @Query("SELECT p FROM AssignedRotation ar " +
+            "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
+            "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND ar.project.projectId IS NOT NULL " +
+            "AND p.status = 'ACTIVE' " +
+            "GROUP BY ar.project.projectId"
+    )
+    Optional<Project> fetchAssociateCurrentProject(@Param("userId") UUID userId);
+
     @Query("SELECT COUNT(DISTINCT ar.project.projectId) FROM AssignedRotation ar " +
             "WHERE ar.user.userId = :userId AND ar.project.projectId IS NOT NULL")
     Optional<Integer> fetchAssociateProjectsCount(@Param("userId") UUID userId);
