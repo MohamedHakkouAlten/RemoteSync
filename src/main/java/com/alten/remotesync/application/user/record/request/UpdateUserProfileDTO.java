@@ -8,8 +8,9 @@ import jakarta.validation.constraints.Pattern;
 import java.util.UUID;
 
 public record UpdateUserProfileDTO(
-        @NotNull
+        @NotNull(message = "User ID cannot be null")
         UUID userId,
+
         @NotBlank(message = "First name cannot be blank")
         @NotNull
         String firstName,
