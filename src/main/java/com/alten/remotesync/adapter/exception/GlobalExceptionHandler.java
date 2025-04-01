@@ -3,6 +3,7 @@ package com.alten.remotesync.adapter.exception;
 import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.adapter.exception.report.ReportNotFoundException;
+import com.alten.remotesync.adapter.exception.user.UserDisabledException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,13 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
         // ADDING LOGS HERE FOR THE DATABASE !
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserDisabledException.class)
+    public ResponseEntity<?> userDisabledException(UserDisabledException e) {
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ProjectNotFoundException.class)
