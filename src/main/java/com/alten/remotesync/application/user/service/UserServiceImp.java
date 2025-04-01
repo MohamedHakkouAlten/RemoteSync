@@ -1,5 +1,6 @@
 package com.alten.remotesync.application.user.service;
 
+import com.alten.remotesync.adapter.exception.user.UserDisabledException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.user.mapper.UserMapper;
@@ -52,6 +53,8 @@ public class UserServiceImp implements UserService {
         if(!authentication.isAuthenticated()) throw new UserNotFoundException("Authentication failed user was not found");
 
         User dbUser = userDomainRepository.findByUsername(loginRequestDTO.username());
+
+        if(dbUser.isDeleted()) throw new UserDisabledException("Authentication failed account disabled");
 
         return new LoginResponseDTO(jwtService.generateAccessToken(dbUser), jwtService.generateRefreshToken(dbUser));
     }
