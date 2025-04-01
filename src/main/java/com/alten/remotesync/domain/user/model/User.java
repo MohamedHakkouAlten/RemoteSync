@@ -42,7 +42,7 @@ public class User implements UserDetails {
 
         private String phoneNumber;
 
-        @ManyToMany(fetch = FetchType.LAZY)
+        @ManyToMany(fetch = FetchType.EAGER)
         protected List<Role> roles;
 
         private boolean isDeleted;
