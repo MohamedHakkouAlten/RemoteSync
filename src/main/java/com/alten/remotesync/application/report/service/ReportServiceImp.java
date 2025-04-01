@@ -25,6 +25,7 @@ public class ReportServiceImp implements ReportService {
     public ReportDTO createAssociateReport(CreateAssociateReportDTO createAssociateReportDTO) {
         Report report=reportMapper.toAssociateReport(createAssociateReportDTO);
         report.setStatus(ReportStatus.OPENED);
+        // SHOULD SET AUTOMATICALLY THE USER NOT MANUALLY @CreatedBy @LastModifiedBy ...etc
         return reportMapper.toReportDTO(reportDomainRepository.save(report)) ;
     }
 

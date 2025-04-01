@@ -1,20 +1,24 @@
 package com.alten.remotesync.application.project.record.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
 public record AssociateProjectByLabelDTO(
-        @NotNull
-        String label,
-        @NotNull
+        @NotNull(message = "User ID cannot be null")
         UUID userId,
-        @NotNull
+
+        @NotBlank(message = "Label cannot be blank")
+        String label,
+
+        @NotNull(message = "Page number cannot be null")
         Integer pageNumber,
+
+        @Min(value = 1, message = "Page size must be at least 1")
+        @Max(value = 100, message = "Page size cannot exceed 100")
         Integer pageSize
 ) {
-        public AssociateProjectByLabelDTO(String label, UUID userId, Integer pageNumber) {
-                this(label, userId, pageNumber, 0);
-
-        }
 }
