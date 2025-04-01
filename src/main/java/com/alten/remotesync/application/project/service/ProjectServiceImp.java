@@ -1,5 +1,6 @@
 package com.alten.remotesync.application.project.service;
 
+import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
@@ -9,17 +10,23 @@ import com.alten.remotesync.application.project.record.response.ProjectsCountDTO
 import com.alten.remotesync.application.project.record.response.ProjectDTO;
 import com.alten.remotesync.domain.project.model.Project;
 import com.alten.remotesync.domain.project.repository.ProjectDomainRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-
 
 @Component
 @RequiredArgsConstructor
 public class ProjectServiceImp implements ProjectService {
     private final ProjectDomainRepository projectDomainRepository;
     private final ProjectMapper projectMapper;
+
+    @Override
+    public ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO) {
+        Project project = projectDomainRepository.fetchAssociateCurrentProject(globalDTO.userId()).orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        return projectMapper.toProjectDTO(project);
+    }
 
     @Override
     public PagedProjectDTO getAssociateOldProjects(PagedGlobalIdDTO pagedGlobalIdDTO) {
