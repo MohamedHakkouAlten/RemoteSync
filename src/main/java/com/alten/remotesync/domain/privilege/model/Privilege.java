@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class Privilege implements GrantedAuthority {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long privilegeId;
 
     private String authority;

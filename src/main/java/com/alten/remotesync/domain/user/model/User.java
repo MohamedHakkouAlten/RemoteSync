@@ -1,9 +1,8 @@
 package com.alten.remotesync.domain.user.model;
 
-import com.alten.remotesync.domain.client.model.Client;
+import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.log.model.Log;
 import com.alten.remotesync.domain.notification.model.Notification;
-import com.alten.remotesync.domain.project.model.Project;
 import com.alten.remotesync.domain.report.model.Report;
 import com.alten.remotesync.domain.role.model.Role;
 import com.alten.remotesync.domain.subFactory.model.SubFactory;
@@ -43,7 +42,7 @@ public class User implements UserDetails {
 
         private String phoneNumber;
 
-        @ManyToMany(fetch = FetchType.LAZY)
+        @ManyToMany(fetch = FetchType.EAGER)
         protected List<Role> roles;
 
         private boolean isDeleted;
@@ -54,12 +53,6 @@ public class User implements UserDetails {
         @UpdateTimestamp
         private LocalDateTime updatedAt;
 
-        @ManyToOne
-        private User createdBy;
-
-        @ManyToOne
-        private User updatedBy;
-
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Log> logs;
 
@@ -67,22 +60,13 @@ public class User implements UserDetails {
         private List<Notification> notifications;
 
         @OneToMany(mappedBy = "createdBy")
-        private List<Client> createdClients;
-
-        @OneToMany(mappedBy = "updatedBy")
-        private List<Client> updatedClients;
-
-        @OneToMany(mappedBy = "createdBy")
-        private List<Project> createdProjects;
-
-        @OneToMany(mappedBy = "updatedBy")
-        private List<Project> updatedProjects;
-
-        @OneToMany(mappedBy = "createdBy")
         private List<Report> createdReports;
 
         @OneToMany(mappedBy = "updatedBy")
         private List<Report> updatedReports;
+
+        @OneToMany(mappedBy = "user")
+        private List<AssignedRotation> userAssignedRotations;
 
         @ManyToOne
         private SubFactory subFactory;

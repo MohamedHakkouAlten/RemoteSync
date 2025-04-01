@@ -1,5 +1,6 @@
 package com.alten.remotesync.kernel.security.jwt;
 
+import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -42,8 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
+            UUID userId = jwtService.extractUserId(jwt);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userId != null && userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String tokenType = jwtService.extractClaim(jwt, claims -> claims.get("type", String.class));
                 boolean isRefreshToken = "refresh".equals(tokenType);
                 Instant expirationTime = jwtService.extractClaim(jwt, claims -> claims.getExpiration().toInstant());
@@ -60,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userEmail,
+                        new UserPrincipal(userId, userEmail),
                         null,
                         jwtService.extractAuthorities(jwt)
                 );
@@ -88,4 +91,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }
-
