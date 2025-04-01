@@ -1,5 +1,6 @@
 package com.alten.remotesync.kernel.security.jwt;
 
+import com.alten.remotesync.domain.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,14 +9,11 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // The class is marked as a Spring Service, which will be automatically injected into other components of the Spring application.
 @Service
@@ -38,6 +36,12 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // Extract the user id (userId) from the JWT token
+    public UUID extractUserId(String token) {
+        String userIdStr = extractClaim(token, claims -> claims.get("userId", String.class));
+        return userIdStr != null ? UUID.fromString(userIdStr) : null;
+    }
+
     // Extract a specific claim from the JWT token. A claim is a piece of information encoded in the token (e.g., subject, expiration time).
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         // Extract all claims from the token and then apply the provided claimsResolver function to extract the desired claim.
@@ -46,17 +50,21 @@ public class JwtService {
     }
 
     // Generate an access token for a given user by extracting their authorities (roles) and setting them as extra claims.
-    public String generateAccessToken(UserDetails userDetails) {
+    public String generateAccessToken(User userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         // Loop through the user's authorities (roles) and add them as extra claims.
         userDetails.getAuthorities().forEach(a -> extraClaims.put(a.getAuthority(), a));
+        // Add a custom claim to indicate the user id without retrieving it from the database
+        extraClaims.put("userId", userDetails.getUserId().toString());
         // Call generateToken to create the JWT with the specified expiration for access tokens.
         return generateToken(extraClaims, userDetails, jwtAccessExpiration);
     }
 
     // Generate a refresh token for a given user by adding a special claim to mark it as a refresh token.
-    public String generateRefreshToken(UserDetails userDetails) {
+    public String generateRefreshToken(User userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
+        // Add a custom claim to indicate the user id without retrieving it from the database
+        extraClaims.put("userId", userDetails.getUserId().toString());
         // Add a custom claim to indicate that the token is a refresh token.
         extraClaims.put("type", "refresh");
         // Call generateToken to create the JWT with the specified expiration for refresh tokens.
@@ -64,12 +72,12 @@ public class JwtService {
     }
 
     // Common method to generate a JWT with extra claims, user details, and expiration time.
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    private String generateToken(Map<String, Object> extraClaims, User userDetails, long expiration) {
         return buildToken(extraClaims, userDetails, expiration);
     }
 
     // Build the JWT token using the provided claims, user details, and expiration time.
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    private String buildToken(Map<String, Object> extraClaims, User userDetails, long expiration) {
         return Jwts
                 .builder()  // Start building the JWT
                 .setClaims(extraClaims)  // Set the extra claims in the token
