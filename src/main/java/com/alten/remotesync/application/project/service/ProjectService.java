@@ -1,7 +1,6 @@
 package com.alten.remotesync.application.project.service;
 
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
 import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;

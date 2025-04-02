@@ -12,5 +12,5 @@ import java.util.UUID;
 
 @Repository
 public interface ReportDomainRepository extends JpaRepository<Report, UUID> {
-    Optional<Page<Report>> findAllByCreatedBy_UserIdAndStatus(UUID createdByUserId, ReportStatus status, Pageable pageable);
+    Optional<Page<Report>> findAllByCreatedBy_UserId(UUID createdByUserId, Pageable pageable);
 }

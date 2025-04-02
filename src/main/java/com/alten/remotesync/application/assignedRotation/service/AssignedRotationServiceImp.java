@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class AssignedRotationServiceImp implements AssignedRotationService {
@@ -30,6 +33,18 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         return assignedRotationMapper.toAssignedRotationDTO(assignedRotations);
     }
 
+    @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
+    public List<AssignedRotationDTO> getAssociateOldRotationsWithProject(GlobalDTO globalDTO) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndProject_ProjectIdAndRotationAndRotationAssignmentStatus(
+                globalDTO.userId(),
+                globalDTO.projectId(),
+                RotationAssignmentStatus.OVERRIDDEN,
+                sort).orElseThrow(() -> new AssignedRotationNotFoundException("Assigned Rotation Not Found"));
+
+        return assignedRotations.stream().map(assignedRotationMapper::toAssignedRotationDTO).toList();
+    }
+
     @Override
     public AssignedRotationDTO getAssociateCurrentRotationWithoutProject(GlobalDTO globalDTO) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
@@ -39,5 +54,16 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 sort).orElseThrow(() -> new AssignedRotationNotFoundException("Assigned Rotation Not Found"));
 
         return assignedRotationMapper.toAssignedRotationDTO(assignedRotations);
+    }
+
+    @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
+    public List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndRotationAndRotationAssignmentStatus(
+                globalDTO.userId(),
+                RotationAssignmentStatus.OVERRIDDEN,
+                sort).orElseThrow(() -> new AssignedRotationNotFoundException("Assigned Rotation Not Found"));
+
+        return assignedRotations.stream().map(assignedRotationMapper::toAssignedRotationDTO).toList();
     }
 }
