@@ -8,12 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public record AssociateProjectByLabelDTO(
-        @NotNull(message = "User ID cannot be null")
-        UUID userId,
 
         @NotBlank(message = "Label cannot be blank")
         String label,
 
+        @Min(value = 0,message = "Page number must be at least 1")
         @NotNull(message = "Page number cannot be null")
         Integer pageNumber,
 
