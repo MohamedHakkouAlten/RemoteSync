@@ -30,4 +30,8 @@ public record UpdateUserProfileDTO(
         )
         @NotNull
         String phoneNumber
-) {}
+) {
+        public UpdateUserProfileDTO(UUID userId, UpdateUserProfileDTO updateUserProfileDTO){
+                this(userId, updateUserProfileDTO.firstName, updateUserProfileDTO.lastName, updateUserProfileDTO.email, updateUserProfileDTO.phoneNumber);
+        }
+}

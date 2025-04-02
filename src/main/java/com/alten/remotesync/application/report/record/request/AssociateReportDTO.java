@@ -11,9 +11,6 @@ public record AssociateReportDTO(
         @NotNull(message = "User ID cannot be null")
         UUID userId,
 
-        @NotNull(message = "Report status cannot be null")
-        ReportStatus status,
-
         @NotNull(message = "Page number cannot be null")
         Integer pageNumber,
 
