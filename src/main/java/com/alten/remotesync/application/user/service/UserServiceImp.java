@@ -27,15 +27,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserProfileDTO getMyProfile(GlobalDTO globalDTO) {
-        User dbuser = userDomainRepository.findById(globalDTO.userId())
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + globalDTO.userId()));
+        User dbuser = userDomainRepository.findById(globalDTO.userId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + globalDTO.userId()));
         return userMapper.toUserProfileDTO(dbuser);
     }
 
     @Override
     public UserProfileDTO updateMyProfile(UpdateUserProfileDTO updateUserProfileDTO) {
-        User dbUser = userDomainRepository.findById(updateUserProfileDTO.userId())
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + updateUserProfileDTO.userId()));
+        User dbUser = userDomainRepository.findById(updateUserProfileDTO.userId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + updateUserProfileDTO.userId()));
 
         dbUser.setFirstName(updateUserProfileDTO.firstName());
         dbUser.setLastName(updateUserProfileDTO.lastName());
@@ -47,10 +45,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDTO.username(), loginRequestDTO.password()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.username(), loginRequestDTO.password()));
 
-        if(!authentication.isAuthenticated()) throw new UserNotFoundException("Authentication failed user was not found");
+        if (!authentication.isAuthenticated())
+            throw new UserNotFoundException("Authentication failed user was not found");
 
         User dbUser = userDomainRepository.findByUsername(loginRequestDTO.username());
 
