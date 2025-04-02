@@ -2,7 +2,6 @@ package com.alten.remotesync.application.project.service;
 
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;

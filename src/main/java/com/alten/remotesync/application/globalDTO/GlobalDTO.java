@@ -23,4 +23,8 @@ public record GlobalDTO(
     public static GlobalDTO fromUserIdAndClientId(UUID userId, UUID clientId) {
         return new GlobalDTO(userId, clientId, null);
     }
+
+    public static GlobalDTO fromUserIdAndProjectId(UUID userId, UUID projectId){
+        return new GlobalDTO(userId, null, projectId);
+    }
 }
