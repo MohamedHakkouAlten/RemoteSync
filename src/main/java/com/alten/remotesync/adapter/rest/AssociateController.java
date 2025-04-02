@@ -1,25 +1,25 @@
 package com.alten.remotesync.adapter.rest;
 
-import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.user.record.response.UserProfileDTO;
+import com.alten.remotesync.application.user.service.UserService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+
+import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
-import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
-import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,8 +28,16 @@ import java.util.UUID;
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class AssociateController {
+
+    private final UserService userService;
     private final ProjectService projectService;
     private final ReportService reportService;
+    @GetMapping("/associate/{userId}")
+    public ResponseEntity<UserProfileDTO> getAssociateProfile(@PathVariable UUID userId) {
+        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
+        return ResponseEntity.ok(profile);
+    }
+
 
     @GetMapping({"/associate/projects/current"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
@@ -109,3 +117,6 @@ public class AssociateController {
 
 
 }
+
+
+
