@@ -31,9 +31,8 @@ public class ReportServiceImp implements ReportService {
 
     @Override
     public PagedReportDTO getAssociateReports(AssociateReportDTO associateReportDTO) {
-        Page<Report> pagedReports = reportDomainRepository.findAllByCreatedBy_UserIdAndStatus(
+        Page<Report> pagedReports = reportDomainRepository.findAllByCreatedBy_UserId(
                 associateReportDTO.userId(),
-                associateReportDTO.status(),
                 PageRequest.of(associateReportDTO.pageNumber(), (associateReportDTO.pageSize() != null) ? associateReportDTO.pageSize() : 10, Sort.by(Sort.Direction.DESC, "createdAt")))
                 .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
 
