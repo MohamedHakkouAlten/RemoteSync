@@ -12,13 +12,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/rc")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class RcController {
 
     private final RotationService rotationService;
 
-    @PostMapping("/rotation/create")
+    @PostMapping("/rc/rotation/create")
     @PreAuthorize("hasAuthority('RC:WRITE')")
     public ResponseEntity<?> createRotation(@RequestBody @Valid CreateRotationDTO createRotationDTO) {
         RotationResponseDTO responseDTO = rotationService.createRotation(createRotationDTO);
