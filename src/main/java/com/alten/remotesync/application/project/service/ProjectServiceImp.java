@@ -3,6 +3,7 @@ package com.alten.remotesync.application.project.service;
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
@@ -30,7 +31,7 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO,PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO) {
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjects(
                         globalDTO.userId(),
                         PageRequest.of(pagedGlobalIdDTO.pageNumber(),
