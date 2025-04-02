@@ -10,11 +10,33 @@ import com.alten.remotesync.application.user.record.request.UpdateUserProfileDTO
 import com.alten.remotesync.application.user.service.UserService;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.Valid;
+import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.user.record.response.UserProfileDTO;
+import com.alten.remotesync.application.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
+import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
+import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
+import com.alten.remotesync.application.project.service.ProjectService;
+import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
+import com.alten.remotesync.application.report.service.ReportService;
+import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -94,3 +116,42 @@ public class AssociateController {
                                 , HttpStatus.OK));
     }
 }
+
+    @GetMapping({"/associate/projects/count"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateProjectsCount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getAssociateProjectsCount(
+                                GlobalDTO.fromUserId(userPrincipal.userId())),
+                        HttpStatus.OK));
+
+    }
+
+    @GetMapping({"/associate/projects/byClient"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateProjectsByClient(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute AssociateProjectByClientDTO associateProjectByClientDTO) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getAssociateProjectsByClient(
+                                GlobalDTO.fromUserId(userPrincipal.userId()),
+                                associateProjectByClientDTO),
+                        HttpStatus.OK));
+
+    }
+
+    @PostMapping({"/associate/report/rotation-request"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateRotationRequest(@Valid @RequestBody CreateAssociateReportDTO createAssociateReportDTO) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(reportService.createAssociateReport(createAssociateReportDTO),
+                        HttpStatus.OK));
+
+    }
+
+
+}
+
+
+

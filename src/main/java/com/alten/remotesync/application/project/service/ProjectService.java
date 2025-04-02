@@ -1,6 +1,8 @@
 package com.alten.remotesync.application.project.service;
 
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
 import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;
@@ -11,13 +13,13 @@ import org.springframework.stereotype.Service;
 public interface ProjectService {
     ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateOldProjects(PagedGlobalIdDTO pagedGlobalIdDTO);
+    PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO,PagedGlobalIdDTO pagedGlobalIdDTO);
 
     ProjectDTO getProjectDetails(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateOldProjectsByLabel(AssociateProjectByLabelDTO associateProjectByLabelDTO);
+    PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO);
 
     ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateProjectsByClient(PagedGlobalIdDTO pagedGlobalIdDTO);
+    PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO);
 }
