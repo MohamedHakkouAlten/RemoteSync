@@ -32,10 +32,11 @@ public class AssociateController {
     private final UserService userService;
     private final ProjectService projectService;
     private final ReportService reportService;
+
     @GetMapping("/associate/{userId}")
-    public ResponseEntity<UserProfileDTO> getAssociateProfile(@PathVariable UUID userId) {
+    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
         UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
-        return ResponseEntity.ok(profile);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseWrapper.success(profile, HttpStatus.OK));
     }
 
 
