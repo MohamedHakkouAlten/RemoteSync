@@ -36,7 +36,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     public List<AssignedRotationDTO> getAssociateOldRotationsWithProject(GlobalDTO globalDTO) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
-        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndProject_ProjectIdAndRotationAndRotationAssignmentStatus(
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndProject_ProjectIdAndRotationAssignmentStatus(
                 globalDTO.userId(),
                 globalDTO.projectId(),
                 RotationAssignmentStatus.OVERRIDDEN,
@@ -59,7 +59,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     public List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
-        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndRotationAndRotationAssignmentStatus(
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_UserIdAndRotationAssignmentStatus(
                 globalDTO.userId(),
                 RotationAssignmentStatus.OVERRIDDEN,
                 sort).orElseThrow(() -> new AssignedRotationNotFoundException("Assigned Rotation Not Found"));
