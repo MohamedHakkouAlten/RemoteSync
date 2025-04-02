@@ -1,6 +1,7 @@
 package com.alten.remotesync.domain.client.model;
 
 import com.alten.remotesync.domain.project.model.Project;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -35,6 +36,6 @@ public class Client {
 
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner")@JsonBackReference
     private List<Project> clientProjects;
 }

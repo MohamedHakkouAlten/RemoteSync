@@ -1,8 +1,10 @@
 package com.alten.remotesync.application.project.service;
 
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
+import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
+import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
 import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;
@@ -23,17 +25,17 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO) {
-        Project project = projectDomainRepository.fetchAssociateCurrentProject(globalDTO.userId()).orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        Project project = projectDomainRepository.fetchAssociateCurrentProject(globalDTO.userId()).orElseThrow(() -> new ProjectNotFoundException("No projects are associated with this user"));
         return projectMapper.toProjectDTO(project);
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjects(PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO,PagedGlobalIdDTO pagedGlobalIdDTO) {
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjects(
-                        pagedGlobalIdDTO.globalDTO().userId(),
+                        globalDTO.userId(),
                         PageRequest.of(pagedGlobalIdDTO.pageNumber(),
                                 (pagedGlobalIdDTO.pageSize() != null) ? pagedGlobalIdDTO.pageSize() : 10))
-                .orElseThrow();
+                .orElseThrow(()->new UserNotFoundException("user not found"));
 
         return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
@@ -45,20 +47,21 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public ProjectDTO getProjectDetails(GlobalDTO globalDTO) {
-        Project project = projectDomainRepository.findById(globalDTO.projectId()).orElseThrow();
+        Project project = projectDomainRepository.findById(globalDTO.projectId())
+                .orElseThrow(()->new ProjectNotFoundException("Project Not found"));
         return projectMapper.toProjectDTO(project);
 
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjectsByLabel(AssociateProjectByLabelDTO associateProjectByLabelDTO) {
+    public PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO) {
 
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByLabel
-                        (associateProjectByLabelDTO.userId(),
+                        (globalDTO.userId(),
                                 associateProjectByLabelDTO.label(),
                                 PageRequest.of(associateProjectByLabelDTO.pageNumber(),
                                         (associateProjectByLabelDTO.pageSize() != null) ? associateProjectByLabelDTO.pageSize() : 10))
-                .orElseThrow();
+                .orElseThrow(()->new UserNotFoundException("user not found"));
 
         return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
@@ -71,25 +74,26 @@ public class ProjectServiceImp implements ProjectService {
     @Override
     public ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO) {
 
-        return projectMapper.toProjectsCount(projectDomainRepository.fetchAssociateProjectsCount(globalDTO.userId()).orElseThrow()
+        return projectMapper.toProjectsCount(projectDomainRepository.fetchAssociateProjectsCount(globalDTO.userId())
+                        .orElseThrow(()->new UserNotFoundException("user not found"))
         );
     }
 
     @Override
-    public PagedProjectDTO getAssociateProjectsByClient(PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO) {
 
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByClient(
-                        pagedGlobalIdDTO.globalDTO().userId(),
-                        pagedGlobalIdDTO.globalDTO().clientId(),
-                        PageRequest.of(pagedGlobalIdDTO.pageNumber(),
-                                (pagedGlobalIdDTO.pageSize() != null) ? pagedGlobalIdDTO.pageSize() : 10))
-                .orElseThrow();
+                        globalDTO.userId(),
+                       associateProjectByClientDTO.clientId(),
+                        PageRequest.of(associateProjectByClientDTO.pageNumber(),
+                                (associateProjectByClientDTO.pageSize() != null) ? associateProjectByClientDTO.pageSize() : 10))
+                .orElseThrow(()->new UserNotFoundException("user not found"));
 
         return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
                 pagedProjects.getTotalElements(),
-                pagedGlobalIdDTO.pageNumber() + 1,
-                pagedGlobalIdDTO.pageSize()
+                associateProjectByClientDTO.pageNumber() + 1,
+               associateProjectByClientDTO.pageSize()
         );
     }
 
