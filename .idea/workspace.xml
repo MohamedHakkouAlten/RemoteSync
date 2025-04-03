@@ -4,7 +4,160 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d7b7caf6-2e2b-4b24-9d36-7abcb1cd5507" name="Changes" comment="refactor:removed unused imports RemoteSyncApplicationTests.java" />
+    <list default="true" id="d7b7caf6-2e2b-4b24-9d36-7abcb1cd5507" name="Changes" comment="refactor:removed unused imports RemoteSyncApplicationTests.java">
+      <change beforePath="$PROJECT_DIR$/api/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/RemoteSyncApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/assignedRotation/AssignedRotationNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/project/ProjectNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/report/ReportNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/user/UserDisabledException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/exception/user/UserNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/interceptor/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/rest/AdminController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/rest/AssociateController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/rest/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/rest/RcController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/websocket/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/adapter/wrapper/ResponseWrapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/mapper/AssignedRotationMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/AssignedRotationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/PagedAssignedRotationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/client/mapper/ClientMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/client/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/client/record/response/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/client/service/ClientService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/client/service/ClientServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/factory/mapper/FactoryMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/factory/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/factory/record/response/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/globalDTO/GlobalDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/globalDTO/PagedGlobalIdDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/log/mapper/LogMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/log/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/log/record/response/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/log/service/LogService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/log/service/LogServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/notification/mapper/NotificationMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/notification/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/notification/record/response/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/privilege/mapper/PrivilegeMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/privilege/record/request/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/privilege/record/response/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/privilege/service/PrivilegeService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/privilege/service/PrivilegeServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/mapper/ProjectMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/record/request/AssociateProjectByClientDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/record/request/AssociateProjectByLabelDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/record/response/PagedProjectDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/record/response/ProjectDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/record/response/ProjectsCountDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/service/ProjectService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/project/service/ProjectServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/mapper/ReportMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/record/request/AssociateReportDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/record/request/CreateAssociateReportDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/record/response/PagedReportDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/record/response/ReportDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/service/ReportService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/report/service/ReportServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/role/mapper/RoleMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/role/record/test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/role/service/RoleService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/role/service/RoleServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/mapper/RotationMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/record/request/CreateRotationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/record/response/RotationResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/record/test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/service/RotationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/rotation/service/RotationServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/subFactory/mapper/SubFactoryMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/subFactory/record/test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/mapper/UserMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/record/request/LoginRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/record/request/UpdateUserProfileDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/record/response/AssignedRotationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/record/response/LoginResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/record/response/UserProfileDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/application/user/service/UserServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/assignedRotation/enumeration/RotationAssignmentStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/assignedRotation/model/AssignedRotation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/assignedRotation/model/embeddable/AssignedRotationId.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/assignedRotation/projection/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/assignedRotation/repository/AssignedRotationDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/client/model/Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/client/repository/ClientDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/factory/model/Factory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/factory/projection/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/factory/repository/FactoryDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/log/enumeration/LogStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/log/model/Log.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/log/repository/LogDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/notification/enumeration/NotificationStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/notification/model/Notification.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/notification/repository/NotificationDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/privilege/model/Privilege.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/privilege/repository/PrivilegeDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/project/enumeration/ProjectStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/project/model/Project.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/project/projection/ProjectProjection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/project/repository/ProjectDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/report/enumeration/ReportStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/report/enumeration/ReportType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/report/model/Report.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/report/repository/ReportDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/role/model/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/role/repository/RoleDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/rotation/model/Rotation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/rotation/projection/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/rotation/repository/RotationDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/subFactory/model/SubFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/subFactory/projection/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/subFactory/repository/SubFactoryDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/user/model/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/user/projection/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/user/repository/UserDomainRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/user/services/UserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/domain/user/services/UserDetailsServiceImp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/infrastructure/AuditConfig/AuditingConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/infrastructure/AuditConfig/AuditorAwareImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/infrastructure/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/security/AuthenticationConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/security/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/security/jwt/userPrincipal/UserPrincipal.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/utilty/RolePrivileges/DefaultRolePrivileges.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/java/com/alten/remotesync/kernel/utilty/RolePrivileges/DefaultRoles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/resources/db/migrations/V1__INIT_REMOTESYNC.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/resources/db/migrations/V2__INSERT_ROLES_PRIVILEGES.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/main/resources/db/migrations/V3__REMOVE_RPOJECT_ID_FROM_ASSIGNED_ROTATION.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/test/java/com/alten/remotesync/ProjectTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/test/java/com/alten/remotesync/RemoteSyncApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/test/java/com/alten/remotesync/ReportTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/api/src/test/java/com/alten/remotesync/UserTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/application/test.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,9 +239,9 @@
     "Maven.remotesync [install].executor": "Run",
     "Maven.remotesync [test].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "<unknown>",
+    "git-widget-placeholder": "Hamza__Jdaidi",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/hjdaidi/OneDrive - ALTEN Group/Desktop/PFE/RotationProject/RemoteSync",
+    "last_opened_file_path": "C:/Users/hjdaidi/OneDrive - ALTEN Group/Desktop/PFE/RotationProject/RemoteSync/api",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
