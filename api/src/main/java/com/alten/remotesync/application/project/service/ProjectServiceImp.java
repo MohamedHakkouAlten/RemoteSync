@@ -31,7 +31,7 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO,PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO) {
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjects(
                         globalDTO.userId(),
                         PageRequest.of(pagedGlobalIdDTO.pageNumber(),
