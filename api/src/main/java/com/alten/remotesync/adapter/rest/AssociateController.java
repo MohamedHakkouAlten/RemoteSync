@@ -7,6 +7,7 @@ import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
 import com.alten.remotesync.application.user.record.request.UpdateUserProfileDTO;
+import com.alten.remotesync.application.user.record.response.UserProfileDTO;
 import com.alten.remotesync.application.user.service.UserService;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -135,6 +138,15 @@ public class AssociateController {
                 .body(ResponseWrapper.success(reportService.createAssociateReport(createAssociateReportDTO),
                         HttpStatus.OK));
 
+    }
+
+    @GetMapping("/associate/{userId}")
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+
+    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
+        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(profile, HttpStatus.OK));
     }
 }
 
