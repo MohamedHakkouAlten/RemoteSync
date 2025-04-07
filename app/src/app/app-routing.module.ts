@@ -3,8 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   // ROUTES FOR VISITOR
-  { path: 'RemoteSync/Home', loadChildren: () => import('./components/visitor/home/home.module').then(m => m.HomeModule) },
+  { path: 'RemoteSync/NotFound', loadChildren: () => import('./components/visitor/notfound/notfound.module').then(m => m.NotfoundModule) },
   { path: 'RemoteSync/Login', loadChildren: () => import('./components/visitor/login/login.module').then(m => m.LoginModule) },
+  { path: 'RemoteSync/Example', loadChildren: () => import('./example/example.module').then(m => m.ExampleModule) },
   // END ROUTES FOR VISITOR
 
 
@@ -62,8 +63,8 @@ const routes: Routes = [
 
 
   // WRONG PATH URL
-  { path: '', redirectTo: 'RemoteSync/Home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'RemoteSync/Home' }
+  { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'RemoteSync/NotFound' }
   // END WRONG PATH URL
 ];
 
