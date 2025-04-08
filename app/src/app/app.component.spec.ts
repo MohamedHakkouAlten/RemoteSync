@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'remotesync'`, () => {
+  it(`should have as title 'RemoteSync'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('remotesync');
+    expect(app.title).toEqual('RemoteSync');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, remotesync');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, RemoteSync');
   });
 });

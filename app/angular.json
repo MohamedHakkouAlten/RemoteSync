@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "remotesync": {
+    "RemoteSync": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/remotesync",
+            "outputPath": "dist/remote-sync",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -51,8 +51,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "remotesync:build:production"
+              "buildTarget": "RemoteSync:build:production"
             },
             "development": {
-              "buildTarget": "remotesync:build:development"
+              "buildTarget": "RemoteSync:build:development"
             }
           },
           "defaultConfiguration": "development"
