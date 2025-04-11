@@ -22,4 +22,11 @@ public interface ProjectService {
     ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO);
 
     PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO);
+
+    PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
+
+    ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO);
+
+
+
 }

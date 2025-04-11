@@ -59,5 +59,16 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     )
     Optional<Page<Project>> fetchAssociateOldProjectsByClient(@Param("userId") UUID userId,@Param("clientId") UUID clientId,Pageable pageable);
 
+    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND p.status = 'ACTIVE'")
+    Optional<Integer> fetchActiveProjectsCount(@Param("userId") UUID userId);
 
+    @Query("SELECT p FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND ar.project.projectId IS NOT NULL " +
+            "GROUP BY ar.project.projectId")
+    Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
 }

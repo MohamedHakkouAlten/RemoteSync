@@ -98,4 +98,27 @@ public class ProjectServiceImp implements ProjectService {
         );
     }
 
+    @Override
+    public PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO) {
+        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateProjects(
+                        globalDTO.userId(),
+                        PageRequest.of(pagedGlobalIdDTO.pageNumber(),
+                                pagedGlobalIdDTO.pageSize() != null ? pagedGlobalIdDTO.pageSize() : 10))
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return new PagedProjectDTO(
+                pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
+                pagedProjects.getTotalPages(),
+                pagedProjects.getTotalElements(),
+                pagedGlobalIdDTO.pageNumber() + 1,
+                pagedGlobalIdDTO.pageSize()
+        );
+    }
+
+    @Override
+    public ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO) {
+        Integer activeCount = projectDomainRepository.fetchActiveProjectsCount(globalDTO.userId())
+                .orElse(0);
+        return projectMapper.toProjectsCount(activeCount);
+    }
+
 }

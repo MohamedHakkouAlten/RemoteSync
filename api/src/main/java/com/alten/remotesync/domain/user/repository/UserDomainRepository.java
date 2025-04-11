@@ -11,4 +11,5 @@ public interface UserDomainRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
 
+
 }
