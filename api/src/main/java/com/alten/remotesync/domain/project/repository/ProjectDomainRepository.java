@@ -1,6 +1,7 @@
 package com.alten.remotesync.domain.project.repository;
 
 
+import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.domain.project.model.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,6 +59,11 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
             "GROUP BY ar.project.projectId"
     )
     Optional<Page<Project>> fetchAssociateOldProjectsByClient(@Param("userId") UUID userId,@Param("clientId") UUID clientId,Pageable pageable);
+
+    @Query("SELECT p from Project p ORDER by p.deadLine-p.startDate DESC LIMIT 1")
+    Optional<Project>  findLongestDurationProject();
+
+    Optional<Integer> countByStatusEquals(ProjectStatus status);
 
 
 }

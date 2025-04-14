@@ -8,4 +8,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FactoryServiceImp implements FactoryService {
     private final FactoryDomainRepository factoryDomainRepository;
+
+    @Override
+    public Long getTotalFactoriesCount() {
+       return factoryDomainRepository.count();
+
+    }
 }

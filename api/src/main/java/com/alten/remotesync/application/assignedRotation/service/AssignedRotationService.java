@@ -12,4 +12,5 @@ public interface AssignedRotationService {
     List<AssignedRotationDTO> getAssociateOldRotationsWithProject(GlobalDTO globalDTO); // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     AssignedRotationDTO getAssociateCurrentRotationWithoutProject(GlobalDTO globalDTO);
     List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO); // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
+    Float onSiteAssociatesPercentage();
 }

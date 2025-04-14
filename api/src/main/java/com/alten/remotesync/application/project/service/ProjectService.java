@@ -5,6 +5,7 @@ import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
+import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
 import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;
 import com.alten.remotesync.application.project.record.response.ProjectDTO;
@@ -23,4 +24,12 @@ public interface ProjectService {
     ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO);
 
     PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO);
+
+    ProjectDTO getLongestDurationProject();
+
+    Integer getCompletedProjectsCount();
+
+    ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
+
+    ProjectDTO deleteProject(GlobalDTO globalDTO);
 }

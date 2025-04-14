@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -28,9 +29,11 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
-    private Date deadLine;
+    private LocalDateTime deadLine;
 
-    private boolean isDeleted;
+    private LocalDateTime startDate;
+
+    private Boolean isDeleted;
 
     @ManyToOne
     private Client owner;
