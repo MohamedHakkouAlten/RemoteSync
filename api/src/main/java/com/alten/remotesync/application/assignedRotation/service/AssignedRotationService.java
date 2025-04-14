@@ -17,5 +17,6 @@ public interface AssignedRotationService {
     List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO); // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size);
     void updateRotationByDate(UUID userId, Date date);
+    PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size);
 
 }

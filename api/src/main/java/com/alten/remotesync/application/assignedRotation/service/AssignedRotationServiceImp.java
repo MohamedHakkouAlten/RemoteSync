@@ -119,4 +119,24 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         );
     }
 
+    @Override
+    public PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AssignedRotation> assignedRotationPage =
+                assignedRotationDomainRepository.findByClient_ClientId(clientId, pageable);
+
+        List<AssignedRotationDTO> dtoList = assignedRotationPage
+                .stream()
+                .map(assignedRotationMapper::toAssignedRotationDTO)
+                .toList();
+
+        return new PagedAssignedRotationDTO(
+                dtoList,
+                assignedRotationPage.getTotalPages(),
+                assignedRotationPage.getTotalElements(),
+                assignedRotationPage.getNumber(),
+                assignedRotationPage.getSize()
+        );
+    }
+
 }

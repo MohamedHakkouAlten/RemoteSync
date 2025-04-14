@@ -28,5 +28,11 @@ public interface AssignedRotationDomainRepository extends JpaRepository<Assigned
             "LEFT JOIN FETCH ar.project p " +
             "WHERE u.subFactory.subFactoryID = :subFactoryId")
     Page<AssignedRotation> findByUser_SubFactory_SubFactoryID(@Param("subFactoryId") UUID subFactoryId, Pageable pageable);
+    @Query("SELECT ar FROM AssignedRotation ar " +
+            "JOIN FETCH ar.user u " +
+            "JOIN FETCH ar.rotation r " +
+            "LEFT JOIN FETCH ar.project p " +
+            "WHERE p.owner.clientId = :clientId")
+    Page<AssignedRotation> findByClient_ClientId(@Param("clientId") UUID clientId, Pageable pageable);
 
 }
