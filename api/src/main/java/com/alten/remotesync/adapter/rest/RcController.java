@@ -60,6 +60,16 @@ public class RcController {
                         HttpStatus.OK
                 ));
     }
+    @GetMapping("/projects/canceled/count")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> countCancelledProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(
+                        projectService.countCancelledProjects(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        HttpStatus.OK
+                ));
+    }
     @GetMapping("/rc/rotations/sub-factory/{subFactoryId}/{page}/{size}")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRotationsBySubFactory(@PathVariable UUID subFactoryId,

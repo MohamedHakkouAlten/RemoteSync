@@ -78,4 +78,11 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
         "AND ar.project.projectId IS NOT NULL " +
         "GROUP BY p.projectId " +
         "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
-   Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);}
+   Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId AND p.status = 'CANCELLED'")
+    Optional<Integer> fetchCancelledProjectsCount(@Param("userId") UUID userId);
+
+}

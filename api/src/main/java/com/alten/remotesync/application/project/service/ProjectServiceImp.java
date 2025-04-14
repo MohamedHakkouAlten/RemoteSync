@@ -120,6 +120,12 @@ public class ProjectServiceImp implements ProjectService {
                 .orElse(0);
         return projectMapper.toProjectsCount(activeCount);
     }
+    @Override
+    public ProjectsCountDTO countCancelledProjects(GlobalDTO globalDTO) {
+        Integer cancelledCount = projectDomainRepository.fetchCancelledProjectsCount(globalDTO.userId())
+                .orElse(0);
+        return projectMapper.toProjectsCount(cancelledCount);
+    }
 
     @Override
     public ProjectDTO getLargestTeamProject(GlobalDTO globalDTO) {
