@@ -5,6 +5,7 @@ import com.alten.remotesync.application.assignedRotation.record.response.PagedAs
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,5 +16,6 @@ public interface AssignedRotationService {
     AssignedRotationDTO getAssociateCurrentRotationWithoutProject(GlobalDTO globalDTO);
     List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO); // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size);
+    void updateRotationByDate(UUID userId, Date date);
 
 }

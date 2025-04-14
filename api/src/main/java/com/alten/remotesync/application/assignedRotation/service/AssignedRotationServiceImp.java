@@ -9,6 +9,7 @@ import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignme
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.assignedRotation.repository.AssignedRotationDomainRepository;
 
+import com.alten.remotesync.domain.rotation.model.Rotation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +39,32 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
         return assignedRotationMapper.toAssignedRotationDTO(assignedRotations);
     }
+    @Override
+    public void updateRotationByDate(UUID userId, Date date) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository
+                .findAllAssignedRotationByUser_UserIdAndRotationAssignmentStatus(
+                        userId,
+                        RotationAssignmentStatus.ACTIVE,
+                        sort)
+                .orElseThrow(() -> new AssignedRotationNotFoundException("Assigned Rotation Not Found"));
 
+        for (AssignedRotation assignedRotation : assignedRotations) {
+            if (isDateInRange(date, assignedRotation.getRotation())) {
+                updateRotation(assignedRotation);
+            }
+        }
+    }
+
+    private boolean isDateInRange(Date date, Rotation rotation) {
+        return !date.before(rotation.getStartDate()) && !date.after(rotation.getEndDate());
+    }
+
+    private void updateRotation(AssignedRotation assignedRotation) {
+        assignedRotation.setRotationAssignmentStatus(RotationAssignmentStatus.OVERRIDDEN);
+
+        assignedRotationDomainRepository.save(assignedRotation);
+    }
 
     @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     public List<AssignedRotationDTO> getAssociateOldRotationsWithProject(GlobalDTO globalDTO) {

@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -81,6 +82,16 @@ public class RcController {
                         HttpStatus.OK
                 )
         );
+    }
+    @PutMapping("/rotations/update/{userId}")
+    @PreAuthorize("hasAuthority('RC:WRITE')")
+    public ResponseEntity<?> updateRotationByDate(
+            @PathVariable UUID userId,
+            @RequestParam Date date) {
+        assignedRotationService.updateRotationByDate(userId, date);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success("Rotation updated successfully", HttpStatus.OK));
     }
 
 }
