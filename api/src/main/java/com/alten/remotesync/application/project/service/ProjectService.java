@@ -27,6 +27,7 @@ public interface ProjectService {
 
     ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO);
 
+    ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
 
 
 }

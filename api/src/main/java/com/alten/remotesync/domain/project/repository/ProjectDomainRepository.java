@@ -71,4 +71,11 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
             "AND ar.project.projectId IS NOT NULL " +
             "GROUP BY ar.project.projectId")
     Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
-}
+
+   @Query("SELECT p FROM AssignedRotation ar " +
+        "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
+        "WHERE ar.user.userId = :userId " +
+        "AND ar.project.projectId IS NOT NULL " +
+        "GROUP BY p.projectId " +
+        "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
+   Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);}

@@ -121,4 +121,12 @@ public class ProjectServiceImp implements ProjectService {
         return projectMapper.toProjectsCount(activeCount);
     }
 
+    @Override
+    public ProjectDTO getLargestTeamProject(GlobalDTO globalDTO) {
+        Project project = projectDomainRepository
+                .fetchProjectWithLargestTeam(globalDTO.userId())
+                .orElseThrow(() -> new ProjectNotFoundException("No project with a large team found"));
+        return projectMapper.toProjectDTO(project);
+    }
+
 }

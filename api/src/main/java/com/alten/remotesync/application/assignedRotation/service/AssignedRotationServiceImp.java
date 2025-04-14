@@ -3,17 +3,22 @@ package com.alten.remotesync.application.assignedRotation.service;
 import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
 import com.alten.remotesync.application.assignedRotation.mapper.AssignedRotationMapper;
 import com.alten.remotesync.application.assignedRotation.record.response.AssignedRotationDTO;
+import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignmentStatus;
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.assignedRotation.repository.AssignedRotationDomainRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
         return assignedRotationMapper.toAssignedRotationDTO(assignedRotations);
     }
+
 
     @Override // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     public List<AssignedRotationDTO> getAssociateOldRotationsWithProject(GlobalDTO globalDTO) {
@@ -66,4 +72,24 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
         return assignedRotations.stream().map(assignedRotationMapper::toAssignedRotationDTO).toList();
     }
+    @Override
+    public PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AssignedRotation> assignedRotationPage =
+                assignedRotationDomainRepository.findByUser_SubFactory_SubFactoryID(subFactoryId, pageable);
+
+        List<AssignedRotationDTO> dtoList = assignedRotationPage
+                .stream()
+                .map(assignedRotationMapper::toAssignedRotationDTO)
+                .toList();
+
+        return new PagedAssignedRotationDTO(
+                dtoList,
+                assignedRotationPage.getTotalPages(),
+                assignedRotationPage.getTotalElements(),
+                assignedRotationPage.getNumber(),
+                assignedRotationPage.getSize()
+        );
+    }
+
 }
