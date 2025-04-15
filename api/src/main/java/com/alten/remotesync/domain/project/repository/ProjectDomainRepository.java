@@ -65,5 +65,30 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
 
     Optional<Integer> countByStatusEquals(ProjectStatus status);
 
+    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND p.status = 'ACTIVE'")
+    Optional<Integer> fetchActiveProjectsCount(@Param("userId") UUID userId);
+
+    @Query("SELECT p FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND ar.project.projectId IS NOT NULL " +
+            "GROUP BY ar.project.projectId")
+    Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
+
+    @Query("SELECT p FROM AssignedRotation ar " +
+            "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId " +
+            "AND ar.project.projectId IS NOT NULL " +
+            "GROUP BY p.projectId " +
+            "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
+    Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
+            "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "WHERE ar.user.userId = :userId AND p.status = 'CANCELLED'")
+    Optional<Integer> fetchCancelledProjectsCount(@Param("userId") UUID userId);
 
 }

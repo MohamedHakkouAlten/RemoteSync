@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class ReportServiceImp implements ReportService {
@@ -42,5 +44,12 @@ public class ReportServiceImp implements ReportService {
                 associateReportDTO.pageNumber() + 1,
                 associateReportDTO.pageSize()
         );
+    }
+    @Override
+    public ReportDTO updateReportStatus(UUID reportId, ReportStatus status) {
+        Report report = reportDomainRepository.findById(reportId)
+                .orElseThrow(() -> new ReportNotFoundException("Report with ID " + reportId + " not found"));
+        report.setStatus(status);
+        return reportMapper.toReportDTO(reportDomainRepository.save(report));
     }
 }
