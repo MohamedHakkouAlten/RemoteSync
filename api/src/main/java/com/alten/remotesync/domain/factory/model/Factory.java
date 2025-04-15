@@ -1,6 +1,7 @@
 package com.alten.remotesync.domain.factory.model;
 
 import com.alten.remotesync.domain.subFactory.model.SubFactory;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -29,5 +30,6 @@ public class Factory {
     private boolean isDeleted;
 
     @OneToMany(mappedBy = "factory")
+    @JsonBackReference
     private List<SubFactory> subFactoryList;
 }

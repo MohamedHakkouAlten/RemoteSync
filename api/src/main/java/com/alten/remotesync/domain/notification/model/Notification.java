@@ -2,6 +2,7 @@ package com.alten.remotesync.domain.notification.model;
 
 import com.alten.remotesync.domain.notification.enumeration.NotificationStatus;
 import com.alten.remotesync.domain.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,5 +32,6 @@ public class Notification {
     private LocalDateTime createdAt;
 
     @ManyToOne
+    @JsonBackReference
     private User receiver;
 }

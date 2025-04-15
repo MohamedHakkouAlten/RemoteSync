@@ -3,6 +3,7 @@ package com.alten.remotesync.domain.report.model;
 import com.alten.remotesync.domain.report.enumeration.ReportStatus;
 import com.alten.remotesync.domain.report.enumeration.ReportType;
 import com.alten.remotesync.domain.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Report {
     @Id
     @UuidGenerator
@@ -44,9 +47,11 @@ public class Report {
 
     @ManyToOne
     @CreatedBy
+    @JsonBackReference
     private User createdBy;
 
     @ManyToOne
     @LastModifiedBy
+    @JsonBackReference
     private User updatedBy;
 }

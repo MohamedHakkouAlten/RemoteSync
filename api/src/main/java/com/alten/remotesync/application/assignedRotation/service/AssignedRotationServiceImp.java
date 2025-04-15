@@ -66,4 +66,9 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
         return assignedRotations.stream().map(assignedRotationMapper::toAssignedRotationDTO).toList();
     }
+
+    @Override
+    public Float onSiteAssociatesPercentage() {
+        return 0f;
+    }
 }

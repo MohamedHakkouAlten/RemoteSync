@@ -32,6 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+### TESTS ###
+
+src/test/*
+
 ### Application Properties ###
 src/main/resources/application-dev.properties
 src/main/resources/application-prod.properties

@@ -2,6 +2,7 @@ package com.alten.remotesync.domain.log.model;
 
 import com.alten.remotesync.domain.log.enumeration.LogStatus;
 import com.alten.remotesync.domain.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,5 +38,6 @@ public class Log {
     private String actionDetails;
 
     @ManyToOne
+    @JsonBackReference
     private User user;
 }

@@ -5,6 +5,7 @@ import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignme
 import com.alten.remotesync.domain.project.model.Project;
 import com.alten.remotesync.domain.rotation.model.Rotation;
 import com.alten.remotesync.domain.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -46,8 +47,10 @@ public class AssignedRotation {
     private LocalDateTime updatedAt;
 
     @ManyToOne
+    @JsonBackReference
     private User createdBy;
 
     @ManyToOne
+    @JsonBackReference
     private User updatedBy;
 }

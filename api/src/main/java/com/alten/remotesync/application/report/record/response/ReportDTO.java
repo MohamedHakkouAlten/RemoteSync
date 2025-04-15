@@ -24,6 +24,11 @@ public record ReportDTO(
 
         LocalDateTime updatedAt,
 
+        User createdBy,
+
         User updatedBy
+
+
+
 ) {
 }
