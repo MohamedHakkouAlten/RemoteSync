@@ -75,6 +75,7 @@ const routes: Routes = [
 
   // WRONG PATH URL
   { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
+  { path: 'RemoteSync/rc/dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: '**', redirectTo: 'RemoteSync/Error/404' }
   // END WRONG PATH URL
 ];
