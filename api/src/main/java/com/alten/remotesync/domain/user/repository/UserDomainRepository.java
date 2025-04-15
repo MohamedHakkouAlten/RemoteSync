@@ -1,15 +1,19 @@
 package com.alten.remotesync.domain.user.repository;
 
+import com.alten.remotesync.domain.role.model.Role;
 import com.alten.remotesync.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface UserDomainRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
+    User findByEmail(String email);
 
 
+    Integer countAllByRoles(List<Role> roles);
 }

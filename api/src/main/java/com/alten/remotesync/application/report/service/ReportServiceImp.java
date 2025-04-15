@@ -1,6 +1,7 @@
 package com.alten.remotesync.application.report.service;
 
 import com.alten.remotesync.adapter.exception.report.ReportNotFoundException;
+import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.report.mapper.ReportMapper;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
@@ -51,5 +52,20 @@ public class ReportServiceImp implements ReportService {
                 .orElseThrow(() -> new ReportNotFoundException("Report with ID " + reportId + " not found"));
         report.setStatus(status);
         return reportMapper.toReportDTO(reportDomainRepository.save(report));
+    }
+
+    @Override
+    public PagedReportDTO getRcReports(PagedGlobalIdDTO pagedGlobalIdDTO) {
+        Page<Report> pagedReports = reportDomainRepository.findAllBy(
+                        PageRequest.of(pagedGlobalIdDTO.pageNumber(), (pagedGlobalIdDTO.pageSize() != null) ? pagedGlobalIdDTO.pageSize() : 10, Sort.by(Sort.Direction.DESC, "createdAt")))
+                .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
+
+
+        return new PagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
+                pagedReports.getTotalPages(),
+                pagedReports.getTotalElements(),
+                pagedGlobalIdDTO.pageNumber() + 1,
+                pagedGlobalIdDTO.pageSize()
+        );
     }
 }

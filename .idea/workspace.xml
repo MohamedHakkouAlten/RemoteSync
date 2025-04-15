@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b7438b8e-e93b-4040-b659-40d8d2accfe5" name="Changes" comment="Refactor: organizing the project structure" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="maryam" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MohamedHakkouAlten&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MohamedHakkouAlten/RemoteSync&quot;,
+    &quot;accountId&quot;: &quot;23667c6e-e609-4e7a-b826-c57f248e1b54&quot;
+  },
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
+    },
+    &quot;owner&quot;: &quot;MohamedHakkouAlten&quot;,
+    &quot;repository&quot;: &quot;RemoteSync&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2ux60IXTSEk716lDacNrsdX1DHx" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.RemoteSync.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RemoteSyncApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.UserServiceTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.UserServiceTest.getMyProfile_Success.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.UserServiceTest.login_Success.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.com.alten.remotesync.application in remotesync.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/mhakkou/Documents/IdeaProjects/RemoteSync/api&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mhakkou\Documents\IdeaProjects\RemoteSync\api" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.RemoteSync">
+    <configuration name="RemoteSync" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.RemoteSyncApplication" />
+      <module name="remotesync" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RemoteSyncApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="remotesync" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.alten.remotesync.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.alten.remotesync" />
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.RemoteSyncApplicationTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="remotesync" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.alten.remotesync.application.user.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.alten.remotesync.application.user.service" />
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.application.user.service.UserServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTest.getMyProfile_Success" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="remotesync" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.alten.remotesync.application.user.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.alten.remotesync.application.user.service" />
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.application.user.service.UserServiceTest" />
+      <option name="METHOD_NAME" value="getMyProfile_Success" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTest.login_Success" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="remotesync" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.alten.remotesync.application.user.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.alten.remotesync.application.user.service" />
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.application.user.service.UserServiceTest" />
+      <option name="METHOD_NAME" value="login_Success" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="com.alten.remotesync.application in remotesync" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="remotesync" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.alten.remotesync.application.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.alten.remotesync.application" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.UserServiceTest.login_Success" />
+        <item itemvalue="JUnit.UserServiceTest.getMyProfile_Success" />
+        <item itemvalue="JUnit.UserServiceTest" />
+        <item itemvalue="JUnit.RemoteSyncApplicationTests" />
+        <item itemvalue="JUnit.com.alten.remotesync.application in remotesync" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b7438b8e-e93b-4040-b659-40d8d2accfe5" name="Changes" comment="" />
+      <created>1743177655486</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743177655486</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Refactor and update service classes, DTOs, mappers, and exception handling&#10;&#10;- Refactored and added service implementations for AssignedRotation, Project, Report, and User entities.&#10;- Updated, created new DTOs, mappers.&#10;- Improved exception handling across various services (e.g., AssignedRotationNotFoundException, ProjectNotFoundException, UserNotFoundException).&#10;- Enhanced authentication, and response wrapping mechanisms.">
+      <option name="closed" value="true" />
+      <created>1743450848633</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1743450848633</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Enhance error handling, validation, and user tracking&#10;&#10;- Updated DTOs with improved validation annotations.&#10;- Added custom error response handling in ResponseWrapper for validation errors with additional context (timestamp, triggeredBy).&#10;- Implemented enhanced error handling in GlobalExceptionHandler to capture validation exceptions and include user information and timestamps.">
+      <option name="closed" value="true" />
+      <created>1743501567042</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1743501567042</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Implement custom exception handling for disabled users&#10;&#10;- Added UserDisabledException to handle cases where a user is disabled.&#10;- Updated GlobalExceptionHandler to handle UserDisabledException and return appropriate error responses.">
+      <option name="closed" value="true" />
+      <created>1743502015947</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743502015947</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat: Implement Controllers, Setup Roles For Each RestController">
+      <option name="closed" value="true" />
+      <created>1743506208396</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743506208397</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat: add initial seed data for system components (TEMPORARY)">
+      <option name="closed" value="true" />
+      <created>1743525286181</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743525286181</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Refactor and Update Multiple Classes for Improved Functionality and Structure&#10;&#10;- Updated services, controllers, and repositories: AssignedRotationService, AssignedRotationServiceImp, ProjectService, ReportServiceImp, and others.&#10;- Enhanced DTOs and exception handling: Added improvements to GlobalDTO, UpdateUserProfileDTO, AssociateReportDTO, and others.&#10;- Refined security configurations and request interceptors for better security and logging.">
+      <option name="closed" value="true" />
+      <created>1743596248837</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743596248838</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Refactor and update various service and controller files&#10;&#10;- Updated AssignedRotationDomainRepository.java and AssignedRotationServiceImp.java.&#10;- Refactored AssociateController.java and AuthController.java for better request handling.&#10;- Enhanced ProjectServiceImp.java and added necessary changes to support new features.&#10;- Move RequestInterceptorConfig.java to new package.">
+      <option name="closed" value="true" />
+      <created>1743607426752</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1743607426753</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Refactor: Removing Unit tests">
+      <option name="closed" value="true" />
+      <created>1743607467584</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1743607467584</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Refactor: organizing the project structure">
+      <option name="closed" value="true" />
+      <created>1743696732669</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743696732670</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Refactor and update service classes, DTOs, mappers, and exception handling&#10;&#10;- Refactored and added service implementations for AssignedRotation, Project, Report, and User entities.&#10;- Updated, created new DTOs, mappers.&#10;- Improved exception handling across various services (e.g., AssignedRotationNotFoundException, ProjectNotFoundException, UserNotFoundException).&#10;- Enhanced authentication, and response wrapping mechanisms." />
+    <MESSAGE value="Enhance error handling, validation, and user tracking&#10;&#10;- Updated DTOs with improved validation annotations.&#10;- Added custom error response handling in ResponseWrapper for validation errors with additional context (timestamp, triggeredBy).&#10;- Implemented enhanced error handling in GlobalExceptionHandler to capture validation exceptions and include user information and timestamps." />
+    <MESSAGE value="Implement custom exception handling for disabled users&#10;&#10;- Added UserDisabledException to handle cases where a user is disabled.&#10;- Updated GlobalExceptionHandler to handle UserDisabledException and return appropriate error responses." />
+    <MESSAGE value="feat: Implement Controllers, Setup Roles For Each RestController" />
+    <MESSAGE value="feat: add initial seed data for system components (TEMPORARY)" />
+    <MESSAGE value="Refactor and Update Multiple Classes for Improved Functionality and Structure&#10;&#10;- Updated services, controllers, and repositories: AssignedRotationService, AssignedRotationServiceImp, ProjectService, ReportServiceImp, and others.&#10;- Enhanced DTOs and exception handling: Added improvements to GlobalDTO, UpdateUserProfileDTO, AssociateReportDTO, and others.&#10;- Refined security configurations and request interceptors for better security and logging." />
+    <MESSAGE value="Refactor and update various service and controller files&#10;&#10;- Updated AssignedRotationDomainRepository.java and AssignedRotationServiceImp.java.&#10;- Refactored AssociateController.java and AuthController.java for better request handling.&#10;- Enhanced ProjectServiceImp.java and added necessary changes to support new features.&#10;- Move RequestInterceptorConfig.java to new package." />
+    <MESSAGE value="Refactor: Removing Unit tests" />
+    <MESSAGE value="Refactor: organizing the project structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor: organizing the project structure" />
+  </component>
+</project>

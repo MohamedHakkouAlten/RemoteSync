@@ -12,5 +12,5 @@ public interface UserService {
     UserProfileDTO getMyProfile(GlobalDTO globalDTO);
     UserProfileDTO updateMyProfile(UpdateUserProfileDTO updateUserProfileDTO);
     LoginResponseDTO login(LoginRequestDTO loginRequestDTO);
-
+    Integer getRcCountTotalAssociates(String role);
 }
