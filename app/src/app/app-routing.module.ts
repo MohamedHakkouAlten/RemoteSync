@@ -2,9 +2,21 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
+  // ROUTES FOR ERRORS
+  { path: 'RemoteSync/Error/404', loadChildren: () => import('./components/visitor/notfound/notfound.module').then(m => m.NotfoundModule) },
+  // END ROUTES FOR ERRORS
+
+
+
+
+
+
+
+
+
   // ROUTES FOR VISITOR
-  { path: 'RemoteSync/Home', loadChildren: () => import('./components/visitor/home/home.module').then(m => m.HomeModule) },
   { path: 'RemoteSync/Login', loadChildren: () => import('./components/visitor/login/login.module').then(m => m.LoginModule) },
+  { path: 'RemoteSync/Example', loadChildren: () => import('./example/example.module').then(m => m.ExampleModule) },
   // END ROUTES FOR VISITOR
 
 
@@ -62,8 +74,9 @@ const routes: Routes = [
 
 
   // WRONG PATH URL
-  { path: '', redirectTo: 'RemoteSync/Home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'RemoteSync/Home' }
+  { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
+  { path: 'RemoteSync/rc/dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: '**', redirectTo: 'RemoteSync/Error/404' }
   // END WRONG PATH URL
 ];
 
