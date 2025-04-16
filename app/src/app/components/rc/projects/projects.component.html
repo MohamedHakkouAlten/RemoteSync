@@ -1,0 +1,108 @@
+<div class="projects-layout">
+    <app-navigation></app-navigation>
+  
+    <main class="projects-container">
+      <header class="projects-header">
+        <h1>Projects</h1>
+        <p>Overview of all active, upcoming, and completed projects</p>
+      </header>
+  
+      <div class="summary-stats">
+        <span>Total Projects: <strong class="count">{{ totalProjectCount }}</strong></span>
+        <span class="stat-item"><span class="indicator active"></span>Active: <strong class="count">{{ activeProjectCount }}</strong></span>
+        <span class="stat-item"><span class="indicator completed"></span>Completed: <strong class="count">{{ completedProjectCount }}</strong></span>
+        <span class="stat-item"><span class="indicator upcoming"></span>Upcoming: <strong class="count">{{ upcomingProjectCount }}</strong></span>
+      </div>
+  
+      <div class="toolbar">
+          <p-iconField iconPosition="left" class="search-field">
+              <p-inputIcon styleClass="pi pi-search" />
+              <input
+                  pInputText
+                  type="text"
+                  [(ngModel)]="searchTerm"
+                  (input)="applyGlobalFilter($event)"
+                  placeholder="Search projects..." />
+          </p-iconField>
+        <button pButton type="button" label="Filters" icon="pi pi-filter" class="p-button-outlined filter-button" (click)="onFilterClick()"></button>
+        <button pButton type="button" label="New Project" icon="pi pi-plus" class="p-button-warning new-project-button" (click)="onNewProjectClick()"></button>
+      </div>
+  
+      <div class="table-container">
+          <p-table
+              #projectTable
+              [value]="allProjects"
+              [paginator]="true"
+              [rows]="5"
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+              [rowsPerPageOptions]="[5, 10, 25, 50]"
+              [(selection)]="selectedProjects"
+              dataKey="id"
+              styleClass="p-datatable-striped p-datatable-gridlines custom-table"
+              [globalFilterFields]="['name', 'rcName', 'status']"
+              [loading]="loading">
+  
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                      <th pSortableColumn="name">Project Name <p-sortIcon field="name"></p-sortIcon></th>
+                      <th pSortableColumn="rcName">RC in Charge <p-sortIcon field="rcName"></p-sortIcon></th>
+                      <th>Team Members</th>
+                      <th pSortableColumn="duration">Duration <p-sortIcon field="duration"></p-sortIcon></th>
+                      <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+                      <th>Actions</th>
+                  </tr>
+              </ng-template>
+  
+              <ng-template pTemplate="body" let-project>
+                  <tr>
+                      <td><p-tableCheckbox [value]="project"></p-tableCheckbox></td>
+                      <td>{{ project.name }}</td>
+                      <td class="rc-cell">
+                          <p-avatar [image]="project.rcAvatar" shape="circle" size="normal"></p-avatar>
+                          <span>{{ project.rcName }}</span>
+                      </td>
+                      <td class="team-cell">
+                          <p-avatarGroup styleClass="mb-3">
+                              <p-avatar *ngFor="let member of project.teamMembers.slice(0, 3)" [image]="member.avatar" size="normal" shape="circle" pTooltip="{{member.name}}" tooltipPosition="top"></p-avatar>
+                              <p-avatar *ngIf="project.teamMembers.length > 3" [label]="'+' + (project.teamMembers.length - 3)" size="normal" shape="circle" styleClass="p-avatar-text more-members-avatar"></p-avatar>
+                          </p-avatarGroup>
+                      </td>
+                      <td>{{ project.duration }}</td>
+                      <td>
+                          <p-tag [value]="project.status" [severity]="getStatusSeverity(project.status)" [rounded]="true"></p-tag>
+                      </td>
+                      <td class="actions-cell">
+                          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-info" (click)="editProject(project)" pTooltip="Edit" tooltipPosition="top"></button>
+                          <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-success" (click)="viewProject(project)" pTooltip="View" tooltipPosition="top"></button>
+                          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" pTooltip="Delete" tooltipPosition="top"></button>
+                      </td>
+                  </tr>
+              </ng-template>
+  
+               <ng-template pTemplate="emptymessage">
+                  <tr>
+                      <td [attr.colspan]="7" class="text-center">No projects found matching your search criteria.</td>
+                  </tr>
+              </ng-template>
+  
+              <ng-template pTemplate="loadingbody">
+                   <tr>
+                      <td [attr.colspan]="7" class="text-center">Loading projects data...</td>
+                   </tr>
+               </ng-template>
+  
+          </p-table>
+      </div> 
+  
+      <footer class="app-footer">
+          <span>© 2024 Alten. All rights reserved.</span>
+          <div class="footer-links">
+              <a href="#">About Us</a>
+              <a href="#">Terms of Service</a>
+              <a href="#">Privacy Policy</a>
+          </div>
+      </footer>
+  
+    </main> 

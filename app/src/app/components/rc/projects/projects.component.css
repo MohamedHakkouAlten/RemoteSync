@@ -1,0 +1,245 @@
+
+:host {
+    display: block;
+    background-color: #f8f9fa; /* Light background */
+    min-height: calc(100vh - 60px); /* Full height minus header */
+  }
+  
+  .projects-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .projects-container {
+    padding: 1.5rem 2rem;
+    flex-grow: 1;
+    max-width: 1300px; /* Allow wider content for table */
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .projects-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0.5rem;
+  }
+  
+  .projects-header p {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Summary Stats */
+  .summary-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem; /* Increased gap */
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #495057;
+  }
+  
+  .summary-stats .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+  }
+  
+  .summary-stats .indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.3rem;
+  }
+  
+  .summary-stats .indicator.active { background-color: #007bff; } /* Blue */
+  .summary-stats .indicator.completed { background-color: #28a745; } /* Green */
+  .summary-stats .indicator.upcoming { background-color: #ffc107; } /* Yellow/Orange */
+  
+  .summary-stats .count {
+    font-weight: 600;
+    color: #343a40;
+  }
+  
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+  
+  .toolbar .search-field {
+      flex-grow: 1;
+      min-width: 250px;
+  }
+  :host ::ng-deep .toolbar .search-field .p-inputtext {
+      width: 100%;
+  }
+  
+  :host ::ng-deep .toolbar .filter-button {
+      /* Standard outlined button colors */
+      color: #6c757d;
+      border-color: #ced4da;
+  }
+  :host ::ng-deep .toolbar .filter-button:hover {
+      background-color: #f8f9fa;
+  }
+  
+  :host ::ng-deep .toolbar .new-project-button {
+    background-color: #FF8C00; /* Match theme orange */
+    border-color: #FF8C00;
+    margin-left: auto; /* Push to the right */
+  }
+  :host ::ng-deep .toolbar .new-project-button:hover {
+    background-color: #e07b00;
+    border-color: #d37300;
+  }
+  
+  /* Table Styles */
+  .table-container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      overflow: hidden; /* Ensures rounded corners contain table */
+  }
+  
+  :host ::ng-deep .custom-table .p-datatable-thead > tr > th {
+      background-color: #f8f9fa; /* Light grey header */
+      color: #495057;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 2px solid #dee2e6;
+      border-top: none;
+      padding: 0.9rem 0.75rem;
+      text-align: left;
+  }
+  
+  :host ::ng-deep .custom-table .p-datatable-tbody > tr > td {
+      padding: 0.8rem 0.75rem; /* Adjust cell padding */
+      vertical-align: middle; /* Align cell content vertically */
+      border-color: #e9ecef; /* Lighter grid lines */
+      font-size: 0.9rem;
+  }
+  
+  /* Specific Cell Styling */
+  .rc-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+  }
+  .rc-cell span {
+      font-weight: 500;
+      color: #343a40;
+  }
+  .team-cell .p-avatar-group .p-avatar {
+      width: 30px; /* Slightly smaller avatars in group */
+      height: 30px;
+  }
+  .team-cell .p-avatar-group .more-members-avatar {
+      background-color: #e9ecef;
+      color: #495057;
+      font-size: 0.75rem;
+  }
+  
+  .actions-cell button {
+      margin-right: 0.25rem;
+  }
+  .actions-cell button:last-child {
+      margin-right: 0;
+  }
+  /* Adjust text button colors for specific actions */
+  :host ::ng-deep .actions-cell .p-button-info { color: #17a2b8; }
+  :host ::ng-deep .actions-cell .p-button-success { color: #28a745; }
+  :host ::ng-deep .actions-cell .p-button-danger { color: #dc3545; }
+  
+  
+  /* Pagination */
+  :host ::ng-deep .custom-table .p-paginator-bottom {
+      border-top: 1px solid #e9ecef;
+      padding: 1rem;
+      background-color: #ffffff; /* Match table background */
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+  }
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-current {
+      font-size: 0.9rem;
+      color: #6c757d;
+  }
+  /* Style paginator buttons like report page if needed */
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-page,
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-first,
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-prev,
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-next,
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-last {
+      min-width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 4px;
+  }
+  :host ::ng-deep .custom-table .p-paginator .p-paginator-page.p-highlight {
+      background-color: #FF8C00; /* Orange */
+      border-color: #FF8C00;
+      color: white;
+  }
+  
+  
+  /* Footer */
+  .app-footer {
+      margin-top: 2.5rem;
+      padding: 1.5rem 0;
+      border-top: 1px solid #dee2e6;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6c757d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+  }
+  .footer-links {
+      display: flex;
+      gap: 1.5rem;
+  }
+  .footer-links a {
+      color: #6c757d;
+      text-decoration: none;
+  }
+  .footer-links a:hover {
+      color: #FF8C00;
+      text-decoration: underline;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+      .projects-container {
+          padding: 1rem;
+      }
+      .summary-stats {
+          gap: 0.5rem 1rem; /* Smaller gap */
+          justify-content: space-between;
+      }
+       .summary-stats span:first-child { /* Total projects */
+          width: 100%;
+          margin-bottom: 0.5rem;
+       }
+      .toolbar {
+          flex-direction: column;
+          align-items: stretch;
+      }
+      .toolbar .new-project-button {
+          margin-left: 0;
+          order: -1; /* Move to top */
+          margin-bottom: 0.5rem;
+      }
+       .app-footer {
+          flex-direction: column;
+          gap: 0.5rem;
+       }
+  }

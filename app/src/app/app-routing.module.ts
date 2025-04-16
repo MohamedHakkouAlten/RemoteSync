@@ -22,7 +22,6 @@ const routes: Routes = [
 
 
 
-  { path: 'RemoteSync/Example', loadChildren: () => import('./example/example.module').then(m => m.ExampleModule) },
   // END ROUTES FOR VISITOR
 
 
@@ -37,6 +36,12 @@ const routes: Routes = [
   // ROUTES FOR ASSOCIATE - Protected by AuthGuard
   { path: 'RemoteSync/Associate/Dashboard', loadChildren: () => import('./components/associate/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'ADMIN'] } },
   { path: 'RemoteSync/Associate/Project', loadChildren: () => import('./components/associate/project/project.module').then(m => m.ProjectModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
+  {
+    path: 'RemoteSync/Associate/Report', // The URL path for the reports page
+    loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule), // Lazy load ReportModule
+    canActivate: [RoleGuard], // Apply the RoleGuard
+    data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } // Define allowed roles (adjust if needed)
+  },
   // END ROUTES FOR ASSOCIATE
 
 
@@ -52,6 +57,12 @@ const routes: Routes = [
 
 
   // ROUTES FOR RC
+  {
+    path: 'RemoteSync/RC/Projects', // Define the URL path
+    loadChildren: () => import('./components/rc/projects/projects.module').then(m => m.ProjectsModule),
+    canActivate: [RoleGuard], // Apply security
+    data: { roles: ['RC', 'ADMIN'] } // Define allowed roles (adjust as needed)
+  },
 
   // END ROUTES FOR RC
 
@@ -82,6 +93,8 @@ const routes: Routes = [
 
   // WRONG PATH URL
   { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
+  { path: 'report', loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule) },
+  { path: 'projects', loadChildren: () => import('./components/rc/projects/projects.module').then(m => m.ProjectsModule) },
   { path: '**', redirectTo: 'RemoteSync/Error/404' }
   // END WRONG PATH URL
 ];

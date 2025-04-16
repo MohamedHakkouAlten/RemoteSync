@@ -50,7 +50,7 @@ public class RemoteSyncApplication {
         SpringApplication.run(RemoteSyncApplication.class, args);
     }
 
-    //@Bean
+    @Bean
     public CommandLineRunner init(
             AssignedRotationDomainRepository assignedRotationRepository,
             ClientDomainRepository clientRepository,
