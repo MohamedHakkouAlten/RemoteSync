@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+/*import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ExampleRoutingModule } from './example-routing.module';
@@ -21,3 +21,4 @@ import { InputTextModule } from 'primeng/inputtext'; // Import InputTextModule
   ]
 })
 export class ExampleModule { }
+*/

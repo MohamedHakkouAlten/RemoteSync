@@ -33,9 +33,7 @@
    
   font-size: 0.75rem; /* Adjust text size inside overflow avatar */
 }
-p,span,h1,h3,h2,tr,th{
-  font-family: inter;
-}
+
 
 /*Calendar  */
 /* src/app/components/dashboard/content/content.component.css */
