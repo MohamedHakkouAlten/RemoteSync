@@ -190,15 +190,6 @@ public class AssociateController {
                         HttpStatus.OK));
 
     }
-
-    @GetMapping("/associate/{userId}")
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-
-    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
-        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(profile, HttpStatus.OK));
-    }
 }
 
 

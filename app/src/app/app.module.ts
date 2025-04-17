@@ -1,13 +1,18 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeng/themes';
 import Lara from '@primeng/themes/lara';
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ButtonModule } from 'primeng/button';
 
@@ -37,18 +42,22 @@ const BlackLara = definePreset(Lara, {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    BrowserAnimationsModule,
     ButtonModule
+    // HttpClientModule removed as it's deprecated
   ],
   providers: [
     provideAnimationsAsync(),
-    providePrimeNG({ 
-      theme: { 
+    providePrimeNG({
+      theme: {
           preset: BlackLara,
-          options: { 
+          options: {
               darkModeSelector: '.app-dark'
           }
       },
-    })
+    }),
+    provideHttpClient(withFetch()), // Modern approach to provide HttpClient
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

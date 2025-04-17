@@ -1,8 +1,11 @@
 package com.alten.remotesync.adapter.exception;
 
 import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
+import com.alten.remotesync.adapter.exception.client.ClientNotFoundException;
+import com.alten.remotesync.adapter.exception.factory.FactoryNotFoundException;
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.adapter.exception.report.ReportNotFoundException;
+import com.alten.remotesync.adapter.exception.role.RoleNotFoundException;
 import com.alten.remotesync.adapter.exception.user.UserDisabledException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
@@ -62,6 +65,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<?> roleNotFoundException(RoleNotFoundException e) {
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FactoryNotFoundException.class)
+    public ResponseEntity<?> factoryNotFoundException(FactoryNotFoundException e) {
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<?> clientNotFoundException(ClientNotFoundException e) {
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+
+
 
 
 
@@ -91,7 +117,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex, HttpServletRequest request) {
         Map<String, Object> errorResponse = ResponseWrapper.error(
-                ex.getMessage(),
+                "Internal Server Error : " + ex.getMessage(), // ex.getMessage() DONT HOW THE MESSAGE ANYMORE BECAUSE IS CAN CONTAIN SENSITIVE DATA NEED BE OVER WRITTEN
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
         errorResponse.put("timestamp", LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
