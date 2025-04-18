@@ -39,7 +39,7 @@
               [rowsPerPageOptions]="[5, 10, 25, 50]"
               [(selection)]="selectedProjects"
               dataKey="id"
-              styleClass="p-datatable-striped p-datatable-gridlines custom-table"
+              styleClass="custom-table"  
               [globalFilterFields]="['name', 'rcName', 'status']"
               [loading]="loading">
   
@@ -74,10 +74,10 @@
                           <p-tag [value]="project.status" [severity]="getStatusSeverity(project.status)" [rounded]="true"></p-tag>
                       </td>
                       <td class="actions-cell">
-                          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-info" (click)="editProject(project)" pTooltip="Edit" tooltipPosition="top"></button>
-                          <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-success" (click)="viewProject(project)" pTooltip="View" tooltipPosition="top"></button>
-                          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" pTooltip="Delete" tooltipPosition="top"></button>
-                      </td>
+                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-secondary" (click)="editProject(project)" pTooltip="Edit" tooltipPosition="top"></button>
+                        <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary" (click)="viewProject(project)" pTooltip="View" tooltipPosition="top"></button>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" pTooltip="Delete" tooltipPosition="top"></button> <!-- Keep danger for delete potentially -->
+                    </td>
                   </tr>
               </ng-template>
   
