@@ -15,6 +15,8 @@ import Lara from '@primeng/themes/lara';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ButtonModule } from 'primeng/button';
+import { NotificationComponent } from './components/shared/navigation/notification/notification.component';
+import { NavigationComponent } from "./components/shared/navigation/navigation.component";
 
 const BlackLara = definePreset(Lara, {
   semantic: {
@@ -37,7 +39,8 @@ const BlackLara = definePreset(Lara, {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NotificationComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +48,9 @@ const BlackLara = definePreset(Lara, {
     BrowserAnimationsModule,
     ButtonModule
     // HttpClientModule removed as it's deprecated
-  ],
+    ,
+    NavigationComponent
+],
   providers: [
     provideAnimationsAsync(),
     providePrimeNG({

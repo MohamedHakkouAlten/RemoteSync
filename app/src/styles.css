@@ -42,10 +42,17 @@
 
     --color-primary : #FFA500;
     --color-secondary: #F9FAFB;
+   
 }
-p,span,h1,h3,h2,tr,th{
+:root p,span,h1,h3,h2,tr,th{
   font-family: inter;
 }
+:root {
+  /* Override PrimeNG button label font weight */
+  --p-button-label-font-weight: 300; /* Example: Set to semi-bold */
+  /* You can use other values like: normal, bold, 300, 400, 500, 700, etc. */
+}
+
 :host ::ng-deep .p-button-label{
 font-weight: 100 !important;
 }

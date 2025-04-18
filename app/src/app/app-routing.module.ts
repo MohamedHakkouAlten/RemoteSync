@@ -84,6 +84,7 @@ const routes: Routes = [
   { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
   { path: 'RemoteSync/rc/dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'RemoteSync/profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule) },
+  { path: 'RemoteSync/associate/notifications', loadChildren: () => import('./components/associate/notifications/notifications.module').then(m => m.NotificationsModule) },
   { path: '**', redirectTo: 'RemoteSync/Error/404' }
   // END WRONG PATH URL
 ];

@@ -57,6 +57,7 @@ export class LoginComponent implements OnInit {
         password: this.password
       };
 
+
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.loading = false;
@@ -69,6 +70,7 @@ export class LoginComponent implements OnInit {
 
           // Navigate to return URL or dashboard
           setTimeout(() => {
+            this.loading=true
             this.router.navigate([this.returnUrl]);
           }, 1000);
         },

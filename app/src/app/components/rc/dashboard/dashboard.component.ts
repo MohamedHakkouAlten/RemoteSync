@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { interval, startWith, Subscription } from 'rxjs';
+
+
+
 interface NavLink {
   label: string;
   route?: string; // Optional: Add route path if using Angular Router
@@ -35,11 +41,11 @@ interface ProjectStatusSimple {
 
 export class DashboardComponent implements OnInit {
 
-  // Properties to make the component more dynamic later
-  userName: string = 'John Anderson';
-  userAvatarUrl: string = 'assets/images/avatar.png'; // Replace with your actual path
-  logoUrl: string = 'assets/images/alten.png'; // Replace with your actual path
-  activeLink: string = 'Projects'; // To control the active state
+
+
+
+
+
 
   // Icons (using inline SVGs in the template is often easier with Tailwind)
 
@@ -85,9 +91,13 @@ dateColumns: string[] = [
 
 //recent reports 
 pendingRequests: PendingRequest[] = [];
-  constructor() { }
+
 
   ngOnInit(): void {
+
+
+
+
     this.tableData = [
       { name: 'Youssef El Amrani', project: 'Project Alpha', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
       { name: 'Leila Tazi', project: 'Project Delta', status_20250414: 'On-site', status_20250421: 'On-site', status_20250429_1: 'On-site', status_20250429_2: 'On-site' },
@@ -140,10 +150,7 @@ pendingRequests: PendingRequest[] = [];
    
   }
 
-  // Example function if clicking a link should change the active state
-  setActiveLink(linkName: string): void {
-    this.activeLink = linkName;
-    // Add navigation logic here if needed (e.g., using Angular Router)
-  }
 
+
+ 
 }

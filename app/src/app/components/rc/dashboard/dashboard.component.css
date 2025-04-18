@@ -204,3 +204,54 @@
   font-size: 14 px;
   font-weight: 300 !important;
 }
+
+
+/* notification css */
+/* src/app/components/notification-panel/notification-panel.component.css */
+
+/* Add slight transition for hover background */
+li {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Ensure buttons inside the panel don't inherit cursor pointer from li */
+li button {
+    cursor: pointer;
+}
+
+/* Style the scrollbar subtly (optional, browser-specific) */
+.notification-panel .overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+.notification-panel .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+.notification-panel .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.notification-panel .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+:host ::ng-deep  .p-button .p-button-label   {
+  
+   
+  font-weight: 300 !important;
+ 
+}
+:host ::ng-deep  .p-button .change   {
+  
+   
+  border-radius: 2px !important;
+ 
+}
+:host ::ng-deep .small-overlay-badge .p-badge {
+  font-size: 11px !important ;/* Increase text size */
+ display: flex;
+ justify-content: center;
+ align-items: center;
+   /* Add more padding */
+  min-width: 17px!important;  /* Ensure minimum width */
+  height: 17px!important;     /* Ensure minimum height */
+}

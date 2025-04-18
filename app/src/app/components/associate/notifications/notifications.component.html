@@ -1,0 +1,113 @@
+<!-- Use min-h-screen for full background coverage, remove fixed height -->
+<div class="bg-secondary w-full">
+    <app-navigation/>
+    <!-- Changed w-screen to w-full, removed h-[90vh], changed items-baseline to items-start -->
+    <!-- Added padding bottom (pb-10) -->
+   <!-- Card with fixed height -->
+    <div class="w-full pt-5 h-[90vh] flex justify-center items-baseline">
+<p-card styleClass="w-[85vw]   shadow-md rounded-lg notification-card-fixed-height">
+    <ng-template pTemplate="header">
+        <div class="flex justify-between items-center p-3 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800">Notifications</h2>
+           
+        </div>
+    </ng-template>
+
+    <!-- Using p-tabs for headers, binding value and listening to changes -->
+    <!-- Flex setup for height management -->
+    <div class="flex flex-col flex-grow min-h-0"> <!-- Container for tabs + list -->
+        <p-tabs [(value)]="activeTabValue" (valueChange)="onTabChange($event)" styleClass="flex-shrink-0"> <!-- Tab Header Area -->
+            <p-tablist>
+                @for (tab of tabs; track tab.value) {
+                    <p-tab [value]="tab.value">
+                        <div class="flex items-center p-3 space-x-2">
+                           <span>{{ tab.title }}</span>
+                           <!-- Access count via signal function -->
+                           <p-badge [value]="tab.countSignal()" ></p-badge>
+                        </div>
+                    </p-tab>
+                }
+            </p-tablist>
+        </p-tabs>
+
+        <!-- Single Notification List Area (Rendered once, content changes via signals) -->
+        <!-- Flex setup to take remaining space -->
+        <div class="notification-list-container flex flex-col flex-grow min-h-0 pt-1"> <!-- Added pt-1 -->
+            <div style="font-family: inter;" class="text-sm bg-secondary font-medium text-gray-500 px-3 py-1.5 mb-2 flex-shrink-0">Today</div>
+
+            <!-- Scrollable list area -->
+            <div class="notification-items notification-list-scrollable flex-grow px-2 ">
+                 <!-- Empty state messages -->
+                 <div *ngIf="displayedNotifications().length === 0 && filteredNotifications().length > 0" class="text-center text-gray-500 py-6">No notifications on this page.</div>
+                 <div *ngIf="filteredNotifications().length === 0" class="text-center !text-gray-200  py-6">
+                     @switch (activeTabValue()) {
+                       @case ('all') { You currently have no notifications. }
+                       @case ('unread') { You have no unread notifications. }
+                       @case ('reports') { You have no report notifications. }
+                       @case ('calendar') { You have no calendar notifications. }
+                       @default { No items to display. }
+                     }
+                 </div>
+
+                <!-- Notification Items Loop (using displayedNotifications signal) -->
+                @for (notification of displayedNotifications(); track notification.id) {
+                    <div class="notification-item border border-gray-200 rounded-sm p-3 mb-2 bg-white"
+                         [class.unread]="!notification.isRead">
+                        <div class="flex items-start space-x-3">
+                            <!-- Icon Container -->
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                                 [ngClass]="{
+                                    'bg-amber-100': notification.type === 'report',
+                                    'bg-teal-100': notification.type === 'rotation',
+                                    'bg-purple-100': notification.type === 'general'
+                                 }">
+                                <!-- Icon -->
+                                <ng-container [ngSwitch]="notification.type">
+                                    <i *ngSwitchCase="'report'"   class="text-lg pi pi-file text-amber-600"></i>
+                                    <i *ngSwitchCase="'rotation'" class="text-lg pi pi-clock text-teal-600"></i>
+                                    <i *ngSwitchCase="'general'"  class="text-lg pi pi-info-circle text-purple-600"></i>
+                                    <!-- Optional: Add a default case if notification.type could be something else -->
+                                    <i *ngSwitchDefault class="text-lg pi pi-question-circle text-gray-500"></i> <!-- Example default -->
+                                </ng-container>
+                            </div>
+                            <!-- Main Content -->
+                            <div class="flex-grow">
+                                <!-- Header -->
+                                <div class="flex justify-between items-center mb-0.5">
+                                    <h3 class="text-sm font-semibold text-gray-900">{{ notification.title }}</h3>
+                                    <span class="text-xs text-gray-500">{{ notification.timestamp }}</span>
+                                </div>
+                                <!-- Sender -->
+                                <div class="flex items-center space-x-1.5 mb-1.5">
+                                     <p-avatar [label]="notification.senderInitial" shape="circle" styleClass="text-white !text-xs w-5 h-5"></p-avatar>
+                                     <span class="text-xs text-gray-700">{{ notification.senderName }}</span>
+                                </div>
+                                <!-- Message -->
+                                <p class="text-xs text-gray-600 mb-2 leading-snug">
+                                    {{ notification.message }}
+                                </p>
+                                <!-- Actions -->
+                                <div class="flex items-center space-x-1.5">
+                                    <button *ngIf="notification.type === 'report'" pButton type="button" label="View Calendar"  icon="pi pi-calendar"  style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-8 !px-2 " (click)="viewCalendar(notification.id)"></button>
+                                    <button *ngIf="notification.type === 'rotation'" pButton type="button" label="View Report" icon="pi pi-file-import"style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-8 !px-2 "  (click)="viewReport(notification.id)"></button>
+                                    <button pButton type="button" label="Dismiss" class="!text-[12px] !border-0 !h-8 !px-2 !rounded-1 !text-[#374151] !bg-[#f3f4f6]"  style="border-radius: 3px;" (click)="dismissNotification(notification.id)"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                } @empty {
+                    <!-- This specific @empty block might not be reached due to the outer *ngIf checks -->
+                    <!-- Keeping the outer *ngIfs for clearer empty state messages -->
+                }
+            </div> <!-- End Notification Items -->
+
+            <!-- Paginator -->
+            <div class="paginator-container px-3 py-1 border-t border-gray-200 flex-shrink-0" *ngIf="totalRecords() > rows()">
+                 <p-paginator (onPageChange)="onPageChange($event)" [first]="first()" [rows]="rows()" [totalRecords]="totalRecords()" [rowsPerPageOptions]="[5, 10, 20]"></p-paginator>
+            </div>
+        </div> <!-- End Notification List Container -->
+    </div> <!-- End Flex Container for Tabs+List -->
+
+</p-card>
+</div>
+</div>

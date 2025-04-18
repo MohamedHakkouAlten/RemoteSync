@@ -1,10 +1,11 @@
-<header class="dashboard-header">
+<!--<header class="dashboard-header">
   <div class="logo-container">
     <img src="assets/alten-logo.png" alt="ALTEN Logo Graphic" class="logo-image">
     <div class="logo-text-wrapper">
       <span class="logo-text-sub">RemoteSync</span>
     </div>
   </div>
+  
   <nav class="main-nav">
     <a routerLink="/RemoteSync/Associate/Dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
     <a routerLink="/RemoteSync/Associate/Project" routerLinkActive="active-link">Projects</a>
@@ -22,3 +23,236 @@
     </div>
   </div>
 </header>
+-->
+  <!-- header -->  
+  <nav class="bg-white w-full border-b sticky top-0 z-20 border-gray-200 px-4 sm:px-6 py-3">
+    <div class="flex items-center justify-between">
+  
+      <!-- Left Side: Logo and Brand Name -->
+      <div class="flex items-center">
+        <img [src]="logoUrl" alt="RemoteSync Logo" class="h-10 w-auto mr-3">
+        <span style="font-family: Overpass;" class="text-2xl mt-2 font-medium text-gray-800">RemoteSync</span>
+      </div>
+  
+      <!-- Center-Left: Navigation Links -->
+      <div class="hidden md:flex items-center space-x-8 ml-10">
+        <a
+          href="#"
+          (click)="setActiveLink('Dashboard'); $event.preventDefault()"
+          class="py-2 text-sm font-medium transition-colors duration-150"
+          style="font-family: inter;"
+          [ngClass]="{
+            'text-primary border-b-2 border-primary': activeLink === 'Dashboard',
+            'text-gray-500 hover:text-gray-800': activeLink !== 'Dashboard'
+          }">
+          Dashboard
+        </a>
+        <a
+          href="#"
+          (click)="setActiveLink('Calendar'); $event.preventDefault()"
+          class="py-2 text-sm font-medium transition-colors duration-150"
+          style="font-family: inter;"
+          [ngClass]="{
+            'text-primary border-b-2 border-primary': activeLink === 'Calendar',
+            'text-gray-500 hover:text-gray-800': activeLink !== 'Calendar'
+          }">
+          Calendar
+        </a>
+        <a
+          href="#"
+          (click)="setActiveLink('Projects'); $event.preventDefault()"
+          class="py-2 text-sm font-medium transition-colors duration-150"
+          style="font-family: inter;"
+          [ngClass]="{
+            'text-primary border-b-2 border-primary': activeLink === 'Projects',
+            'text-gray-500 hover:text-gray-800': activeLink !== 'Projects'
+          }">
+          Projects
+        </a>
+        <a
+          href="#"
+          (click)="setActiveLink('Reports'); $event.preventDefault()"
+          class="py-2 text-sm font-medium transition-colors duration-150"
+          style="font-family: inter;"
+          [ngClass]="{
+            'text-primary border-b-2 border-primary': activeLink === 'Reports',
+            'text-gray-500 hover:text-gray-800': activeLink !== 'Reports'
+          }">
+          Reports
+        </a>
+      </div>
+  
+      <!-- Right Side: Notifications and User Menu -->
+
+      
+       
+  <div class="flex justify-center items-center gap-x-1">
+        <!-- User Avatar (PrimeNG) -->
+        <p-avatar
+          image="assets/images/avatar.png"
+          size="normal"
+          shape="circle"
+          styleClass="cursor-pointer">
+        </p-avatar>
+  
+        <!-- User Name -->
+        <span class="hidden sm:block text-sm font-medium text-gray-700">{{ userName }}</span>
+             <!-- Dropdown Arrow (SVG Example) -->
+             <div class="card flex justify-center">
+             <p-menu
+             #userMenu
+             [model]="menuItems"
+             [popup]="true"
+             appendTo="body"
+             styleClass="min-w-[180px] !mt-2 shadow-md"
+             [baseZIndex]="1001" 
+             inputId="user_menu_id" 
+           ></p-menu>
+           <p-button (click)="userMenu.toggle($event)"   styleClass="!bg-transparent !border-0 "  >
+            <i
+      class="pi" 
+      [ngClass]="{
+        'pi-angle-down': !userMenu.visible, 
+        'pi-angle-up': userMenu.visible   
+      }"
+      style="color: #6a7282 !important; font-size: 10px; vertical-align: middle;" 
+      ></i>
+           </p-button>
+          </div>
+    
+     <!-- Notification Bell Icon (SVG Example) -->
+     <p-overlaybadge (click)="togglePanel($event)" class="small-overlay-badge pt-2"   *ngIf="unreadCount > 0"
+      [value]="unreadCount"
+      severity="warn">
+      <i class="pi pi-bell "  style="font-size: 20px;color: #6a7282;"></i>
+  </p-overlaybadge>
+  
+      </div>
+    </div>
+  </nav>
+  <!-- PrimeNG Overlay Panel -->
+  <p-overlayPanel
+    #notificationOverlay
+    [appendTo]="'body'"
+    class="!p-0"
+    [styleClass]="'w-full max-w-md shadow-xl !p-0 rounded-lg'"
+    [showCloseIcon]="true"
+  >
+    <!-- Panel Content -->
+    <div class="flex flex-col !p-0 max-h-[70vh] min-w-[360px]">
+      <!-- Header -->
+      <div class="flex justify-between items-center ml-2 border-b mb-2 border-gray-200">
+        <h2 class="text-lg font-medium text-gray-700">Notifications</h2>
+        <div class="flex items-center ">
+          <button
+            (click)="markAllAsRead()"
+            class="text-[12px]  hover:text-amber-800 focus:outline-none !text-gray-400 !border-0 !bg-transparent"
+            [disabled]="unreadCount === 0"
+            [class.opacity-50]="unreadCount === 0"
+            [class.cursor-not-allowed]="unreadCount === 0"
+            pButton
+            icon="pi pi-check-square"
+            
+          >
+            Mark all as read
+          </button>
+       
+        </div>
+      </div>
+  
+      <!-- Notification List - Scrollable -->
+      <div class="flex-grow flex-col  gap-y-2 flex overflow-y-auto">
+        <!-- Enhanced: Empty State -->
+         <div *ngIf="notifications.length === 0" class="p-6 text-center bg-amber-700/5 text-gray-500">
+           You have no notifications.
+         </div>
+  
+        <ng-container *ngIf="notifications.length > 0">
+          <!-- Iterate over notifications -->
+          <div
+            *ngFor="let notification of notifications; let isLast = last"
+            class="flex items-start p-2 border-l-3 !border-b-0 border-primary hover:bg-gray-100 transition duration-150 ease-in-out"
+            [class.border-b]="!isLast"
+            [class.border-gray-100]="!isLast"
+            [class.bg-[#ac997117]]="!notification.isRead" 
+            [class.opacity-100]="notification.isRead" 
+          >
+            <!-- Unread Indicator Dot -->
+
+  
+            <!-- Notification Content -->
+            <div class="flex-grow flex flex-col gap-y-3">
+
+              <div class="flex flex-col gap-y-2">
+              <div class="flex justify-between  items-baseline mb-1">
+                <!-- Type/Title -->
+                <span class="font-semibold text-sm text-gray-700">{{ notification.type }}</span>
+                <!-- Timestamp -->
+                <span class="text-xs text-gray-500">{{ getRelativeTime(notification.timestamp) }}</span>
+              </div>
+  
+              <!-- Message Body -->
+              <p class="text-sm text-gray-600 leading-snug">
+                <strong *ngIf="notification.sender" class="font-medium text-amber-700">{{ notification.sender }}</strong>
+                {{ notification.message }}
+              </p>
+            </div>
+              <!-- Action Buttons -->
+               @if (notification.type=='Rotation Update') {
+              <div   class="mt-5 w-full flex ">
+                <button
+                (click)="handleAction(notification,'rapport')"
+                  label="View Report"                
+                  class="flex-1/2 text-[13px] cursor-pointer font-medium rounded-[2px] text-white p-1 px-2 gap-x-2 flex justify-center items-center e bg-primary  rounded-1 e"
+                >
+           <h1 class="underline underline-offset-2">  View Report</h1> <i class="pi pi-arrow-up-right" style="font-size: 14px;"></i>
+              </button>
+
+              <button
+              *ngIf="!notification.isRead"
+              (click)="handleAction(notification,'dismiss')"
+              label="View Report"                
+              class=" text-[13px] flex-1/2  cursor-pointer font-medium border-1 border-gray-300  px-2 rounded-[2px] text-gray-400 p-1 flex justify-center items-center e bg-transparent   e"
+            >
+            Dismiss
+          </button>
+             
+            </div>
+          }
+          @else {
+         
+            <div   class="mt-5 w-full flex ">
+              <button
+              (click)="handleAction(notification,'rapport')"
+                label="View Report"                
+                class="flex-1/2 text-[13px] cursor-pointer font-medium rounded-[2px] text-white p-1 px-2 gap-x-2 flex justify-center items-center e bg-primary  rounded-1 e"
+              >
+         <h1 class="underline underline-offset-2">  View Calendar</h1> <i class="pi pi-arrow-up-right" style="font-size: 14px;"></i>
+            </button>
+
+            <button
+            *ngIf="!notification.isRead"
+            (click)="handleAction(notification,'dismiss')"
+            label="View Report"                
+            class=" text-[13px] flex-1/2  cursor-pointer font-medium border-1 border-gray-300  px-2 rounded-[2px] text-gray-400 p-1 flex justify-center items-center e bg-transparent   e"
+          >
+          Dismiss
+        </button>
+      </div>
+      }
+            </div>
+          </div>
+        </ng-container>
+      </div>
+  
+      <!-- Footer -->
+      <div class="p-3 border-t w-full border-gray-200 text-center">
+        <button
+          (click)="viewAllNotifications()"
+          class="text-base font-medium text-primary items-center flex justify-start w-full gap-x-2 cursor-pointer hover:text-amber-800 focus:outline-none"
+        >
+      <h1 class=" underline underline-offset-2">View All notifications</h1> 
+        </button>
+      </div>
+    </div>
+  </p-overlayPanel>
