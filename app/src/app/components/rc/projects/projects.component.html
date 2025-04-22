@@ -1,108 +1,479 @@
 <div class="projects-layout">
     <app-navigation></app-navigation>
-  
+
     <main class="projects-container">
-      <header class="projects-header">
-        <h1>Projects</h1>
-        <p>Overview of all active, upcoming, and completed projects</p>
-      </header>
-  
-      <div class="summary-stats">
-        <span>Total Projects: <strong class="count">{{ totalProjectCount }}</strong></span>
-        <span class="stat-item"><span class="indicator active"></span>Active: <strong class="count">{{ activeProjectCount }}</strong></span>
-        <span class="stat-item"><span class="indicator completed"></span>Completed: <strong class="count">{{ completedProjectCount }}</strong></span>
-        <span class="stat-item"><span class="indicator upcoming"></span>Upcoming: <strong class="count">{{ upcomingProjectCount }}</strong></span>
-      </div>
-  
-      <div class="toolbar">
-          <p-iconField iconPosition="left" class="search-field">
-              <p-inputIcon styleClass="pi pi-search" />
-              <input
-                  pInputText
-                  type="text"
-                  [(ngModel)]="searchTerm"
-                  (input)="applyGlobalFilter($event)"
-                  placeholder="Search projects..." />
-          </p-iconField>
-        <button pButton type="button" label="Filters" icon="pi pi-filter" class="p-button-outlined filter-button" (click)="onFilterClick()"></button>
-        <button pButton type="button" label="New Project" icon="pi pi-plus" class="p-button-warning new-project-button" (click)="onNewProjectClick()"></button>
-      </div>
-  
-      <div class="table-container">
-          <p-table
-              #projectTable
-              [value]="allProjects"
-              [paginator]="true"
-              [rows]="5"
-              [showCurrentPageReport]="true"
-              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-              [rowsPerPageOptions]="[5, 10, 25, 50]"
-              [(selection)]="selectedProjects"
-              dataKey="id"
-              styleClass="custom-table"  
-              [globalFilterFields]="['name', 'rcName', 'status']"
-              [loading]="loading">
-  
-              <ng-template pTemplate="header">
-                  <tr>
-                      <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-                      <th pSortableColumn="name">Project Name <p-sortIcon field="name"></p-sortIcon></th>
-                      <th pSortableColumn="rcName">RC in Charge <p-sortIcon field="rcName"></p-sortIcon></th>
-                      <th>Team Members</th>
-                      <th pSortableColumn="duration">Duration <p-sortIcon field="duration"></p-sortIcon></th>
-                      <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
-                      <th>Actions</th>
-                  </tr>
-              </ng-template>
-  
-              <ng-template pTemplate="body" let-project>
-                  <tr>
-                      <td><p-tableCheckbox [value]="project"></p-tableCheckbox></td>
-                      <td>{{ project.name }}</td>
-                      <td class="rc-cell">
-                          <p-avatar [image]="project.rcAvatar" shape="circle" size="normal"></p-avatar>
-                          <span>{{ project.rcName }}</span>
-                      </td>
-                      <td class="team-cell">
-                          <p-avatarGroup styleClass="mb-3">
-                              <p-avatar *ngFor="let member of project.teamMembers.slice(0, 3)" [image]="member.avatar" size="normal" shape="circle" pTooltip="{{member.name}}" tooltipPosition="top"></p-avatar>
-                              <p-avatar *ngIf="project.teamMembers.length > 3" [label]="'+' + (project.teamMembers.length - 3)" size="normal" shape="circle" styleClass="p-avatar-text more-members-avatar"></p-avatar>
-                          </p-avatarGroup>
-                      </td>
-                      <td>{{ project.duration }}</td>
-                      <td>
-                          <p-tag [value]="project.status" [severity]="getStatusSeverity(project.status)" [rounded]="true"></p-tag>
-                      </td>
-                      <td class="actions-cell">
-                        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-secondary" (click)="editProject(project)" pTooltip="Edit" tooltipPosition="top"></button>
-                        <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary" (click)="viewProject(project)" pTooltip="View" tooltipPosition="top"></button>
-                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" pTooltip="Delete" tooltipPosition="top"></button> <!-- Keep danger for delete potentially -->
-                    </td>
-                  </tr>
-              </ng-template>
-  
-               <ng-template pTemplate="emptymessage">
-                  <tr>
-                      <td [attr.colspan]="7" class="text-center">No projects found matching your search criteria.</td>
-                  </tr>
-              </ng-template>
-  
-              <ng-template pTemplate="loadingbody">
-                   <tr>
-                      <td [attr.colspan]="7" class="text-center">Loading projects data...</td>
-                   </tr>
-               </ng-template>
-  
-          </p-table>
-      </div> 
-  
-      <footer class="app-footer">
-          <span>© 2024 Alten. All rights reserved.</span>
-          <div class="footer-links">
-              <a href="#">About Us</a>
-              <a href="#">Terms of Service</a>
-              <a href="#">Privacy Policy</a>
-          </div>
-      </footer>
-  
-    </main> 
+        <header class="projects-header">
+            <h1>Projects</h1>
+            <p>Overview of all active, upcoming, and completed projects</p>
+        </header>
+
+        <div class="summary-stats">
+            <span>Total Projects: <strong class="count">{{ totalProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator active"></span>Active: <strong class="count">{{ activeProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator completed"></span>Completed: <strong class="count">{{ completedProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator upcoming"></span>Upcoming: <strong class="count">{{ upcomingProjectCount }}</strong></span>
+        </div>
+
+        <div class="toolbar">
+            <p-iconField iconPosition="left" class="search-field">
+                <p-inputIcon styleClass="pi pi-search" />
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="searchTerm"
+                    (input)="applyGlobalFilter($event)"
+                    placeholder="Search projects..." />
+            </p-iconField>
+            <button pButton type="button" label="Filters" icon="pi pi-filter" class="p-button-outlined filter-button" (click)="onFilterClick()"></button>
+            <button pButton type="button" label="New Project" icon="pi pi-plus" class="p-button-warning new-project-button" (click)="showCreateProjectDialog()"></button>
+        </div>
+
+        <div class="table-container">
+            <p-table
+                #projectTable
+                [value]="allProjects"
+                [paginator]="true"
+                [rows]="5"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[5, 10, 25, 50]"
+                [(selection)]="selectedProjects"
+                dataKey="id"
+                styleClass="custom-table"
+                [globalFilterFields]="['name', 'rcName', 'status', 'client']"
+                [loading]="loading">
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                        <th pSortableColumn="name">Project Name <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="rcName">RC in Charge <p-sortIcon field="rcName"></p-sortIcon></th>
+                        <th>Team Members</th>
+                        <th pSortableColumn="duration">Duration <p-sortIcon field="duration"></p-sortIcon></th>
+                        <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+                        
+                        <th>Actions</th> 
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-project>
+                    <tr>
+                        <td><p-tableCheckbox [value]="project"></p-tableCheckbox></td>
+                        <td>{{ project.name }}</td>
+                        <td class="rc-cell">
+                            <p-avatar [image]="project.rcAvatar" shape="circle" size="normal" [label]="project.rcName ? project.rcName.substring(0,1) : ''"></p-avatar>
+                            <span>{{ project.rcName || '-' }}</span>
+                        </td>
+                        <td class="team-cell">
+                            <p-avatarGroup *ngIf="project.teamMembers?.length > 0">
+                                <p-avatar *ngFor="let member of project.teamMembers.slice(0, 3)" [image]="member.avatar" size="normal" shape="circle" pTooltip="{{member.name}}" tooltipPosition="top" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
+                                <p-avatar *ngIf="project.teamMembers.length > 3" [label]="'+' + (project.teamMembers.length - 3)" size="normal" shape="circle" styleClass="p-avatar-text more-members-avatar"></p-avatar>
+                            </p-avatarGroup>
+                             <span *ngIf="!project.teamMembers || project.teamMembers.length === 0">-</span>
+                        </td>
+                        <td>{{ project.duration }}</td>
+                        <td>
+                            <p-tag [value]="project.status" [severity]="getStatusSeverity(project.status)" [rounded]="true"></p-tag>
+                        </td>
+                         <td class="actions-cell">
+                            <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-secondary" (click)="editProject(project)" pTooltip="Edit" tooltipPosition="top"></button>
+                            <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary" (click)="viewProject(project)" pTooltip="View" tooltipPosition="top"></button>
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" pTooltip="Delete" tooltipPosition="top"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="7" class="text-center" style="padding: 2rem;">No projects found matching your search criteria.</td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="loadingbody">
+                     <tr>
+                        <td [attr.colspan]="7" class="text-center" style="padding: 2rem;">
+                            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                            <span style="display: block; margin-top: 0.5rem;">Loading projects data...</span>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+
+    </main>
+
+    <!-- =========================== -->
+    <!-- === CREATE PROJECT DIALOG === -->
+    <!-- =========================== -->
+    <p-dialog
+        header="Create New Project"
+        [(visible)]="displayCreateProjectDialog"
+        [modal]="true"
+        [style]="{ width: '40vw', 'min-width': '400px' }"
+        [draggable]="false"
+        [resizable]="false"
+        (onHide)="hideCreateProjectDialog()">
+
+        <div class="p-fluid p-dialog-content-padding">
+            <div class="field">
+                <label for="projectTitle">Title</label>
+                <input id="projectTitle" type="text" pInputText [(ngModel)]="newProjectTitle" required autofocus />
+            </div>
+
+            <div class="field">
+                <label for="projectStatus">Status</label>
+                <p-dropdown
+                    id="projectStatus"
+                    [options]="projectStatusOptions"
+                    [(ngModel)]="newProjectStatus"
+                    placeholder="Select a Status"
+                    optionLabel="label"
+                    optionValue="value"
+                    required>
+                </p-dropdown>
+            </div>
+
+             <div class="field">
+                <label for="projectRC">RC in Charge</label>
+                <p-dropdown
+                    id="projectRC"
+                    [options]="allUsers"
+                    [(ngModel)]="newProjectRC"
+                    placeholder="Select RC"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    required
+                    appendTo="body"> 
+                    <ng-template pTemplate="selectedItem" let-selectedOption>
+                        <div class="user-item" *ngIf="selectedOption">
+                           <p-avatar [image]="selectedOption.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="selectedOption.name ? selectedOption.name.substring(0,1) : ''"></p-avatar>
+                            <span>{{ selectedOption.name }}</span>
+                        </div>
+                         <span *ngIf="!selectedOption" class="p-dropdown-label p-placeholder">Select RC</span>
+                    </ng-template>
+                    <ng-template let-user pTemplate="item">
+                        <div class="user-item">
+                            <p-avatar [image]="user.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="user.name ? user.name.substring(0,1) : ''"></p-avatar>
+                            <span>{{ user.name }}</span>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+
+             <div class="field">
+                <label for="projectMembers">Project Members</label>
+                <p-autoComplete
+                    id="projectMembers"
+                    [(ngModel)]="newProjectMembers"
+                    [suggestions]="filteredUsers"
+                    (completeMethod)="filterUsers($event)"
+                    field="name"
+                    [multiple]="true"
+                    placeholder="Search collaborators..."
+                    [dropdown]="true"
+                    forceSelection
+                    appendTo="body">
+
+                    <ng-template pTemplate="chip" let-member>
+                        <div class="user-item user-chip"> 
+                            <p-avatar [image]="member.avatar" shape="circle" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
+                            <span>{{ member.name }}</span>
+                        </div>
+                    </ng-template>
+
+                     <ng-template pTemplate="item" let-user>
+                        <div class="user-item">
+                             <p-avatar [image]="user.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="user.name ? user.name.substring(0,1) : ''"></p-avatar>
+                            <span>{{ user.name }}</span>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+            </div>
+
+            <div class="formgrid grid">
+                <div class="field col">
+                    <label for="projectStartDate">Start Date</label>
+                    <p-calendar
+                        id="projectStartDate"
+                        [(ngModel)]="newProjectStartDate"
+                        dateFormat="M d, yy"
+                        [showIcon]="true"
+                        appendTo="body">
+                    </p-calendar>
+                </div>
+                <div class="field col">
+                    <label for="projectDeadline">End Date (Deadline)</label>
+                    <p-calendar
+                        id="projectDeadline"
+                        [(ngModel)]="newProjectDeadline"
+                        dateFormat="M d, yy"
+                        [showIcon]="true"
+                        appendTo="body">
+                    </p-calendar>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="projectClient">Client</label>
+                <input id="projectClient" type="text" pInputText [(ngModel)]="newProjectClient" />
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button
+                label="Cancel"
+                icon="pi pi-times"
+                styleClass="p-button-text"
+                (click)="hideCreateProjectDialog()">
+            </p-button>
+            <p-button
+                label="Save"
+                icon="pi pi-check"
+                styleClass="p-button-warning"
+                (click)="saveNewProject()"
+                [disabled]="!newProjectTitle || !newProjectStatus || !newProjectRC">
+            </p-button>
+        </ng-template>
+
+    </p-dialog>
+
+
+    <!-- ========================= -->
+    <!-- === EDIT PROJECT DIALOG === -->
+    <!-- ========================= -->
+    <p-dialog
+        header="Edit Project"
+        [(visible)]="displayEditProjectDialog"
+        [modal]="true"
+        [style]="{ width: '40vw', 'min-width': '400px' }"
+        styleClass="edit-project-dialog"
+        [draggable]="false"
+        [resizable]="false"
+        (onHide)="hideEditProjectDialog()">
+
+        <ng-container *ngIf="projectToEdit">
+            <div class="p-fluid p-dialog-content-padding">
+                <div class="field">
+                    <label for="editProjectTitle">Title</label>
+                    <input id="editProjectTitle" type="text" pInputText [(ngModel)]="projectToEdit.name" required autofocus />
+                </div>
+
+                <div class="field">
+                    <label for="editProjectStatus">Status</label>
+                    <p-dropdown
+                        id="editProjectStatus"
+                        [options]="projectStatusOptions"
+                        [(ngModel)]="projectToEdit.status"
+                        placeholder="Select a Status"
+                        optionLabel="label"
+                        optionValue="value"
+                        required
+                        appendTo="body">
+                    </p-dropdown>
+                </div>
+
+                <div class="field">
+                    <label for="editProjectRC">RC in Charge</label>
+                    <p-dropdown
+                        id="editProjectRC"
+                        [options]="allUsers"
+                        [(ngModel)]="editProjectRC"
+                        placeholder="Select RC"
+                        optionLabel="name"
+                        [filter]="true"
+                        filterBy="name"
+                        [showClear]="true"
+                        required
+                        appendTo="body">
+                        <ng-template pTemplate="selectedItem" let-selectedOption>
+                            <div class="user-item" *ngIf="selectedOption">
+                               <p-avatar [image]="selectedOption.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="selectedOption.name ? selectedOption.name.substring(0,1) : ''"></p-avatar>
+                                <span>{{ selectedOption.name }}</span>
+                            </div>
+                            <span *ngIf="!selectedOption" class="p-dropdown-label p-placeholder">Select RC</span>
+                        </ng-template>
+                        <ng-template let-user pTemplate="item">
+                            <div class="user-item">
+                                <p-avatar [image]="user.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="user.name ? user.name.substring(0,1) : ''"></p-avatar>
+                                <span>{{ user.name }}</span>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+
+                 <div class="field">
+                    <label for="editProjectMembers">Project Members</label>
+                    <p-autoComplete
+                        id="editProjectMembers"
+                        [(ngModel)]="editProjectMembers"
+                        [suggestions]="filteredUsersForEdit"
+                        (completeMethod)="filterUsersForEdit($event)"
+                        field="name"
+                        [multiple]="true"
+                        placeholder="Search collaborators..."
+                        [dropdown]="true"
+                        forceSelection
+                        appendTo="body">
+
+                        <ng-template pTemplate="chip" let-member>
+                            <div class="user-item user-chip">
+                                <p-avatar [image]="member.avatar" shape="circle" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
+                                <span>{{ member.name }}</span>
+                            </div>
+                        </ng-template>
+
+                         <ng-template pTemplate="item" let-user>
+                            <div class="user-item">
+                                 <p-avatar [image]="user.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="user.name ? user.name.substring(0,1) : ''"></p-avatar>
+                                <span>{{ user.name }}</span>
+                            </div>
+                        </ng-template>
+                    </p-autoComplete>
+                </div>
+
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="editProjectStartDate">Start Date</label>
+                        <p-calendar
+                            id="editProjectStartDate"
+                            [(ngModel)]="projectToEdit.startDate"
+                            dateFormat="M d, yy"
+                            [showIcon]="true"
+                            appendTo="body">
+                        </p-calendar>
+                    </div>
+                    <div class="field col">
+                        <label for="editProjectDeadline">End Date (Deadline)</label>
+                        <p-calendar
+                            id="editProjectDeadline"
+                            [(ngModel)]="projectToEdit.deadline"
+                            dateFormat="M d, yy"
+                            [showIcon]="true"
+                            appendTo="body">
+                        </p-calendar>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="editProjectClient">Client</label>
+                    <input id="editProjectClient" type="text" pInputText [(ngModel)]="projectToEdit.client" />
+                </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <p-button
+                    label="Cancel"
+                    icon="pi pi-times"
+                    styleClass="p-button-text"
+                    (click)="hideEditProjectDialog()">
+                </p-button>
+                <p-button
+                    label="Update"
+                    icon="pi pi-check"
+                    styleClass="p-button-warning"
+                    (click)="updateProject()"
+                    [disabled]="!projectToEdit.name || !projectToEdit.status || !editProjectRC">
+                </p-button>
+            </ng-template>
+          
+        </ng-container> 
+          <ng-template pTemplate="footer">
+                <p-button
+                    label="Cancel"
+                    icon="pi pi-times"
+                    styleClass="p-button-text"
+                    (click)="hideCreateProjectDialog()">
+                </p-button>
+                <p-button
+                    label="Save"
+                    icon="pi pi-check"
+                    styleClass="p-button-warning"
+                    (click)="saveNewProject()"
+                    [disabled]="!newProjectTitle || !newProjectStatus || !newProjectRC">
+                </p-button>
+            </ng-template>
+    </p-dialog>
+
+
+    <!-- ========================= -->
+    <!-- === VIEW PROJECT DIALOG === -->
+    <!-- ========================= -->
+    <p-dialog
+        header="Project Details"
+        [(visible)]="displayViewProjectDialog"
+        [modal]="true"
+        [style]="{ width: '40vw', 'min-width': '400px' }"
+        styleClass="view-project-dialog"
+        [draggable]="false"
+        [resizable]="false"
+        (onHide)="hideViewProjectDialog()">
+
+        <ng-container *ngIf="projectToView">
+            <div class="p-dialog-content p-dialog-content-padding view-dialog-content">
+
+                <div class="field-view">
+                    <strong>Title:</strong>
+                    <span class="value">{{ projectToView.name }}</span>
+                </div>
+
+                <div class="field-view">
+                    <strong>Status:</strong>
+                    <span class="value">
+                        <p-tag [value]="projectToView.status" [severity]="getStatusSeverity(projectToView.status)" [rounded]="true"></p-tag>
+                    </span>
+                </div>
+
+                 <div class="field-view">
+                    <strong>RC in Charge:</strong>
+                     <span class="value">
+                        <span class="user-item" *ngIf="projectToView.rcName">
+                             <p-avatar [image]="projectToView.rcAvatar" shape="circle" size="normal" [label]="projectToView.rcName ? projectToView.rcName.substring(0,1) : ''"></p-avatar>
+                             <span>{{ projectToView.rcName }}</span>
+                        </span>
+                        <span *ngIf="!projectToView.rcName">-</span>
+                     </span>
+                 </div>
+
+                 <div class="field-view">
+                    <strong>Team Members:</strong>
+                     <span class="value">
+                        <div class="member-list" *ngIf="projectToView.teamMembers && projectToView.teamMembers.length > 0; else noMembers">
+                            <span *ngFor="let member of projectToView.teamMembers" class="user-item">
+                                <p-avatar [image]="member.avatar" shape="circle" size="normal" styleClass="mr-1" pTooltip="{{member.name}}" tooltipPosition="top" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
+                                
+                               
+                            </span>
+                        </div>
+                        <ng-template #noMembers>
+                            <span>-</span>
+                        </ng-template>
+                     </span>
+                 </div>
+
+                 <div class="field-view">
+                     <strong>Duration:</strong>
+                     <span class="value">{{ calculateDuration(projectToView?.startDate, projectToView?.deadline) }}</span>
+                 </div>
+
+                 <div class="field-view">
+                     <strong>Client:</strong>
+                     <span class="value">{{ projectToView.client || '-' }}</span>
+                 </div>
+
+            </div>
+
+             <ng-template pTemplate="footer">
+                <p-button
+                    label="Close"
+                    icon="pi pi-times"
+                    styleClass="p-button-text"
+                    (click)="hideViewProjectDialog()">
+                </p-button>
+            </ng-template>
+        </ng-container> 
+    </p-dialog>
+
+</div> 
