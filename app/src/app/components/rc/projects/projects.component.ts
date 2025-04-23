@@ -133,7 +133,7 @@ export class ProjectsComponent implements OnInit {
 
         const members1 = [101, 102, 103].map(id => findUserById(id)).filter((u): u is User => !!u);
         const members2 = [104, 105].map(id => findUserById(id)).filter((u): u is User => !!u);
-        const members3 = [101, 103, 105, 201].map(id => findUserById(id)).filter((u): u is User => !!u);
+        const members3 = [101, 103, 105, 201, 102, 104, 106, 202, 204].map(id => findUserById(id)).filter((u): u is User => !!u);
         const members4 = [102, 202].map(id => findUserById(id)).filter((u): u is User => !!u);
         const members5: User[] = [];
 

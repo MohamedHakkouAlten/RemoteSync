@@ -405,74 +405,100 @@
     </p-dialog>
 
    
-
-    <!-- ========================= -->
-    <!-- === VIEW PROJECT DIALOG === -->
-    <!-- ========================= -->
+    <!-- ======================================= -->
+    <!-- === VIEW PROJECT DIALOG (Image Style) === -->
+    <!-- ======================================= -->
     <p-dialog
-        header="Project Details"
         [(visible)]="displayViewProjectDialog"
+        [showHeader]="false" 
         [modal]="true"
-        [style]="{ width: '40vw', 'min-width': '400px' }"
+        [style]="{ width: '40vw', 'min-width': '450px', height: 'flex' }"
+        class="overflow-y-auto"
         styleClass="view-project-dialog"
         [draggable]="false"
         [resizable]="false"
         (onHide)="hideViewProjectDialog()">
 
-        <ng-container *ngIf="projectToView">
-            <div class="p-dialog-content view-dialog-content">
+        <!-- The ng-container still guards the whole view -->
+        <ng-container *ngIf="projectToView"         class="overflow-y-auto"
+        >
+            <!-- Card structure inside the dialog content -->
+            <div class="view-card-container overflow-y-auto">
 
-                <div class="field-view">
-                    <strong>Title:</strong>
-                    <span class="value">{{ projectToView.name }}</span>
-                </div>
-
-                <div class="field-view">
-                    <strong>Status:</strong>
-                    <span class="value">
-                        <p-tag [value]="projectToView.status" [severity]="getStatusSeverity(projectToView.status)" [rounded]="true"></p-tag>
+                <!-- Card Header (This now acts as the primary header) -->
+                <div class="view-card-header">
+                    <h2 class="view-card-title">{{ projectToView.name }}</h2>
+                    <span class="view-card-status">
+                        <p-tag [value]="projectToView.status" [severity]="getStatusSeverity(projectToView.status)"></p-tag>
                     </span>
                 </div>
 
-                 <div class="field-view">
-                    <strong>RC in Charge:</strong>
-                     <span class="value">
-                        <span class="user-item" *ngIf="projectToView.rcName">
-                             <p-avatar [image]="projectToView.rcAvatar" shape="circle" size="normal" [label]="projectToView.rcName ? projectToView.rcName.substring(0,1) : ''"></p-avatar>
-                             <span>{{ projectToView.rcName }}</span>
-                        </span>
-                        <span *ngIf="!projectToView.rcName">-</span>
-                     </span>
-                 </div>
+                <!-- RC Section -->
+                <div class="view-card-section">
+                    <div class="view-section-label">
+                        <i class="pi pi-user"></i>
+                        <span>RC in Charge</span>
+                    </div>
+                    <div class="view-section-content">
+                        <div class="view-rc-info" *ngIf="projectToView.rcName; else noRcView">
+                            <p-avatar [image]="projectToView.rcAvatar" shape="circle" [label]="projectToView.rcName.substring(0,1)"></p-avatar>
+                            <span>{{ projectToView.rcName }}</span>
+                        </div>
+                        <ng-template #noRcView>
+                            <span class="view-value-empty">-</span>
+                        </ng-template>
+                    </div>
+                </div>
 
-                 <div class="field-view">
-                    <strong>Team Members:</strong>
-                     <span class="value">
-                        <div class="member-name-list" *ngIf="projectToView.teamMembers && projectToView.teamMembers.length > 0; else noMembersView">
-                            <div *ngFor="let member of projectToView.teamMembers" class="member-name-item">
-                                {{ member.name }}
+                           <!-- Team Members Section -->
+                           <div class="view-card-section">
+                            <div class="view-section-label">
+                                 <i class="pi pi-users"></i>
+                                 <span>Team Members</span>
+                            </div>
+                            <div class="view-section-content">
+                                <!-- Container for the list (styles applied via CSS) -->
+                                <div class="view-member-list" *ngIf="projectToView.teamMembers && projectToView.teamMembers.length > 0; else noMembersView">
+                                    <!-- CHANGE CLASS HERE -->
+                                    <div *ngFor="let member of projectToView.teamMembers" class="view-member-chip">
+                                        {{ member.name }}
+                                       
+                                    </div>
+                                </div>
+                                <ng-template #noMembersView>
+                                     <span class="view-value-empty">-</span>
+                                </ng-template>
                             </div>
                         </div>
-                        <ng-template #noMembersView>
-                            <span>-</span>
-                        </ng-template>
-                     </span>
-                 </div>
 
-                 <div class="field-view">
-                     <strong>Duration:</strong>
-                     <span class="value">{{ calculateDuration(projectToView?.startDate, projectToView?.deadline) }}</span>
-                 </div>
+                <!-- Duration Section -->
+                <div class="view-card-section">
+                     <div class="view-section-label">
+                         <i class="pi pi-clock"></i>
+                         <span>Duration</span>
+                    </div>
+                     <div class="view-section-content">
+                         <span class="view-value-text">{{ projectToView.duration }}</span>
+                     </div>
+                </div>
 
+                <!-- Client Section -->
+                <div class="view-card-section">
+                    <div class="view-section-label">
+                         <i class="pi pi-building"></i>
+                         <span>Client</span>
+                    </div>
+                    <div class="view-section-content">
+                         <span class="view-value-text" *ngIf="projectToView.client; else noClientView">{{ projectToView.client }}</span>
+                         <ng-template #noClientView>
+                             <span class="view-value-empty">-</span>
+                         </ng-template>
+                    </div>
+                </div>
 
+            </div> <!-- End view-card-container -->
 
-                 <div class="field-view">
-                     <strong>Client:</strong>
-                     <span class="value">{{ projectToView.client || '-' }}</span>
-                 </div>
-
-            </div>
-
+             <!-- Footer -->
              <ng-template pTemplate="footer">
                 <p-button
                     label="Close"
@@ -483,5 +509,4 @@
             </ng-template>
         </ng-container>
     </p-dialog>
-
 </div>

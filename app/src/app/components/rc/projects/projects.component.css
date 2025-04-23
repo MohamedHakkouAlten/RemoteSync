@@ -234,9 +234,9 @@ Refined Table Styles
     border-radius: 16px; /* Fully rounded */
 }
 /* Custom severity colors */
-:host ::ng-deep .p-tag.p-tag-info { background-color: #cfe2ff; color: #052c65; } /* Blue-ish */
-:host ::ng-deep .p-tag.p-tag-success { background-color: #d1e7dd; color: #0a3622; } /* Green-ish */
-:host ::ng-deep .p-tag.p-tag-warn { background-color: #fff3cd; color: #664d03; } /* Yellow-ish */
+:host ::ng-deep .p-tag.p-tag-info { background-color: #bbe8ff91; color: #0066ff; } /* Blue-ish */
+:host ::ng-deep .p-tag.p-tag-success { background-color: #cbffce95; color: #03cb46; } /* Green-ish */
+:host ::ng-deep .p-tag.p-tag-warn { background-color: #fff3cdb5; color: #d37300; } /* Yellow-ish */
 
 /* Table Checkbox/Actions Columns Width */
 :host ::ng-deep .custom-table .p-datatable-thead > tr > th:first-child,
@@ -337,11 +337,201 @@ Refined Table Styles
     color: #4b5563;
     line-height: 1.6;
 }
-/* Add specific class for view dialog padding consistency */
-:host ::ng-deep .p-dialog .p-dialog-content.view-dialog-content {
-     padding: 1.75rem;
+/* =============================================
+   NEW VIEW DIALOG STYLES (Matching Image Target)
+   ============================================= */
+
+/* --- Overall Dialog Styling --- */
+:host ::ng-deep .view-project-dialog .p-dialog-header {
+    /* Optional: Hide default header if we replicate title inside */
+     /* display: none; */
+     /* Or just style it minimally */
+     padding: 1rem 1.5rem;
+     border-bottom: none; /* Remove border if recreating header look */
 }
 
+:host ::ng-deep .view-project-dialog .p-dialog-content {
+    padding: 0 !important; /* Remove default padding */
+    background-color: #f8f9fa; /* Light gray background OUTSIDE the card */
+    overflow: hidden; /* Helps with card border radius */
+}
+
+:host ::ng-deep .view-project-dialog .p-dialog-footer {
+    background-color: #ffffff; /* Match card background */
+    border-top: 1px solid #e5e7eb; /* Light separator */
+    border-bottom-left-radius: 10px; /* Match card radius */
+    border-bottom-right-radius: 10px;
+    padding: 1rem 1.75rem;
+}
+
+/* --- The White Card Container --- */
+.view-card-container {
+    background-color: #ffffff;
+    padding: 1.75rem 2rem; /* Inner padding for the card content */
+    border-radius: 10px; /* Rounded corners for the card itself */
+    margin: 1rem; /* Space between card and dialog edge */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+}
+
+/* --- Card Header Area --- */
+.view-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the top */
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.view-card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+    line-height: 1.3;
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+.view-card-status .p-tag {
+    /* Use specific severity classes if needed, or target directly */
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 16px; /* Pill shape */
+    white-space: nowrap;
+}
+/* Style for 'In Progress' specifically */
+:host ::ng-deep .view-card-status .p-tag-info {
+    background-color: #fff3cdb5 !important; /* Light Orange/Yellow */
+    color: #d37300 !important; /* Darker Orange/Yellow */
+}
+/* Add similar overrides for .p-tag-warn and .p-tag-success if needed */
+
+
+/* --- Section Styling --- */
+.view-card-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f3f5; /* Lighter divider */
+}
+.view-card-section:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.view-section-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #868e96; /* Gray label color */
+    margin-bottom: 0.8rem;
+}
+.view-section-label .pi {
+    font-size: 0.9em; /* Icon size relative to text */
+    margin-right: 0.5rem;
+    color: #adb5bd; /* Slightly lighter icon color */
+}
+
+/* --- Section Content Styling --- */
+.view-section-content {
+    padding-left: 1.4rem; /* Indent content slightly */
+    color: #343a40; /* Darker content text */
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* RC Specific */
+.view-rc-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.view-rc-info .p-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    background-color: #fff3cd !important; /* Background from image */
+    color: #f97316 !important; /* Text color from image */
+    flex-shrink: 0;
+}
+.view-rc-info span {
+    font-weight: 500;
+}
+
+/* Team Member List */
+/* Team Member List (Horizontal Chips, 2 Lines Max, Scrollable) */
+.view-member-list {
+    display: flex;         /* Lay out items horizontally */
+    flex-wrap: wrap;       /* Allow items to wrap to the next line */
+    gap: 0.5rem;           /* Space between chips (horizontal and vertical) */
+    /* === ADJUST max-height to fit ~2 lines of chips === */
+    /* Estimate: (padding + line-height) * 2 + gap */
+    /* Example: (0.6rem + 1.2rem)*2 + 0.5rem = 3.6rem + 0.5rem = 4.1rem */
+    max-height: 4.2rem;    /* Adjust this value (e.g., 4rem, 4.5rem, 65px) */
+    overflow-y: auto;      /* Enable vertical scrollbar ONLY if needed */
+    /* ================================================= */
+    padding-bottom: 5px;   /* Add padding below content */
+    padding-right: 5px;    /* Prevent scrollbar overlap */
+}
+
+/* Individual Member Chip/Tag */
+.view-member-chip {
+    display: inline-flex;  /* Treat as inline block but allow flex alignment inside */
+    align-items: center;
+    padding: 0.3rem 0.8rem;
+    background-color: #e9ecef; /* Light gray background */
+    border-radius: 16px;   /* Pill shape */
+    font-size: 0.9rem;
+    color: #495057;        /* Slightly darker text */
+    white-space: nowrap;   /* Prevent name itself from wrapping */
+    line-height: 1.3;      /* Control chip height */
+}
+
+/* Style for empty state remains same */
+.view-member-empty {
+    font-style: italic;
+    color: #6b7280;
+}
+.view-member-name {
+    /* Simple text style */
+}
+
+/* Duration/Client Value */
+.view-value-text {
+    font-weight: 500;
+}
+.view-value-empty {
+    font-style: italic;
+    color: #868e96;
+}
+
+/* Responsive Adjustments for View Card */
+@media (max-width: 768px) {
+     /* Adjust dialog width if needed */
+    :host ::ng-deep .view-project-dialog {
+        width: 90vw !important;
+    }
+    .view-card-container {
+        padding: 1.5rem;
+        margin: 0.5rem;
+    }
+    .view-card-header {
+        flex-direction: column; /* Stack title and status */
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+    .view-card-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+    .view-card-status {
+        /* Align self to start if needed */
+    }
+    .view-section-content {
+        padding-left: 0.5rem; /* Reduce indent on small screens */
+    }
+}
 /* --- Form Field General Styling (Create/Edit Dialogs) --- */
 :host ::ng-deep .create-project-dialog .field,
 :host ::ng-deep .edit-project-dialog .field {
