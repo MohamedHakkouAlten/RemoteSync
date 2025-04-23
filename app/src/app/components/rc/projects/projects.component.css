@@ -114,7 +114,6 @@ Refined Table Styles
     overflow: hidden; /* Important for border-radius clipping */
 }
 
-/* Use ::ng-deep carefully or preferably ViewEncapsulation.None / global styles */
 :host ::ng-deep .custom-table .p-datatable-thead > tr > th,
 :host ::ng-deep .custom-table .p-datatable-tbody > tr > td {
     border: none; /* Remove default borders */
@@ -158,37 +157,35 @@ Refined Table Styles
     align-items: center;
     gap: 0.9rem; /* Space between avatar and name */
 }
-.rc-cell .p-avatar{
-  background-color: #fff3cd;
-  color: #f97316; /* Space between avatar and name */
+/* Consistent avatar styles for RC cell */
+:host ::ng-deep .rc-cell .p-avatar {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0; /* Prevent avatar shrinking */
+    background-color: #fff3cd; /* Yellowish background */
+    color: #f97316; /* Orange text */
+    font-size: 1rem;
 }
 .rc-cell span {
     font-weight: 500;
     color: #343a40;
     white-space: nowrap;
 }
-:host ::ng-deep .rc-cell .p-avatar {
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0; /* Prevent avatar shrinking */
-}
+
 
 .team-cell .p-avatar-group {
     display: flex;
     align-items: center;
-  
 }
-.team-cell .p-avatar{
-    background-color: #d1d5db;
-  color: #1f2937;
-  
-}
+/* Consistent avatar styles for team cell */
 :host ::ng-deep .team-cell .p-avatar-group .p-avatar {
     width: 32px; /* Slightly smaller for group */
     height: 32px;
     font-size: 0.9rem;
     box-shadow: 0 0 0 2px #ffffff; /* White border for overlap */
     margin-left: -10px; /* Overlap amount */
+    background-color: #d1d5db; /* Gray background */
+    color: #1f2937; /* Dark text */
 }
 :host ::ng-deep .team-cell .p-avatar-group .p-avatar:first-child {
     margin-left: 0;
@@ -340,14 +337,22 @@ Refined Table Styles
     color: #4b5563;
     line-height: 1.6;
 }
-/* --- Form Field General Styling --- */
-:host ::ng-deep .p-dialog .field {
+/* Add specific class for view dialog padding consistency */
+:host ::ng-deep .p-dialog .p-dialog-content.view-dialog-content {
+     padding: 1.75rem;
+}
+
+/* --- Form Field General Styling (Create/Edit Dialogs) --- */
+:host ::ng-deep .create-project-dialog .field,
+:host ::ng-deep .edit-project-dialog .field {
     margin-bottom: 1.75rem;
 }
-:host ::ng-deep .p-dialog .field:last-of-type {
+:host ::ng-deep .create-project-dialog .field:last-of-type,
+:host ::ng-deep .edit-project-dialog .field:last-of-type {
     margin-bottom: 0; /* No margin on the very last field */
 }
-:host ::ng-deep .p-dialog .field label {
+:host ::ng-deep .create-project-dialog .field label,
+:host ::ng-deep .edit-project-dialog .field label {
     display: block;
     margin-bottom: 0.7rem;
     font-weight: 500;
@@ -390,7 +395,8 @@ Refined Table Styles
     position: relative; /* Needed for absolutely positioned elements within */
 }
 /* Placeholder Styling */
-:host ::ng-deep .p-dialog .field ::placeholder {
+:host ::ng-deep .p-dialog .field ::placeholder,
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-label.p-placeholder {
     color: #9ca3af;
     opacity: 1;
 }
@@ -425,9 +431,6 @@ Refined Table Styles
     cursor: pointer;
     display: flex; /* Allow aligning avatar/text inside */
     align-items: center; /* Vertically align avatar/text inside */
-}
-:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-label.p-placeholder {
-    color: #9ca3af;
 }
 :host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-trigger {
     position: absolute;
@@ -495,26 +498,33 @@ Refined Table Styles
     background-color: #eef2ff; /* Light indigo background */
     color: #4338ca; /* Indigo text */
     border-radius: 6px;
-    padding: 0.2rem 0rem 0.2rem 0.5rem; /* Padding around chip content (R handled by icon) */
+    padding: 0; /* Remove outer padding */
     margin: 0; /* Let gap handle spacing */
     font-size: 0.85rem;
     font-weight: 500;
+    /* overflow: hidden; Ensure avatar rounding works */
 }
-/* Target the chip label span (if structure allows, or style the div directly) */
+/* Style the user-item div *inside* the chip */
 :host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .user-chip {
-     padding: 0; /* Remove padding from inner div if exists */
-     background: none; /* Override any background on inner div */
+     padding: 0.2rem 0rem 0.2rem 0.5rem; /* Add padding here */
+     display: flex;
+     align-items: center;
+     background: none;
 }
 :host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .user-chip .p-avatar {
      width: 18px; /* Smaller avatar in chip */
      height: 18px;
      font-size: 0.65rem;
      margin-right: 0.4rem; /* Space between avatar and name in chip */
+     background-color: #ede9fe; /* Light purple */
+     color: #7c3aed; /* Purple */
+     flex-shrink: 0;
 }
 :host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .p-autocomplete-token-icon {
     margin-left: 0.5rem; /* Space before remove icon */
-    padding: 0.3rem; /* Clickable area for remove icon */
+    padding: 0.5rem; /* Increased clickable area for remove icon */
     cursor: pointer;
+    align-self: center; /* Align icon vertically */
 }
 :host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-dropdown {
     position: absolute;
@@ -587,19 +597,22 @@ Refined Table Styles
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* --- Shared User Item Display (in Dropdowns/Autocomplete Lists) --- */
+/* --- Shared User Item Display (in Dropdowns/Autocomplete Lists/Selected) --- */
 .user-item {
     display: flex;
     align-items: center;
     gap: 0.7rem; /* Space between avatar and name */
 }
-.user-item .p-avatar {
-    width: 24px; /* Standard size in lists */
+/* Avatar within dropdown list items */
+:host ::ng-deep .p-dropdown-panel .user-item .p-avatar,
+:host ::ng-deep .p-autocomplete-panel .user-item .p-avatar,
+:host ::ng-deep .p-dropdown .p-dropdown-label .user-item .p-avatar {
+    width: 24px; /* Standard size in lists/selection */
     height: 24px;
     font-size: 0.7rem;
     flex-shrink: 0;
-    background-color: #fff3cd;
-  color: #f97316;
+    background-color: #ffedd5; /* Light orange */
+    color: #c2410c; /* Darker orange text */
 }
 .user-item span {
     font-size: 0.95rem;
@@ -629,9 +642,11 @@ Refined Table Styles
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1.5rem;
     margin: 0; /* Override grid margins */
+    margin-bottom: 1.75rem; /* Add bottom margin like other fields */
 }
 :host ::ng-deep .p-dialog .formgrid.grid .field.col {
     padding: 0; /* Override grid padding */
+    margin-bottom: 0; /* Remove margin from inner fields */
 }
 
 /* --- Dialog Footer Refinements --- */
@@ -679,63 +694,62 @@ Refined Table Styles
     cursor: not-allowed;
 }
 
-/* ============================
-   OPTIONAL VIEW DIALOG STYLES
-============================ */
+/* =================================
+   VIEW DIALOG STYLES - ENHANCED
+================================= */
 :host ::ng-deep .view-dialog-content .field-view {
-    margin-bottom: 1.1rem;
     display: flex;
     align-items: flex-start; /* Align label top if value wraps */
+    margin-bottom: 1.2rem; /* Consistent spacing */
     font-size: 0.95rem;
     line-height: 1.5;
 }
+:host ::ng-deep .view-dialog-content .field-view:last-child {
+    margin-bottom: 0;
+}
 :host ::ng-deep .view-dialog-content .field-view strong {
-    display: inline-block;
+    display: block; /* Changed from inline-block */
     width: 140px; /* Fixed width for labels */
-    margin-right: 1rem;
-    color: #374151;
-    font-weight: 600;
     flex-shrink: 0; /* Prevent label shrinking */
+    margin-right: 1rem;
+    color: #374151; /* Dark gray */
+    font-weight: 600; /* Bold */
+    padding-top: 0.1rem; /* Align better with multi-line values */
 }
 :host ::ng-deep .view-dialog-content .field-view .value {
     flex-grow: 1;
-    color: #4b5563;
+    color: #4b5563; /* Medium gray */
     word-break: break-word; /* Allow long values to wrap */
     /* Align items within the value span if needed */
-    display: flex;
-    align-items: center;
+    display: flex; /* Use flex for content alignment */
     flex-wrap: wrap; /* Allow wrapping for tags/avatars */
     gap: 0.5rem; /* Space between items if they wrap */
+    align-items: center; /* Center single line items like tags/RC */
 }
-/* Style for the member list specifically */
-:host ::ng-deep .view-dialog-content .member-list {
+/* Style for the member name list */
+:host ::ng-deep .view-dialog-content .member-name-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
-    padding-top: 0.2rem; /* Small top padding */
+    flex-direction: column; /* Stack names vertically */
+    gap: 0.3rem; /* Space between names */
+    align-items: flex-start; /* Align names to the left */
+    width: 100%; /* Take full width of the value area */
 }
-:host ::ng-deep .view-dialog-content .member-list .user-item {
-    gap: 0.4rem; /* Smaller gap inside user item */
-}
-:host ::ng-deep .view-dialog-content .member-list .user-item .p-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-}
-/* Adjust tag alignment/spacing if needed */
-:host ::ng-deep .view-dialog-content .field-view .value .p-tag {
-     /* Default alignment should be okay with flex */
+:host ::ng-deep .view-dialog-content .member-name-item {
+    padding: 2px 0; /* Small vertical padding */
+    line-height: 1.4; /* Adjust line height if needed */
 }
 /* Adjust user-item alignment in RC field */
 :host ::ng-deep .view-dialog-content .field-view .value .user-item {
-    /* Default alignment should be okay with flex */
     display: inline-flex; /* Keeps avatar and name together */
+    align-items: center;
+    gap: 0.5rem;
 }
 :host ::ng-deep .view-dialog-content .field-view .value .user-item .p-avatar {
-    width: 28px; /* Match member list size */
-    height: 28px;
-    font-size: 0.8rem;
+     width: 24px; /* Consistent avatar size */
+     height: 24px;
+     font-size: 0.7rem;
+     background-color: #ffedd5; /* Match dropdown avatar */
+     color: #c2410c;
 }
 
 
@@ -770,17 +784,26 @@ Refined Table Styles
     /* Stack date fields */
     :host ::ng-deep .p-dialog .formgrid.grid {
         grid-template-columns: 1fr; /* Single column */
-        gap: 1.75rem; /* Keep vertical gap */
+        gap: 0; /* Remove grid gap, rely on field margin */
+        margin-bottom: 0; /* Remove grid margin */
     }
-    /* Adjust view dialog label width */
-    :host ::ng-deep .view-dialog-content .field-view strong {
-        width: 100px; /* Shorter label width */
-        margin-right: 0.5rem;
+     /* Add margin back to inner date fields when stacked */
+    :host ::ng-deep .p-dialog .formgrid.grid .field.col {
+         margin-bottom: 1.75rem;
     }
-     :host ::ng-deep .view-dialog-content .field-view {
+     :host ::ng-deep .p-dialog .formgrid.grid .field.col:last-child {
+         margin-bottom: 0;
+    }
+
+    /* Responsive View Dialog: Stack Label and Value */
+    :host ::ng-deep .view-dialog-content .field-view {
         flex-direction: column; /* Stack label and value */
         align-items: flex-start;
-        gap: 0.3rem; /* Small gap between stacked label/value */
-        margin-bottom: 1.2rem;
+        gap: 0.4rem; /* Small gap between stacked label/value */
+    }
+     :host ::ng-deep .view-dialog-content .field-view strong {
+        width: auto; /* Let label take natural width */
+        margin-right: 0;
+        padding-top: 0; /* Reset padding */
     }
 }

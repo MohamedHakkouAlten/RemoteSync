@@ -45,14 +45,13 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                        <th style="width: 3.5rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
                         <th pSortableColumn="name">Project Name <p-sortIcon field="name"></p-sortIcon></th>
                         <th pSortableColumn="rcName">RC in Charge <p-sortIcon field="rcName"></p-sortIcon></th>
                         <th>Team Members</th>
                         <th pSortableColumn="duration">Duration <p-sortIcon field="duration"></p-sortIcon></th>
                         <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
-                        
-                        <th>Actions</th> 
+                        <th>Actions</th>
                     </tr>
                 </ng-template>
 
@@ -111,16 +110,18 @@
         [(visible)]="displayCreateProjectDialog"
         [modal]="true"
         [style]="{ width: '40vw', 'min-width': '400px' }"
+        styleClass="create-project-dialog"
         [draggable]="false"
         [resizable]="false"
         (onHide)="hideCreateProjectDialog()">
 
         <div class="p-fluid p-dialog-content-padding">
+            <!-- Title -->
             <div class="field">
                 <label for="projectTitle">Title</label>
                 <input id="projectTitle" type="text" pInputText [(ngModel)]="newProjectTitle" required autofocus />
             </div>
-
+            <!-- Status -->
             <div class="field">
                 <label for="projectStatus">Status</label>
                 <p-dropdown
@@ -130,10 +131,11 @@
                     placeholder="Select a Status"
                     optionLabel="label"
                     optionValue="value"
-                    required>
+                    required
+                    appendTo="body">
                 </p-dropdown>
             </div>
-
+            <!-- RC -->
              <div class="field">
                 <label for="projectRC">RC in Charge</label>
                 <p-dropdown
@@ -146,7 +148,7 @@
                     filterBy="name"
                     [showClear]="true"
                     required
-                    appendTo="body"> 
+                    appendTo="body">
                     <ng-template pTemplate="selectedItem" let-selectedOption>
                         <div class="user-item" *ngIf="selectedOption">
                            <p-avatar [image]="selectedOption.avatar" shape="circle" size="normal" styleClass="mr-2" [label]="selectedOption.name ? selectedOption.name.substring(0,1) : ''"></p-avatar>
@@ -162,7 +164,7 @@
                     </ng-template>
                 </p-dropdown>
             </div>
-
+            <!-- Members -->
              <div class="field">
                 <label for="projectMembers">Project Members</label>
                 <p-autoComplete
@@ -175,10 +177,11 @@
                     placeholder="Search collaborators..."
                     [dropdown]="true"
                     forceSelection
-                    appendTo="body">
+                    appendTo="body"
+                    [minLength]="0"> <!-- Allow dropdown on click for create too -->
 
                     <ng-template pTemplate="chip" let-member>
-                        <div class="user-item user-chip"> 
+                        <div class="user-item user-chip">
                             <p-avatar [image]="member.avatar" shape="circle" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
                             <span>{{ member.name }}</span>
                         </div>
@@ -192,7 +195,7 @@
                     </ng-template>
                 </p-autoComplete>
             </div>
-
+            <!-- Dates -->
             <div class="formgrid grid">
                 <div class="field col">
                     <label for="projectStartDate">Start Date</label>
@@ -215,10 +218,19 @@
                     </p-calendar>
                 </div>
             </div>
-
+            <!-- Client -->
             <div class="field">
                 <label for="projectClient">Client</label>
-                <input id="projectClient" type="text" pInputText [(ngModel)]="newProjectClient" />
+                <p-dropdown
+                    id="projectClient"
+                    [options]="clientOptions"
+                    [(ngModel)]="newProjectClient"
+                    placeholder="Select Client"
+                    optionLabel="label"
+                    optionValue="value"
+                    [showClear]="true"
+                    appendTo="body">
+                </p-dropdown>
             </div>
         </div>
 
@@ -258,7 +270,7 @@
             <div class="p-fluid p-dialog-content-padding">
                 <div class="field">
                     <label for="editProjectTitle">Title</label>
-                    <input id="editProjectTitle" type="text" pInputText [(ngModel)]="projectToEdit.name" required autofocus />
+                    <input id="editProjectTitle" type="text" pInputText [(ngModel)]="projectToEdit!.name" required autofocus />
                 </div>
 
                 <div class="field">
@@ -266,7 +278,7 @@
                     <p-dropdown
                         id="editProjectStatus"
                         [options]="projectStatusOptions"
-                        [(ngModel)]="projectToEdit.status"
+                        [(ngModel)]="projectToEdit!.status"
                         placeholder="Select a Status"
                         optionLabel="label"
                         optionValue="value"
@@ -316,7 +328,8 @@
                         placeholder="Search collaborators..."
                         [dropdown]="true"
                         forceSelection
-                        appendTo="body">
+                        appendTo="body"
+                        [minLength]="0">
 
                         <ng-template pTemplate="chip" let-member>
                             <div class="user-item user-chip">
@@ -339,7 +352,7 @@
                         <label for="editProjectStartDate">Start Date</label>
                         <p-calendar
                             id="editProjectStartDate"
-                            [(ngModel)]="projectToEdit.startDate"
+                            [(ngModel)]="projectToEdit!.startDate"
                             dateFormat="M d, yy"
                             [showIcon]="true"
                             appendTo="body">
@@ -349,7 +362,7 @@
                         <label for="editProjectDeadline">End Date (Deadline)</label>
                         <p-calendar
                             id="editProjectDeadline"
-                            [(ngModel)]="projectToEdit.deadline"
+                            [(ngModel)]="projectToEdit!.deadline"
                             dateFormat="M d, yy"
                             [showIcon]="true"
                             appendTo="body">
@@ -359,44 +372,39 @@
 
                 <div class="field">
                     <label for="editProjectClient">Client</label>
-                    <input id="editProjectClient" type="text" pInputText [(ngModel)]="projectToEdit.client" />
+                    <p-dropdown
+                        id="editProjectClient"
+                        [options]="clientOptions"
+                        [(ngModel)]="projectToEdit!.client"
+                        placeholder="Select Client"
+                        optionLabel="label"
+                        optionValue="value"
+                        [showClear]="true"
+                        appendTo="body">
+                    </p-dropdown>
                 </div>
             </div>
+        </ng-container>
 
-            <ng-template pTemplate="footer">
-                <p-button
-                    label="Cancel"
-                    icon="pi pi-times"
-                    styleClass="p-button-text"
-                    (click)="hideEditProjectDialog()">
-                </p-button>
-                <p-button
-                    label="Update"
-                    icon="pi pi-check"
-                    styleClass="p-button-warning"
-                    (click)="updateProject()"
-                    [disabled]="!projectToEdit.name || !projectToEdit.status || !editProjectRC">
-                </p-button>
-            </ng-template>
-          
-        </ng-container> 
-          <ng-template pTemplate="footer">
-                <p-button
-                    label="Cancel"
-                    icon="pi pi-times"
-                    styleClass="p-button-text"
-                    (click)="hideCreateProjectDialog()">
-                </p-button>
-                <p-button
-                    label="Save"
-                    icon="pi pi-check"
-                    styleClass="p-button-warning"
-                    (click)="saveNewProject()"
-                    [disabled]="!newProjectTitle || !newProjectStatus || !newProjectRC">
-                </p-button>
-            </ng-template>
+        <ng-template pTemplate="footer">
+            <p-button
+                label="Cancel"
+                icon="pi pi-times"
+                styleClass="p-button-text"
+                (click)="hideEditProjectDialog()">
+            </p-button>
+            <p-button
+                label="Update"
+                icon="pi pi-check"
+                styleClass="p-button-warning"
+                (click)="updateProject()"
+                [disabled]="!projectToEdit?.name || !projectToEdit?.status || !editProjectRC">
+            </p-button>
+        </ng-template>
+
     </p-dialog>
 
+   
 
     <!-- ========================= -->
     <!-- === VIEW PROJECT DIALOG === -->
@@ -412,7 +420,7 @@
         (onHide)="hideViewProjectDialog()">
 
         <ng-container *ngIf="projectToView">
-            <div class="p-dialog-content p-dialog-content-padding view-dialog-content">
+            <div class="p-dialog-content view-dialog-content">
 
                 <div class="field-view">
                     <strong>Title:</strong>
@@ -440,14 +448,12 @@
                  <div class="field-view">
                     <strong>Team Members:</strong>
                      <span class="value">
-                        <div class="member-list" *ngIf="projectToView.teamMembers && projectToView.teamMembers.length > 0; else noMembers">
-                            <span *ngFor="let member of projectToView.teamMembers" class="user-item">
-                                <p-avatar [image]="member.avatar" shape="circle" size="normal" styleClass="mr-1" pTooltip="{{member.name}}" tooltipPosition="top" [label]="member.name ? member.name.substring(0,1) : ''"></p-avatar>
-                                
-                               
-                            </span>
+                        <div class="member-name-list" *ngIf="projectToView.teamMembers && projectToView.teamMembers.length > 0; else noMembersView">
+                            <div *ngFor="let member of projectToView.teamMembers" class="member-name-item">
+                                {{ member.name }}
+                            </div>
                         </div>
-                        <ng-template #noMembers>
+                        <ng-template #noMembersView>
                             <span>-</span>
                         </ng-template>
                      </span>
@@ -457,6 +463,8 @@
                      <strong>Duration:</strong>
                      <span class="value">{{ calculateDuration(projectToView?.startDate, projectToView?.deadline) }}</span>
                  </div>
+
+
 
                  <div class="field-view">
                      <strong>Client:</strong>
@@ -473,7 +481,7 @@
                     (click)="hideViewProjectDialog()">
                 </p-button>
             </ng-template>
-        </ng-container> 
+        </ng-container>
     </p-dialog>
 
-</div> 
+</div>
