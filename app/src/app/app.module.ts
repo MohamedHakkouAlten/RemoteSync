@@ -17,6 +17,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ButtonModule } from 'primeng/button';
 import { NotificationComponent } from './components/shared/navigation/notification/notification.component';
 import { NavigationComponent } from "./components/shared/navigation/navigation.component";
+import { CalendarComponent } from './utility/rc/calendar/calendar.component';
+
+
 
 const BlackLara = definePreset(Lara, {
   semantic: {
@@ -40,7 +43,8 @@ const BlackLara = definePreset(Lara, {
 @NgModule({
   declarations: [
     AppComponent,
-    NotificationComponent
+    NotificationComponent,
+    CalendarComponent
   ],
   imports: [
     BrowserModule,

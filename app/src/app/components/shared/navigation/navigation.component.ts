@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { CommonModule } from '@angular/common';
@@ -17,12 +17,12 @@ import { MenuItem } from 'primeng/api';
 
 interface Notification {
   id: number;
-  type: 'Report Approval' | 'Rotation Update';
-  sender?: string; // Optional sender name
+  type: 'report' | 'rotation' | 'general';
+  sender: string; // Optional sender name
   message: string;
   timestamp: Date; // Use Date object for easier sorting/formatting
   isRead: boolean;
-
+  
 
 }
 
@@ -43,7 +43,8 @@ interface Notification {
       ButtonModule,
     AvatarModule,
      RippleModule,
-     MenuModule
+     MenuModule,
+     RouterModule
   ]
 })
 export class NavigationComponent implements OnInit {
@@ -60,7 +61,7 @@ export class NavigationComponent implements OnInit {
     menuItems: MenuItem[] = []; // Array to hold menu items
     userAvatarUrl: string = 'assets/images/avatar.png'; // Replace with your actual path
     logoUrl: string = 'assets/images/alten.png'; // Replace with your actual path
-    activeLink: string = 'Projects'; // To control the active state
+   
 
     
   constructor(    
@@ -75,7 +76,7 @@ this.menuItems = [
   {
     label: 'Notifications',
     icon: 'pi pi-bell', // Reuse bell icon
-    command: () => this.navigateToNotifications()
+    command: () => this.router.navigate(['/RemoteSync/associate/notifications'])
   },
   {
     label: 'Settings',
@@ -98,11 +99,7 @@ this.menuItems = [
     // Implement notification logic
     console.log('Notification clicked');
   }
-    // Example function if clicking a link should change the active state
-    setActiveLink(linkName: string): void {
-      this.activeLink = linkName;
-      // Add navigation logic here if needed (e.g., using Angular Router)
-    }
+
     // Load sample notifications based on the provided images
     loadNotifications(): void {
       const now = new Date();
@@ -111,7 +108,7 @@ this.menuItems = [
     
         {
           id: 1,
-          type: 'Report Approval',
+          type: 'report',
           sender: 'Sarah Johnson',
           message: 'approved your quarterly report.',
           timestamp: new Date(now.getTime() - 5 * 60 * 1000), // 5 minutes ago
@@ -120,7 +117,7 @@ this.menuItems = [
         },
         {
           id: 2,
-          type: 'Rotation Update',
+          type: 'rotation',
           sender: 'Michael Chen',
           message: 'assigned you to the Project Aurora task force.',
           timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
@@ -129,15 +126,16 @@ this.menuItems = [
         },
         {
           id: 3,
-          type: 'Rotation Update',
+          type: 'rotation',
           message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
           timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
           isRead: false,
+          sender: 'Elena Petrova',
           // No actions needed for this type often
         },
         {
           id: 4,
-          type: 'Report Approval',
+          type: 'report',
           sender: 'Elena Petrova',
           message: 'commented on your project plan: "Great timeline structure, let\'s discuss the resource allocation tomorrow."',
           timestamp: new Date(now.setDate(now.getDate() - 1)), // Yesterday
@@ -146,22 +144,26 @@ this.menuItems = [
         },
         {
           id: 5,
-          type: 'Rotation Update',
+          type: 'rotation',
           message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
           timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
           isRead: false,
+          sender: 'Elena Petrova',
         
         },
         // Add more notifications as needed for testing scroll
          {
           id: 6,
-          type: 'Rotation Update',
+          type: 'rotation',
           message: 'Password policy updated. Please review the new requirements.',
           timestamp: new Date(now.setDate(now.getDate() - 3)), // 3 days ago
           isRead: true,
+          sender: 'Elena Petrova',
         },
-      ]; // Sort newest first
+      ];
+     
     }
+  
     navigateToNotifications(): void {
       console.log('Navigate to Notifications page/view triggered from user menu.');
       // Implement actual navigation logic

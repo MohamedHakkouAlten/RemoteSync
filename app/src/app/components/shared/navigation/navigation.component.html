@@ -25,7 +25,7 @@
 </header>
 -->
   <!-- header -->  
-  <nav class="bg-white w-full border-b sticky top-0 z-20 border-gray-200 px-4 sm:px-6 py-3">
+  <nav class="bg-white w-full border-b  border-gray-200 px-4 sm:px-6 py-3">
     <div class="flex items-center justify-between">
   
       <!-- Left Side: Logo and Brand Name -->
@@ -37,47 +37,46 @@
       <!-- Center-Left: Navigation Links -->
       <div class="hidden md:flex items-center space-x-8 ml-10">
         <a
-          href="#"
-          (click)="setActiveLink('Dashboard'); $event.preventDefault()"
-          class="py-2 text-sm font-medium transition-colors duration-150"
+       
+       
+          routerLink="/RemoteSync/rc/dashboard"
+          routerLinkActive= 'text-primary border-b-2 border-primary '
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
           style="font-family: inter;"
-          [ngClass]="{
-            'text-primary border-b-2 border-primary': activeLink === 'Dashboard',
-            'text-gray-500 hover:text-gray-800': activeLink !== 'Dashboard'
-          }">
+          >
           Dashboard
         </a>
         <a
-          href="#"
-          (click)="setActiveLink('Calendar'); $event.preventDefault()"
-          class="py-2 text-sm font-medium transition-colors duration-150"
+        routerLink="/RemoteSync/rc/calendar"
+        routerLinkActive= 'text-primary border-b-2 border-primary '
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
+         
+
           style="font-family: inter;"
-          [ngClass]="{
-            'text-primary border-b-2 border-primary': activeLink === 'Calendar',
-            'text-gray-500 hover:text-gray-800': activeLink !== 'Calendar'
-          }">
+          >
           Calendar
         </a>
         <a
-          href="#"
-          (click)="setActiveLink('Projects'); $event.preventDefault()"
-          class="py-2 text-sm font-medium transition-colors duration-150"
+        routerLink="/"
+        routerLinkActive= 'text-primary border-b-2 border-primary '
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
+          
+          
           style="font-family: inter;"
-          [ngClass]="{
-            'text-primary border-b-2 border-primary': activeLink === 'Projects',
-            'text-gray-500 hover:text-gray-800': activeLink !== 'Projects'
-          }">
+         >
           Projects
         </a>
         <a
-          href="#"
-          (click)="setActiveLink('Reports'); $event.preventDefault()"
-          class="py-2 text-sm font-medium transition-colors duration-150"
+        routerLink="/"
+        routerLinkActive= 'text-primary border-b-2 border-primary '
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
+          
           style="font-family: inter;"
-          [ngClass]="{
-            'text-primary border-b-2 border-primary': activeLink === 'Reports',
-            'text-gray-500 hover:text-gray-800': activeLink !== 'Reports'
-          }">
+         >
           Reports
         </a>
       </div>
@@ -86,8 +85,9 @@
 
       
        
-  <div class="flex justify-center items-center gap-x-1">
+  <div   class="flex justify-center items-center gap-x-1">
         <!-- User Avatar (PrimeNG) -->
+        <a class="flex gap-x-1 items-center" routerLink="/RemoteSync/profile">
         <p-avatar
           image="assets/images/avatar.png"
           size="normal"
@@ -97,8 +97,10 @@
   
         <!-- User Name -->
         <span class="hidden sm:block text-sm font-medium text-gray-700">{{ userName }}</span>
+      </a>
              <!-- Dropdown Arrow (SVG Example) -->
              <div class="card flex justify-center">
+          
              <p-menu
              #userMenu
              [model]="menuItems"
@@ -108,18 +110,20 @@
              [baseZIndex]="1001" 
              inputId="user_menu_id" 
            ></p-menu>
+          
            <p-button (click)="userMenu.toggle($event)"   styleClass="!bg-transparent !border-0 "  >
+       
             <i
       class="pi" 
       [ngClass]="{
         'pi-angle-down': !userMenu.visible, 
         'pi-angle-up': userMenu.visible   
       }"
-      style="color: #6a7282 !important; font-size: 10px; vertical-align: middle;" 
+      style="color: #6a7282 !important; font-size: 14px; vertical-align: middle;" 
       ></i>
            </p-button>
           </div>
-    
+   
      <!-- Notification Bell Icon (SVG Example) -->
      <p-overlaybadge (click)="togglePanel($event)" class="small-overlay-badge pt-2"   *ngIf="unreadCount > 0"
       [value]="unreadCount"
@@ -127,7 +131,7 @@
       <i class="pi pi-bell "  style="font-size: 20px;color: #6a7282;"></i>
   </p-overlaybadge>
   
-      </div>
+</div>
     </div>
   </nav>
   <!-- PrimeNG Overlay Panel -->
@@ -171,87 +175,72 @@
           <!-- Iterate over notifications -->
           <div
             *ngFor="let notification of notifications; let isLast = last"
-            class="flex items-start p-2 border-l-3 !border-b-0 border-primary hover:bg-gray-100 transition duration-150 ease-in-out"
-            [class.border-b]="!isLast"
-            [class.border-gray-100]="!isLast"
-            [class.bg-[#ac997117]]="!notification.isRead" 
-            [class.opacity-100]="notification.isRead" 
+            class="flex items-start p-2  !border-1   border-gray-200 hover:bg-gray-100 transition duration-150 ease-in-out"
+            [class.!border-l-primary]="!notification.isRead"
+            [class.!border-l-3]="!notification.isRead"
+
+           
+  
           >
             <!-- Unread Indicator Dot -->
 
   
             <!-- Notification Content -->
-            <div class="flex-grow flex flex-col gap-y-3">
-
-              <div class="flex flex-col gap-y-2">
+             <div class="flex w-full gap-x-4  ">
+              <div class="flex-shrink-0 w-8 h-8 mt-2 rounded-full flex items-center justify-center"
+              [ngClass]="{
+                 'bg-amber-100': notification.type === 'report',
+                 'bg-teal-100': notification.type === 'rotation',
+                 'bg-purple-100': notification.type === 'general'
+              }">
+             <!-- Icon -->
+             <ng-container [ngSwitch]="notification.type">
+                 <i *ngSwitchCase="'report'"   class="text-lg pi pi-file text-amber-600"></i>
+                 <i *ngSwitchCase="'rotation'" class="text-lg pi pi-clock text-teal-600"></i>
+                 <i *ngSwitchCase="'general'"  class="text-lg pi pi-info-circle text-purple-600"></i>
+                 <!-- Optional: Add a default case if notification.type could be something else -->
+                 <i *ngSwitchDefault class="text-lg pi pi-question-circle text-gray-500"></i> <!-- Example default -->
+             </ng-container>
+         </div>
+            <div class=" !w-full flex flex-col ">
+            
+              <div class="flex flex-col ">
               <div class="flex justify-between  items-baseline mb-1">
                 <!-- Type/Title -->
                 <span class="font-semibold text-sm text-gray-700">{{ notification.type }}</span>
                 <!-- Timestamp -->
                 <span class="text-xs text-gray-500">{{ getRelativeTime(notification.timestamp) }}</span>
               </div>
-  
+                <!-- Sender -->
+                <div class="flex items-center space-x-1.5 mb-1.5">
+                  <p-avatar [label]="notification.sender!.charAt(0).toUpperCase()+notification.sender!.split(' ')[1].charAt(0).toUpperCase()" shape="circle" styleClass="text-white !text-[10px] !pt-0.5 !w-7 !h-7"></p-avatar>
+                  <span class="text-xs text-gray-700">{{ notification.sender }}</span>
+             </div>
               <!-- Message Body -->
-              <p class="text-sm text-gray-600 leading-snug">
-                <strong *ngIf="notification.sender" class="font-medium text-amber-700">{{ notification.sender }}</strong>
+              <p class="text-[12px] text-gray-600 leading-snug">
+          
                 {{ notification.message }}
               </p>
+                 <div class="flex mt-2 gap-x-2 ">
+              <button *ngIf="notification.type === 'report'" pButton type="button" label="View Calendar"  icon="pi pi-calendar"  style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-7 !px-2 "></button>
+              <button *ngIf="notification.type === 'rotation'" pButton type="button" label="View Report" icon="pi pi-file-import"style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-7 !px-2 "  ></button>
+              <button pButton type="button" label="Dismiss" class="!text-[12px] !border-0 !h-7 !px-2 !rounded-1 !text-[#374151] !bg-[#f3f4f6]"  style="border-radius: 3px;" (click)="handleAction(notification,'dismiss')"></button>
             </div>
-              <!-- Action Buttons -->
-               @if (notification.type=='Rotation Update') {
-              <div   class="mt-5 w-full flex ">
-                <button
-                (click)="handleAction(notification,'rapport')"
-                  label="View Report"                
-                  class="flex-1/2 text-[13px] cursor-pointer font-medium rounded-[2px] text-white p-1 px-2 gap-x-2 flex justify-center items-center e bg-primary  rounded-1 e"
-                >
-           <h1 class="underline underline-offset-2">  View Report</h1> <i class="pi pi-arrow-up-right" style="font-size: 14px;"></i>
-              </button>
-
-              <button
-              *ngIf="!notification.isRead"
-              (click)="handleAction(notification,'dismiss')"
-              label="View Report"                
-              class=" text-[13px] flex-1/2  cursor-pointer font-medium border-1 border-gray-300  px-2 rounded-[2px] text-gray-400 p-1 flex justify-center items-center e bg-transparent   e"
-            >
-            Dismiss
-          </button>
+          </div>
              
             </div>
-          }
-          @else {
-         
-            <div   class="mt-5 w-full flex ">
-              <button
-              (click)="handleAction(notification,'rapport')"
-                label="View Report"                
-                class="flex-1/2 text-[13px] cursor-pointer font-medium rounded-[2px] text-white p-1 px-2 gap-x-2 flex justify-center items-center e bg-primary  rounded-1 e"
-              >
-         <h1 class="underline underline-offset-2">  View Calendar</h1> <i class="pi pi-arrow-up-right" style="font-size: 14px;"></i>
-            </button>
-
-            <button
-            *ngIf="!notification.isRead"
-            (click)="handleAction(notification,'dismiss')"
-            label="View Report"                
-            class=" text-[13px] flex-1/2  cursor-pointer font-medium border-1 border-gray-300  px-2 rounded-[2px] text-gray-400 p-1 flex justify-center items-center e bg-transparent   e"
-          >
-          Dismiss
-        </button>
-      </div>
-      }
-            </div>
+             </div>
           </div>
         </ng-container>
       </div>
   
       <!-- Footer -->
-      <div class="p-3 border-t w-full border-gray-200 text-center">
+      <div class="p-2 border-t w-full border-gray-200 text-center">
         <button
           (click)="viewAllNotifications()"
-          class="text-base font-medium text-primary items-center flex justify-start w-full gap-x-2 cursor-pointer hover:text-amber-800 focus:outline-none"
+          class="text-sm font-medium text-primary items-center flex justify-end w-full gap-x-2 cursor-pointer hover:text-amber-800 focus:outline-none"
         >
-      <h1 class=" underline underline-offset-2">View All notifications</h1> 
+      <h1 class=" underline underline-offset-2">View All notifications</h1> <i class="pi pi-arrow-up-right pt-0.5" ></i>
         </button>
       </div>
     </div>

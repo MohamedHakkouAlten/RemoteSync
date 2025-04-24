@@ -1,0 +1,173 @@
+/* src/app/rotation-schedule/rotation-schedule.component.css */
+
+/*
+ * Using :host ::ng-deep to override PrimeNG styles locally for this component.
+ * This pierces Angular's view encapsulation. Use with caution.
+ * Using standard CSS properties instead of @apply.
+ * Color values (rgb/hex) are based on default Tailwind colors - adjust if your theme differs.
+ */
+
+
+  /* Ensure dropdown panel items also look okay (optional styling) */
+  /* You might need to style .p-dropdown-panel .p-dropdown-item etc. if needed */
+  
+  
+  /* --- Ensure status indicator grid cells have consistent height --- */
+  :host ::ng-deep .grid .flex.justify-center.items-center {
+     min-height: 40px; /* Example fixed height */
+  }
+  
+  /* --- Calendar Navigation Buttons (Optional) --- */
+  :host ::ng-deep .p-button.p-button-text.p-button-secondary {
+      color: rgb(75 85 99); /* Equivalent to text-gray-600 */
+  }
+  :host ::ng-deep .p-button.p-button-text.p-button-secondary:not(.p-disabled):hover {
+      background-color: rgb(243 244 246 / 0.5); /* Equivalent to bg-gray-100 with some transparency */
+  }
+
+
+
+  /* Base styles for the switch slider */
+:host ::ng-deep .p-toggleswitch .p-toggleswitch-slider {
+    transition: background-color 0.2s ease-in-out;
+    /* Ensure size matches the visual if needed */
+ height:20px; 
+    width: 45px;  /* Adjust as needed */
+  }
+  /* Style the custom handle icon */
+  :host ::ng-deep .p-toggleswitch .p-toggleswitch-slider:before {
+      /* The default handle styling usually works, but you can adjust */
+      /* Ensure the icon inside is centered if needed */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: red;
+      
+  }
+
+  
+  /* Style for 'On-site' status (Orange background) */
+  :host ::ng-deep .p-toggleswitch.status-on-site .p-toggleswitch-slider {
+    background-color: #FFEDD5; /* Equivalent to bg-orange-500 */
+    height: 18px;
+    width:  40px;
+    position: relative;
+   
+    
+  }
+  /* Ensure handle icon is visible on orange */
+  :host ::ng-deep .p-toggleswitch.status-on-site .p-toggleswitch-handle  {
+    
+     background-color:#F97316 !important;
+     height: 19px;
+     width:  19px;
+     right: 0;
+  }
+  
+  
+  /* Style for 'Remote' status (Blue background) */
+  :host ::ng-deep .p-toggleswitch.status-remote .p-toggleswitch-slider {
+    background-color: #DBEAFE; /* Equivalent to bg-blue-500 */
+    height: 18px;
+    width:  40px;
+    position: relative;
+   
+ 
+  }
+  /* Ensure handle icon is visible on blue */
+  :host ::ng-deep .p-toggleswitch.status-remote .p-toggleswitch-handle {
+    background-color:#3B82F6 !important;
+    height: 19px;
+    width:  19px;
+    left: 0;
+
+   
+  }
+  
+  
+  /* Style for 'Off' status (Gray background) */
+  :host ::ng-deep .p-toggleswitch.status-off .p-toggleswitch-slider {
+    border-color: rgb(220, 222, 224);
+    background-color: white;
+    border-width: 1px;
+    
+     /* Equivalent to bg-gray-300 */
+    height: 18px;
+    width:  40px;
+    position: relative;
+  }
+  /* Ensure handle icon is visible on gray */
+  :host ::ng-deep .p-toggleswitch.status-off .p-toggleswitch-handle {
+
+     background-color:rgb(211, 215, 219) ;
+     height: 16.1px;
+     width:  16.1px;
+     left: 28%;
+     top: 61.12%;
+  }
+  
+  
+  /* Optional: Adjust focus ring */
+  :host ::ng-deep .p-toggleswitch.p-focus .p-toggleswitch-slider {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(59, 130, 246, 0.5); /* Default blue focus */
+  }
+  :host ::ng-deep .p-toggleswitch.status-on-site.p-focus .p-toggleswitch-slider {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(249, 115, 22, 0.5); /* Orange focus */
+  }
+  :host ::ng-deep .p-toggleswitch.status-off.p-focus .p-toggleswitch-slider {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(209, 213, 219, 0.7); /* Gray focus */
+  }
+
+  :host ::ng-deep .p-button-label {
+    font-family: Comfortaa !important;
+  }
+
+
+  :host ::ng-deep .p-autocomplete .p-inputtext {
+border: none !important;
+background-color: var(--color-secondary);
+font-family: Inter;
+font-size: 14px;
+border-radius: 4px !important;
+
+
+  }
+  :host ::ng-deep .p-iconfield .p-inputtext {
+    border: none !important;
+    background-color: var(--color-secondary);
+    font-family: Inter;
+    box-shadow: none !important;
+    border-radius: 4px;
+    
+      }
+  :host ::ng-deep .p-autocomplete .p-inputtext:enabled:focus{
+    border: none !important;
+    background-color: var(--color-secondary) !important;
+    border-color:var(--color-secondary) !important;
+  box-shadow: none !important;
+    
+      }
+    
+
+  :host ::ng-deep .p-autocomplete .p-autocomplete-dropdown {
+    border: none !important;
+background-color: var(--color-secondary);
+color: #6a7282 !important;
+  }
+  :host ::ng-deep .p-icon {
+    width:  12px;
+    height: 12px;
+  }
+
+  :host ::ng-deep .p-select .p-select-label {
+    color: white !important;
+  }
+
+  :host ::ng-deep .p-select .p-select-dropdown  {
+    color: white !important;
+  }
+  :host ::ng-deep .p-select   {
+    box-shadow: none !important;
+  }
+
+
