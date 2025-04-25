@@ -410,14 +410,15 @@
     <!-- ======================================= -->
     <p-dialog
         [(visible)]="displayViewProjectDialog"
-        [showHeader]="false" 
+        [showHeader]="true" 
         [modal]="true"
-        [style]="{ width: '40vw', 'min-width': '450px', height: 'flex' }"
+        [style]="{ width: '40vw', 'min-width': '450px', height: 'flex-y' }"
         class="overflow-y-auto"
         styleClass="view-project-dialog"
         [draggable]="false"
         [resizable]="false"
         (onHide)="hideViewProjectDialog()">
+      
 
         <!-- The ng-container still guards the whole view -->
         <ng-container *ngIf="projectToView"         class="overflow-y-auto"
@@ -498,15 +499,7 @@
 
             </div> <!-- End view-card-container -->
 
-             <!-- Footer -->
-             <ng-template pTemplate="footer">
-                <p-button
-                    label="Close"
-                    icon="pi pi-times"
-                    styleClass="p-button-text"
-                    (click)="hideViewProjectDialog()">
-                </p-button>
-            </ng-template>
+          
         </ng-container>
     </p-dialog>
 </div>
