@@ -1,5 +1,5 @@
 
-import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -81,10 +81,55 @@ export class RotationComponent implements OnInit {
 
   // Suggestions array for p-autoComplete
   filteredCollaborators: Collaborator[] = [];
+  private weekClickListeners: Function[] = []; // To store listener cleanup functions
+  selectedWeeks = new Set<string>(); // To keep track of selected weeks (use string key: "year-week")
 
+  constructor(private renderer: Renderer2) { }
+
+  
+  private _datePickerElementRef: ElementRef | undefined;
+  private listenersAttached = false; // Flag to avoid attaching multiple times unnecessarily
+
+  @ViewChild('customDatesPicker', { read: ElementRef }) set datePickerElementRef(elRef: ElementRef | undefined) {
+    // This setter is called when the element reference is resolved or changes.
+    console.log('DatePicker ElementRef Setter Called. Ref:', elRef); // Debug log
+
+    if (elRef && !this.listenersAttached) {
+      // Only setup if we get a valid reference AND haven't set up listeners yet
+      console.log('DatePicker ElementRef is valid, proceeding with setup.');
+      this._datePickerElementRef = elRef;
+      // Use setTimeout here as well, to ensure internal p-datepicker rendering is complete
+      // even after the element itself is available in the DOM.
+      setTimeout(() => {
+        if (this._datePickerElementRef) { // Double-check ref inside timeout
+             console.log('Running setup from setter timeout.');
+             this.setupWeekClickListeners();
+             this.reapplySelectedStyles(); // Apply styles for any pre-selected weeks
+             this.listenersAttached = true; // Mark listeners as attached
+        } else {
+             console.warn('DatePicker ElementRef became undefined before setter timeout completed.');
+        }
+      }, 0);
+    } else if (!elRef) {
+       // Element was removed (e.g., *ngIf became false)
+       console.log('DatePicker ElementRef became undefined (removed from DOM?). Clearing listeners.');
+       this.clearWeekClickListeners();
+       this._datePickerElementRef = undefined;
+       this.listenersAttached = false; // Reset flag
+    } else if (elRef && this.listenersAttached) {
+        // Element ref is already set and listeners were attached.
+        // This might happen on certain change detection cycles. Usually no action needed.
+        // console.log('DatePicker ElementRef setter called, but listeners already attached.');
+    }
+  }
+
+  // Getter is optional, used internally
+  get datePickerElementRef(): ElementRef | undefined {
+    return this._datePickerElementRef;
+  }
   ngOnInit(): void {
-    // Set default end date (e.g., end of year) if needed
-    
+ 
+  
     if (!this.endDate) {
       const today = new Date();
       this.endDate = new Date(today.getFullYear(), 11, 31); // Dec 31st
@@ -95,6 +140,9 @@ export class RotationComponent implements OnInit {
     //   this.selectedCollaborators = [this.collaborators[0], this.collaborators[1]];
     // }
   }
+
+
+  
 
   // --- Methods ---
  // *** NEW: Method for p-autoComplete suggestions ***
@@ -180,5 +228,137 @@ removeCollaborator(collaboratorToRemove: Collaborator): void {
   //   this.customDates = null;
   //   this.selectedCollaborators = [];
   // }
+  onViewChanged(): void {
+    // Use setTimeout to allow the DOM to update before querying
+    setTimeout(() => {
+       if (this.datePickerElementRef) {
+          this.setupWeekClickListeners();
+          this.reapplySelectedStyles(); // Re-apply styles after view change
+       }
+    }, 0);
+  }
+
+  private clearWeekClickListeners(): void {
+    this.weekClickListeners.forEach(removeListener => removeListener());
+    this.weekClickListeners = [];
+  }
+
+  private setupWeekClickListeners(): void {
+    this.clearWeekClickListeners();
+
+    // Check moved inside setup function for safety, called from multiple places
+    if (!this.datePickerElementRef) {
+       console.warn('DatePicker ElementRef not available in setupWeekClickListeners');
+       return;
+    }
+
+    const nativeEl = this.datePickerElementRef.nativeElement;
+    // Robust query: ensure we are inside the datepicker table body
+    const weekNumberCells = nativeEl.querySelectorAll('.p-datepicker-calendar-container .p-datepicker-calendar tbody td.p-datepicker-weeknumber');
+
+    if (weekNumberCells.length === 0) {
+        // This might happen briefly during transitions, log if it persists
+        // console.warn('No week number cells found during setup.');
+    }
+
+    weekNumberCells.forEach((cell: HTMLElement) => {
+      this.renderer.setAttribute(cell, 'tabindex', '0');
+      this.renderer.setAttribute(cell, 'role', 'button');
+      this.renderer.setStyle(cell, 'cursor', 'pointer'); // Ensure cursor style
+
+      const removeClickListener = this.renderer.listen(cell, 'click', (event) => {
+        this.handleWeekClick(event, cell);
+      });
+      this.weekClickListeners.push(removeClickListener);
+
+       const removeKeyListener = this.renderer.listen(cell, 'keydown', (event: KeyboardEvent) => {
+         if (event.key === 'Enter' || event.key === ' ') {
+           event.preventDefault();
+           this.handleWeekClick(event, cell);
+         }
+       });
+      this.weekClickListeners.push(removeKeyListener);
+    });
+  }
+
+  private handleWeekClick(event: Event, cell: HTMLElement): void {
+    const weekNumberText = cell.textContent?.trim();
+    const year = this.findYearForWeekCell(cell);
+
+    if (weekNumberText && year !== null) {
+      const weekNumber = parseInt(weekNumberText, 10);
+      const weekKey = `${year}-${weekNumber}`;
+
+      if (this.selectedWeeks.has(weekKey)) {
+        this.selectedWeeks.delete(weekKey);
+        this.renderer.removeClass(cell, 'selected-week');
+        this.renderer.removeAttribute(cell, 'aria-pressed');
+      } else {
+        // Optional: Clear previous selection if only one week should be selected
+        // this.clearAllWeekSelections();
+        this.selectedWeeks.add(weekKey);
+        this.renderer.addClass(cell, 'selected-week');
+        this.renderer.setAttribute(cell, 'aria-pressed', 'true');
+      }
+      console.log('Selected Weeks:', Array.from(this.selectedWeeks));
+    }
+  }
+
+  private findYearForWeekCell(weekCell: HTMLElement): number | null {
+     let currentElement: HTMLElement | null = weekCell;
+     // Go up until we find the table container for the specific month's calendar
+     while (currentElement && !currentElement.classList.contains('p-datepicker-calendar-container')) {
+         currentElement = currentElement.parentElement;
+     }
+
+     if (currentElement) {
+         const monthElement = currentElement.querySelector('.p-datepicker-month');
+         const yearElement = currentElement.querySelector('.p-datepicker-year');
+         if (yearElement && yearElement.textContent) {
+             const year = parseInt(yearElement.textContent, 10);
+             const weekNumber = parseInt(weekCell.textContent || '0', 10);
+             const monthText = monthElement?.textContent?.toLowerCase() || '';
+
+             // Handle ISO week date edge cases (Week 1 in Dec, Week 52/53 in Jan)
+             if (weekNumber >= 52 && monthText.includes('jan')) {
+                 return year - 1; // Week belongs to the previous year
+             }
+             if (weekNumber === 1 && monthText.includes('dec')) {
+                 return year + 1; // Week belongs to the next year
+             }
+             return year; // Default case
+         }
+     }
+    console.warn("Could not determine year for week cell reliably.");
+    const fallbackYearEl = this.datePickerElementRef?.nativeElement?.querySelector('.p-datepicker-year');
+    return fallbackYearEl ? parseInt(fallbackYearEl.textContent || '0', 10) : new Date().getFullYear();
+  }
+
+  private reapplySelectedStyles(): void {
+      if (!this.datePickerElementRef) return;
+      const nativeEl = this.datePickerElementRef.nativeElement;
+      const weekNumberCells = nativeEl.querySelectorAll('.p-datepicker-calendar-container .p-datepicker-calendar tbody td.p-datepicker-weeknumber');
+
+      weekNumberCells.forEach((cell: HTMLElement) => {
+          const weekNumberText = cell.textContent?.trim();
+          const year = this.findYearForWeekCell(cell); // Use the same logic to find year
+          if (weekNumberText && year !== null) {
+              const weekNumber = parseInt(weekNumberText, 10);
+              const weekKey = `${year}-${weekNumber}`;
+              if (this.selectedWeeks.has(weekKey)) {
+                  this.renderer.addClass(cell, 'selected-week');
+                  this.renderer.setAttribute(cell, 'aria-pressed', 'true');
+              } else {
+                  // Ensure deselected state is clean
+                  this.renderer.removeClass(cell, 'selected-week');
+                  this.renderer.removeAttribute(cell, 'aria-pressed');
+              }
+          } else {
+               // Ensure clean state if year/week couldn't be determined
+               this.renderer.removeClass(cell, 'selected-week');
+               this.renderer.removeAttribute(cell, 'aria-pressed');
+          }
+      });
+  }
 
 }
