@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { LoginRequestDto } from '../dto/auth.dto';
 import { LoginResponseDTO } from '../dto/login-response.dto';
+import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
 
 // Simple interface for basic user info state
 interface UserInfo {
@@ -73,9 +74,9 @@ export class AuthService {
    * Login user using credentials.
    */
   login(credentials: LoginRequestDto): Observable<LoginResponseDTO> {
-    return this.http.post<any>(`${this.API_URL}/login`, credentials) // Expect wrapper object
+    return this.http.post<ResponseWrapperDto<LoginResponseDTO>>(`${this.API_URL}/login`, credentials) // Expect wrapper object
       .pipe(
-        map(response => {
+        map((response  )=> {
           // Adapt this based on your *actual* backend response structure
           if (response && response.status === 'success' && response.data) {
              // Assuming LoginResponseDTO is the type of response.data

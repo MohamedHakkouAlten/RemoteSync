@@ -89,3 +89,30 @@
 :host ::ng-deep .p-select .p-select-dropdown {
     color: #364153 !important;
 }
+/* Add to your component's CSS file or a global stylesheet */
+
+/* Style for the week number cell itself to indicate clickability */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out; /* Smooth transition */
+  border-radius: 4px; /* Optional: Rounded corners */
+  text-align: center; /* Ensure text is centered */
+}
+
+/* Style for when the week number cell is hovered (optional) */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:hover {
+  background-color: #e9ecef; /* Light background on hover */
+}
+
+/* Style for the SELECTED week number cell */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber.selected-week {
+  background-color: #007bff; /* Example: Bootstrap primary blue */
+  color: white; /* White text for contrast */
+  font-weight: bold;
+}
+
+/* Style for focus outline (accessibility) */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
+}

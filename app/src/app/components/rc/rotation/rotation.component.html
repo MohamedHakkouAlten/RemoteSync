@@ -9,6 +9,7 @@
   contentStyleClass="h-[var(--dialog-content-height-xs)] md:h-[var(--dialog-content-height-md)] lg:h-[var(--dialog-content-height-lg)] overflow-y-auto"
   (onHide)="onDialogHide()"
   [dismissableMask]="true"
+  
  
   >
   <div class="p-3 space-y-6  bg-white">
@@ -222,6 +223,9 @@
                     [maxDate]="endDate"
                     panelStyleClass="my-compact-datepicker"
                     #customDatesModel="ngModel"
+                    #customDatesPicker 
+                    (onMonthChange)="onViewChanged()" 
+                    (onYearChange)="onViewChanged()">  
                     [required]="true">
                 </p-datepicker>
            
@@ -235,7 +239,7 @@
   </div>
 
   <!-- Footer Actions -->
-  <ng-template pTemplate="footer">
+  <ng-template #footer>
     <div class="flex justify-end gap-4 w-full px-6 pt-4  border-t border-gray-200">
        <button
             style="font-family: inter;"
