@@ -1,0 +1,144 @@
+/* notifications.component.css */
+
+/* Style the card for fixed height and flex layout */
+:host ::ng-deep .notification-card-fixed-height {
+    height: 84vh;
+    max-height: 85vh;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+
+  }
+  
+  /* Ensure card body/content fill height and manage flex */
+  :host ::ng-deep .notification-card-fixed-height .p-card-body,
+  :host ::ng-deep .notification-card-fixed-height .p-card-content {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden;
+  }
+  
+  /* --- New p-tabs Styling --- */
+  :host ::ng-deep .notification-card-fixed-height p-tabs {
+    /* Tabs component itself might need flex settings if not default */
+     display: block; /* Or flex? Check default */
+     flex-shrink: 0; /* Prevent tab header area from shrinking */
+  }
+  
+  :host ::ng-deep .notification-card-fixed-height p-tablist {
+    /* Style the container for tab headers */
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 0 0.75rem !important; /* Match px-3 */
+    display: flex !important; /* Use flex for alignment */
+  }
+  
+  :host ::ng-deep .notification-card-fixed-height p-tab {
+    /* Style individual tab header */
+    border: none !important;
+    background: none !important;
+    padding: 0.5rem 0.75rem !important; /* Reduced padding */
+    margin-right: 0.5rem !important; /* Spacing */
+    color: #747b85 !important; /* gray-600 */
+    border-bottom: 2px solid transparent !important; /* Reserve space */
+    transition: color 0.2s, border-color 0.2s !important;
+    cursor: pointer;
+    font-weight: 400 !important;
+    font-size: small;
+  }
+  :host ::ng-deep .notification-card-fixed-height p-tab:focus {
+     outline: none !important;
+     box-shadow: none !important; /* Remove focus ring if desired */
+  }
+  
+  :host ::ng-deep .notification-card-fixed-height p-tab[data-p-active="true"] {
+    /* Style the ACTIVE tab header */
+    border-bottom-color: var(--color-primary) !important; /* orange-500 */
+    color: var(--color-primary) !important; /* orange-600 */
+    font-weight: 600; /* Make active tab bold */
+  }
+  
+  :host ::ng-deep .notification-card-fixed-height p-tab:not([data-p-active="true"]):hover {
+    /* Style tab header on hover (if not active) */
+     color: var(--color-primary) !important;
+     border-bottom-color: #fed7aa !important; /* Lighter orange */
+  }
+  
+  /* Adjust badge position/size within tab if needed */
+  :host ::ng-deep .notification-card-fixed-height p-tab .p-badge {
+      /* Defaults are usually okay, adjust if necessary */
+      /* e.g., transform: scale(0.8) translateY(-2px); */
+    height: 18px !important;
+    width:  18px !important;
+    font-size: 10px !important;
+    min-width: 10px;
+    display: flex;
+    justify-content: center;
+    background: var(--color-primary);
+    align-items: center;
+
+  }
+  
+  
+  /* Style the scrollable list area */
+  .notification-list-scrollable {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #c5c5c5 #f1f1f1;
+  }
+  .notification-list-scrollable::-webkit-scrollbar { width: 6px; }
+  .notification-list-scrollable::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+  .notification-list-scrollable::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 3px; }
+  .notification-list-scrollable::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+  
+  /* Unread item style */
+  .notification-item.unread {
+
+      border-left-width: 3px !important;
+      border-left-style: solid !important;
+      border-left-color: var(--color-primary) !important;
+      border-radius: 0 !important; /* orange-400 */
+  }
+  
+  /* Smaller Avatar Text */
+  :host ::ng-deep .p-avatar.w-5.h-5 .p-avatar-text {
+      font-size: 0.65rem !important;
+      line-height: 1.25rem !important;
+  }
+  
+  /* Dismiss Button Style */
+  .dismiss-button {
+      background-color: #f3f4f6 !important; /* bg-gray-100 */
+      border-color: transparent !important;
+      color: #374151 !important; /* text-gray-700 */
+  }
+  .dismiss-button:enabled:hover {
+      background-color: #e5e7eb !important; /* bg-gray-200 */
+  }
+  
+  /* Paginator Styles (Compact) */
+  :host ::ng-deep .paginator-container .p-paginator {
+      background: none !important; border: none !important;
+      padding: 0.25rem 0 !important;
+  }
+  :host ::ng-deep .paginator-container .p-paginator .p-paginator-element {
+      min-width: 2.25rem !important; height: 2.25rem !important;
+      box-shadow: none !important;
+  }
+  :host ::ng-deep .paginator-container .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+      background-color: var(--color-primary) !important; border-color: var(--color-primary) !important; color: white !important;
+  }
+  :host ::ng-deep .paginator-container .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover {
+      background-color: #fed7aa !important; color: #9a3412 !important;
+  }
+  :host ::ng-deep .paginator-container .p-paginator .p-dropdown {
+     height: 2.25rem !important;
+  }
+  :host ::ng-deep .paginator-container .p-paginator .p-dropdown .p-dropdown-label {
+      font-size: 0.8rem !important;
+  }

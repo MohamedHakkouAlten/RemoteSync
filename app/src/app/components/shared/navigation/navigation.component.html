@@ -1,0 +1,100 @@
+<!--<header class="dashboard-header">
+  <div class="logo-container">
+    <img src="assets/alten-logo.png" alt="ALTEN Logo Graphic" class="logo-image">
+    <div class="logo-text-wrapper">
+      <span class="logo-text-sub">RemoteSync</span>
+    </div>
+  </div>
+  
+  <nav class="main-nav">
+    <a routerLink="/RemoteSync/Associate/Dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+    <a routerLink="/RemoteSync/Associate/Project" routerLinkActive="active-link">Projects</a>
+    <a routerLink="/RemoteSync/Associate/Calendar" routerLinkActive="active-link">Calendar</a>
+    <a routerLink="/RemoteSync/Associate/Report" routerLinkActive="active-link">Reports</a>  
+  </nav>
+  <div class="user-info">
+    <button class="icon-button" (click)="onNotificationClick()" title="Notifications">
+      <i class="pi pi-bell"></i>
+    </button>
+    <div class="user-menu">
+      <p-avatar icon="pi pi-user" styleClass="mr-2" shape="circle"></p-avatar>
+      <span class="user-name">{{ userName }}</span>
+      <i class="pi pi-angle-down"></i>
+    </div>
+  </div>
+</header>
+-->
+  <!-- header -->  
+  <nav class="bg-white w-full border-b  border-gray-200 px-4 sm:px-6 py-3">
+    <div class="flex items-center justify-between">
+  
+      <!-- Left Side: Logo and Brand Name -->
+      <div class="flex items-center">
+        <img [src]="logoUrl" alt="RemoteSync Logo" class="h-10 w-auto mr-3">
+        <span style="font-family: Overpass;" class="text-2xl mt-2 font-medium text-gray-800">RemoteSync</span>
+      </div>
+  
+      <!-- Center-Left: Navigation Links -->
+      <div class="hidden md:flex items-center space-x-8 ml-10">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.routerLink"
+          routerLinkActive="text-primary border-b-2 border-primary"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500"
+          style="font-family: inter;"
+        >
+          {{ item.label }}
+        </a>
+      </div>
+  
+      <!-- Right Side: Notifications and User Menu -->
+
+      
+       
+  <div   class="flex justify-center items-center gap-x-1">
+        <!-- User Avatar (PrimeNG) -->
+        <a class="flex gap-x-1 items-center" (click)="navigateToProfile()" style="cursor: pointer;">
+        <p-avatar
+          image="assets/images/avatar.png"
+          size="normal"
+          shape="circle"
+          styleClass="cursor-pointer">
+        </p-avatar>
+  
+        <!-- User Name -->
+        <span class="hidden sm:block text-sm font-medium text-gray-700">{{ userName }}</span>
+      </a>
+             <!-- Dropdown Arrow (SVG Example) -->
+             <div class="card flex justify-center">
+          
+             <p-menu
+             #userMenu
+             [model]="menuItems"
+             [popup]="true"
+             appendTo="body"
+             styleClass="min-w-[180px] !mt-2 shadow-md"
+             [baseZIndex]="1001" 
+             inputId="user_menu_id" 
+           ></p-menu>
+          
+           <p-button (click)="userMenu.toggle($event)"   styleClass="!bg-transparent !border-0 "  >
+       
+            <i
+      class="pi" 
+      [ngClass]="{
+        'pi-angle-down': !userMenu.visible, 
+        'pi-angle-up': userMenu.visible   
+      }"
+      style="color: #6a7282 !important; font-size: 14px; vertical-align: middle;" 
+      ></i>
+           </p-button>
+          </div>
+   
+     <!-- Notification Bell Icon (SVG Example)
+
+   -->
+  <app-notification-panel ></app-notification-panel>
+</div>
+    </div>
+  </nav>

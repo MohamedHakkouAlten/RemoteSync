@@ -1,5 +1,13 @@
 {
     "plugins": {
         "@tailwindcss/postcss": {}
-    }
+    },
+    "theme": {
+        "extend": {
+          "colors": {
+            "custom-yellow": "#FFA500", 
+            "custom-gray": "#6C757D"
+          }
+        }
+      }
 }

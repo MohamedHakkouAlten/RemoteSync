@@ -1,6 +1,5 @@
 package com.alten.remotesync.application.report.record.request;
 
-import com.alten.remotesync.domain.report.enumeration.ReportStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

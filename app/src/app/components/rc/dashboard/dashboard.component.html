@@ -1,0 +1,295 @@
+
+
+
+
+<app-navigation></app-navigation>
+
+<!-- body -->
+<div class="flex w-full z-10  overflow-y-auto ">
+
+<!-- left panel -->
+
+  <aside class="w-[19%] bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen">
+    <!-- Section: Active Projects -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-start">
+        <!-- Bar Chart Icon (SVG Example) -->
+      <i class=" pi pi-chart-bar " style="color:var(--color-primary);font-size: 20px;" ></i>
+        <a href="#" class="text-sm text- text-primary hover:text-orange-600 ">View All</a>
+      </div>
+      <p style="font-family: inter;" class="text-[36px] tracking-wider font-bold text-gray-900">{{ activeProjects }}</p>
+      <p class="text-sm text-gray-500">Active Projects</p>
+    </div>
+  
+    <!-- Section: Completed Projects -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-start">
+        <!-- Check Circle Icon (SVG Example) -->
+        <i class=" pi  pi-check-circle " style="color:var(--color-primary); font-size: 20px;" ></i>
+        <a href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
+      </div>
+      <p style="font-family: inter;"  class="text-[36px] tracking-wider font-bold text-gray-900">{{ completedProjects }}</p>
+      <p class="text-sm text-gray-500">Completed Projects</p>
+    </div>
+  <!-- stats section -->
+   <div class="flex  flex-col gap-5">
+
+    <h3 class="text-base font-bold text-[#111827]">Site Statistics</h3>
+    <!-- Section: Site Statistics -->
+    <div class="space-y-3 ">
+   
+      <div class="bg-[#F9FAFB] p-4 rounded-md space-y-2">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600 text-sm">Total Sites</span>
+          <span class="font-semibold text-[16px] text-gray-900">{{ totalSites }}</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600 text-sm">Total Capacity</span>
+          <span class="font-semibold text-[16px] text-gray-900">{{ totalCapacity }}</span>
+        </div>
+      </div>
+    </div>
+  
+     <!-- Section: Worker Statistics -->
+     <div class="space-y-2">
+       <!-- Title could be added if desired: <h3 class="text-base font-semibold text-gray-800">Worker Distribution</h3> -->
+      <div class="bg-[#F9FAFB] p-4 rounded-md space-y-2">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">Remote Workers</span>
+          <span class="font-semibold text-base text-[#2563EB]">{{ remoteWorkersPercent }}%</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-600">On-site Workers</span>
+          <span class="font-semibold text-base text-[#22C55E]">{{ onsiteWorkersPercent }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Section: Highest Duration -->
+    <div class="space-y-4 ">
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-semibold text-gray-800">Highest Duration</h3>
+        <a href="#" class="text-sm text-primary hover:text-orange-600 ">Details</a>
+      </div>
+      <div class="flex flex-col gap-y-2">
+      <p class="text-sm text-gray-500">{{ highestDurationProject }}</p>
+      <!-- PrimeNG Progress Bar -->
+      <p-progressBar
+        [value]="highestDurationValue"
+        [showValue]="false"
+        color="var(--color-primary)"
+        styleClass="!h-2 custom-progress-bar "
+        >
+        <!-- styleClass used for custom styling -->
+      </p-progressBar>
+    </div>
+    </div>
+  
+    <!-- Section: Largest Team -->
+    <div class="space-y-5">
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-semibold text-gray-800">Largest Team</h3>
+        <a href="#" class="text-sm text-primary hover:text-orange-600 ">Details</a>
+      </div>
+      <div class="flex flex-col gap-y-2">
+      <p class="text-sm text-gray-500">{{ largestTeamProject }}</p>
+      <p class="text-xs text-gray-500">{{ largestTeamMembersCount }} members</p>
+      <!-- PrimeNG Avatar Group -->
+      <p-avatarGroup styleClass=" ml-2 custom-avatar-group">
+          <p-avatar
+            *ngFor="let avatarUrl of teamAvatars"
+            [image]="avatarUrl"
+            size="normal"
+            shape="circle">
+          </p-avatar>
+          <!-- Overflow indicator -->
+          <p-avatar
+            *ngIf="overflowAvatarsCount > 0"
+            [label]="'+' + overflowAvatarsCount"
+            size="normal"
+            shape="circle"
+            styleClass="bg-gray-200 text-gray-700 font-semibold">
+            <!-- Custom styling for the overflow avatar -->
+           </p-avatar>
+      </p-avatarGroup>
+    </div>
+    </div>
+  
+  </aside>
+
+  <!-- Calendar-->
+
+  <div class="p-6 md:p-8  w-[60%] space-y-6"> <!-- Add padding and vertical spacing -->
+
+    <!-- Header Section -->
+    <div class="flex flex-col  md:flex-row justify-between  md:items-center space-y-4 md:space-y-0">
+      <div class="space-y-1">
+        <h1 class="text-2xl  font-bold text-gray-900">RC Dashboard</h1>
+        <p class="text-sm text-gray-500">Welcome, {{ welcomeName }}</p>
+      </div>
+      <div class="flex space-x-4">
+        <p-button
+          label="View Calendar"
+          icon="pi pi-calendar "
+         
+          
+          styleClass=" !h-9  gray-btn !bg-[#F3F4F6] !border-0 !text-sm !px-5 "
+          [style]="{'color': '#374151','text-color':'red !important'}">
+          <!-- Using inline style for specific gray button look if needed -->
+        </p-button>
+        <p-button
+          label="Add New Project"
+          styleClass="!border-0 orange-btn !h-9 !text-white !text-sm !bg-primary !px-5 "
+       >
+           <!-- Use p-button-warning or inline style for orange -->
+        </p-button>
+      </div>
+    </div>
+  
+    <!-- Table Section -->
+     <div class="space-y-2">
+     <div class="flex flex-row gap-x-7 justify-end">
+      <span class="flex  justify-center items-center">
+        <span class="h-2 w-2 bg-[#F97316] rounded-full mr-4"
+             >
+        </span>
+        <span class="text-sm text-gray-700">On-site</span>
+  
+      </span>
+      <span class="flex  justify-center items-center">
+        <span class="h-2 w-2 bg-[#3B82F6] rounded-full mr-4"
+             >
+        </span>
+        <span class="text-sm text-gray-700">Remote </span>
+  
+      </span>
+      <span class="flex  justify-center items-center">
+        <span class="h-2 w-2 bg-gray-400 rounded-full mr-4"
+             >
+        </span>
+        <span class="text-sm text-gray-700">Off</span>
+  
+      </span>
+     </div>
+    <div class="bg-white border-1 border-gray-200 rounded-lg overflow-hidden">
+      <p-table
+        [value]="tableData"
+        [paginator]="true"
+        [rows]="10"
+        [totalRecords]="totalRecords"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first}-{last} of {totalRecords} entries"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        styleClass="p-datatable-sm custom-table"
+        responsiveLayout="scroll"
+        (onPage)="loadData($event)" [lazy]="true">
+         <!-- Using lazy loading approach -->
+  
+        <ng-template pTemplate="header">
+          <tr >
+            <th class="text-left text-xs font-semibold text-gray-500  tracking-wider py-3 px-4 border-b border-gray-200 ">Name</th>
+            <th class="text-left text-xs font-semibold text-gray-500  tracking-wider py-3 px-4 border-b border-gray-200 ">Project</th>
+            <!-- Dynamic Date Columns -->
+            <th *ngFor="let date of dateColumns" class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider py-3 px-4 border-b border-gray-200 bg-gray-50">
+              {{ date }}
+            </th>
+          </tr>
+        </ng-template>
+  <!--testing new branch -->
+        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+          <tr class="border-b border-gray-200">
+            <td class="py-3 px-4 text-sm text-gray-800 font-medium whitespace-nowrap">
+              <!-- Special styling for Hassan Benjelloun -->
+              <span [innerHTML]="rowData.name === 'Hassan Benjelloun' ? rowData.name.replace(' ', '<br>') : rowData.name"></span>
+            </td>
+            <td class="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{{ rowData.project }}</td>
+            <!-- Dynamic Status Columns -->
+            <td *ngFor="let date of dateColumns; let i = index" class="py-3 px-4 text-sm whitespace-nowrap">
+               <ng-container *ngIf="getStatus(rowData, i) as status">
+                   <span class="flex justify-center items-center">
+                     <span class="h-2 w-6 rounded-full mr-4"
+                           [ngClass]="{
+                             'bg-[#3B82F6]': status === 'Remote',
+                             'bg-[#F97316]': status === 'On-site'
+                           }">
+                     </span>
+               
+                   </span>
+               </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+  
+         <ng-template pTemplate="emptymessage">
+             <tr>
+                 <td [attr.colspan]="2 + dateColumns.length" class="text-center py-4 text-gray-500">
+                     No records found.
+                 </td>
+             </tr>
+         </ng-template>
+  
+         <ng-template pTemplate="paginatorleft">
+             <!-- Custom element to show current page info if needed -->
+             <!-- The built-in currentPageReportTemplate is usually sufficient -->
+         </ng-template>
+  
+         <ng-template pTemplate="paginatorright">
+             <!-- Custom elements on the right side of the paginator if needed -->
+         </ng-template>
+  
+      </p-table>
+    </div>
+  </div>
+  
+  
+
+ 
+  </div>
+   <!-- Recent reports section-->
+   <aside class="w-[21%] bg-white p-6 space-y-6 border-l border-gray-200 min-h-screen">
+    <!-- Section Header -->
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">Pending Requests</h2>
+      <a href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
+    </div>
+  
+    <!-- Requests List -->
+    <div class="space-y-4">
+      <div *ngFor="let request of pendingRequests; "
+           class="bg-white border border-gray-200 rounded-lg p-4 ">
+  
+        <!-- Card Header: Name and Badge -->
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="text-base font-semibold text-gray-800">{{ request.name }}</h3>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-medium"
+                [ngClass]="{
+                  'bg-blue-100 text-blue-700': request.status === 'Remote',
+                  'bg-green-100 text-green-700': request.status === 'On-site'
+                }">
+            {{ request.status }}
+          </span>
+        </div>
+  
+        <!-- Card Body: Date and Reason -->
+        <div class="space-y-1">
+          <div class="flex items-center text-sm text-gray-500">
+            <!-- Clock Icon (SVG Example) -->
+            <svg class="h-4 w-4 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <span>{{ request.dateRange }}</span>
+          </div>
+          <p class="text-sm text-gray-600">{{ request.reason }}</p>
+        </div>
+  
+      </div>
+    </div>
+  
+    <!-- Placeholder if no requests -->
+    <div *ngIf="!pendingRequests || pendingRequests.length === 0" class="text-center text-gray-500 text-sm mt-6">
+      No pending requests.
+    </div>
+  
+  </aside>
+</div>
+

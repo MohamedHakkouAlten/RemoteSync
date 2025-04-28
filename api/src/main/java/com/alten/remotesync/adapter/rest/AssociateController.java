@@ -3,6 +3,8 @@ package com.alten.remotesync.adapter.rest;
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
@@ -36,6 +38,13 @@ public class AssociateController {
         return "HAPPY";
     }
 
+    @GetMapping("/associate/{userId}")
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
+        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(profile, HttpStatus.OK));
+    }
     @PutMapping({"/associate/updateMyProfile", "/rc/updateMyProfile", "/admin/updateMyProfile"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
     public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
@@ -130,6 +139,48 @@ public class AssociateController {
 
     }
 
+    @GetMapping({"/associate/projects/current"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateCurrentProject(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getAssociateCurrentProject(
+                                GlobalDTO.fromUserId(userPrincipal.userId())),
+                        HttpStatus.OK));
+    }
+
+    @GetMapping({"/associate/projects/old"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedGlobalIdDTO pagedGlobalIdDTO) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getAssociateOldProjects(
+                                GlobalDTO.fromUserId(userPrincipal.userId()),
+                                pagedGlobalIdDTO),
+                        HttpStatus.OK));
+    }
+
+    @GetMapping({"/associate/projects/{projectId}"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateProjectDetails(@PathVariable("projectId") String projectId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getProjectDetails(
+                                GlobalDTO.fromProjectId(UUID.fromString(projectId))),
+                        HttpStatus.OK));
+    }
+
+    @GetMapping({"/associate/projects/byLabel"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateSearchProject(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute AssociateProjectByLabelDTO associateProjectByLabelDTO) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getAssociateOldProjectsByLabel(
+                                GlobalDTO.fromUserId(userPrincipal.userId()),
+                                associateProjectByLabelDTO),
+                        HttpStatus.OK));
+
+    }
     @PostMapping({"/associate/report/rotation-request"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
     public ResponseEntity<?> associateRotationRequest(@Valid @RequestBody CreateAssociateReportDTO createAssociateReportDTO) {
@@ -138,15 +189,6 @@ public class AssociateController {
                 .body(ResponseWrapper.success(reportService.createAssociateReport(createAssociateReportDTO),
                         HttpStatus.OK));
 
-    }
-
-    @GetMapping("/associate/{userId}")
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-
-    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
-        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(profile, HttpStatus.OK));
     }
 }
 

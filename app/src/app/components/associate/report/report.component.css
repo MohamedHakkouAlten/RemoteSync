@@ -1,0 +1,404 @@
+/* src/app/components/associate/report/report.component.css */
+
+/* ============================
+   Layout & Container
+   ============================ */
+   :host {
+    display: block;
+    background-color: #f8f9fa; /* Light background for the whole page */
+    min-height: calc(100vh - 60px); /* Full height minus header height */
+  }
+  
+  .report-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure layout takes full viewport height */
+  }
+  
+  .report-container {
+    padding: 1.5rem 2rem; /* Standard padding */
+    flex-grow: 1;
+    max-width: 1200px; /* Optional: Constrain max width */
+    margin: 0 auto; /* Center content */
+    width: 100%;
+  }
+  
+  .report-header h1 {
+    font-size: 1.75rem; /* Slightly smaller than dashboard */
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* ============================
+     Filter Bar
+     ============================ */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: center;
+  }
+  
+  .search-input {
+    flex-grow: 1; /* Take available space */
+    min-width: 250px; /* Minimum width before wrapping */
+  }
+  
+  /* Ensure PrimeNG input fills the container */
+  :host ::ng-deep .search-input .p-inputtext {
+    width: 100%;
+  }
+  
+  :host ::ng-deep .filter-dropdown .p-dropdown {
+    min-width: 160px;
+    width: auto; /* Allow dropdown to size based on content */
+  }
+  
+  /* Style the create button like the image */
+  :host ::ng-deep .create-button.p-button-warning {
+    background-color: #FF8C00; /* Orange color from image */
+    border-color: #FF8C00;
+    color: #ffffff; /* White text */
+    margin-left: auto; /* Push button to the right */
+  }
+  :host ::ng-deep .create-button.p-button-warning:hover,
+  :host ::ng-deep .create-button.p-button-warning:focus {
+    background-color: #e07b00; /* Darker orange on hover/focus */
+    border-color: #e07b00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.5); /* PrimeNG focus style */
+  }
+  
+  /* ============================
+     Report Grid & Cards
+     ============================ */
+  .report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 1.5rem; /* Spacing between cards */
+  }
+  
+  .report-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push footer to bottom */
+    padding: 1.25rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    min-height: 200px; /* Give cards a minimum height */
+  }
+  
+  .report-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card-content {
+    margin-bottom: 1rem;
+  }
+  
+  .report-title {
+    font-size: 1.05rem; /* Slightly smaller title */
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+    /* Optional: Limit title lines */
+    /* display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; */
+  }
+  
+  .report-type {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+  }
+  
+  .report-type i {
+    font-size: 0.9rem;
+  }
+  
+  .report-description {
+    font-size: 0.875rem;
+    color: #495057;
+    line-height: 1.5;
+    margin-bottom: 0; /* Remove default p margin if any */
+    /* Limit description lines */
+     display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(1.5em * 2); /* Reserve space for 2 lines (adjust em based on font-size) */
+  }
+  
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f3f5;
+    padding-top: 0.75rem;
+    margin-top: auto; /* Crucial to push footer to the bottom */
+  }
+  
+  .report-date {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+  
+  .report-date i {
+    font-size: 0.9rem;
+  }
+  
+  /* Status Badge Styling using p-tag severities */
+  :host ::ng-deep .p-tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem !important; /* Fine-tune padding */
+    font-weight: 500;
+  }
+  
+  /* Customizing p-tag colors slightly to match image better */
+  /* Accepted (Green) - Default 'success' is fine */
+  :host ::ng-deep .p-tag.p-tag-success { background-color: #DCFCE7; color: #166534; }
+  
+  /* Pending (Orange) - Using 'warn' */
+  :host ::ng-deep .p-tag.p-tag-warn { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;}
+  
+  /* Rejected (Red) - Default 'danger' is fine */
+  :host ::ng-deep .p-tag.p-tag-danger  { background-color: #FEE2E2; color: #991B1B; }
+  
+  /* In review (Grey) - Using 'info' or 'secondary' */
+  :host ::ng-deep .p-tag.p-tag-info    { background-color: #E5E7EB; color: #374151; } /* Using grey colors */
+  
+  
+  /* ============================
+     Pagination & No Reports
+     ============================ */
+  .pagination-container {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Style Paginator elements */
+  :host ::ng-deep .p-paginator {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+  }
+  
+  :host ::ng-deep .p-paginator .p-paginator-page,
+  :host ::ng-deep .p-paginator .p-paginator-first,
+  :host ::ng-deep .p-paginator .p-paginator-prev,
+  :host ::ng-deep .p-paginator .p-paginator-next,
+  :host ::ng-deep .p-paginator .p-paginator-last {
+      min-width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      margin: 0 2px;
+  }
+  :host ::ng-deep .p-paginator .p-paginator-page.p-highlight {
+      background-color: #FF8C00; /* Orange */
+      border-color: #FF8C00;
+      color: white;
+  }
+  :host ::ng-deep .p-paginator .p-dropdown {
+      height: 2.5rem;
+      margin: 0 0.5rem;
+  }
+  
+  
+  .no-reports-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+    font-size: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-top: 1.5rem; /* Add margin if grid is empty */
+  }
+  
+  
+  /* ============================
+     Responsive Adjustments
+     ============================ */
+  @media (max-width: 768px) {
+    .report-container {
+      padding: 1.5rem 1rem; /* Reduce padding */
+    }
+    .report-header h1 {
+      font-size: 1.5rem;
+    }
+    .filter-bar {
+      flex-direction: column; /* Stack filters vertically */
+      align-items: stretch; /* Make items full width */
+    }
+    .search-input,
+    :host ::ng-deep .filter-dropdown .p-dropdown,
+    .create-button {
+      width: 100%; /* Full width on small screens */
+      min-width: unset;
+      margin-left: 0; /* Reset margin for button */
+    }
+     .create-button {
+        order: -1; /* Move create button to top on mobile */
+        margin-bottom: 1rem;
+     }
+    .report-grid {
+      grid-template-columns: 1fr; /* Single column */
+    }
+  
+    /* Adjust dialog width on smaller screens */
+    :host ::ng-deep .p-dialog {
+      width: 90vw !important;
+      min-width: unset !important;
+    }
+  }
+  
+ /* ============================
+   Custom Dialog Styling
+   ============================ */
+
+/* Overall Dialog Container */
+:host ::ng-deep .p-dialog {
+    border-radius: 8px; /* Match card corner radius */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Slightly more pronounced shadow */
+    border: none; /* Remove default border if any */
+  }
+  
+  /* Dialog Header */
+  :host ::ng-deep .p-dialog .p-dialog-header {
+    background-color: #ffffff; /* Keep header white */
+    color: #343a40;
+    padding: 1.25rem 1.5rem; /* Adjust padding */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid #e9ecef; /* Subtle separator line */
+  }
+  
+  :host ::ng-deep .p-dialog .p-dialog-title {
+    font-weight: 600; /* Bold title */
+    font-size: 1.1rem;
+  }
+  
+  /* Dialog Header Icons (e.g., Close Button) */
+  :host ::ng-deep .p-dialog .p-dialog-header-icon {
+    color: #6c757d; /* Grey icon */
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 4px;
+  }
+  :host ::ng-deep .p-dialog .p-dialog-header-icon:hover,
+  :host ::ng-deep .p-dialog .p-dialog-header-icon:focus {
+    color: #343a40; /* Darker on hover */
+    background-color: #f8f9fa; /* Slight background */
+    border-color: transparent;
+    box-shadow: none;
+  }
+  
+  /* Dialog Content Area */
+  :host ::ng-deep .p-dialog .p-dialog-content {
+    background-color: #ffffff;
+    padding: 1.5rem; /* Consistent padding */
+    color: #495057;
+  }
+  
+  /* Input Fields inside the Dialog */
+  :host ::ng-deep .p-dialog .field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4b5563; /* Slightly softer label color */
+    font-size: 0.875rem;
+  }
+  
+ /* src/app/components/associate/report/report.component.css */
+
+/* Find this rule (or similar) */
+:host ::ng-deep .p-dialog .field .p-inputtext,
+:host ::ng-deep .p-dialog .field .p-inputtextarea {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 100%; /* --- THIS IS THE KEY --- */
+  box-sizing: border-box; /* Important: Include padding/border in the 100% width */
+  font-family: inherit;
+  padding: 0.5rem 0.75rem;
+  min-height: 38px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Ensure input and textarea fill container and have consistent padding */
+:host ::ng-deep .p-dialog .field .p-inputtext,
+:host ::ng-deep .p-dialog .field .p-inputtextarea {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  padding: 0.5rem 0.75rem;
+  min-height: 40px; /* Adjust for consistent height with other inputs */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Make sure the textarea is vertically resizable but with a min-height */
+:host ::ng-deep .p-dialog .field .p-inputtextarea {
+  resize: vertical;
+  min-height: 120px; /* Adjust as needed for the textarea's size */
+}
+
+/* Focus styles */
+:host ::ng-deep .p-dialog .field .p-inputtext:enabled:focus,
+:host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:focus {
+  border-color: #FF8C00; /* Orange focus border */
+  box-shadow: 0 0 0 1px rgba(255, 140, 0, 0.5);
+}
+
+  
+  /* Dialog Footer */
+  :host ::ng-deep .p-dialog .p-dialog-footer {
+    background-color: #f8f9fa; /* Light grey footer background */
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  
+  /* Footer Buttons */
+  :host ::ng-deep .p-dialog-footer .p-button-text {
+    color: #6c757d; /* Standard grey for cancel */
+  }
+  :host ::ng-deep .p-dialog-footer .p-button-text:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* Subtle hover */
+  }
+  
+  :host ::ng-deep .p-dialog-footer .p-button-warning {
+    /* Reuse styles from create button if they match */
+    background-color: #FF8C00;
+    border-color: #FF8C00;
+    color: #ffffff;
+  }
+  :host ::ng-deep .p-dialog-footer .p-button-warning:enabled:hover,
+  :host ::ng-deep .p-dialog-footer .p-button-warning:enabled:focus {
+    background-color: #e07b00;
+    border-color: #e07b00;
+    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.5);
+  }
+  
+ 

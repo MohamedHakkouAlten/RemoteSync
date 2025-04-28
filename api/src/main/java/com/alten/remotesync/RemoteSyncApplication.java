@@ -1,5 +1,6 @@
 package com.alten.remotesync;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.alten.remotesync.kernel.utilty.RolePrivileges.DefaultRolePrivileges;
@@ -317,7 +318,7 @@ public class RemoteSyncApplication {
                     .label("CRM System")
                     .titre("Customer Relationship Management System")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(new Date(System.currentTimeMillis() + 90 * 24 * 60 * 60 * 1000L)) // 90 days from now
+                    .deadLine(LocalDateTime.now().plusDays(90)) // 90 days from now
                     .isDeleted(false)
                     .owner(client1)
                     .build();
@@ -326,7 +327,7 @@ public class RemoteSyncApplication {
                     .label("Mobile Banking App")
                     .titre("Next-Gen Mobile Banking Application")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(new Date(System.currentTimeMillis() + 120 * 24 * 60 * 60 * 1000L)) // 120 days from now
+                    .deadLine(LocalDateTime.now().plusDays(120)) // 120 days from now
                     .isDeleted(false)
                     .owner(client2)
                     .build();
@@ -335,7 +336,7 @@ public class RemoteSyncApplication {
                     .label("Patient Portal")
                     .titre("Online Patient Management Portal")
                     .status(ProjectStatus.PENDING)
-                    .deadLine(new Date(System.currentTimeMillis() + 60 * 24 * 60 * 60 * 1000L)) // 60 days from now
+                    .deadLine(LocalDateTime.now().plusDays(60)) // 60 days from now
                     .isDeleted(false)
                     .owner(client3)
                     .build();
@@ -344,7 +345,7 @@ public class RemoteSyncApplication {
                     .label("E-Learning Platform")
                     .titre("Interactive E-Learning Platform")
                     .status(ProjectStatus.COMPLETED)
-                    .deadLine(new Date(System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000L)) // 30 days ago
+                    .deadLine(LocalDateTime.now().plusDays(30)) // 30 days ago
                     .isDeleted(false)
                     .owner(client4)
                     .build();
@@ -353,7 +354,7 @@ public class RemoteSyncApplication {
                     .label("Inventory Management")
                     .titre("Retail Inventory Management System")
                     .status(ProjectStatus.INACTIVE)
-                    .deadLine(new Date(System.currentTimeMillis() + 45 * 24 * 60 * 60 * 1000L)) // 45 days from now
+                    .deadLine(LocalDateTime.now().plusDays(45)) // 45 days from now
                     .isDeleted(false)
                     .owner(client5)
                     .build();
@@ -362,7 +363,7 @@ public class RemoteSyncApplication {
                     .label("Analytics Dashboard")
                     .titre("Business Intelligence Analytics Dashboard")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(new Date(System.currentTimeMillis() + 75 * 24 * 60 * 60 * 1000L)) // 75 days from now
+                    .deadLine(LocalDateTime.now().plusDays(75)) // 75 days from now
                     .isDeleted(false)
                     .owner(client1)
                     .build();

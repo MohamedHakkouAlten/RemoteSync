@@ -2,6 +2,7 @@ package com.alten.remotesync.domain.subFactory.model;
 
 import com.alten.remotesync.domain.factory.model.Factory;
 import com.alten.remotesync.domain.user.model.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -32,5 +33,6 @@ public class SubFactory {
     private Factory factory;
 
     @OneToMany(mappedBy = "subFactory")
+    @JsonBackReference
     private List<User> subFactoryUsers;
 }
