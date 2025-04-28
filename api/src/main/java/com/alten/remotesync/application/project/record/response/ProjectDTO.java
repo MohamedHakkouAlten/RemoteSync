@@ -18,6 +18,7 @@ public record ProjectDTO(
         ProjectStatus status,
 
         Date deadLine,
+        Date startDate,
 
         boolean isDeleted,
 

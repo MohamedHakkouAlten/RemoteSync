@@ -1,10 +1,7 @@
 package com.alten.remotesync.domain.rotation.model;
 
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -26,7 +23,7 @@ public class Rotation {
     private Date startDate;
     private Date endDate;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Date> customDates;
     private int rotationSequence;
 

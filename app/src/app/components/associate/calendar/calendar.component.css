@@ -1,0 +1,114 @@
+/* Add specific styles here that are complex or repetitive for Tailwind */
+/* Or override PrimeNG component styles if necessary */
+
+:host {
+    display: block; /* Ensure component takes up space */
+}
+
+/* General Day Cell Styling */
+.day-cell {
+    transition: background-color 0.15s ease-in-out;
+}
+.day-cell.other-month {
+    cursor: default; /* No pointer on non-current month days */
+}
+
+/* Month View Specifics */
+.month-grid {
+    /* Borders are now handled on individual cells for consistency */
+}
+.month-day-cell {
+    /* Adjust min-height in HTML if needed */
+}
+.month-day-cell.other-month {
+     color: #d1d5db; /* Tailwind gray-300 */
+}
+.month-day-cell:hover:not(.other-month) {
+    /* Hover handled by Tailwind hover:bg-blue-50 in HTML */
+}
+.current-month-day {
+    color: #374151; /* Tailwind gray-700 */
+}
+.other-month-day {
+    color: #d1d5db; /* Tailwind gray-300 */
+}
+
+/* Specific style for Today in Month View (less prominent than week view) */
+.today-highlight-month {
+    color: #c2410c; /* Tailwind orange-700 */
+    font-weight: 600; /* semibold */
+    /* Optional: Add a subtle background or border */
+     background-color: #ffedd5; /* Tailwind orange-100 */
+     border-radius: 9999px; /* rounded-full */
+     width: 1.5rem; /* w-6 */
+     height: 1.5rem; /* h-6 */
+     display: inline-flex; /* Use inline-flex to center text */
+     align-items: center;
+     justify-content: center;
+     /* Adjust position slightly if needed with margin/padding */
+}
+
+/* Week View Specifics */
+.week-day-cell {
+     /* Borders handled in HTML */
+}
+/* Hover handled in HTML */
+.week-day-cell .today-highlight { /* Styles for the day number in week view */
+     /* Style applied via ngClass in HTML */
+}
+
+
+/* Event Dot/Item Styling */
+.event-dot {
+    flex-shrink: 0; /* Prevent dot from shrinking */
+}
+
+/* Year View Month Card */
+.month-card {
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    /* Hover handled in HTML */
+}
+/* Current Month Highlight in Year View */
+.month-card.current-month-highlight {
+    border-color: #fb923c; /* Tailwind orange-400 */
+    background-color: #fff7ed; /* Tailwind orange-50 */
+    box-shadow: 0 0 0 1px #fb923c; /* Ring effect */
+}
+
+/* Legend Styles */
+.calendar-footer {
+    /* Flex behavior handled in HTML */
+}
+
+/* Override PrimeNG Dialog Header padding if needed */
+:host ::ng-deep .p-dialog .p-dialog-header {
+    padding: 0.75rem 1rem; /* Adjust as needed */
+}
+/* Override PrimeNG Dialog Content padding */
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 0; /* Remove default content padding, handle spacing inside */
+    overflow-y: auto; /* Add scroll if content overflows */
+}
+/* Override PrimeNG Dialog Footer padding */
+:host ::ng-deep .p-dialog .p-dialog-footer {
+    padding: 0.75rem 1rem; /* Adjust as needed */
+    border-top: 1px solid #e5e7eb; /* Add separator */
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .month-day-cell {
+        min-height: 80px; /* Slightly shorter cells on mobile */
+    }
+     .week-day-cell {
+        min-height: 100px;
+    }
+}
+@media (max-width: 640px) {
+     /* Stack legend items */
+    .calendar-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

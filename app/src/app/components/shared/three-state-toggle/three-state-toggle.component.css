@@ -1,0 +1,72 @@
+/* Use :host for component encapsulation */
+:host {
+    display: inline-block; /* Behaves like an inline element but can have width/height */
+    cursor: pointer;
+    user-select: none; /* Prevent text selection on click */
+    outline: none; /* Remove default browser outline, manage focus style below */
+    --thumb-size: 15px; /* Size of the circle */
+    --track-padding: 0.2px; /* Padding inside the track */
+    --track-height: calc(var(--thumb-size) + 2 * var(--track-padding)); /* Track height based on thumb + padding */
+    --track-width: calc(var(--thumb-size) * 2.5 + 2 * var(--track-padding)); /* Track width allows space for 3 positions */
+    --thumb-travel-distance: calc(var(--track-width) - var(--thumb-size) - 2 * var(--track-padding)); /* Total distance thumb can travel */
+  }
+  
+  /* Add focus ring for accessibility */
+  :host(:focus-visible) .toggle-track {
+      outline: 2px solid dodgerblue; /* Or your preferred focus style */
+      outline-offset: 2px;
+  }
+  
+  .toggle-track {
+    position: relative;
+    width: var(--track-width);
+    height: var(--track-height);
+    background-color: #e0e0e0; /* Default track color (like 'off') */
+    border-radius: calc(var(--track-height) / 2); /* Fully rounded ends */
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+  }
+  
+  .toggle-thumb {
+    position: absolute;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    background-color: #757575; /* Default thumb color */
+    border-radius: 50%; /* Make it a circle */
+    top: var(--track-padding);
+    left: var(--track-padding); /* Initial position for state -1 */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Subtle shadow */
+  }
+  
+  /* --- State Styling --- */
+  
+  /* State: Left (-1) */
+  .toggle-track.state-left {
+    /* Optional: change track background */
+      background-color: #DBEAFE;  
+  }
+  .toggle-track.state-left .toggle-thumb {
+    transform: translateX(0%); /* No translation needed, already at the left */
+    background-color: #3B82F6; /* Example: Red */
+  }
+  
+  /* State: Middle (0) - This is the reference state */
+  .toggle-track.state-middle {
+     background-color: var(--color-secondary); /* Light blue background for middle */
+  }
+  .toggle-track.state-middle .toggle-thumb {
+    /* Move thumb to the center */
+    transform: translateX(calc(var(--thumb-travel-distance) / 2));
+    background-color: #c6cbd2; /* The blue from your image example */
+  }
+  
+  /* State: Right (1) */
+  .toggle-track.state-right {
+     background-color: #FFEDD5; /* Example: Light Green */
+  }
+  .toggle-track.state-right .toggle-thumb {
+    /* Move thumb all the way to the right */
+    transform: translateX(var(--thumb-travel-distance));
+    background-color: #F97316; /* Example: Green */
+  }
