@@ -19,9 +19,6 @@ const routes: Routes = [
   { path: 'RemoteSync/Login', loadChildren: () => import('./components/visitor/login/login.module').then(m => m.LoginModule) },
   { path: 'RemoteSync/ForgotPassword', loadChildren: () => import('./components/visitor/forgot-password/forgot-password.module').then(m => m.ForgotPasswordModule) },
   { path: 'RemoteSync/ResetPassword', loadChildren: () => import('./components/visitor/reset-password/reset-password.module').then(m => m.ResetPasswordModule) },
-
-
-
   // END ROUTES FOR VISITOR
 
 
@@ -33,15 +30,13 @@ const routes: Routes = [
 
 
 
-  // ROUTES FOR ASSOCIATE - Protected by AuthGuard
-  { path: 'RemoteSync/Associate/Dashboard', loadChildren: () => import('./components/associate/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'ADMIN'] } },
+  // ROUTES FOR ASSOCIATE
+  { path: 'RemoteSync/Associate/Dashboard', loadChildren: () => import('./components/associate/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
   { path: 'RemoteSync/Associate/Project', loadChildren: () => import('./components/associate/project/project.module').then(m => m.ProjectModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
-  {
-    path: 'RemoteSync/Associate/Report', // The URL path for the reports page
-    loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule), // Lazy load ReportModule
-    canActivate: [RoleGuard], // Apply the RoleGuard
-    data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } // Define allowed roles (adjust if needed)
-  },
+  { path: 'RemoteSync/Associate/Calendar', loadChildren: () => import('./components/associate/calendar/calendar.module').then(m => m.CalendarModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
+  { path: 'RemoteSync/Associate/Report', loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
+  { path: 'RemoteSync/Associate/Notification', loadChildren: () => import('./components/associate/notifications/notifications.module').then(m => m.NotificationsModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
+  { path: 'RemoteSync/Associate/Profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
   // END ROUTES FOR ASSOCIATE
 
 
@@ -57,13 +52,11 @@ const routes: Routes = [
 
 
   // ROUTES FOR RC
-  {
-    path: 'RemoteSync/RC/Projects', // Define the URL path
-    loadChildren: () => import('./components/rc/projects/projects.module').then(m => m.ProjectsModule),
-    canActivate: [RoleGuard], // Apply security
-    data: { roles: ['RC', 'ADMIN'] } // Define allowed roles (adjust as needed)
-  },
-
+  { path: 'RemoteSync/Rc/Dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
+  { path: 'RemoteSync/RC/Project', loadChildren: () => import('./components/rc/project/project.module').then(m => m.ProjectModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
+  { path: 'RemoteSync/RC/Report', loadChildren: () => import('./components/rc/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
+  { path: 'RemoteSync/Rc/Profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
+  { path: 'RemoteSync/Rc/Calendar', loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   // END ROUTES FOR RC
 
 
@@ -93,8 +86,6 @@ const routes: Routes = [
 
   // WRONG PATH URL
   { path: '', redirectTo: 'RemoteSync/Login', pathMatch: 'full' },
-  { path: 'report', loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule) },
-  { path: 'projects', loadChildren: () => import('./components/rc/projects/projects.module').then(m => m.ProjectsModule) },
   { path: '**', redirectTo: 'RemoteSync/Error/404' }
   // END WRONG PATH URL
 ];

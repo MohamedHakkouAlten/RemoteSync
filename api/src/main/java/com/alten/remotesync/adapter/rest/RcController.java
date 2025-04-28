@@ -51,7 +51,7 @@ public class RcController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
-                        projectService.countActiveProjects(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        projectService.countActiveProjects(),
                         HttpStatus.OK
                 ));
     }
@@ -71,7 +71,7 @@ public class RcController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
-                        projectService.countCancelledProjects(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        projectService.countCancelledProjects(),
                         HttpStatus.OK
                 ));
     }

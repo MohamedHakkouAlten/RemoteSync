@@ -68,10 +68,10 @@ export class LoginComponent implements OnInit {
             life: 3000
           });
 
-          // Navigate to return URL or dashboard
+          // Navigate to return URL or role-based dashboard
           setTimeout(() => {
             this.loading=true
-            this.router.navigate([this.returnUrl]);
+            this.authService.redirectAfterLogin(this.returnUrl);
           }, 1000);
         },
         error: (error) => {

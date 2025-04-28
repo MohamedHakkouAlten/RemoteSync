@@ -46,13 +46,10 @@
   }
 }
 
-@import "primeicons/primeicons.css";
-
 @theme {
-
-    --color-primary : #FF9500; /*FFA500 */
-    --color-secondary: #F9FAFB;
-   
+  --color-primary : #FFA500;
+  --color-primary : #FF9500; /*FFA500 */
+  --color-secondary: #F9FAFB;
 }
 
 :host ::ng-deep .lightgray  {
@@ -68,18 +65,13 @@
 }
 
 :host ::ng-deep .p-button-label{
-font-weight: 100 !important;
+  font-weight: 100 !important;
 }
 
- 
-   
-      .my-compact-datepicker .p-datepicker-calendar .p-datepicker-day {
-
+.my-compact-datepicker .p-datepicker-calendar .p-datepicker-day {
     width: 22px !important;
     height:22px !important;
     font-size: 12px;
-
-
   }
 
   .p-datepicker-day-selected {
@@ -99,11 +91,9 @@ font-weight: 100 !important;
   font-size: 15px !important;
 }
 .p-datepicker-weeknumber {
-font-size: 15px !important;
-
+  font-size: 15px !important;
 }
 .p-datepicker-weekheader {
   font-size: 15px !important;
   font-weight: 500 !important;
-  
-  }
+}

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Ensure FormsModule is imported
 
 import { ProjectsRoutingModule } from './projects-routing.module';
-import { ProjectsComponent } from './projects.component';
+import { ProjectComponent } from './project.component';
 
 import { NavigationComponent } from '../../shared/navigation/navigation.component'; // Adjust path if needed
 
@@ -30,7 +30,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
     declarations: [
-        ProjectsComponent
+        ProjectComponent
     ],
     imports: [
         CommonModule,
@@ -61,4 +61,4 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         // ---------------------------------------
     ]
 })
-export class ProjectsModule { }
+export class ProjectModule { }

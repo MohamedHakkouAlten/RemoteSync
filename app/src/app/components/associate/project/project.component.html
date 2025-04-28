@@ -1,87 +1,97 @@
 <div class="dashboard-layout">
-    <!-- Header -->
+  <!-- Header -->
     <app-navigation></app-navigation>
-    
-    <div class="projects-page">
-    <!-- Header and Filters -->
-    <header class="projects-header">
-      <h1>Projects</h1>
-      <div class="filter-bar">
-        <!-- Search Input -->
-        <span class="p-input-icon-left search-input">
-          <i class="pi pi-search"></i>
-          <input type="text" pInputText placeholder="Search by title or label..."
-                 [(ngModel)]="searchTerm" (ngModelChange)="filterProjects()" />
-        </span>
-        <!-- Status Dropdown -->
-        <p-dropdown [options]="statusOptions" [(ngModel)]="selectedStatus"
-                    placeholder="All Status" optionLabel="label" optionValue="value"
-                    (onChange)="filterProjects()" styleClass="filter-dropdown"></p-dropdown>
-        <!-- Client Dropdown -->
-        <p-dropdown [options]="clientOptions" [(ngModel)]="selectedClient"
-                    placeholder="All Clients" optionLabel="label" optionValue="value"
-                    (onChange)="filterProjects()" styleClass="filter-dropdown"></p-dropdown>
-      </div>
-    </header>
-  
-    <!-- Projects Grid -->
-    <main class="projects-grid">
-      <!-- Loop through filtered projects -->
-      <div class="project-card" *ngFor="let project of filteredProjects">
-  
-        <!-- Card Top: Title and Status Badge -->
-        <div class="card-top">
-          <h3 class="project-title">{{ project.title }}</h3>
-          <p-badge [value]="project.status" [severity]="project.statusSeverity" styleClass="status-badge"></p-badge>
-        </div>
-  
-        <!-- Category -->
-        <p class="project-category">{{ project.category }}</p>
-  
-        <!-- Details: Client & Date -->
-        <div class="project-info">
-          <div class="info-item">
-            <i class="pi pi-building info-icon"></i>
-            <span>{{ project.client }}</span>
+
+  <div class="projects-page">
+      <!-- Header and Filters -->
+      <header class="projects-header">
+          <h1>Projects</h1>
+          <div class="filter-bar">
+              <!-- Search Input (Remains the same) -->
+              <span class="p-input-icon-left search-input">
+                  <i class="pi pi-search"></i>
+                  <input type="text" pInputText placeholder="Search by title or label..."
+                         [(ngModel)]="searchTerm" (ngModelChange)="filterProjects()" />
+              </span>
+
+              <!-- Status Dropdown - Using p-dropdown -->
+              <p-dropdown 
+                  [options]="statusOptions" 
+                  [(ngModel)]="selectedStatus" 
+                  (onChange)="filterProjects()" 
+                  placeholder="All Status" 
+                  [showClear]="false"
+                  styleClass="filter-dropdown">
+              </p-dropdown>
+
+              <!-- Client Dropdown - Using p-dropdown -->
+              <p-dropdown 
+                  [options]="clientOptions" 
+                  [(ngModel)]="selectedClient" 
+                  (onChange)="filterProjects()" 
+                  placeholder="All Clients" 
+                  [showClear]="false"
+                  styleClass="filter-dropdown">
+              </p-dropdown>
+
           </div>
-          <div class="info-item">
-            <i class="pi pi-clock info-icon"></i>
-            <span>{{ project.dueDate }}</span>
+      </header>
+
+      <!-- Projects Grid (Remains the same) -->
+      <main class="projects-grid">
+          <!-- Loop through filtered projects -->
+          <div class="project-card" *ngFor="let project of filteredProjects">
+
+              <!-- Card Top: Title and Status Badge -->
+              <div class="card-top">
+                  <h3 class="project-title">{{ project.title }}</h3>
+                  <p-badge [value]="project.status" [severity]="project.statusSeverity" styleClass="status-badge"></p-badge>
+              </div>
+
+              <!-- Category -->
+              <p class="project-category">{{ project.category }}</p>
+
+              <!-- Details: Client & Date -->
+              <div class="project-info">
+                  <div class="info-item">
+                      <i class="pi pi-building info-icon"></i>
+                      <span>{{ project.client }}</span>
+                  </div>
+                  <div class="info-item">
+                      <i class="pi pi-clock info-icon"></i>
+                      <span>{{ project.dueDate }}</span>
+                  </div>
+              </div>
+
+              <!-- Progress -->
+              <div class="project-progress">
+                  <div class="progress-header">
+                      <span class="progress-label">Progress</span>
+                      <span class="progress-value">{{ project.progress }}%</span>
+                  </div>
+                  <p-progressBar [value]="project.progress" [showValue]="false" styleClass="project-progress-bar"></p-progressBar>
+              </div>
+
+              <!-- Assignees -->
+              <div class="project-assignees">
+                  <p-avatarGroup styleClass="assignee-group">
+                      <p-avatar *ngFor="let assignee of project.assignees | slice:0:3"
+                                [image]="assignee.image" [label]="assignee.label"
+                                shape="circle" size="normal"></p-avatar>
+                      <p-avatar *ngIf="project.remainingAssignees && project.remainingAssignees > 0"
+                                [label]="'+' + project.remainingAssignees"
+                                shape="circle" size="normal"
+                                styleClass="remaining-assignees-badge"></p-avatar>
+                  </p-avatarGroup>
+              </div>
+
+          </div> <!-- End project-card -->
+
+          <!-- No Projects Message (Remains the same) -->
+          <div *ngIf="!filteredProjects || filteredProjects.length === 0" class="no-projects-message">
+              No projects found matching your criteria.
           </div>
-        </div>
-  
-        <!-- Progress -->
-        <div class="project-progress">
-          <div class="progress-header">
-            <span class="progress-label">Progress</span>
-            <span class="progress-value">{{ project.progress }}%</span>
-          </div>
-          <p-progressBar [value]="project.progress" [showValue]="false" styleClass="project-progress-bar"></p-progressBar>
-        </div>
-  
-        <!-- Assignees -->
-        <div class="project-assignees">
-          <p-avatarGroup styleClass="assignee-group">
-             <!-- Display first few avatars -->
-             <p-avatar *ngFor="let assignee of project.assignees | slice:0:3"
-                       [image]="assignee.image" [label]="assignee.label"
-                       shape="circle" size="normal"
-                       [styleClass]="assignee.styleClass"></p-avatar>
-             <!-- Display "+X" badge if there are remaining assignees -->
-             <p-avatar *ngIf="project.remainingAssignees && project.remainingAssignees > 0"
-                       [label]="'+' + project.remainingAssignees"
-                       shape="circle" size="normal"
-                       styleClass="remaining-assignees-badge"></p-avatar>
-          </p-avatarGroup>
-        </div>
-  
-      </div> <!-- End project-card -->
-  
-       <!-- Optional: Message if no projects match filter -->
-       <div *ngIf="filteredProjects.length === 0" class="no-projects-message">
-          No projects found matching your criteria.
-       </div>
-  
-    </main> <!-- End projects-grid -->
+
+      </main> <!-- End projects-grid -->
   </div> <!-- End projects-page -->
 </div> <!-- End dashboard-layout -->

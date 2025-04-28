@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext'; // Often needed by dropdown/multiselect filtering
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DatePickerModule } from 'primeng/datepicker';
+import { NavigationComponent } from "../../shared/navigation/navigation.component";
 
 // Interfaces for clarity (adjust based on your actual data models)
 interface Project {
@@ -41,7 +42,7 @@ export interface RotationOutput {
   standalone: true,
   templateUrl: './rotation.component.html',
   styleUrl: './rotation.component.css',
-  imports :[ CommonModule,   FormsModule,
+  imports: [CommonModule, FormsModule,
     // PrimeNG Modules
     DialogModule,
     DropdownModule,
@@ -49,9 +50,9 @@ export interface RotationOutput {
     InputNumberModule,
     MultiSelectModule,
     ButtonModule,
-    AutoCompleteModule, 
+    AutoCompleteModule,
     DatePickerModule,
-    InputTextModule,]
+    InputTextModule, NavigationComponent]
 })
 export class RotationComponent implements OnInit {
 

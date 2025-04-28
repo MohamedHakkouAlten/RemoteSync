@@ -123,6 +123,38 @@ export class AuthService {
   }
 
   /**
+   * Get the default redirect URL based on user role
+   */
+  getDefaultRedirectUrl(): string {
+    const roles = this.getUserRoles();
+    
+    if (roles.includes('ADMIN')) {
+      return '/RemoteSync/Admin/Dashboard';
+    } else if (roles.includes('RC')) {
+      return '/RemoteSync/Rc/Dashboard';
+    } else if (roles.includes('ASSOCIATE')) {
+      return '/RemoteSync/Associate/Dashboard';
+    } else {
+      // Default fallback
+      return '/RemoteSync/Login';
+    }
+  }
+
+  /**
+   * Handle redirection after successful login
+   * @param returnUrl Optional URL to redirect to
+   */
+  redirectAfterLogin(returnUrl?: string): void {
+    // If returnUrl is provided and not empty, use it
+    if (returnUrl && returnUrl !== '/') {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      // Otherwise redirect based on role
+      this.router.navigateByUrl(this.getDefaultRedirectUrl());
+    }
+  }
+
+  /**
    * Logout the current user. Clears local data and optionally calls backend.
    */
   logout(): Observable<void> {

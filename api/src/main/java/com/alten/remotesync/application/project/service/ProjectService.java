@@ -30,13 +30,13 @@ public interface ProjectService {
 
     ProjectDTO getLongestDurationProject();
 
-    Integer getCompletedProjectsCount();
+    ProjectsCountDTO getCompletedProjectsCount();
 
     ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
 
     ProjectDTO deleteProject(GlobalDTO globalDTO);
 
-    Integer getRcCountInactiveProjects();
+    ProjectsCountDTO getRcCountInactiveProjects();
 
     List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO);
 
@@ -44,9 +44,9 @@ public interface ProjectService {
 
     PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
 
-    ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO);
+    ProjectsCountDTO countActiveProjects();
 
     ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
 
-    ProjectsCountDTO countCancelledProjects(GlobalDTO globalDTO);
+    ProjectsCountDTO countCancelledProjects();
 }

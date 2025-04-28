@@ -32,13 +32,13 @@ interface SelectOption {
 type ProjectStatusSeverity = 'info' | 'warn' | 'success';
 
 @Component({
-    selector: 'app-projects',
+    selector: 'app-project',
     standalone: false, // Ensure this matches your project setup
-    templateUrl: './projects.component.html',
-    styleUrls: ['./projects.component.css'],
+    templateUrl: './project.component.html',
+    styleUrls: ['./project.component.css'],
     // providers: [ConfirmationService, MessageService] // If using
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectComponent implements OnInit {
 
     @ViewChild('projectTable') projectTable: Table | undefined;
 

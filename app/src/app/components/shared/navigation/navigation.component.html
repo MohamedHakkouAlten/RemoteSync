@@ -37,47 +37,14 @@
       <!-- Center-Left: Navigation Links -->
       <div class="hidden md:flex items-center space-x-8 ml-10">
         <a
-       
-       
-          routerLink="/RemoteSync/rc/dashboard"
-          routerLinkActive= 'text-primary border-b-2 border-primary '
+          *ngFor="let item of navItems"
+          [routerLink]="item.routerLink"
+          routerLinkActive="text-primary border-b-2 border-primary"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
+          class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500"
           style="font-family: inter;"
-          >
-          Dashboard
-        </a>
-        <a
-        routerLink="/RemoteSync/rc/calendar"
-        routerLinkActive= 'text-primary border-b-2 border-primary '
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
-         
-
-          style="font-family: inter;"
-          >
-          Calendar
-        </a>
-        <a
-        routerLink="/"
-        routerLinkActive= 'text-primary border-b-2 border-primary '
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
-          
-          
-          style="font-family: inter;"
-         >
-          Projects
-        </a>
-        <a
-        routerLink="/"
-        routerLinkActive= 'text-primary border-b-2 border-primary '
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="py-2 text-sm font-medium transition-colors duration-150 text-gray-500 "
-          
-          style="font-family: inter;"
-         >
-          Reports
+        >
+          {{ item.label }}
         </a>
       </div>
   
@@ -87,7 +54,7 @@
        
   <div   class="flex justify-center items-center gap-x-1">
         <!-- User Avatar (PrimeNG) -->
-        <a class="flex gap-x-1 items-center" routerLink="/RemoteSync/profile">
+        <a class="flex gap-x-1 items-center" (click)="navigateToProfile()" style="cursor: pointer;">
         <p-avatar
           image="assets/images/avatar.png"
           size="normal"
