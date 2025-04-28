@@ -1,0 +1,1000 @@
+/* src/app/components/admin/projects/projects.component.css */
+
+/* ============================
+Base Layout & Container
+============================ */
+:host {
+    display: block;
+    background-color: #f8f9fa; /* Light background */
+}
+.projects-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.projects-container {
+    padding: 2rem 2.5rem;
+    flex-grow: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+/* Header */
+.projects-header h1 {
+    font-size: 1.9rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0.5rem;
+}
+.projects-header p {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+/* Summary Stats */
+.summary-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.8rem;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+    color: #495057;
+}
+.summary-stats .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.summary-stats .indicator {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    margin-right: 0.4rem; /* Adjusted from gap */
+}
+.summary-stats .indicator.active { background-color: #0d6efd; } /* Example: Blue */
+.summary-stats .indicator.completed { background-color: #198754; } /* Example: Green */
+.summary-stats .indicator.upcoming { background-color: #ffc107; } /* Example: Yellow */
+.summary-stats .count {
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+.toolbar .search-field {
+    flex-grow: 1;
+    min-width: 300px;
+    max-width: 450px;
+}
+:host ::ng-deep .toolbar .search-field .p-inputtext {
+    width: 100%;
+    font-size: 0.95rem;
+    border-radius: 6px;
+}
+:host ::ng-deep .toolbar .search-field .p-input-icon {
+    top: 50%;
+    margin-top: -.5rem; /* Vertically center */
+}
+:host ::ng-deep .toolbar .filter-button {
+    color: #6c757d;
+    border-color: #ced4da;
+    border-radius: 6px;
+}
+:host ::ng-deep .toolbar .filter-button:hover {
+    background-color: #e9ecef;
+}
+:host ::ng-deep .toolbar .new-project-button {
+    background-color: #FF8C00; /* Dark Orange */
+    border-color: #FF8C00;
+    color: #ffffff;
+    margin-left: auto; /* Pushes to the right */
+    border-radius: 6px;
+}
+:host ::ng-deep .toolbar .new-project-button:hover,
+:host ::ng-deep .toolbar .new-project-button:focus {
+    background-color: #e07b00; /* Slightly darker orange */
+    border-color: #d37300;
+    color: #ffffff;
+}
+
+/* ============================
+Refined Table Styles
+============================ */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    overflow: hidden; /* Important for border-radius clipping */
+}
+
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th,
+:host ::ng-deep .custom-table .p-datatable-tbody > tr > td {
+    border: none; /* Remove default borders */
+}
+
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th {
+    background-color: #f8f9fa; /* Light header background */
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem; /* Smaller header font */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #dee2e6; /* Header bottom border */
+    padding: 1rem 1.1rem; /* Adjusted padding */
+    text-align: left;
+    white-space: nowrap;
+}
+
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th .p-sortable-column-icon {
+    font-size: 0.8em;
+    margin-left: 0.5rem;
+}
+
+:host ::ng-deep .custom-table .p-datatable-tbody > tr {
+    border-bottom: 1px solid #e9ecef; /* Row separator */
+}
+:host ::ng-deep .custom-table .p-datatable-tbody > tr:last-child {
+    border-bottom: none; /* No border on last row */
+}
+
+:host ::ng-deep .custom-table .p-datatable-tbody > tr > td {
+    padding: 1rem 1.1rem; /* Consistent padding */
+    vertical-align: middle;
+    font-size: 0.95rem;
+    color: #495057;
+}
+
+/* Specific Cell Styling */
+.rc-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem; /* Space between avatar and name */
+}
+/* Consistent avatar styles for RC cell */
+:host ::ng-deep .rc-cell .p-avatar {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0; /* Prevent avatar shrinking */
+    background-color: #fff3cd; /* Yellowish background */
+    color: #f97316; /* Orange text */
+    font-size: 1rem;
+}
+.rc-cell span {
+    font-weight: 500;
+    color: #343a40;
+    white-space: nowrap;
+}
+
+
+.team-cell .p-avatar-group {
+    display: flex;
+    align-items: center;
+}
+/* Consistent avatar styles for team cell */
+:host ::ng-deep .team-cell .p-avatar-group .p-avatar {
+    width: 32px; /* Slightly smaller for group */
+    height: 32px;
+    font-size: 0.9rem;
+    box-shadow: 0 0 0 2px #ffffff; /* White border for overlap */
+    margin-left: -10px; /* Overlap amount */
+    background-color: #d1d5db; /* Gray background */
+    color: #1f2937; /* Dark text */
+}
+:host ::ng-deep .team-cell .p-avatar-group .p-avatar:first-child {
+    margin-left: 0;
+}
+:host ::ng-deep .team-cell .p-avatar-group .more-members-avatar {
+    background-color: #e9ecef;
+    color: #495057;
+    font-size: 0.8rem; /* Smaller font for '+N' */
+    font-weight: 500;
+    width: 32px;
+    height: 32px;
+    display: inline-flex; /* Use inline-flex for centering */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #ffffff;
+    margin-left: -10px;
+}
+
+.actions-cell {
+    text-align: left; /* Align icons left */
+    white-space: nowrap;
+}
+.actions-cell button {
+    margin-right: 0.15rem; /* Small space between buttons */
+    color: #6c757d; /* Default icon color */
+}
+:host ::ng-deep .actions-cell button.p-button {
+    width: 2.25rem; /* Consistent button size */
+    height: 2.25rem;
+}
+:host ::ng-deep .actions-cell button.p-button-text:hover {
+    background-color: rgba(0, 0, 0, 0.04); /* Subtle hover */
+}
+:host ::ng-deep .actions-cell button.p-button-danger {
+    color: #dc3545; /* Red for delete */
+}
+:host ::ng-deep .actions-cell button.p-button-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1); /* Red subtle hover */
+}
+
+/* Status Tags */
+:host ::ng-deep .p-tag {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+    font-weight: 500;
+    border-radius: 16px; /* Fully rounded */
+}
+/* Custom severity colors */
+:host ::ng-deep .p-tag.p-tag-info { background-color: #bbe8ff91; color: #0066ff; } /* Blue-ish */
+:host ::ng-deep .p-tag.p-tag-success { background-color: #cbffce95; color: #03cb46; } /* Green-ish */
+:host ::ng-deep .p-tag.p-tag-warn { background-color: #fff3cdb5; color: #d37300; } /* Yellow-ish */
+
+/* Table Checkbox/Actions Columns Width */
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th:first-child,
+:host ::ng-deep .custom-table .p-datatable-tbody > tr > td:first-child {
+    width: 3.5rem; /* Width for checkbox column */
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+}
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th:last-child,
+:host ::ng-deep .custom-table .p-datatable-tbody > tr > td:last-child {
+    width: 8rem; /* Width for actions column */
+    text-align: left;
+}
+
+/* Pagination */
+:host ::ng-deep .custom-table .p-paginator-bottom {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+    background-color: #ffffff;
+    border-bottom-left-radius: 8px; /* Match container radius */
+    border-bottom-right-radius: 8px;
+}
+:host ::ng-deep .custom-table .p-paginator .p-paginator-current {
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+:host ::ng-deep .custom-table .p-paginator .p-paginator-page,
+:host ::ng-deep .custom-table .p-paginator .p-paginator-first,
+:host ::ng-deep .custom-table .p-paginator .p-paginator-prev,
+:host ::ng-deep .custom-table .p-paginator .p-paginator-next,
+:host ::ng-deep .custom-table .p-paginator .p-paginator-last {
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    border: 1px solid #dee2e6;
+    margin: 0 2px;
+}
+:host ::ng-deep .custom-table .p-paginator .p-paginator-page:not(.p-highlight):hover {
+    background-color: #e9ecef;
+}
+:host ::ng-deep .custom-table .p-paginator .p-paginator-page.p-highlight {
+    background-color: #FF8C00; /* Match primary button color */
+    border-color: #FF8C00;
+    color: white;
+}
+:host ::ng-deep .custom-table .p-paginator .p-dropdown .p-dropdown-label {
+    font-size: 0.9rem;
+}
+:host ::ng-deep .custom-table .p-paginator .p-dropdown {
+    height: 2.5rem;
+    margin: 0 0.5rem;
+    border-radius: 6px;
+}
+
+/* ==================================================
+   DIALOG STYLES - Refined & Unified
+================================================== */
+
+/* --- Base Dialog Container & Structure --- */
+:host ::ng-deep .p-dialog {
+    border-radius: 12px !important; /* More pronounced radius */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: none !important;
+    overflow: hidden; /* Keep clipping */
+}
+:host ::ng-deep .p-dialog .p-dialog-header {
+    background-color: #ffffff;
+    color: #1f2937; /* Darker text */
+    padding: 1.25rem 1.75rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom: 1px solid #e5e7eb; /* Light divider */
+}
+:host ::ng-deep .p-dialog .p-dialog-title {
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.5;
+}
+:host ::ng-deep .p-dialog .p-dialog-header-icon {
+    color: #9ca3af;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: 0.5rem;
+}
+:host ::ng-deep .p-dialog .p-dialog-header-icon:hover,
+:host ::ng-deep .p-dialog .p-dialog-header-icon:focus {
+    color: #1f2937;
+    background-color: #f3f4f6; /* Subtle background on hover */
+    box-shadow: none;
+    outline: none;
+}
+:host ::ng-deep .p-dialog .p-dialog-content {
+    background-color: #ffffff;
+    padding: 1.75rem; /* Consistent padding */
+    color: #4b5563;
+    line-height: 1.6;
+}
+/* =============================================
+   NEW VIEW DIALOG STYLES (Matching Image Target)
+   ============================================= */
+
+/* --- Overall Dialog Styling --- */
+:host ::ng-deep .view-project-dialog .p-dialog-header {
+    /* Optional: Hide default header if we replicate title inside */
+     /* display: none; */
+     /* Or just style it minimally */
+     padding: 1rem 1.5rem;
+     border-bottom: none; /* Remove border if recreating header look */
+}
+
+:host ::ng-deep .view-project-dialog .p-dialog-content {
+    padding: 0 !important; /* Remove default padding */
+    background-color: #f8f9fa; /* Light gray background OUTSIDE the card */
+    overflow: hidden; /* Helps with card border radius */
+}
+
+:host ::ng-deep .view-project-dialog .p-dialog-footer {
+    background-color: #ffffff; /* Match card background */
+    border-top: 1px solid #e5e7eb; /* Light separator */
+    border-bottom-left-radius: 10px; /* Match card radius */
+    border-bottom-right-radius: 10px;
+    padding: 1rem 1.75rem;
+}
+
+/* --- The White Card Container --- */
+.view-card-container {
+    background-color: #ffffff;
+    padding: 1.75rem 2rem; /* Inner padding for the card content */
+    border-radius: 10px; /* Rounded corners for the card itself */
+    margin: 1rem; /* Space between card and dialog edge */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+}
+
+/* --- Card Header Area --- */
+.view-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the top */
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.view-card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+    line-height: 1.3;
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+.view-card-status .p-tag {
+    /* Use specific severity classes if needed, or target directly */
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 16px; /* Pill shape */
+    white-space: nowrap;
+}
+/* Style for 'In Progress' specifically */
+:host ::ng-deep .view-card-status .p-tag-info {
+    background-color: #fff3cdb5 !important; /* Light Orange/Yellow */
+    color: #d37300 !important; /* Darker Orange/Yellow */
+}
+/* Add similar overrides for .p-tag-warn and .p-tag-success if needed */
+
+
+/* --- Section Styling --- */
+.view-card-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f3f5; /* Lighter divider */
+}
+.view-card-section:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.view-section-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #868e96; /* Gray label color */
+    margin-bottom: 0.8rem;
+}
+.view-section-label .pi {
+    font-size: 0.9em; /* Icon size relative to text */
+    margin-right: 0.5rem;
+    color: #adb5bd; /* Slightly lighter icon color */
+}
+
+/* --- Section Content Styling --- */
+.view-section-content {
+    padding-left: 1.4rem; /* Indent content slightly */
+    color: #343a40; /* Darker content text */
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* RC Specific */
+.view-rc-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.view-rc-info .p-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    background-color: #fff3cd !important; /* Background from image */
+    color: #f97316 !important; /* Text color from image */
+    flex-shrink: 0;
+}
+.view-rc-info span {
+    font-weight: 500;
+}
+
+/* Team Member List */
+/* Team Member List (Horizontal Chips, 2 Lines Max, Scrollable) */
+.view-member-list {
+    display: flex;         /* Lay out items horizontally */
+    flex-wrap: wrap;       /* Allow items to wrap to the next line */
+    gap: 0.5rem;           /* Space between chips (horizontal and vertical) */
+    /* === ADJUST max-height to fit ~2 lines of chips === */
+    /* Estimate: (padding + line-height) * 2 + gap */
+    /* Example: (0.6rem + 1.2rem)*2 + 0.5rem = 3.6rem + 0.5rem = 4.1rem */
+    max-height: 4.2rem;    /* Adjust this value (e.g., 4rem, 4.5rem, 65px) */
+    overflow-y: auto;      /* Enable vertical scrollbar ONLY if needed */
+    /* ================================================= */
+    padding-bottom: 5px;   /* Add padding below content */
+    padding-right: 5px;    /* Prevent scrollbar overlap */
+}
+
+/* Individual Member Chip/Tag */
+.view-member-chip {
+    display: inline-flex;  /* Treat as inline block but allow flex alignment inside */
+    align-items: center;
+    padding: 0.3rem 0.8rem;
+    background-color: #e9ecef; /* Light gray background */
+    border-radius: 16px;   /* Pill shape */
+    font-size: 0.9rem;
+    color: #495057;        /* Slightly darker text */
+    white-space: nowrap;   /* Prevent name itself from wrapping */
+    line-height: 1.3;      /* Control chip height */
+}
+
+/* Style for empty state remains same */
+.view-member-empty {
+    font-style: italic;
+    color: #6b7280;
+}
+.view-member-name {
+    /* Simple text style */
+}
+
+/* Duration/Client Value */
+.view-value-text {
+    font-weight: 500;
+}
+.view-value-empty {
+    font-style: italic;
+    color: #868e96;
+}
+
+/* Responsive Adjustments for View Card */
+@media (max-width: 768px) {
+     /* Adjust dialog width if needed */
+    :host ::ng-deep .view-project-dialog {
+        width: 90vw !important;
+    }
+    .view-card-container {
+        padding: 1.5rem;
+        margin: 0.5rem;
+    }
+    .view-card-header {
+        flex-direction: column; /* Stack title and status */
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+    .view-card-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+    .view-card-status {
+        /* Align self to start if needed */
+    }
+    .view-section-content {
+        padding-left: 0.5rem; /* Reduce indent on small screens */
+    }
+}
+/* --- Form Field General Styling (Create/Edit Dialogs) --- */
+:host ::ng-deep .create-project-dialog .field,
+:host ::ng-deep .edit-project-dialog .field {
+    margin-bottom: 1.75rem;
+}
+:host ::ng-deep .create-project-dialog .field:last-of-type,
+:host ::ng-deep .edit-project-dialog .field:last-of-type {
+    margin-bottom: 0; /* No margin on the very last field */
+}
+:host ::ng-deep .create-project-dialog .field label,
+:host ::ng-deep .edit-project-dialog .field label {
+    display: block;
+    margin-bottom: 0.7rem;
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* --- Unified Input Appearance --- */
+:host ::ng-deep .p-dialog .field .p-inputtext,
+:host ::ng-deep .p-dialog .field .p-dropdown,
+:host ::ng-deep .p-dialog .field .p-calendar .p-inputtext, /* Target INPUT inside */
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container {
+    border: 1px solid #d1d5db; /* Standard border */
+    border-radius: 8px; /* Slightly rounded */
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    min-height: 46px; /* Consistent height */
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: #374151;
+    transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+/* Specific Padding for text-based inputs */
+:host ::ng-deep .p-dialog .field .p-inputtext,
+:host ::ng-deep .p-dialog .field .p-calendar .p-inputtext {
+    padding: 0.75rem 1rem;
+}
+/* Adjust calendar padding for icon */
+:host ::ng-deep .p-dialog .field .p-calendar .p-inputtext {
+    padding-right: 3rem;
+}
+/* Remove padding from wrappers (dropdown, autocomplete) */
+:host ::ng-deep .p-dialog .field .p-dropdown,
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container {
+    padding: 0; /* Wrapper itself has no padding */
+    display: flex; /* Make wrappers flex */
+    align-items: center;
+    position: relative; /* Needed for absolutely positioned elements within */
+}
+/* Placeholder Styling */
+:host ::ng-deep .p-dialog .field ::placeholder,
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-label.p-placeholder {
+    color: #9ca3af;
+    opacity: 1;
+}
+/* --- Consistent Focus State --- */
+:host ::ng-deep .p-dialog .field .p-inputtext:enabled:focus,
+:host ::ng-deep .p-dialog .field .p-dropdown.p-focus,
+:host ::ng-deep .p-dialog .field .p-calendar .p-inputtext:enabled:focus,
+:host ::ng-deep .p-dialog .field .p-autocomplete.p-focus .p-autocomplete-multiple-container {
+    border-color: #FF8C00 !important; /* Use primary color */
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.3) !important;
+    outline: none;
+}
+
+/* ============================
+   Component Specific Styles
+============================ */
+
+/* --- Dropdown (p-dropdown) --- */
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-label {
+    padding: 0.75rem 1rem; /* Standard padding */
+    padding-right: 5.5rem; /* More space needed for clear icon + trigger */
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    color: #374151;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex; /* Allow aligning avatar/text inside */
+    align-items: center; /* Vertically align avatar/text inside */
+}
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-trigger {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2.5rem;
+    color: #9ca3af;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    transition: color 0.2s ease-out;
+}
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-trigger:hover {
+    color: #6b7280;
+}
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-clear-icon {
+    position: absolute;
+    right: 2.5rem; /* Position left of trigger */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem; /* Easier to click */
+    z-index: 2;
+}
+:host ::ng-deep .p-dialog .field .p-dropdown .p-dropdown-clear-icon:hover {
+    color: #6b7280;
+}
+
+/* --- AutoComplete (p-autocomplete) --- */
+:host ::ng-deep .p-dialog .field .p-autocomplete {
+    width: 100%; /* Ensure autocomplete takes full width */
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container {
+     /* Inherits base styles */
+     padding: 0.3rem 2.8rem 0.3rem 0.7rem; /* Adjusted padding: top/bottom, R(for dropdown), L */
+     min-height: 46px; /* Match other fields */
+     cursor: text;
+     flex-wrap: wrap; /* Allow chips to wrap */
+     gap: 0.4rem; /* Space between chips/input */
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-input {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    flex-grow: 1;
+    background: transparent;
+    padding: 0.4rem 0.3rem; /* Minimal padding for input itself */
+    font-size: 0.95rem;
+    color: #374151;
+    margin: 0;
+    min-width: 100px; /* Prevent input becoming too small */
+}
+/* Style the Chips directly */
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token {
+    display: inline-flex; /* Use inline-flex for chip content */
+    align-items: center;
+    background-color: #eef2ff; /* Light indigo background */
+    color: #4338ca; /* Indigo text */
+    border-radius: 6px;
+    padding: 0; /* Remove outer padding */
+    margin: 0; /* Let gap handle spacing */
+    font-size: 0.85rem;
+    font-weight: 500;
+    /* overflow: hidden; Ensure avatar rounding works */
+}
+/* Style the user-item div *inside* the chip */
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .user-chip {
+     padding: 0.2rem 0rem 0.2rem 0.5rem; /* Add padding here */
+     display: flex;
+     align-items: center;
+     background: none;
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .user-chip .p-avatar {
+     width: 18px; /* Smaller avatar in chip */
+     height: 18px;
+     font-size: 0.65rem;
+     margin-right: 0.4rem; /* Space between avatar and name in chip */
+     background-color: #ede9fe; /* Light purple */
+     color: #7c3aed; /* Purple */
+     flex-shrink: 0;
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token .p-autocomplete-token-icon {
+    margin-left: 0.5rem; /* Space before remove icon */
+    padding: 0.5rem; /* Increased clickable area for remove icon */
+    cursor: pointer;
+    align-self: center; /* Align icon vertically */
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-dropdown {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2.5rem;
+    color: #9ca3af;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #d1d5db; /* Separator line */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+:host ::ng-deep .p-dialog .field .p-autocomplete .p-autocomplete-dropdown:hover {
+    color: #6b7280;
+}
+
+/* --- Calendar (p-calendar) --- */
+:host ::ng-deep .p-dialog .field .p-calendar {
+    display: block;
+    width: 100%;
+    position: relative;
+}
+:host ::ng-deep .p-dialog .field .p-calendar .p-button {
+    position: absolute;
+    right: 1px; /* Position inside border */
+    top: 1px;
+    bottom: 1px;
+    width: 2.8rem;
+    background: transparent !important;
+    border: none !important;
+    color: #9ca3af !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 7px 7px 0; /* Match input right radius */
+    transition: color 0.2s ease-out;
+    z-index: 3;
+}
+:host ::ng-deep .p-dialog .field .p-calendar .p-button .pi-calendar {
+    font-size: 1.1rem;
+}
+:host ::ng-deep .p-dialog .field .p-calendar .p-button:enabled:hover {
+    background: transparent !important;
+    color: #6b7280 !important;
+}
+:host ::ng-deep .p-dialog .field .p-calendar .p-inputtext:enabled:focus {
+    /* Focus state handled by general rule */
+    position: relative; /* Ensure input stays above button bg if any */
+    z-index: 2;
+}
+:host ::ng-deep .p-dialog .field .p-calendar .p-button:focus {
+     /* Prevent extra focus ring on button */
+    box-shadow: none !important;
+    outline: none !important;
+}
+:host ::ng-deep .p-datepicker {
+    z-index: 1101 !important; /* Ensure datepicker is above dialog */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* --- Shared User Item Display (in Dropdowns/Autocomplete Lists/Selected) --- */
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem; /* Space between avatar and name */
+}
+/* Avatar within dropdown list items */
+:host ::ng-deep .p-dropdown-panel .user-item .p-avatar,
+:host ::ng-deep .p-autocomplete-panel .user-item .p-avatar,
+:host ::ng-deep .p-dropdown .p-dropdown-label .user-item .p-avatar {
+    width: 24px; /* Standard size in lists/selection */
+    height: 24px;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    background-color: #ffedd5; /* Light orange */
+    color: #c2410c; /* Darker orange text */
+}
+.user-item span {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.2;
+}
+/* Panel Item Styling (Dropdown & Autocomplete) */
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item,
+:host ::ng-deep .p-autocomplete-panel .p-autocomplete-item {
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.15s ease-out;
+}
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item:hover,
+:host ::ng-deep .p-autocomplete-panel .p-autocomplete-item:hover {
+    background-color: #f9fafb; /* Very light gray hover */
+}
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item.p-highlight,
+:host ::ng-deep .p-autocomplete-panel .p-autocomplete-item.p-highlight {
+    background-color: #fff7ed; /* Light orange highlight */
+    color: #9a3412; /* Dark orange text */
+    font-weight: 500;
+}
+
+/* --- Form Grid Layout for Dates --- */
+:host ::ng-deep .p-dialog .formgrid.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin: 0; /* Override grid margins */
+    margin-bottom: 1.75rem; /* Add bottom margin like other fields */
+}
+:host ::ng-deep .p-dialog .formgrid.grid .field.col {
+    padding: 0; /* Override grid padding */
+    margin-bottom: 0; /* Remove margin from inner fields */
+}
+
+/* --- Dialog Footer Refinements --- */
+:host ::ng-deep .p-dialog .p-dialog-footer {
+    background-color: #f9fafb; /* Slightly off-white footer */
+    border-top: 1px solid #e5e7eb;
+    padding: 1.25rem 1.75rem;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+:host ::ng-deep .p-dialog-footer .p-button {
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.65rem 1.35rem;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+:host ::ng-deep .p-dialog-footer .p-button-text {
+    color: #4b5563;
+    background-color: transparent;
+}
+:host ::ng-deep .p-dialog-footer .p-button-text:enabled:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+:host ::ng-deep .p-dialog-footer .p-button-warning {
+    background-color: #FF8C00; /* Match theme */
+    border-color: #FF8C00;
+    color: #ffffff;
+}
+:host ::ng-deep .p-dialog-footer .p-button-warning:enabled:hover {
+    background-color: #f97316; /* Slightly darker orange */
+    border-color: #f97316;
+}
+:host ::ng-deep .p-dialog-footer .p-button-warning:enabled:focus {
+    background-color: #f97316;
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.4); /* Focus ring */
+}
+:host ::ng-deep .p-dialog-footer .p-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =================================
+   VIEW DIALOG STYLES - ENHANCED
+================================= */
+
+:host ::ng-deep .view-dialog-content .field-view {
+    display: flex;
+    align-items: flex-start; /* Align label top if value wraps */
+    margin-bottom: 1.2rem; /* Consistent spacing */
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+:host ::ng-deep .view-dialog-content .field-view:last-child {
+    margin-bottom: 0;
+}
+:host ::ng-deep .view-dialog-content .field-view strong {
+    display: block; /* Changed from inline-block */
+    width: 140px; /* Fixed width for labels */
+    flex-shrink: 0; /* Prevent label shrinking */
+    margin-right: 1rem;
+    color: #374151; /* Dark gray */
+    font-weight: 600; /* Bold */
+    padding-top: 0.1rem; /* Align better with multi-line values */
+}
+:host ::ng-deep .view-dialog-content .field-view .value {
+    flex-grow: 1;
+    color: #4b5563; /* Medium gray */
+    word-break: break-word; /* Allow long values to wrap */
+    /* Align items within the value span if needed */
+    display: flex; /* Use flex for content alignment */
+    flex-wrap: wrap; /* Allow wrapping for tags/avatars */
+    gap: 0.5rem; /* Space between items if they wrap */
+    align-items: center; /* Center single line items like tags/RC */
+}
+/* Style for the member name list */
+:host ::ng-deep .view-dialog-content .member-name-list {
+    display: flex;
+    flex-direction: column; /* Stack names vertically */
+    gap: 0.3rem; /* Space between names */
+    align-items: flex-start; /* Align names to the left */
+    width: 100%; /* Take full width of the value area */
+}
+:host ::ng-deep .view-dialog-content .member-name-item {
+    padding: 2px 0; /* Small vertical padding */
+    line-height: 1.4; /* Adjust line height if needed */
+}
+/* Adjust user-item alignment in RC field */
+:host ::ng-deep .view-dialog-content .field-view .value .user-item {
+    display: inline-flex; /* Keeps avatar and name together */
+    align-items: center;
+    gap: 0.5rem;
+}
+:host ::ng-deep .view-dialog-content .field-view .value .user-item .p-avatar {
+     width: 24px; /* Consistent avatar size */
+     height: 24px;
+     font-size: 0.7rem;
+     background-color: #ffedd5; /* Match dropdown avatar */
+     color: #c2410c;
+}
+
+
+/* ============================
+   RESPONSIVE STYLES
+============================ */
+@media (max-width: 992px) {
+    .projects-container { padding: 1.5rem; }
+    .table-container { overflow-x: auto; } /* Allow horizontal scroll */
+    :host ::ng-deep .custom-table { min-width: 800px; } /* Set min-width for scroll */
+     /* Make dialog wider on medium screens */
+     :host ::ng-deep .p-dialog {
+        width: 70vw !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-container { padding: 1rem; }
+    .projects-header h1 { font-size: 1.7rem; }
+    .projects-header p { font-size: 0.95rem; margin-bottom: 1.5rem; }
+    .summary-stats { gap: 0.8rem 1.2rem; margin-bottom: 2rem; justify-content: flex-start; }
+    .summary-stats span:first-of-type { width: 100%; margin-bottom: 0.5rem; font-size: 1rem; } /* Total full width */
+    .toolbar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+    .toolbar .new-project-button { margin-left: 0; order: -1; margin-bottom: 0.5rem; } /* Move button to top */
+    .toolbar .search-field { min-width: unset; max-width: unset; width: 100%; }
+    /* Dialog nearly full width on small screens */
+    :host ::ng-deep .p-dialog {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        min-width: unset !important;
+    }
+    /* Stack date fields */
+    :host ::ng-deep .p-dialog .formgrid.grid {
+        grid-template-columns: 1fr; /* Single column */
+        gap: 0; /* Remove grid gap, rely on field margin */
+        margin-bottom: 0; /* Remove grid margin */
+    }
+     /* Add margin back to inner date fields when stacked */
+    :host ::ng-deep .p-dialog .formgrid.grid .field.col {
+         margin-bottom: 1.75rem;
+    }
+     :host ::ng-deep .p-dialog .formgrid.grid .field.col:last-child {
+         margin-bottom: 0;
+    }
+
+    /* Responsive View Dialog: Stack Label and Value */
+    :host ::ng-deep .view-dialog-content .field-view {
+        flex-direction: column; /* Stack label and value */
+        align-items: flex-start;
+        gap: 0.4rem; /* Small gap between stacked label/value */
+    }
+     :host ::ng-deep .view-dialog-content .field-view strong {
+        width: auto; /* Let label take natural width */
+        margin-right: 0;
+        padding-top: 0; /* Reset padding */
+    }
+}
