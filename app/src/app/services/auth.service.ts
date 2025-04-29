@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
 import { LoginRequestDto } from '../dto/auth.dto';
 import { LoginResponseDTO } from '../dto/login-response.dto';
 import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
+import { User } from '../models/user.model';
+
 
 // Simple interface for basic user info state
 interface UserInfo {
@@ -241,7 +243,10 @@ export class AuthService {
     return this.userInfoSubject.value?.firstName ?? null;
     // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
   }
-
+  getUser(): User | null {
+    return {firstName: this.userInfoSubject.value?.firstName,lastName:this.userInfoSubject.value?.lastName} as User ;
+    // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
+  }
   /**
    * Gets the current user's last name synchronously.
    * Returns null if not authenticated.

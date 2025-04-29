@@ -11,26 +11,12 @@
 
   <aside class="w-[19%] bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen">
     <!-- Section: Active Projects -->
-    <div class="space-y-2">
-      <div class="flex justify-between items-start">
-        <!-- Bar Chart Icon (SVG Example) -->
-      <i class=" pi pi-chart-bar " style="color:var(--color-primary);font-size: 20px;" ></i>
-        <a href="#" class="text-sm text- text-primary hover:text-orange-600 ">View All</a>
-      </div>
-      <p style="font-family: inter;" class="text-[36px] tracking-wider font-bold text-gray-900">{{ activeProjects }}</p>
-      <p class="text-sm text-gray-500">Active Projects</p>
-    </div>
+     <div class="space-x-5">
+<app-project-stats-card [projectStats]="activeProjects"  icon="pi pi-chart-bar" title="Active Projects"/>
   
     <!-- Section: Completed Projects -->
-    <div class="space-y-2">
-      <div class="flex justify-between items-start">
-        <!-- Check Circle Icon (SVG Example) -->
-        <i class=" pi  pi-check-circle " style="color:var(--color-primary); font-size: 20px;" ></i>
-        <a href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
-      </div>
-      <p style="font-family: inter;"  class="text-[36px] tracking-wider font-bold text-gray-900">{{ completedProjects }}</p>
-      <p class="text-sm text-gray-500">Completed Projects</p>
-    </div>
+    <app-project-stats-card [projectStats]="completedProjects" icon="pi  pi-check-circle" title="Completed Projects"/>
+  </div>
   <!-- stats section -->
    <div class="flex  flex-col gap-5">
 
@@ -38,31 +24,15 @@
     <!-- Section: Site Statistics -->
     <div class="space-y-3 ">
    
-      <div class="bg-[#F9FAFB] p-4 rounded-md space-y-2">
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-gray-600 text-sm">Total Sites</span>
-          <span class="font-semibold text-[16px] text-gray-900">{{ totalSites }}</span>
-        </div>
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-gray-600 text-sm">Total Capacity</span>
-          <span class="font-semibold text-[16px] text-gray-900">{{ totalCapacity }}</span>
-        </div>
-      </div>
+      <app-site-stats-card [siteValue1]="{key :'Total Sites',value:totalSites}" [siteValue2]="{key:'Total Capacity',value:totalCapacity}"/>
     </div>
   
      <!-- Section: Worker Statistics -->
+     
      <div class="space-y-2">
-       <!-- Title could be added if desired: <h3 class="text-base font-semibold text-gray-800">Worker Distribution</h3> -->
-      <div class="bg-[#F9FAFB] p-4 rounded-md space-y-2">
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-gray-600">Remote Workers</span>
-          <span class="font-semibold text-base text-[#2563EB]">{{ remoteWorkersPercent }}%</span>
-        </div>
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-gray-600">On-site Workers</span>
-          <span class="font-semibold text-base text-[#22C55E]">{{ onsiteWorkersPercent }}%</span>
-        </div>
-      </div>
+      <app-site-stats-card [siteValue1]="{key :'Remote Workers',value:(totalSites+'%'),color:'text-[#2563EB]'}" 
+      [siteValue2]="{key:'On-site Workers',value:(onsiteWorkersPercent+'%'),color:'text-[#22C55E]'}"/>
+      
     </div>
   </div>
     <!-- Section: Highest Duration -->
@@ -95,22 +65,14 @@
       <p class="text-sm text-gray-500">{{ largestTeamProject }}</p>
       <p class="text-xs text-gray-500">{{ largestTeamMembersCount }} members</p>
       <!-- PrimeNG Avatar Group -->
-      <p-avatarGroup styleClass=" ml-2 custom-avatar-group">
-          <p-avatar
-            *ngFor="let avatarUrl of teamAvatars"
-            [image]="avatarUrl"
-            size="normal"
-            shape="circle">
-          </p-avatar>
+      <p-avatarGroup styleClass=" ml-2 ">
+          <app-user-avatar *ngFor="let user of users" [userInitials]="userUtils.getUserInitials(user)"/>
+      
+          <app-user-avatar 
+          *ngIf="overflowAvatarsCount > 0"
+            [userInitials]="'+' + overflowAvatarsCount"/>
           <!-- Overflow indicator -->
-          <p-avatar
-            *ngIf="overflowAvatarsCount > 0"
-            [label]="'+' + overflowAvatarsCount"
-            size="normal"
-            shape="circle"
-            styleClass="bg-gray-200 text-gray-700 font-semibold">
-            <!-- Custom styling for the overflow avatar -->
-           </p-avatar>
+  
       </p-avatarGroup>
     </div>
     </div>
@@ -131,18 +93,13 @@
         <p-button
           label="View Calendar"
           icon="pi pi-calendar "
-         
+          (click)="navigateToCalendar()"
           
           styleClass=" !h-9  gray-btn !bg-[#F3F4F6] !border-0 !text-sm !px-5 "
           [style]="{'color': '#374151','text-color':'red !important'}">
           <!-- Using inline style for specific gray button look if needed -->
         </p-button>
-        <p-button
-          label="Add New Project"
-          styleClass="!border-0 orange-btn !h-9 !text-white !text-sm !bg-primary !px-5 "
-       >
-           <!-- Use p-button-warning or inline style for orange -->
-        </p-button>
+
       </div>
     </div>
   
@@ -200,17 +157,18 @@
           <tr class="border-b border-gray-200">
             <td class="py-3 px-4 text-sm text-gray-800 font-medium whitespace-nowrap">
               <!-- Special styling for Hassan Benjelloun -->
-              <span [innerHTML]="rowData.name === 'Hassan Benjelloun' ? rowData.name.replace(' ', '<br>') : rowData.name"></span>
+              <span >{{rowData.user.firstName}} {{rowData.user.lastName}}</span>
             </td>
             <td class="py-3 px-4 text-sm text-gray-500 whitespace-nowrap">{{ rowData.project }}</td>
             <!-- Dynamic Status Columns -->
-            <td *ngFor="let date of dateColumns; let i = index" class="py-3 px-4 text-sm whitespace-nowrap">
-               <ng-container *ngIf="getStatus(rowData, i) as status">
+            <td *ngFor="let date of dateColumns;" class="py-3 px-4 text-sm whitespace-nowrap">
+               <ng-container *ngIf="getStatus(rowData,  date) as status">
                    <span class="flex justify-center items-center">
-                     <span class="h-2 w-6 rounded-full mr-4"
+                     <span class="h-2 w-6 bg-gray-400 rounded-full mr-4"
                            [ngClass]="{
-                             'bg-[#3B82F6]': status === 'Remote',
-                             'bg-[#F97316]': status === 'On-site'
+                             'bg-[#3B82F6]': status === 'remote',
+                             'bg-[#F97316]': status === 'on-site',
+                             'bg-gray-400': status === 'off'
                            }">
                      </span>
                
@@ -250,7 +208,7 @@
     <!-- Section Header -->
     <div class="flex justify-between items-center">
       <h2 class="text-lg font-semibold text-gray-900">Pending Requests</h2>
-      <a href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
+      <a routerLink="/RemoteSync/RC/Report" href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
     </div>
   
     <!-- Requests List -->

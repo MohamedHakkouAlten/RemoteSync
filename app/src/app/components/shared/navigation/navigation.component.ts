@@ -1,10 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
-import { AvatarModule } from 'primeng/avatar';
-import { AvatarGroupModule } from 'primeng/avatargroup';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { BadgeModule } from 'primeng/badge';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { TooltipModule } from 'primeng/tooltip';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { MenubarModule } from 'primeng/menubar';
@@ -14,6 +11,8 @@ import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { NotificationPanelComponent } from "../notification-panel/notification-panel.component";
 import { AuthService } from '../../../services/auth.service';
+import { UserUtils } from '../../../utilities/UserUtils';
+import { UserAvatarComponent } from "../shared-ui/user-avatar/user-avatar.component";
 
 
 
@@ -25,25 +24,20 @@ import { AuthService } from '../../../services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-    AvatarModule,
-    AvatarGroupModule,
-    BadgeModule,
-    TooltipModule,
-    OverlayBadgeModule,
-    MenubarModule,
     ButtonModule,
-    RippleModule,
     MenuModule,
     RouterModule,
-    NotificationPanelComponent
+    NotificationPanelComponent,
+    UserAvatarComponent
 ]
 })
 export class NavigationComponent implements OnInit {
 
 
-
+    userUtils=UserUtils
     // Properties to make the component more dynamic later
     userName: string = '';
+    userInitials:string=""
     @ViewChild('userMenu') userMenu!: Menu; // Reference to the p-menu component
     menuItems: MenuItem[] = []; // Array to hold menu items
     userAvatarUrl: string = 'assets/images/avatar.png'; // Replace with your actual path
@@ -70,10 +64,8 @@ export class NavigationComponent implements OnInit {
 
   ngOnInit(): void {
     // Get user's first and last name from AuthService
-    const firstName = this.authService.getFirstName() || '';
-    const lastName = this.authService.getLastName() || '';
-    this.userName = firstName && lastName ? `${firstName} ${lastName}` : 'Guest User';
-    
+this.updateUserName()
+    this.userInitials=this.userUtils.getUserInitials(this.authService.getUser())
     // Subscribe to user info changes to update name when user logs in/out
     this.authService.userInfo$.subscribe(userInfo => {
       if (userInfo) {
