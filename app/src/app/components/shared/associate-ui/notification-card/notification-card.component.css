@@ -1,0 +1,8 @@
+  /* Unread item style */
+  .notification-item.unread {
+
+    border-left-width: 3px !important;
+    border-left-style: solid !important;
+    border-left-color: var(--color-primary) !important;
+    border-radius: 0 !important; /* orange-400 */
+}

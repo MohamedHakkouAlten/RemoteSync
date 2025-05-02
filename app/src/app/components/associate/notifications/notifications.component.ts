@@ -1,24 +1,17 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
+import { Notification } from '../../../models/notification.model';
+import { NotificationType } from '../../../enums/notification-type.enum';
 
 // Define an interface for notification structure
 // Define the interface WITHOUT styling properties
-interface Notification {
-  id: number;
-  type: 'report' | 'rotation' | 'general';
-  title: string;
-  senderInitial: string;
-  senderName: string;
-  timestamp: string;
-  message: string;
-  isRead: boolean;
-}
+
 
 // Interface for Tab Configuration
 interface TabConfig {
-  title: string;
+ 
   value: string; // Unique identifier for the tab
-  filterFn: (notification: Notification) => boolean; // Function to filter notifications
+
   countSignal: () => number; // Function returning the count signal for the badge
 }
 @Component({
@@ -29,22 +22,23 @@ interface TabConfig {
 })
 export class NotificationsComponent implements OnInit {
 
-  private allNotifications = signal<Notification[]>([]); // Holds ALL notifications (using signals)
 
+  private allNotifications = signal<Notification[]>([]); // Holds ALL notifications (using signals)
+  private unReadNotifications = signal<Notification[]>([]); 
+  private reportsNotifications = signal<Notification[]>([]); 
+  private calendarNotifications = signal<Notification[]>([]); 
   // Computed signals for counts
-  allCount = computed(() => this.allNotifications().length);
-  unreadCount = computed(() => this.allNotifications().filter(n => !n.isRead).length);
-  reportCount = computed(() => this.allNotifications().filter(n => n.type === 'report').length);
-  // Assuming 'calendar' type doesn't exist, maybe it relates to reports? Adjust if needed.
-  // Or add a 'calendar' type to the Notification interface and data.
-  calendarCount = computed(() => this.allNotifications().filter(n => n.type === 'report').length); // Example: Calendar shows reports
+  allCount = signal<number>(0);
+  unreadCount = signal<number>(0);
+  reportCount =signal<number>(0);
+  calendarCount = signal<number>(0); 
 
   // Tab Configuration
   tabs: TabConfig[] = [
-    { title: 'All', value: 'all', filterFn: (n) => true, countSignal: this.allCount },
-    { title: 'Unread', value: 'unread', filterFn: (n) => !n.isRead, countSignal: this.unreadCount },
-    { title: 'Reports', value: 'reports', filterFn: (n) => n.type === 'report', countSignal: this.reportCount },
-    { title: 'Calendar', value: 'calendar', filterFn: (n) => n.type === 'report', countSignal: this.calendarCount } // Example mapping
+    { value: 'all',  countSignal: this.allCount },
+    {  value: 'unread', countSignal: this.unreadCount },
+    {  value: 'reports',countSignal: this.reportCount },
+    {  value: 'calendar',  countSignal: this.calendarCount } // Example mapping
   ];
 
   // Active Tab State
@@ -52,47 +46,222 @@ export class NotificationsComponent implements OnInit {
 
   // Pagination State
   first = signal<number>(0); // Index of the first record displayed
-  rows = signal<number>(5); // Number of rows per page
-  totalRecords = signal<number>(0); // Total number of notifications *for the active filter*
+  rows = signal<number>(2); // Number of rows per page
+  totalRecords = computed(()=>{
+    
+      switch(this.activeTabValue()){
+        case 'unread' :return this.unreadCount();
+        case 'reports':return this.reportCount();
+        case 'calendar' :return this.calendarCount();
+        default :return this.allCount();
+      
+    }
+  }); // Total number of notifications *for the active filter*
 
   // Filtered list based on active tab (computed signal)
-  filteredNotifications = computed(() => {
-    const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.filterFn || (() => true);
-    return this.allNotifications().filter(currentFilterFn);
-  });
+  // filteredNotifications = computed(() => {
+  //   const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.filterFn || (() => true);
+  //   return this.allNotifications().filter(currentFilterFn);
+  // });
 
+  
   // Displayed list based on pagination applied to filtered list (computed signal)
   displayedNotifications = computed(() => {
-    const filtered = this.filteredNotifications();
+    const list = this.activeList();
     const startIndex = this.first();
     const endIndex = startIndex + this.rows();
-    return filtered.slice(startIndex, endIndex);
+    return list.slice(startIndex, endIndex);
+  });
+  private activeList = computed(() => {
+    switch (this.activeTabValue()) {
+      case 'unread':   return this.unReadNotifications();
+      case 'reports':  return this.reportsNotifications();
+      case 'calendar': return this.calendarNotifications();
+      default:         return this.allNotifications();
+    }
   });
 
   ngOnInit(): void {
     this.loadNotifications();
     // Initial calculation of totalRecords for the default tab
-    this.updateTotalRecords();
+   // this.updateTotalRecords();
   }
 
   loadNotifications(): void {
     // Simulate fetching data
-    const data: Notification[] = [
-      { id: 1, type: 'report',   title: 'Report Approval', senderInitial: 'SJ', senderName: 'Sarah Johnson', timestamp: '14 min ago', message: 'Your quarterly report has been approved. You can now proceed...', isRead: false },
-      { id: 2, type: 'rotation', title: 'Rotation Update', senderInitial: 'MC', senderName: 'Michael Chen',  timestamp: '1 hour ago', message: 'You have been assigned to the Project Aurora task force...', isRead: false },
-      { id: 3, type: 'general',  title: 'System Update', senderInitial: 'IT', senderName: 'IT Department', timestamp: '1 day ago', message: 'A system maintenance is scheduled...', isRead: true },
-      { id: 4, type: 'report',   title: 'Monthly Review Due', senderInitial: 'PM', senderName: 'Project Manager', timestamp: '2 days ago', message: 'Please submit your monthly review report by EOD Friday.', isRead: false },
-      { id: 5, type: 'general',  title: 'Reminder: Timesheet', senderInitial: 'HR', senderName: 'Human Resources', timestamp: '2 days ago', message: 'Friendly reminder to submit your timesheet for the week.', isRead: true },
-      { id: 6, type: 'rotation', title: 'Project Kickoff Meeting', senderInitial: 'MC', senderName: 'Michael Chen',  timestamp: '3 days ago', message: 'The kickoff meeting for Project Aurora is scheduled for next Monday.', isRead: false },
-      { id: 7, type: 'report',   title: 'Budget Approved', senderInitial: 'FN', senderName: 'Finance Dept', timestamp: '4 days ago', message: 'The Q3 budget proposal has been approved.', isRead: true },
-    ];
+    const now = new Date();
+    this.unreadCount.set(8);
+    this.allCount.set(4);
+    this.reportCount.set(2);
+    this.calendarCount.set(2);
+
+    this.calendarNotifications.set([
+      {
+        id: 22,
+        type: NotificationType.Rotation,
+        sender: { firstName: 'Michael', lastName: 'Chen' },
+        message: 'assigned you to the Project Aurora task force.',
+        timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
+        isRead: false,
+
+      },
+      {
+        id: 31,
+        type: NotificationType.Rotation,
+        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
+        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+        isRead: false,
+        sender: { firstName: 'Mic', lastName: 'drop' },
+        // No actions needed for this type often
+      },
+      {
+        id: 21,
+        type: NotificationType.Report,
+        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
+        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+        isRead: false,
+        sender: { firstName: 'Mic', lastName: 'drop' },
+        // No actions needed for this type often
+      },
+      {
+        id: 5,
+        type: NotificationType.Rotation,
+        message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
+        timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
+        isRead: false,
+        sender: { firstName: 'Walk', lastName: 'Talk' },
+
+      },
+    ])
+
+
+    this.unReadNotifications.set([
+      {
+        id: 22,
+        type: NotificationType.Rotation,
+        sender: { firstName: 'Michael', lastName: 'Chen' },
+        message: 'assigned you to the Project Aurora task force.',
+        timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
+        isRead: false,
+
+      },
+      {
+        id: 31,
+        type: NotificationType.Rotation,
+        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
+        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+        isRead: false,
+        sender: { firstName: 'Mic', lastName: 'drop' },
+        // No actions needed for this type often
+      },
+      {
+        id: 21,
+        type: NotificationType.Report,
+        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
+        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+        isRead: false,
+        sender: { firstName: 'Mic', lastName: 'drop' },
+        // No actions needed for this type often
+      },
+      {
+        id: 5,
+        type: NotificationType.Rotation,
+        message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
+        timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
+        isRead: false,
+        sender: { firstName: 'Walk', lastName: 'Talk' },
+
+      },
+    ])
+
+    const data: Notification[] =[
+    
+    
+          {
+            id: 1,
+            type:NotificationType.Report,
+            sender: { firstName: 'Sarah', lastName: 'Johnson' },
+            message: 'approved your quarterly report.',
+            timestamp: new Date(now.getTime() - 5 * 60 * 1000), // 5 minutes ago
+            isRead: false
+    
+          },
+          {
+            id: 2,
+            type: NotificationType.Rotation,
+            sender: { firstName: 'Michael', lastName: 'Chen' },
+            message: 'assigned you to the Project Aurora task force.',
+            timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
+            isRead: false,
+    
+          },
+          {
+            id: 3,
+            type: NotificationType.Rotation,
+            message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
+            timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
+            isRead: false,
+            sender: { firstName: 'Mic', lastName: 'drop' },
+            // No actions needed for this type often
+          },
+          {
+            id: 4,
+            type: NotificationType.Report,
+            sender: { firstName: 'Cheef', lastName: 'Beef' },
+            message: 'commented on your project plan: "Great timeline structure, let\'s discuss the resource allocation tomorrow."',
+            timestamp: new Date(now.setDate(now.getDate() - 1)), // Yesterday
+            isRead: true, // Example of a read notification
+    
+          },
+          {
+            id: 5,
+            type: NotificationType.Rotation,
+            message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
+            timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
+            isRead: false,
+            sender: { firstName: 'Walk', lastName: 'Talk' },
+    
+          },
+          // Add more notifications as needed for testing scroll
+    
+        ];
     this.allNotifications.set(data);
   }
-
-  // Update total records based on the currently filtered list
-  updateTotalRecords(): void {
-    this.totalRecords.set(this.filteredNotifications().length);
+  handleNotificationDismiss(notificationId: string|number) {
+  if(this.unreadCount()>0)  this.unreadCount.update(count=>count-1)
+    this.updateSpecificNotificationList(this.allNotifications, notificationId);
+  this.updateSpecificNotificationList(this.reportsNotifications, notificationId);
+  this.updateSpecificNotificationList(this.calendarNotifications, notificationId);
+  this.updateSpecificNotificationList(this.unReadNotifications, notificationId);
+  this.deleteReadNotification(notificationId);
   }
+
+
+  private updateSpecificNotificationList(
+    listSignal: WritableSignal<Notification[]>, // Pass the signal itself
+    notificationId: string | number
+  ): void {
+    listSignal.update(currentNotifications =>
+      this.markNotificationAsReadInArray(currentNotifications, notificationId)
+    );
+}
+deleteReadNotification(notificationId:string|number){
+  this.unReadNotifications.update(notifications => notifications.filter(n=>!n.isRead))
+}
+  private markNotificationAsReadInArray(
+    notifications: Notification[],
+    notificationId: string | number
+  ): Notification[] {
+    return notifications.map(notification =>
+      notification.id === notificationId
+        ? { ...notification, isRead: true } // Create new object if ID matches
+        : notification                     // Return original object otherwise
+    );
+  }
+  // Update total records based on the currently filtered list
+  // updateTotalRecords(): void {
+  //   this.totalRecords.set(this.filteredNotifications().length);
+  // }
 
   // --- Event Handlers ---
 
@@ -109,56 +278,12 @@ export class NotificationsComponent implements OnInit {
    onTabChange(newValue: string|number): void {
     this.activeTabValue.set(newValue);
     this.first.set(0); // Reset pagination to the first page
-    this.updateTotalRecords(); // Update total records for the new filter
+ //   this.updateTotalRecords(); // Update total records for the new filter
     // No need to explicitly update displayedNotifications, computed signal handles it
   }
 
-  viewCalendar(id: number): void {
-    console.log(`Viewing calendar related to notification ${id}`);
-  }
 
-  viewReport(id: number): void {
-    console.log(`Viewing report related to notification ${id}`);
-  }
+  
 
-  dismissNotification(id: number): void {
-    console.log(`Dismissing notification ${id}`);
-    this.allNotifications.update(currentNotifications =>
-        currentNotifications.filter(n => n.id !== id)
-    );
-    // Re-calculate totalRecords based on potentially new filtered list size
-    this.updateTotalRecords();
 
-    // Adjust 'first' if the current page becomes empty after deletion (more complex with signals)
-    // Check if the current 'first' is now beyond the new totalRecords
-    const currentFirst = this.first();
-    const currentRows = this.rows();
-    const newTotal = this.totalRecords();
-    if (currentFirst >= newTotal && newTotal > 0) {
-        const newLastPageFirst = Math.floor((newTotal - 1) / currentRows) * currentRows;
-        this.first.set(newLastPageFirst);
-    } else if (newTotal === 0) {
-        this.first.set(0); // Reset if list becomes empty
-    }
-    // Computed signals 'filteredNotifications' and 'displayedNotifications' will update automatically
-  }
-
-  markAllAsRead(): void {
-    console.log('Marking all as read');
-    this.allNotifications.update(notifications =>
-        notifications.map(n => ({ ...n, isRead: true }))
-    );
-    // If the current tab is 'unread', the list will automatically become empty.
-    // If we are on the 'unread' tab, we might need to reset pagination and update totalRecords.
-    if(this.activeTabValue() === 'unread') {
-        this.first.set(0);
-        this.updateTotalRecords(); // totalRecords will become 0
-    }
-    // Counts and displayed list will update automatically via signals.
-  }
-
-  // Helper for *ngFor trackBy
-  trackById(index: number, notification: Notification): number {
-    return notification.id;
-  }
 }

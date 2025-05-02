@@ -52,6 +52,7 @@
     <div class="pagination-footer flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-3 rounded-lg shadow border border-gray-100" *ngIf="totalRecords > 0">
         <span class="text-sm text-gray-600">{{ paginationSummary }}</span>
         <p-paginator [rows]="rows" [totalRecords]="totalRecords" [first]="first" (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[6, 12, 24]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
+    
     </div>
 
 </div> <!-- End reports-page -->

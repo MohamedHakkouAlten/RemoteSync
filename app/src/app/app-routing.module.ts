@@ -52,7 +52,7 @@ const routes: Routes = [
 
 
   // ROUTES FOR RC
-  { path: 'RemoteSync/Rc/Dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: 'remotesync/rc/dashboard', loadChildren: () => import('./components/rc/dashboard/dashboard.module').then(m => m.DashboardModule) },
   { path: 'RemoteSync/RC/Project', loadChildren: () => import('./components/rc/project/project.module').then(m => m.ProjectModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'RemoteSync/RC/Report', loadChildren: () => import('./components/rc/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'RemoteSync/Rc/Profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },

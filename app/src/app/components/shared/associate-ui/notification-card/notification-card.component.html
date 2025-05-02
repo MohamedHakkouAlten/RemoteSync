@@ -1,0 +1,45 @@
+<div class="notification-item border border-gray-200 rounded-sm p-3  bg-white"
+[class.unread]="!notification.isRead">
+<div class="flex items-start space-x-3">
+   <!-- Icon Container -->
+   <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+        [ngClass]="{
+           'bg-amber-100': notification.type === 'report',
+           'bg-teal-100': notification.type === 'rotation',
+           'bg-purple-100': notification.type === 'general'
+        }">
+       <!-- Icon -->
+       <ng-container [ngSwitch]="notification.type">
+           <i *ngSwitchCase="'report'"   class="text-lg pi pi-file text-amber-600"></i>
+           <i *ngSwitchCase="'rotation'" class="text-lg pi pi-clock text-teal-600"></i>
+           <i *ngSwitchCase="'general'"  class="text-lg pi pi-info-circle text-purple-600"></i>
+           <!-- Optional: Add a default case if notification.type could be something else -->
+           <i *ngSwitchDefault class="text-lg pi pi-question-circle text-gray-500"></i> <!-- Example default -->
+       </ng-container>
+   </div>
+   <!-- Main Content -->
+   <div class="flex-grow">
+       <!-- Header -->
+       <div class="flex justify-between items-center mb-0.5">
+           <h3 class="text-sm font-semibold text-gray-900">{{ notification.type}}</h3>
+           <span class="text-xs text-gray-500">{{  getRelativeTime(notification.timestamp) }}</span>
+       </div>
+       <!-- Sender 
+       <div class="flex items-center space-x-1.5 mb-1.5">
+            <p-avatar [label]="userUtils.getUserInitials(notification.sender)" shape="circle" styleClass="text-white !text-xs w-5 h-5"></p-avatar>
+            <span class="text-xs text-gray-700">{{ notification.sender.firstName+' '+notification.sender.lastName }}</span>
+       </div>
+       -->
+       <!-- Message -->
+       <p class="text-xs text-gray-600 mb-2 leading-snug">
+           {{ notification.message }}
+       </p>
+       <!-- Actions -->
+       <div class="flex items-center space-x-1.5">
+           <button *ngIf="notification.type === 'report'" pButton type="button" label="View Calendar"  icon="pi pi-calendar"  style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-8 !px-2 " (click)="viewCalendar()"></button>
+           <button *ngIf="notification.type === 'rotation'" pButton type="button" label="View Report" icon="pi pi-file-import"style="border-radius: 3px;" class=" !bg-primary !text-[12px] !border-0 !h-8 !px-2 "  (click)="viewReport()"></button>
+           <button (click)="onDismiss()" [disabled]="notification.isRead" pButton type="button" label="Dismiss" class="!text-[12px] !border-0 !h-8 !px-2 !rounded-1 !text-[#374151] !bg-[#f3f4f6]"  style="border-radius: 3px;"></button>
+       </div>
+   </div>
+</div>
+</div>

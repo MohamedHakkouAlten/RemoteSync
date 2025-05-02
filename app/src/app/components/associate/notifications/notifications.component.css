@@ -96,14 +96,7 @@
   .notification-list-scrollable::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 3px; }
   .notification-list-scrollable::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
   
-  /* Unread item style */
-  .notification-item.unread {
 
-      border-left-width: 3px !important;
-      border-left-style: solid !important;
-      border-left-color: var(--color-primary) !important;
-      border-radius: 0 !important; /* orange-400 */
-  }
   
   /* Smaller Avatar Text */
   :host ::ng-deep .p-avatar.w-5.h-5 .p-avatar-text {

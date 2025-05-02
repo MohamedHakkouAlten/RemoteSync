@@ -1,10 +1,11 @@
+import { NotificationType } from "../enums/notification-type.enum";
+import { User } from "./user.model";
+
 export interface Notification {
     id: number;
-    type: 'report' | 'rotation' | 'general';
-    sender: string; // Optional sender name
+    type: NotificationType;
+    sender:User;
+    timestamp: Date;
     message: string;
-    timestamp: Date; // Use Date object for easier sorting/formatting
     isRead: boolean;
-  
-  
   }
