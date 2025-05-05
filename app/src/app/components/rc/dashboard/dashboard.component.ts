@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RotationReport } from '../../../models/report.model';
 import { addWeeks, format, startOfWeek } from 'date-fns';
-import { AuthService } from '../../../services/auth.service';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
 import { RotationStatus } from '../../../enums/rotation-status.enum';
 
 import { Router } from '@angular/router';
@@ -74,7 +74,7 @@ users:User[]=[this.user1,this.user2]
 
 pendingRequests: RotationReport[] = [];
 
-constructor(private authService :AuthService,private rotationService:RotationService,private router:Router){
+constructor(private authService :AuthFacadeService,private rotationService:RotationService,private router:Router){
 
 }
 

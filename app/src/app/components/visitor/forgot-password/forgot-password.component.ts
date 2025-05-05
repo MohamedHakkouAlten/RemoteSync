@@ -1,73 +1,92 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
+import { ForgotPasswordRequestDto } from '../../../dto/auth/forgotpassword.dto';
+import { TranslateService } from '@ngx-translate/core';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: false,
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+  styleUrls: ['./forgot-password.component.css']
 })
-export class ForgotPasswordComponent {
-  // --- Component Properties ---
-  email: string = ''; // Bound to the email input field
-  submitted: boolean = false; // Flag for submission attempt
+export class ForgotPasswordComponent implements OnInit {
+  email: string = '';
+  submitted: boolean = false;
+  loading: boolean = false;
+  currentLanguage: SupportedLanguage = 'en'; // Default language
 
-  // Access the form instance
   @ViewChild('forgotPasswordForm') forgotPasswordForm!: NgForm;
 
-  // Inject services
   constructor(
     private messageService: MessageService,
-    private router: Router
-    // private router: Router // Inject Router if needed
+    private router: Router,
+    private authService: AuthFacadeService,
+    private translate: TranslateService,
+    private languageService: LanguageService
   ) { }
 
-  // --- Component Methods ---
+  ngOnInit(): void {
+    this.languageService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
+    });
+  }
 
-  /**
-   * Handles the request to send a password reset link.
-   */
   sendResetLink(): void {
-    this.submitted = true; // Mark form as submitted
+    this.submitted = true;
 
-    // Mark control as touched for immediate validation feedback
     if (this.forgotPasswordForm?.controls['email']) {
       this.forgotPasswordForm.controls['email'].markAsTouched();
     }
 
-    // Check form validity (based on required and email validators)
     if (this.forgotPasswordForm?.valid && this.email) {
-      // --- Success ---
+      this.loading = true;
       console.log('Password reset request for:', this.email);
-      // TODO: Implement actual API call to backend service here
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Password reset instructions sent to your email.',
-        life: 4000 // Longer display time
+      
+      const forgotPasswordData: ForgotPasswordRequestDto = {
+        email: this.email
+      };
+      
+      this.authService.forgotPassword(forgotPasswordData).subscribe({
+        next: (response) => {
+          this.loading = false;
+          
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('forgotPassword.resetLinkSent'),
+            detail: this.translate.instant('forgotPassword.checkYourEmail'),
+            life: 4000
+          });
+          
+          // Clear the email field after successful submission
+          this.email = '';
+          this.submitted = false;
+          
+          // Optional: Navigate to login page after a delay
+          setTimeout(() => {
+            this.router.navigate(['/RemoteSync/Login']);
+          }, 3000);
+        },
+        error: (error) => {
+          this.loading = false;
+          
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant('forgotPassword.resetLinkFailed'),
+            detail: error.message || this.translate.instant('forgotPassword.emailNotFound'),
+            life: 5000
+          });
+        }
       });
-
-      // Optionally navigate to a confirmation page or login after a delay
-      setTimeout(() => {
-        // THIS IS JUST FOR TEST TO CHECK IF THE UI WORKING PERFECTLY FINE OR NOT
-        this.router.navigate(['/RemoteSync/ResetPassword']); // Navigate to login page
-      }, 2000); // 2 seconds delay
-
-      // Optionally clear field or disable button after sending
-      // this.email = '';
-      // this.submitted = false; // Allow resubmission if needed after timeout?
-      // this.forgotPasswordForm.reset();
-
     } else {
-      // --- Failure ---
       console.log('Forgot Password failed: Form invalid or email empty.');
       this.messageService.add({
         severity: 'error',
-        summary: 'Error',
-        detail: 'Please enter a valid email address.',
+        summary: this.translate.instant('forgotPassword.resetLinkFailed'),
+        detail: this.translate.instant('forgotPassword.enterValidEmail'),
         life: 3000
       });
     }

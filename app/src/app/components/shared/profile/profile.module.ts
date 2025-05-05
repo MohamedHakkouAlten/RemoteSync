@@ -7,6 +7,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { NavigationComponent } from "../navigation/navigation.component";
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { ButtonModule } from 'primeng/button';
     FormsModule, // Import FormsModule for ngModel
     AvatarModule,
     InputTextModule,
-    ButtonModule
-  ]
+    ButtonModule,
+    NavigationComponent
+]
 })
 export class ProfileModule { }

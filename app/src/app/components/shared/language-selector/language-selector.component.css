@@ -1,0 +1,119 @@
+.language-selector {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+/* Language icon button styling */
+.language-icon-button {
+  color: var(--orange-500);
+  width: 2.5rem;
+  height: 2.5rem;
+  transition: all 0.2s ease;
+  background-color: transparent !important;
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Increased gap between globe icon and flag */
+}
+
+.current-language-flag {
+  width: 16px;
+  height: 10px;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-left: 0.25rem; /* Added margin to ensure separation from the globe icon */
+}
+
+.language-icon-button:hover {
+  background-color: transparent !important;
+  color: var(--orange-600);
+}
+
+.language-icon-button:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* Dialog styling */
+:host ::ng-deep .language-dialog {
+  max-width: 300px;
+  border-radius: 8px;
+}
+
+:host ::ng-deep .language-dialog .p-dialog-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+:host ::ng-deep .language-dialog .p-dialog-content {
+  padding: 0;
+}
+
+/* Language options styling */
+.language-options {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.language-option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.language-option:hover {
+  background-color: rgba(249, 115, 22, 0.1);
+}
+
+.language-flag {
+  width: 24px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .language-icon-button {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  
+  :host ::ng-deep .language-dialog {
+    max-width: 250px;
+  }
+}
+
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .language-selector {
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  :host ::ng-deep .p-dropdown {
+    height: 32px;
+    min-height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .language-dropdown {
+    min-width: 70px;
+  }
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover {
+  background-color: var(--orange-200) !important;
+}

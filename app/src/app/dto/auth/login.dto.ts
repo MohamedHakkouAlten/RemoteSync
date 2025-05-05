@@ -1,8 +1,10 @@
-/**
- * Data Transfer Object for Login Response
- * This interface defines the shape of data received from the login API
- */
+// Request DTOs
+export interface LoginRequestDto {
+    usernameOrEmail: string;
+    password: string;
+}
 
+// Response DTOs
 export interface LoginResponseDTO {
   accessToken: string;
   refreshToken: string;
