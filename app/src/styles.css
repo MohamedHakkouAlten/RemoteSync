@@ -55,7 +55,7 @@
 :host ::ng-deep .lightgray  {
   background-color: rgb(193, 30, 30);
 }
-:root p,span,h1,h3,h2,tr,th,label{
+:root p,span,h1,h3,h2,tr,th,label,a{
   font-family: inter;
 }
 :root {

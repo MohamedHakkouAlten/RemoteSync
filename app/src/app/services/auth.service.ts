@@ -7,6 +7,9 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { LoginRequestDto } from '../dto/auth.dto';
 import { LoginResponseDTO } from '../dto/login-response.dto';
+import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
+import { User } from '../models/user.model';
+
 
 // Simple interface for basic user info state
 interface UserInfo {
@@ -73,9 +76,9 @@ export class AuthService {
    * Login user using credentials.
    */
   login(credentials: LoginRequestDto): Observable<LoginResponseDTO> {
-    return this.http.post<any>(`${this.API_URL}/login`, credentials) // Expect wrapper object
+    return this.http.post<ResponseWrapperDto<LoginResponseDTO>>(`${this.API_URL}/login`, credentials) // Expect wrapper object
       .pipe(
-        map(response => {
+        map((response  )=> {
           // Adapt this based on your *actual* backend response structure
           if (response && response.status === 'success' && response.data) {
              // Assuming LoginResponseDTO is the type of response.data
@@ -240,7 +243,10 @@ export class AuthService {
     return this.userInfoSubject.value?.firstName ?? null;
     // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
   }
-
+  getUser(): User | null {
+    return {firstName: this.userInfoSubject.value?.firstName,lastName:this.userInfoSubject.value?.lastName} as User ;
+    // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
+  }
   /**
    * Gets the current user's last name synchronously.
    * Returns null if not authenticated.

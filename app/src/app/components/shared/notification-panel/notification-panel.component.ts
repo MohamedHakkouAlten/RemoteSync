@@ -5,17 +5,10 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
-
-interface Notification {
-  id: number;
-  type: 'report' | 'rotation' | 'general';
-  sender: string; // Optional sender name
-  message: string;
-  timestamp: Date; // Use Date object for easier sorting/formatting
-  isRead: boolean;
+import { Notification } from '../../../models/notification.model';
 
 
-}
+
 @Component({
   selector: 'app-notification-panel',
   imports: [

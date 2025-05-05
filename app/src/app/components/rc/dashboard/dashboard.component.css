@@ -13,26 +13,8 @@
 }
 
 /* Adjust AvatarGroup spacing slightly if needed */
-:host ::ng-deep .custom-avatar-group.p-avatar-group .p-avatar {
-   margin-left: -0.75rem; /* Adjust overlap */
-   border: 2px solid white; /* Match common stacked avatar style */
-}
 
-/* Ensure the overflow avatar looks distinct */
-:host ::ng-deep .custom-avatar-group.p-avatar-group .p-avatar.bg-gray-200 {
-   /* Tailwind classes applied via styleClass should work, but you can override here too */
-   /* Example: background-color: #e5e7eb !important; */
-   /* color: #374151 !important; */
-   /* font-weight: 600 !important; */
-   display: flex;
-   align-items: center;
-   justify-content: center;
-}
 
-:host ::ng-deep .custom-avatar-group.p-avatar-group .p-avatar .p-avatar-text {
-   
-  font-size: 0.75rem; /* Adjust text size inside overflow avatar */
-}
 
 
 /*Calendar  */
