@@ -87,7 +87,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     public PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AssignedRotation> assignedRotationPage =
-                assignedRotationDomainRepository.findByUser_SubFactory_SubFactoryID(subFactoryId, pageable);
+                assignedRotationDomainRepository.findAllByUser_SubFactory_SubFactoryID(subFactoryId, pageable);
 
         List<AssignedRotationDTO> dtoList = assignedRotationPage
                 .stream()
@@ -134,7 +134,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     public PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<AssignedRotation> assignedRotationPage =
-                assignedRotationDomainRepository.findByClient_ClientId(clientId, pageable);
+                assignedRotationDomainRepository.findAllByProject_Owner_ClientId(clientId, pageable);
 
         List<AssignedRotationDTO> dtoList = assignedRotationPage
                 .stream()

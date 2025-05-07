@@ -1,0 +1,258 @@
+<!-- Header -->
+<!-- Assuming app-navigation is standalone or correctly imported -->
+<app-navigation></app-navigation>
+
+<div class="calendar-page p-4 sm:p-6 bg-gray-50 min-h-screen">
+
+  <!-- Header Section -->
+  <header class="flex flex-col mb-6 gap-4">
+    <!-- Title changes based on view -->
+    <div class="flex justify-between items-center">
+      <h1 class="text-xl sm:text-2xl font-semibold text-gray-800">
+        <ng-container [ngSwitch]="currentView">
+          <ng-container *ngSwitchCase="'week'">Week</ng-container>
+          <ng-container *ngSwitchCase="'month'">Month</ng-container>
+          <ng-container *ngSwitchCase="'year'">Year</ng-container>
+        </ng-container>
+         Calendar
+      </h1>
+      <!-- Create Report Button (Moved to same line as title) -->
+      <button pButton type="button" [label]="createReportLabel" icon="pi pi-plus" class="p-button-warning !h-9 sm:!h-10 text-xs sm:text-sm !bg-orange-500 !border-orange-500 font-bold"></button>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- View Toggle Buttons (Moved to left) -->
+        <div class="inline-flex rounded-md shadow-sm" role="group">
+          <button
+            type="button"
+            class="px-3 sm:px-4 py-2 text-sm font-medium border rounded-l-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-1"
+            [ngClass]="currentView === 'week' ? 'bg-orange-500 text-white border-orange-500 z-10' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            (click)="changeView('week')">
+            {{ weekLabel }}
+          </button>
+          <button
+            type="button"
+            class="px-3 sm:px-4 py-2 text-sm font-medium border-t border-b transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-1"
+            [ngClass]="currentView === 'month' ? 'bg-orange-500 text-white border-orange-500 z-10' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            (click)="changeView('month')">
+            {{ monthLabel }}
+          </button>
+          <button
+            type="button"
+            class="px-3 sm:px-4 py-2 text-sm font-medium border rounded-r-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-1"
+            [ngClass]="currentView === 'year' ? 'bg-orange-500 text-white border-orange-500 z-10' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            (click)="changeView('year')">
+            {{ yearLabel }}
+          </button>
+        </div>
+      </div>
+      <!-- Navigation (Kept on right) -->
+      <div class="flex items-center gap-1 sm:gap-2">
+        <button pButton type="button" icon="pi pi-angle-left" class="p-button-text p-button-plain text-gray-500 hover:text-gray-700 !p-1 !sm:p-2 !w-7 !h-7 !sm:w-8 !sm:h-8" (click)="previous()"></button>
+        <!-- Make width dynamic based on content -->
+        <span class="text-sm font-semibold text-gray-700 w-auto min-w-[80px] sm:min-w-[144px] text-center px-1">{{ displayDateRange }}</span>
+        <button pButton type="button" icon="pi pi-angle-right" class="p-button-text p-button-plain text-gray-500 hover:text-gray-700 !p-1 !sm:p-2 !w-7 !h-7 !sm:w-8 !sm:h-8" (click)="next()"></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Calendar Area -->
+  <div class="calendar-container bg-white rounded-lg shadow p-4 md:p-6">
+
+    <ng-container [ngSwitch]="currentView">
+
+      <!-- ======================= WEEK VIEW ======================= -->
+      <ng-container *ngSwitchCase="'week'">
+        <!-- Week Header -->
+        <div class="grid grid-cols-7 text-center border-b border-gray-200 pb-2 mb-2">
+          <div *ngFor="let day of weekdays" class="text-xs font-medium text-gray-500 uppercase tracking-wider py-1">{{ day }}</div>
+        </div>
+        <!-- Week Grid -->
+        <div class="grid grid-cols-7 gap-px -m-px"> <!-- Negative margin trick for borders -->
+          <div *ngFor="let day of weekViewData; trackBy: trackByDate"
+               class="day-cell week-day-cell rounded-sm p-2 flex flex-col min-h-[120px] relative cursor-pointer transition-colors hover:bg-gray-50"
+               [ngClass]="getPrimaryEvent(day)?.color === 'orange' ? 'bg-orange-50' : getPrimaryEvent(day)?.color === 'blue'? 'bg-blue-50' : 'bg-white'"
+               (dblclick)="openEditModal(day)"> <!-- Use double click -->
+            <!-- Day Number (Top Right) -->
+            <span class="day-number text-xs font-semibold self-end mb-1"
+                  [ngClass]="{'text-orange-600 bg-orange-100 rounded-full w-5 h-5 flex items-center justify-center': day.isToday}">
+                {{ day.dayOfMonth }}
+            </span>
+            <!-- Events Area -->
+            <div class="events-area flex-grow mt-1 space-y-1">
+              <ng-container *ngIf="getPrimaryEvent(day) as event; else noEventsWeek">
+                <div *ngIf="event.type" class="event-item text-xs flex items-center gap-1.5 p-1 rounded"
+                     [pTooltip]="event.note || event.type" tooltipPosition="top">
+                  <span class="event-dot w-2 h-2 rounded-full flex-shrink-0"
+                        [ngClass]="event.color === 'orange' ? 'bg-orange-400' : 'bg-blue-400'"></span>
+                  <span class="truncate">{{ event.type }}</span>
+                </div>
+                <!-- Display note snippet if exists, always show if note exists (even for note-only events) -->
+                <div *ngIf="event.note" class="text-xs text-gray-500 italic truncate mt-1" [pTooltip]="event.note" tooltipPosition="top">
+                    Note: {{ event.note }}
+                </div>
+              </ng-container>
+              <ng-template #noEventsWeek>
+                <span class="text-gray-400 text-xs italic mt-2">{{ noEventsLabel }}</span>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ======================= MONTH VIEW ======================= -->
+      <ng-container *ngSwitchCase="'month'">
+         <!-- Month Header -->
+         <div class="grid grid-cols-7 text-center border-b border-gray-200 pb-2 mb-1">
+            <div *ngFor="let day of weekdays" class="text-xs font-medium text-gray-500 uppercase tracking-wider py-1">{{ day }}</div>
+         </div>
+         <!-- Month Grid -->
+         <div class="month-grid grid grid-cols-7 border-t border-l border-gray-100">
+            <ng-container *ngFor="let week of monthViewData; trackBy: trackByWeek">
+                <div *ngFor="let day of week.days; trackBy: trackByDate"
+                     class="day-cell month-day-cell relative border-r border-b border-gray-100 p-1.5 flex flex-col min-h-[90px] lg:min-h-[110px] transition-colors"
+                     [class.other-month]="!day.isCurrentMonth"
+                     [ngClass]="{'bg-white': day.isCurrentMonth, 'bg-gray-50': !day.isCurrentMonth, 'hover:bg-blue-50 cursor-pointer': day.isCurrentMonth}"
+                     [ngClass]="getPrimaryEvent(day)?.color === 'orange' ? 'bg-orange-50' : getPrimaryEvent(day)?.color === 'blue'? 'bg-blue-50' : 'bg-white'"
+                     (dblclick)="openEditModal(day)"> <!-- Use double click only for current month -->
+
+                     <!-- Optional: Week Indicator Bar -->
+                     <div *ngIf="day.weekIndicator && getDay(day.date) === 1 && day.isCurrentMonth"
+                          class="week-indicator absolute left-0 top-0 bottom-0 w-1"
+                          [ngClass]="day.weekIndicator === 'orange' ? 'bg-orange-400' : 'bg-blue-400'">
+                     </div>
+
+                    <!-- Day Number -->
+                    <span class="day-number text-xs font-medium self-end mb-1"
+                          [class.current-month-day]="day.isCurrentMonth"
+                          [class.other-month-day]="!day.isCurrentMonth"
+                          [ngClass]="{'today-highlight-month': day.isToday && day.isCurrentMonth}"> <!-- Custom class for month today -->
+                          {{ day.dayOfMonth }}
+                    </span>
+
+                    <!-- Events Area (Only for current month days) -->
+                    <div *ngIf="day.isCurrentMonth" class="events-area flex-grow mt-1 space-y-1 overflow-hidden">
+                         <ng-container *ngIf="getPrimaryEvent(day) as event; else noEventsMonth">
+                            <div *ngIf="event.type" class="event-item text-xs flex items-center gap-1 truncate"
+                                 [pTooltip]="event.note || event.type" tooltipPosition="top">
+                              <span class="event-dot w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                    [ngClass]="event.color === 'orange' ? 'bg-orange-500' : 'bg-blue-500'"></span>
+                              <span class="truncate">{{ event.type }}</span>
+                            </div>
+                            <!-- Always show note if it exists (even for note-only events) -->
+                           <div *ngIf="event.note" class="text-xs text-gray-500 italic truncate mt-0.5" [pTooltip]="event.note" tooltipPosition="top">
+                               Note: {{ event.note }}
+                           </div>
+                         </ng-container>
+                         <ng-template #noEventsMonth>
+                             <span class="text-gray-400 text-xs italic mt-1">{{ noEventsLabel }}</span>
+                         </ng-template>
+                    </div>
+                     <!-- Placeholder for non-current month days -->
+                     <div *ngIf="!day.isCurrentMonth" class="flex-grow"></div>
+                </div>
+            </ng-container>
+         </div>
+      </ng-container>
+
+      <!-- ======================= YEAR VIEW ======================= -->
+      <ng-container *ngSwitchCase="'year'">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+           <!-- Add highlight for current month -->
+           <div *ngFor="let month of yearViewData; trackBy: trackByMonth"
+                class="month-card border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer relative"
+                [ngClass]="{'current-month-highlight': month.isCurrentMonth}"
+                (click)="changeView('month'); setMonth(currentDate, month.monthIndex)">
+                <!-- Optional: Add a subtle indicator for current month -->
+                 <span *ngIf="month.isCurrentMonth" class="absolute top-2 right-2 text-xs font-bold text-orange-600">Current</span>
+
+              <h3 class="text-sm font-semibold text-gray-800 mb-3">{{ month.monthName }}</h3>
+              <div class="space-y-2 text-xs">
+                 <!-- In Site Stat -->
+                 <div class="flex justify-between items-center">
+                    <span class="text-gray-600">{{ inSiteLabel }}</span>
+                    <span class="font-medium text-blue-600">{{ month.inSitePercent }}%</span>
+                 </div>
+                 <!-- Remote Stat -->
+                 <div class="flex justify-between items-center">
+                    <span class="text-gray-600">{{ remoteLabel }}</span>
+                    <span class="font-medium text-orange-600">{{ month.remotePercent }}%</span>
+                 </div>
+                 <!-- Progress Bar Representation -->
+                 <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden flex"> <!-- Use flex instead of float -->
+                     <div class="bg-blue-500 h-1.5" [style.width.%]="month.inSitePercent"></div>
+                     <div class="bg-orange-500 h-1.5" [style.width.%]="month.remotePercent"></div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </ng-container>
+
+    </ng-container> <!-- End ngSwitch -->
+
+  </div> <!-- End Calendar Container -->
+
+   <!-- Legend (Month/Week View) -->
+   <footer class="calendar-footer mt-4 flex flex-wrap items-center justify-start gap-x-4 gap-y-2" *ngIf="currentView === 'month' || currentView === 'week'">
+      <div class="flex items-center gap-1.5 text-xs text-gray-600">
+         <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+         <span>{{ inSiteLabel }}</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-gray-600">
+         <span class="w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
+         <span>{{ remoteLabel }}</span>
+      </div>
+      <!-- Month view specific legends (Optional - kept from original) -->
+      <ng-container *ngIf="currentView === 'month'">
+         <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <span class="w-1 h-3 bg-blue-400 rounded-sm"></span>
+            <span class="whitespace-nowrap">Week: Mostly {{ inSiteLabel }}</span>
+         </div>
+         <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <span class="w-1 h-3 bg-orange-400 rounded-sm"></span>
+            <span class="whitespace-nowrap">Week: Mostly {{ remoteLabel }}</span>
+         </div>
+      </ng-container>
+   </footer>
+
+</div> <!-- End calendar-page -->
+
+
+<!-- ======================= EDIT EVENT DIALOG ======================= -->
+<p-dialog header="Edit Entry for {{ selectedDateFormatted }}" [(visible)]="displayEditModal"
+          [modal]="true" [style]="{width: '90vw', maxWidth: '500px'}" [draggable]="false" [resizable]="false"
+          (onHide)="closeEditModal()"> <!-- Ensure cleanup on hide -->
+
+    <div class="py-4 px-2 space-y-4">
+        <!-- Note Input -->
+        <div>
+            <label for="eventNote" class="block text-sm font-medium text-gray-700 mb-1">Note (Optional)</label>
+            <textarea id="eventNote" pInputTextarea [(ngModel)]="editedNote" rows="3"
+                      class="w-full border-gray-300 rounded-md shadow-sm focus:border-orange-300 focus:ring focus:ring-orange-200 focus:ring-opacity-50"
+                      placeholder="Add any relevant notes..."></textarea>
+        </div>
+    </div>
+
+    <!-- Dialog Footer -->
+    <ng-template pTemplate="footer">
+       <div class="flex justify-between items-center w-full">
+           <!-- Delete Button (only if an event exists) -->
+            <button pButton type="button" label="Delete Entry" icon="pi pi-trash"
+                    class="p-button-text p-button-danger"
+                    *ngIf="selectedDayData && getEventsForDate(selectedDayData.date)"
+                    (click)="deleteEvent()"></button>
+            <!-- Spacer if delete not shown -->
+             <div *ngIf="!selectedDayData || !getEventsForDate(selectedDayData.date)"></div>
+
+            <!-- Standard Action Buttons -->
+           <div>
+                <button pButton type="button" label="Cancel" icon="pi pi-times"
+                        class="p-button-text text-gray-600 mr-2"
+                        (click)="closeEditModal()"></button>
+                <button pButton type="button" label="Save Changes" icon="pi pi-check"
+                        class="!bg-orange-500 !border-orange-500 text-white font-bold"
+                        (click)="saveEventChanges()"></button>
+           </div>
+       </div>
+    </ng-template>
+</p-dialog>

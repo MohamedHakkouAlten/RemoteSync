@@ -112,9 +112,9 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public Integer getCompletedProjectsCount() {
+    public ProjectsCountDTO getCompletedProjectsCount() {
 
-        return projectDomainRepository.countByStatusEquals(ProjectStatus.COMPLETED);
+        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.COMPLETED));
     }
 
 
@@ -130,8 +130,8 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public Integer getRcCountInactiveProjects() {
-        return projectDomainRepository.countByStatusEquals(ProjectStatus.INACTIVE);
+    public ProjectsCountDTO getRcCountInactiveProjects() {
+        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.INACTIVE));
     }
 
     @Override
@@ -171,15 +171,12 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public Integer countActiveProjects() {
-
-        return projectDomainRepository.countByStatusEquals(ProjectStatus.ACTIVE);
+    public ProjectsCountDTO countActiveProjects() {
+        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.ACTIVE));
     }
     @Override
-    public ProjectsCountDTO countCancelledProjects(GlobalDTO globalDTO) {
-        Integer cancelledCount = projectDomainRepository.fetchCancelledProjectsCount(globalDTO.userId())
-                .orElse(0);
-        return projectMapper.toProjectsCount(cancelledCount);
+    public ProjectsCountDTO countCancelledProjects() {
+        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.CANCELLED));
     }
 
     @Override

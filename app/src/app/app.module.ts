@@ -1,7 +1,6 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +14,16 @@ import Lara from '@primeng/themes/lara';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ButtonModule } from 'primeng/button';
+import { NavigationComponent } from "./components/shared/navigation/navigation.component";
+import { CalendarComponent } from './utility/rc/calendar/calendar.component';
+
+// Translation imports
+import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { HttpLoaderFactory } from './i18n/translation-loader.factory';
+import { LanguageSelectorComponent } from './components/shared/language-selector/language-selector.component';
+import { AuthFacadeService } from './services/auth-facade.service';
+
+
 
 const BlackLara = definePreset(Lara, {
   semantic: {
@@ -37,15 +46,30 @@ const BlackLara = definePreset(Lara, {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CalendarComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    ButtonModule
-    // HttpClientModule removed as it's deprecated
-  ],
+    ButtonModule,
+    // We need HttpClientModule for the TranslateLoader
+    HttpClientModule,
+    NavigationComponent,
+    // Translation module
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      },
+      defaultLanguage: 'en',
+      isolate: false
+    }),
+    LanguageSelectorComponent
+],
+
   providers: [
     provideAnimationsAsync(),
     providePrimeNG({
@@ -57,7 +81,12 @@ const BlackLara = definePreset(Lara, {
       },
     }),
     provideHttpClient(withFetch()), // Modern approach to provide HttpClient
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    TranslateService
   ],
   bootstrap: [AppComponent]
 })

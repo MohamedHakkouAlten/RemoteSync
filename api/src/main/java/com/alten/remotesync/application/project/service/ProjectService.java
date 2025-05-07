@@ -1,6 +1,5 @@
 package com.alten.remotesync.application.project.service;
 
-import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
@@ -31,13 +30,13 @@ public interface ProjectService {
 
     ProjectDTO getLongestDurationProject();
 
-    Integer getCompletedProjectsCount();
+    ProjectsCountDTO getCompletedProjectsCount();
 
     ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
 
     ProjectDTO deleteProject(GlobalDTO globalDTO);
 
-    Integer getRcCountInactiveProjects();
+    ProjectsCountDTO getRcCountInactiveProjects();
 
     List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO);
 
@@ -45,9 +44,9 @@ public interface ProjectService {
 
     PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
 
-    Integer countActiveProjects();
+    ProjectsCountDTO countActiveProjects();
 
     ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
 
-    ProjectsCountDTO countCancelledProjects(GlobalDTO globalDTO);
+    ProjectsCountDTO countCancelledProjects();
 }

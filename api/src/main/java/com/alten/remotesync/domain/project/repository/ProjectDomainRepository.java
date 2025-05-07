@@ -33,6 +33,7 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     @Query("SELECT COUNT(DISTINCT ar.project.projectId) FROM AssignedRotation ar " +
             "WHERE ar.user.userId = :userId AND ar.project.projectId IS NOT NULL")
     Optional<Integer> fetchAssociateProjectsCount(@Param("userId") UUID userId);
+
     @Query("SELECT p FROM AssignedRotation ar " +
             "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
             "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
@@ -68,32 +69,21 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     @Query("SELECT p from Project p ORDER by p.deadLine-p.startDate DESC LIMIT 1")
     Optional<Project> findLongestDurationProject();
 
-    Integer countByStatusEquals(ProjectStatus status);
-
-    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
-            "JOIN Project p ON p.projectId = ar.project.projectId " +
-            "WHERE ar.user.userId = :userId " +
-            "AND p.status = 'ACTIVE'")
-    Optional<Integer> fetchActiveProjectsCount(@Param("userId") UUID userId);
+    Integer countDistinctByStatusEquals(ProjectStatus status);
 
     @Query("SELECT p FROM AssignedRotation ar " +
             "JOIN Project p ON p.projectId = ar.project.projectId " +
+            "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
             "WHERE ar.user.userId = :userId " +
             "AND ar.project.projectId IS NOT NULL " +
             "GROUP BY ar.project.projectId")
     Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
 
-    @Query("SELECT p FROM AssignedRotation ar " +
+    @Query("SELECT DISTINCT p FROM AssignedRotation ar " +
             "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
+            "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
             "WHERE ar.user.userId = :userId " +
-            "AND ar.project.projectId IS NOT NULL " +
             "GROUP BY p.projectId " +
             "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
     Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
-
-    @Query("SELECT COUNT(DISTINCT p.projectId) FROM AssignedRotation ar " +
-            "JOIN Project p ON p.projectId = ar.project.projectId " +
-            "WHERE ar.user.userId = :userId AND p.status = 'CANCELLED'")
-    Optional<Integer> fetchCancelledProjectsCount(@Param("userId") UUID userId);
-
 }

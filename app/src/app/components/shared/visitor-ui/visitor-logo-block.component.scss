@@ -1,0 +1,27 @@
+/* Visitor Logo Block Styles */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+.logo-image {
+  height: 2.5rem;
+  width: auto;
+  margin-right: 0.75rem;
+}
+.logo-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.logo-text-main {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.025em;
+}
+.logo-text-sub {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  letter-spacing: 0.05em;
+}

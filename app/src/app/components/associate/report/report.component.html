@@ -1,0 +1,124 @@
+
+<div class="report-layout">
+    <app-navigation></app-navigation>
+  
+    <main class="report-container">
+      <header class="report-header">
+        <h1>Reports</h1>
+      </header>
+  
+      <div class="filter-bar">
+        <p-iconField iconPosition="left" class="search-input p-fluid">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="text"
+            pInputText
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Search by title..." />
+        </p-iconField>
+  
+        <p-dropdown
+          [options]="statusOptions"
+          [(ngModel)]="selectedStatus"
+          (onChange)="onFilterChange()"
+          placeholder="All Status"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="filter-dropdown" />
+  
+        <p-dropdown
+          [options]="typeOptions"
+          [(ngModel)]="selectedType"
+          (onChange)="onFilterChange()"
+          placeholder="All Types"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="filter-dropdown" />
+  
+        <p-button
+          label="Create Report"
+          icon="pi pi-plus"
+          (click)="showCreateReportDialog()"
+          styleClass="p-button-warning create-button" />
+      </div>
+  
+      <div class="report-grid" *ngIf="displayedReports.length > 0; else noReports">
+        <div class="report-card" *ngFor="let report of displayedReports">
+          <div class="card-content">
+            <h3 class="report-title">{{ report.title }}</h3>
+            <div class="report-type">
+              <i [class]="report.typeIcon || 'pi pi-file'"></i>
+              <span>{{ report.type }}</span>
+            </div>
+            <p class="report-description">{{ report.description }}</p>
+          </div>
+          <div class="card-footer">
+            <div class="report-date">
+              <i class="pi pi-calendar"></i>
+              <span>{{ report.date }}</span>
+            </div>
+            <p-tag [value]="report.status" [severity]="getStatusSeverity(report.status)" rounded="true"></p-tag>
+          </div>
+        </div>
+      </div>
+  
+      <ng-template #noReports>
+        <div class="no-reports-message">
+          No reports found matching your criteria.
+        </div>
+      </ng-template>
+  
+      <div class="pagination-container" *ngIf="totalRecords > rows">
+        <p-paginator
+          (onPageChange)="onPageChange($event)"
+          [first]="first"
+          [rows]="rows"
+          [totalRecords]="totalRecords"
+          [rowsPerPageOptions]="[9, 18, 27]"> 
+        </p-paginator>
+      </div>
+  
+    </main> 
+    <p-dialog
+      header="Create New Report"
+      [(visible)]="displayCreateDialog"
+      [modal]="true"
+      [style]="{ width: '40vw', 'min-width': '450px' }"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="hideCreateDialog()"> 
+  
+      <div class="p-fluid p-dialog-content-padding"> 
+        <div class="field">
+          <label for="reportTitle">Title</label>
+          <input id="reportTitle" type="text" pInputText [(ngModel)]="newReportTitle" required autofocus />
+        </div>
+        <div class="field">
+          <label for="reportReason">Reason</label>
+          <input id="reportReason" type="text" pInputText [(ngModel)]="newReportReason" />
+        </div>
+      <div class="field">
+        <label for="reportDescription">Description</label>
+        <textarea class="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2" id="reportDescription" pInputTextarea [(ngModel)]="newReportDescription" rows="5"></textarea>
+      </div>
+      </div>
+  
+      <ng-template pTemplate="footer">
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          styleClass="p-button-text"
+          (click)="hideCreateDialog()"></p-button>
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          styleClass="p-button-warning"
+          (click)="saveNewReport()"
+          [disabled]="!newReportTitle"></p-button> 
+      </ng-template>
+  
+    </p-dialog>
+   
+  
+  </div>

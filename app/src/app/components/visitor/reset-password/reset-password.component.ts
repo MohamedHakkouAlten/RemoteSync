@@ -1,6 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
+import { ResetPasswordRequestDto } from '../../../dto/auth/resetpassword.dto';
+import { TranslateService } from '@ngx-translate/core';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
 
 export function passwordsMatchValidator(): ValidatorFn {
   return (formGroup: AbstractControl): ValidationErrors | null => {
@@ -23,36 +28,71 @@ export function passwordsMatchValidator(): ValidatorFn {
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css'
 })
-export class ResetPasswordComponent {
+export class ResetPasswordComponent implements OnInit {
     newPassword: string = '';
     confirmPassword: string = '';
     submitted: boolean = false;
-    resetToken: string | null = null; // To store the token from URL (example)
+    loading: boolean = false;
+    resetToken: string | null = null;
+    currentLanguage: SupportedLanguage = 'en'; // Default language
   
-    // Access the form instance
     @ViewChild('setPasswordForm') setPasswordForm!: NgForm;
   
-    // Inject services
     constructor(
       private messageService: MessageService,
-      // private route: ActivatedRoute, // Inject ActivatedRoute to get token
-      // private router: Router // Inject Router to navigate
+      private authService: AuthFacadeService,
+      private route: ActivatedRoute,
+      private router: Router,
+      private translate: TranslateService,
+      private languageService: LanguageService
     ) { }
   
     ngOnInit(): void {
-      // --- Example: Get reset token from URL query parameter ---
-      // In a real app, you'd get this securely
-      // this.resetToken = this.route.snapshot.queryParamMap.get('token');
-      // if (!this.resetToken) {
-      //   console.error('Reset token not found!');
-      //   this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid password reset link.', life: 5000 });
-      //   // Optionally navigate away: this.router.navigate(['/login']);
-      // }
-  
-      // --- Apply custom validator AFTER form is initialized ---
-      // We need a slight delay or use a different approach for template-driven forms
-      // For simplicity here, we'll check manually in updatePassword()
-      // Alternatively, use Reactive Forms for easier cross-field validation.
+      // Subscribe to language changes
+      this.languageService.currentLanguage$.subscribe(lang => {
+        this.currentLanguage = lang;
+      });
+      
+      // Get reset token from URL query parameter
+      this.route.queryParams.subscribe(params => {
+        this.resetToken = params['token'];
+        
+        // Check token after params are received
+        if (!this.resetToken) {
+          // Use hardcoded messages initially
+          const errorMessages = {
+            'en': {
+              summary: 'Invalid Link',
+              detail: 'The password reset link is invalid or has expired.'
+            },
+            'fr': {
+              summary: 'Lien invalide',
+              detail: 'Le lien de réinitialisation du mot de passe est invalide ou a expiré.'
+            },
+            'es': {
+              summary: 'Enlace inválido',
+              detail: 'El enlace de restablecimiento de contraseña es inválido o ha expirado.'
+            }
+          };
+          
+          // Get messages for current language or fallback to English
+          const messages = errorMessages[this.currentLanguage] || errorMessages['en'];
+          
+          setTimeout(() => {
+            this.messageService.add({ 
+              severity: 'error', 
+              summary: messages.summary, 
+              detail: messages.detail, 
+              life: 5000 
+            });
+          }, 500);
+          
+          // Navigate to forgot password page after a delay
+          setTimeout(() => {
+            this.router.navigate(['/' + this.currentLanguage + '/remotesync/forgot-password']);
+          }, 5500);
+        }
+      });
     }
   
   
@@ -64,48 +104,75 @@ export class ResetPasswordComponent {
     updatePassword(): void {
       this.submitted = true;
   
-      // Mark controls as touched
+      // Mark controls as touched for validation feedback
       if (this.setPasswordForm?.controls) {
         Object.keys(this.setPasswordForm.controls).forEach(key => {
           this.setPasswordForm.controls[key].markAsTouched();
         });
       }
   
-      // --- Manual Check for Password Match ---
+      // Manual check for password match
       const passwordsDoMatch = this.newPassword === this.confirmPassword;
-  
-      // --- Check Form Validity AND Password Match ---
-      if (this.setPasswordForm?.valid && passwordsDoMatch) {
-        // --- Success ---
-        console.log('Password update attempt. Token:', this.resetToken); // Include token if used
-        // TODO: Implement actual API call to backend service here
-        // Send this.newPassword and this.resetToken to your backend
-  
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Your password has been updated successfully!',
-          life: 4000
-        });
-  
-        // Optionally navigate to login page after success
-        // setTimeout(() => this.router.navigate(['/login']), 4000);
-  
+      
+      // Check form validity and password match
+      if (this.setPasswordForm?.valid && passwordsDoMatch && this.resetToken) {
+        this.loading = true;
+
+        const credentials: ResetPasswordRequestDto = {
+          token: this.resetToken,
+          newPassword: this.newPassword,
+          confirmPassword: this.confirmPassword
+        };
+        
+        // Call the auth service to reset the password
+        this.authService.resetPassword(credentials)
+          .subscribe({
+            next: (response) => {
+              this.loading = false;
+              
+              // Show success message
+              this.messageService.add({
+                severity: 'success',
+                summary: this.translate.instant('resetPassword.passwordUpdated'),
+                detail: this.translate.instant('resetPassword.passwordUpdateSuccess'),
+                life: 4000
+              });
+              
+              // Navigate to login page after success
+              setTimeout(() => {
+                this.router.navigate(['/' + this.currentLanguage + '/remotesync/login']);
+              }, 2000);
+            },
+            error: (error) => {
+              this.loading = false;
+              
+              // Show error message
+              this.messageService.add({
+                severity: 'error',
+                summary: this.translate.instant('resetPassword.passwordUpdateFailed'),
+                detail: error.message || this.translate.instant('resetPassword.invalidToken'),
+                life: 5000
+              });
+            }
+          });
       } else {
-        // --- Failure ---
-        let errorDetail = 'Please correct the errors below.';
-        if (!passwordsDoMatch && this.newPassword && this.confirmPassword) {
-          errorDetail = 'Passwords do not match.';
-          // Manually add error state to confirm password for visual feedback (optional)
+        // Handle validation errors
+        let errorDetail = this.translate.instant('resetPassword.correctErrors');
+        
+        if (!this.resetToken) {
+          errorDetail = this.translate.instant('resetPassword.invalidToken');
+        } else if (!passwordsDoMatch && this.newPassword && this.confirmPassword) {
+          errorDetail = this.translate.instant('resetPassword.passwordsMismatch');
+          // Manually add error state to confirm password for visual feedback
           this.setPasswordForm.controls['confirmPassword']?.setErrors({ 'passwordsMismatch': true });
         } else if (!this.setPasswordForm?.valid) {
-           errorDetail = 'Please fill in both password fields correctly.';
+          errorDetail = this.translate.instant('resetPassword.fillPasswordFields');
         }
   
-        console.log('Set Password failed: Form invalid or passwords mismatch.');
+        console.log('Password reset failed: Form invalid or passwords mismatch.');
         this.messageService.add({
           severity: 'error',
-          summary: 'Error Updating Password',
+          summary: this.translate.instant('resetPassword.errorUpdatingPassword'),
           detail: errorDetail,
           life: 3000
         });

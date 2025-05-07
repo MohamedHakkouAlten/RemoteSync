@@ -1,256 +1,408 @@
 /* ==========================================================================
-   Page Layout & Header
+   Base & Layout & Variables (Restored)
    ========================================================================== */
-   :host { display: block; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; color: #333; box-sizing: border-box; }
-   *, *:before, *:after { box-sizing: inherit; }
-   .dashboard-layout { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa; }
+   :host {
+    display: block;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #333;
+    box-sizing: border-box;
+}
 
-   .projects-page {
-     padding: 1.5rem 2rem; /* Match dashboard padding */
-     background-color: #f8f9fa; /* Match dashboard background */
-     min-height: calc(100vh - 60px); /* Full height minus header */
-   }
-   
-   .projects-header {
-     display: flex;
-     flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
-     justify-content: space-between;
-     align-items: center;
-     margin-bottom: 1.5rem;
-     gap: 1rem; /* Space between title and filters */
-   }
-   
-   .projects-header h1 {
-     margin: 0;
-     font-size: 1.5rem; /* Larger title */
-     font-weight: 600;
-     color: #343a40;
-   }
-   
-   .filter-bar {
-     display: flex;
-     flex-wrap: nowrap; /* Prevent wrapping for better alignment */
-     align-items: center;
-     justify-content: flex-end; /* Float elements to the right */
-     gap: 0.75rem; /* Reduced space between filter elements */
-     margin-left: auto; /* Ensure it pushes to the right */
-   }
-   
-   /* Search Input */
-   :host ::ng-deep .search-input.p-input-icon-left {
-     /* Ensure no margin is pushing it left */
-     margin-right: 0;
-   }
-   
-   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
-     padding-left: 2.5rem; /* Space for icon */
-     border-radius: 6px;
-     border: 1px solid #ced4da;
-     height: 38px; /* Consistent height */
-     font-size: 0.9rem;
-     min-width: 250px; /* Minimum width */
-     transition: all 0.3s ease; /* Smooth transition for focus */
-   }
-   
-   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:focus {
-     border-color: #FF8C00; /* Orange border on focus */
-     box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.25); /* Subtle glow */
-   }
-   
-   :host ::ng-deep .search-input.p-input-icon-left > i {
-     left: 0.75rem;
-     color: #adb5bd;
-   }
-   
-   /* Filter Dropdowns */
-   :host ::ng-deep .filter-dropdown.p-dropdown {
-     border-radius: 6px;
-     border: 1px solid #ced4da;
-     height: 38px; /* Consistent height */
-     min-width: 140px; /* Slightly smaller for better alignment */
-     transition: all 0.3s ease; /* Smooth transition for hover/focus */
-   }
-   
-   :host ::ng-deep .filter-dropdown.p-dropdown:hover,
-   :host ::ng-deep .filter-dropdown.p-dropdown:focus {
-     border-color: #FF8C00; /* Orange border on hover/focus */
-   }
-   
-   :host ::ng-deep .filter-dropdown .p-dropdown-label {
-     padding: 0.5rem 0.75rem;
-     font-size: 0.9rem;
-     color: #495057;
-   }
-   
-   :host ::ng-deep .filter-dropdown .p-dropdown-trigger {
-     color: #adb5bd;
-     width: 2.5rem;
-   }
-   
-   /* ==========================================================================
-      Projects Grid Layout
-      ========================================================================== */
-   .projects-grid {
-     display: grid;
-     /* Responsive grid: 1 column on small, 2 on medium, 3 on large */
-     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-     gap: 1.5rem; /* Space between cards */
-   }
-   
-   /* ==========================================================================
-      Project Card Styles
-      ========================================================================== */
-   .project-card {
-     background-color: #ffffff;
-     border-radius: 12px;
-     padding: 1.5rem;
-     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-     border: none;
-     display: flex;
-     flex-direction: column;
-     gap: 1rem; /* Space between sections in the card */
-     transition: all 0.3s ease; /* Smooth transition for hover effects */
-     cursor: pointer; /* Indicate it's clickable */
-   }
-   
-   .project-card:hover {
-     transform: translateY(-5px); /* Slight lift effect */
-     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
-     border-left: 3px solid #FF8C00; /* Orange accent border */
-   }
-   
-   .card-top {
-     display: flex;
-     justify-content: space-between;
-     align-items: center; /* Center align badge with title */
-     gap: 0.5rem;
-   }
-   
-   .project-title {
-     font-size: 1.1rem;
-     font-weight: 600;
-     color: #343a40;
-     margin: 0;
-     line-height: 1.3;
-   }
-   
-   /* Status Badge in Card */
-   :host ::ng-deep .project-card .status-badge.p-badge {
-     font-size: 0.7rem;
-     font-weight: 600;
-     padding: 0.3rem 0.6rem;
-     border-radius: 12px; /* Pill shape */
-     text-transform: uppercase;
-     letter-spacing: 0.03em;
-     margin: 0; /* Remove margin for better centering */
-     display: inline-flex;
-     align-items: center;
-     justify-content: center;
-   }
-   /* Specific badge colors - adjust as needed */
-   :host ::ng-deep .project-card .p-badge.p-badge-warning { background-color: #FFF3E0; color: #FF8C00; } /* In Progress */
-   :host ::ng-deep .project-card .p-badge.p-badge-danger { background-color: #FBEAEB; color: #B02A37; } /* At Risk */
-   :host ::ng-deep .project-card .p-badge.p-badge-success { background-color: #DFF0D8; color: #3C763D; } /* Completed */
-   :host ::ng-deep .project-card .p-badge.p-badge-secondary { background-color: #E9ECEF; color: #495057; } /* On Hold */
-   
-   .project-category {
-     font-size: 0.85rem;
-     color: #6c757d;
-     margin: -0.5rem 0 0.5rem 0; /* Adjust spacing */
-   }
-   
-   .project-info {
-     display: flex;
-     flex-direction: column;
-     gap: 0.5rem; /* Space between client and date */
-     font-size: 0.85rem;
-     color: #495057;
-   }
-   .info-item {
-     display: flex;
-     align-items: center;
-     gap: 0.5rem;
-   }
-   .info-icon {
-     color: #adb5bd; /* Light gray icon */
-     font-size: 0.9rem;
-   }
-   
-   /* Project Progress */
-   .project-progress { margin-top: 0.5rem; }
-   .progress-header {
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     margin-bottom: 0.4rem;
-   }
-   .progress-label {
-     font-size: 0.8rem;
-     color: #6c757d;
-   }
-   .progress-value {
-     font-size: 0.85rem;
-     font-weight: 500;
-     color: #495057;
-   }
-   :host ::ng-deep .project-progress-bar.p-progressbar {
-     height: 6px;
-     background-color: #e9ecef; /* Progress bar background */
-     border-radius: 3px;
-   }
-   :host ::ng-deep .project-progress-bar .p-progressbar-value {
-     background: linear-gradient(to right, #FFA500, #FF8C00); /* Orange gradient */
-     border-radius: 3px;
-   }
-   
-   /* Project Assignees */
-   .project-assignees { margin-top: 0.5rem; }
-   :host ::ng-deep .assignee-group.p-avatar-group .p-avatar {
-     width: 28px; /* Smaller avatars */
-     height: 28px;
-     font-size: 0.75rem; /* Smaller font for initials */
-     border: 2px solid #ffffff; /* White border for overlap */
-   }
-   /* Style for the "+X" badge */
-   :host ::ng-deep .assignee-group .remaining-assignees-badge.p-avatar {
-     background-color: #e9ecef; /* Light gray background */
-     color: #495057; /* Dark gray text */
-   }
-   
-   /* Message for No Projects */
-   .no-projects-message {
-     grid-column: 1 / -1; /* Span all columns */
-     text-align: center;
-     padding: 2rem;
-     color: #6c757d;
-     font-style: italic;
-   }
-   
-   
-   /* ==========================================================================
-      Responsive Styles
-      ========================================================================== */
-   
-   @media (max-width: 768px) {
-     .projects-page { padding: 1.5rem 1rem; }
-     .projects-header { flex-direction: column; align-items: stretch; }
-     .filter-bar { 
-       flex-direction: row;
-       flex-wrap: wrap;
-       justify-content: flex-start;
-     }
-     :host ::ng-deep .search-input.p-input-icon-left {
-       margin-right: 0;
-       margin-bottom: 0.5rem;
-       width: 100%;
-     }
-     :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
-        min-width: unset; /* Allow shrinking */
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* Define Orange Theme Colors */
+:host {
+    --orange-primary: #FF8C00; /* Dark Orange */
+    --orange-secondary: #FFA500; /* Lighter Orange */
+    --orange-light-bg: #FFF3E0; /* Very Light Orange for backgrounds */
+    --page-bg: #f8f9fa; /* Page background color */
+    --card-bg: #ffffff; /* Card background color */
+    --text-primary: #343a40;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color-base: #e9ecef; /* Subtle borders */
+    --border-color-muted: #ced4da; /* Muted borders (used sparingly) */
+}
+
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--page-bg);
+}
+
+.projects-page {
+    padding: 1.5rem 2rem;
+    background-color: var(--page-bg);
+    min-height: calc(100vh - 60px); /* Adjust based on actual header height */
+    flex-grow: 1; /* Ensure it takes available space */
+}
+
+/* ==========================================================================
+   Header & Filters (Restored)
+   ========================================================================== */
+.projects-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.projects-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto; /* Push filters to the right on larger screens */
+}
+
+/* Search Input Styling (Restored - Kept from previous working version) */
+:host ::ng-deep .search-input.p-input-icon-left {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 300px;
+}
+
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border-radius: 6px !important;
+    border: 1px solid var(--page-bg) !important; /* Default border blends with page */
+    height: 44px !important;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text-secondary) !important;
+}
+
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:hover {
+    border-color: var(--orange-primary) !important; /* Orange border on hover */
+}
+
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:focus {
+    border-color: var(--orange-primary) !important; /* Orange border on focus */
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important; /* Orange focus shadow */
+    outline: 0 !important; /* Remove default outline */
+}
+
+:host ::ng-deep .search-input.p-input-icon-left > i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+/* --- START: PrimeNG Dropdown Styling --- */
+:host ::ng-deep .filter-dropdown.p-dropdown {
+    width: 180px; /* Match previous dropdown width */
+    height: 44px; /* Match input height */
+    border-radius: 6px !important;
+    background-color: var(--card-bg) !important; /* White background */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+    border: 1px solid var(--page-bg) !important; /* Default border blends with page */
+}
+
+:host ::ng-deep .filter-dropdown.p-dropdown:hover {
+    border-color: var(--orange-primary) !important; /* Orange border on hover */
+}
+
+:host ::ng-deep .filter-dropdown.p-dropdown .p-dropdown-label {
+    padding: 0.75rem 1rem !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important; /* Adjust for vertical centering */
+}
+
+:host ::ng-deep .filter-dropdown.p-dropdown .p-dropdown-label.p-placeholder {
+    color: var(--text-muted) !important; /* Lighter color for placeholder */
+}
+
+:host ::ng-deep .filter-dropdown.p-dropdown .p-dropdown-trigger {
+    width: 3rem !important;
+    padding: 0 1rem !important;
+    color: var(--text-muted) !important;
+}
+
+:host ::ng-deep .filter-dropdown.p-dropdown.p-focus {
+    border-color: var(--orange-primary) !important;
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important;
+}
+
+/* Dropdown panel styling */
+:host ::ng-deep .p-dropdown-panel {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items {
+    padding: 0.5rem 0 !important;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item {
+    padding: 0.75rem 1rem !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.95rem !important;
+    transition: background-color 0.2s ease !important;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item:hover {
+    background-color: var(--orange-light-bg) !important;
+    color: var(--orange-primary) !important;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-item.p-highlight {
+    background-color: var(--orange-light-bg) !important;
+    color: var(--orange-primary) !important;
+    font-weight: 500 !important;
+}
+/* --- END: PrimeNG Dropdown Styling --- */
+
+/* ==========================================================================
+   Projects Grid & Cards (Restored)
+   ========================================================================== */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.project-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color-base); /* Subtle border */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-left: 3px solid transparent; /* Placeholder for hover effect */
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-left-color: var(--orange-primary); /* Orange accent border on hover */
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align title and badge to top */
+    gap: 0.5rem;
+}
+
+.project-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+/* Status Badge - Unified Orange Style (Restored) */
+:host ::ng-deep .project-card .status-badge.p-badge {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    padding: 0.3rem 0.6rem !important;
+    border-radius: 12px !important; /* Pill shape */
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    margin-top: 2px; /* Slight adjustment for alignment */
+    flex-shrink: 0; /* Prevent badge shrinking */
+    background-color: var(--orange-light-bg) !important; /* Light orange background */
+    color: var(--orange-primary) !important; /* Dark orange text */
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.project-category {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: -0.75rem 0 0.25rem 0; /* Adjust spacing */
+}
+
+.project-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-icon {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* Project Progress (Restored) */
+.project-progress { margin-top: 0.25rem; }
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.progress-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.progress-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+:host ::ng-deep .project-progress-bar.p-progressbar {
+    height: 6px !important;
+    background-color: var(--border-color-base) !important; /* Progress bar track */
+    border-radius: 3px !important;
+    overflow: hidden !important;
+}
+
+:host ::ng-deep .project-progress-bar .p-progressbar-value {
+    background: linear-gradient(to right, var(--orange-secondary), var(--orange-primary)) !important; /* Orange gradient fill */
+    border-radius: 3px !important;
+}
+
+/* Project Assignees (Restored) */
+.project-assignees { margin-top: 0.25rem; }
+
+:host ::ng-deep .assignee-group.p-avatar-group .p-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.75rem !important;
+    border: 2px solid var(--card-bg) !important; /* Border matches card bg */
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05); /* Optional subtle outline */
+}
+
+/* Style for the "+X" Assignee Badge - Orange Theme (Restored) */
+:host ::ng-deep .assignee-group .remaining-assignees-badge.p-avatar {
+    background-color: var(--orange-light-bg) !important; /* Light orange background */
+    color: var(--orange-primary) !important; /* Dark orange text */
+    font-weight: 600 !important;
+}
+/* Ensure initials/image avatars are styled correctly */
+:host ::ng-deep .assignee-group .p-avatar-image {
+    object-fit: cover; /* Ensure image covers the avatar */
+}
+:host ::ng-deep .assignee-group .p-avatar-text {
+    line-height: 24px !important; /* Adjust line-height to center text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Message for No Projects (Restored) */
+.no-projects-message {
+    grid-column: 1 / -1; /* Span all grid columns */
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+
+/* ==========================================================================
+   Responsive Styles (Restored & Updated for Custom Select)
+   ========================================================================== */
+@media (max-width: 992px) {
+     .filter-bar {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-left: 0;
         width: 100%;
      }
+     :host ::ng-deep .search-input.p-input-icon-left {
+        max-width: none;
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+     /* UPDATED: Target p-dropdown for width */
      :host ::ng-deep .filter-dropdown.p-dropdown {
-        min-width: 120px; /* Smaller on mobile */
-        margin-right: 0.5rem;
+         width: calc(50% - 0.375rem) !important;
+         max-width: none !important;
      }
-     .projects-grid { grid-template-columns: 1fr; } /* Single column */
-   }
+     /* UPDATED: Target p-dropdown for margin */
+     .filter-bar > p-dropdown:nth-of-type(1) { margin-right: 0.75rem; }
+     .filter-bar > p-dropdown:nth-of-type(2) { margin-right: 0; }
+
+     /* Kept other 992px styles */
+     .projects-grid {
+         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+     }
+}
+
+@media (max-width: 768px) {
+    /* Kept other 768px styles */
+    .projects-page { padding: 1.5rem 1rem; }
+    .projects-header { flex-direction: column; align-items: stretch; }
+    .filter-bar { justify-content: flex-start; }
+
+    /* UPDATED: Target p-dropdown for width/margin */
+    :host ::ng-deep .filter-dropdown.p-dropdown {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+        margin-right: 0 !important;
+    }
+    .filter-bar > p-dropdown:nth-of-type(1) { margin-right: 0; } /* Remove specific margin override */
+
+    /* Kept other 768px styles */
+    .projects-grid { grid-template-columns: 1fr; }
+}
+
+/* Status Badge Styling */
+:host ::ng-deep .status-badge {
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+:host ::ng-deep .status-badge.p-badge-warn {
+    background-color: #FF8C00 !important; /* Orange for In Progress */
+    color: #fff !important;
+}
+
+:host ::ng-deep .status-badge.p-badge-danger {
+    background-color: #dc3545 !important; /* Red for At Risk */
+    color: #fff !important;
+}
+
+:host ::ng-deep .status-badge.p-badge-success {
+    background-color: #28a745 !important; /* Green for Completed */
+    color: #fff !important;
+}
+
+:host ::ng-deep .status-badge.p-badge-secondary {
+    background-color: #6c757d !important; /* Gray for On Hold */
+    color: #fff !important;
+}

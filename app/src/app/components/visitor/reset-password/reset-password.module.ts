@@ -11,6 +11,11 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { VisitorUiModule } from '../../shared/visitor-ui/visitor-ui.module';
+
+// Translation imports
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSelectorComponent } from '../../../components/shared/language-selector/language-selector.component';
 
 
 @NgModule({
@@ -26,7 +31,12 @@ import { MessageService } from 'primeng/api';
     PasswordModule,
     ButtonModule,
     CheckboxModule,
-    ToastModule
+    ToastModule,
+    VisitorUiModule,
+    // Add TranslateModule for i18n support
+    TranslateModule.forChild(),
+    // Add LanguageSelectorComponent for language selection
+    LanguageSelectorComponent
   ],
   providers: [MessageService]
 })

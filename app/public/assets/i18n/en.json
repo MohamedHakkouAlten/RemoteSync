@@ -1,0 +1,78 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "project": "Project",
+    "report": "Report",
+    "calendar": "Calendar",
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "profile": "Profile"
+  },
+  "login": {
+    "welcomeBack": "Welcome back",
+    "signInToContinue": "Sign in to continue to RemoteSync",
+    "usernameOrEmail": "Username or Email",
+    "enterUsernameOrEmail": "Enter your username or email",
+    "password": "Password",
+    "enterPassword": "Enter your password",
+    "signIn": "Sign In",
+    "forgotPassword": "Forgot password?",
+    "loginSuccessful": "Login Successful",
+    "welcomeBackUser": "Welcome back, {{name}}!",
+    "loginFailed": "Login Failed",
+    "invalidCredentials": "Invalid credentials. Please try again.",
+    "enterValidCredentials": "Please enter a valid username or email and password."
+  },
+  "forgotPassword": {
+    "title": "Forgot Password?",
+    "subtitle": "Enter your email address and we'll send you instructions to reset your password",
+    "emailAddress": "Email address",
+    "enterEmail": "Enter your email",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "backToLogin": "Back to Login",
+    "resetLinkSent": "Reset Link Sent",
+    "checkYourEmail": "Please check your email for instructions to reset your password.",
+    "resetLinkFailed": "Reset Link Failed",
+    "emailNotFound": "Email not found. Please try again.",
+    "enterValidEmail": "Please enter a valid email address."
+  },
+  "resetPassword": {
+    "title": "Set Your New Password",
+    "subtitle": "Please enter your new password below and confirm it.",
+    "newPassword": "New Password",
+    "enterNewPassword": "Enter new password",
+    "confirmPassword": "Confirm New Password",
+    "confirmNewPassword": "Confirm new password",
+    "passwordRequirements": "Password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.",
+    "passwordsMismatch": "Passwords do not match.",
+    "updatePassword": "Update Password",
+    "updating": "Updating...",
+    "passwordUpdated": "Password Updated",
+    "passwordUpdateSuccess": "Your password has been updated successfully!",
+    "passwordUpdateFailed": "Password Reset Failed",
+    "invalidToken": "Invalid reset token. Please request a new password reset link.",
+    "invalidLink": "Invalid Link",
+    "linkExpired": "The password reset link is invalid or has expired.",
+    "errorUpdatingPassword": "Error Updating Password",
+    "correctErrors": "Please correct the errors below.",
+    "fillPasswordFields": "Please fill in both password fields correctly."
+  },
+  "branding": {
+    "trackPresence": "Track Your Team's Presence",
+    "onSiteOrRemote": "On-site or Remote?",
+    "realTimeVisibility": "Real-time visibility into consultant rotations",
+    "stats": {
+      "clients": "500+ Clients",
+      "consultants": "10,000+ Consultants",
+      "planning": "98% Improved Planning"
+    }
+  },
+  "languages": {
+    "english": "English",
+    "french": "French",
+    "spanish": "Spanish"
+  }
+}

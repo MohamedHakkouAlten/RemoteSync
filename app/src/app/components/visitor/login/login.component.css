@@ -19,6 +19,19 @@
     display: flex;
     min-height: 100vh;
     background-color: #f9fafb;
+    position: relative;
+  }
+
+  /* Language Selector Container */
+  .language-selector-container {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: auto;
+    max-width: 120px;
+    border-radius: 4px;
+    padding: 0.25rem;
   }
 
   /* Left Column (Form Side) */
@@ -210,6 +223,12 @@
   :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid {
     display: block;
     border: 2px solid #dc3545 !important; /* Red border */
+    border-radius: 0.5rem !important;
+  }
+
+  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid:hover {
+    display: block;
+    border: 2px solid var(--color-orange-500) !important; /* Red border */
     border-radius: 0.5rem !important;
   }
 

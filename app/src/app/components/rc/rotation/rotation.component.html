@@ -1,0 +1,264 @@
+<app-navigation></app-navigation>
+
+<p-dialog
+  header="Create Rotation"
+  [(visible)]="visible"
+  [modal]="false"
+  [draggable]="false"
+  [resizable]="false"
+ 
+  styleClass="w-[98vw] md:w-[60vw] lg:w-[50vw] xl:w-[700px]"  
+  contentStyleClass="h-[var(--dialog-content-height-xs)] md:h-[var(--dialog-content-height-md)] lg:h-[var(--dialog-content-height-lg)] overflow-y-auto"
+  (onHide)="onDialogHide()"
+  [dismissableMask]="true"
+  
+ 
+  >
+  <div class="p-3 space-y-6  bg-white">
+    <!-- 1. Select Project -->
+    <div class="space-y-2">
+      <label for="project" style="font-family: inter;" class="block text-base font-medium text-[#333333]">Select Project</label>
+      <p-dropdown
+        inputId="project"
+        [options]="projects"
+        [(ngModel)]="selectedProject"
+        optionLabel="name"
+        placeholder="Select project"
+        [filter]="true"
+  
+        filterBy="name"
+        [showClear]="true"
+        [style]="{'width': '100%'}"
+        styleClass="w-full"
+        [loading]="isLoadingProjects"
+        #projectDropdown="ngModel"
+        [required]="true"
+
+        [ngClass]="{'ng-invalid ng-dirty': projectDropdown.invalid && projectDropdown.dirty}"
+      ></p-dropdown>
+       <!-- Basic validation message example -->
+       <small *ngIf="projectDropdown.invalid && projectDropdown.dirty" class="text-red-500 text-xs">Project is required.</small>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+      <div class="space-y-1">
+        <label for="startDate" class="block text-[15px]  text-gray-700">Start Date</label>
+        <p-calendar
+          inputId="startDate"
+          [(ngModel)]="startDate"
+          [iconDisplay]="'input'"
+           [showIcon]="true" 
+          dateFormat="M dd, yy"
+          [style]="{'width': '100%'}"
+          appendTo="body"
+          inputStyleClass="w-full"
+          class="!text-[2px]"
+          [required]="true"
+          appendTo="body"
+          panelStyleClass="my-compact-datepicker"
+        ></p-calendar>
+      </div>
+      
+      <div class="space-y-1">
+        <label for="endDate" class="block text-[15px] text-gray-700">End Date</label>
+        <p-datepicker
+        inputId="endDate"
+        [(ngModel)]="endDate"
+        [showIcon]="true"
+        iconDisplay="input"  
+        dateFormat="M dd, yy"
+        [minDate]="startDate"
+        [style]="{'width': '100%'}"
+        inputStyleClass="w-full"
+        [required]="true"
+        panelStyleClass="my-compact-datepicker"
+        appendTo="body"
+    ></p-datepicker>
+      </div>
+    </div>
+      <!-- 4. Select Collaborators -->
+      <div class="space-y-2">
+        <label for="collaborators" style="font-family: inter;" class="block text-base   text-gray-700">Select Collaborators</label>
+        <p-autoComplete
+        inputId="collaborators"
+        [(ngModel)]="selectedCollaborators"
+        [suggestions]="filteredCollaborators"
+        (completeMethod)="filterCollaborators($event)"
+        field="name"
+        appendTo="body"
+        [multiple]="true"
+        placeholder="Search and add collaborators..."
+        [minLength]="1"
+        class="custom_auto !bg-red-400"
+        [dropdown]="true"
+        [forceSelection]="true"
+        [style]="{'width': '100%'}"
+        styleClass="w-full p-fluid"
+        #collaboratorsModel="ngModel"
+        (onClear)="$event?.stopPropagation()"
+        [required]="true"
+     
+       >
+         <!-- Custom display for items in the suggestion dropdown -->
+         <ng-template let-collaborator pTemplate="item">
+            <div class="flex items-center  space-x-2 py-1 px-2">
+                <img *ngIf="collaborator.avatar" [src]="collaborator.avatar" class="w-6 h-6 rounded-full" alt="">
+                <span class="text-sm">{{ collaborator.name }}</span>
+            </div>
+        </ng-template>
+        <!-- NOTE: pTemplate="selectedItem" is not typically used with multiple=true -->
+        <!-- Selected items are handled via the ngModel array -->
+      </p-autoComplete>
+     <!--<p-multiSelect
+          inputId="collaborators"
+          [options]="collaborators"
+          [(ngModel)]="selectedCollaborators"
+          optionLabel="name"
+          placeholder="Search collaborators..."
+          [filter]="true"
+          filterBy="name"
+          display="chip"
+          [style]="{'width': '100%'}"
+          styleClass="w-full"
+          [loading]="isLoadingCollaborators"
+          #collaboratorsModel="ngModel"
+          [required]="true"
+          [ngClass]="{'ng-invalid ng-dirty': collaboratorsModel.invalid && collaboratorsModel.dirty}"
+        >
+         
+         <ng-template let-collaborator pTemplate="item">
+              <div class="flex items-center space-x-2">
+                  <img *ngIf="collaborator.avatar" [src]="collaborator.avatar" class="w-5 h-5 rounded-full" alt="">
+                  <span>{{ collaborator.name }}</span>
+              </div>
+          </ng-template> 
+        </p-multiSelect>
+      -->
+        <!-- Basic validation message example -->
+         <small *ngIf="collaboratorsModel.invalid && collaboratorsModel.dirty" class="text-red-500 text-xs">At least one collaborator is required.</small>
+      </div>
+    <!-- 2. Rotation Mode Tabs -->
+    <div class="flex bg-[#F3F4F6] rounded-[8px] text-gray-700 p-1 gap-2 overflow-hidden">
+      <button
+        type="button"  style="font-family: Inter;"
+        class="flex-1 px-4 py-3 text-[15px]  text-center transition-colors duration-150 focus:outline-none"
+        [ngClass]="{
+          'bg-[#FF9500] text-white  rounded-[6px]': rotationMode === 'automatic',
+          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6]  rounded-0': rotationMode !== 'automatic'
+        }"
+        (click)="rotationMode = 'automatic'"
+      >
+        Automatic Rotation
+      </button>
+      <button
+        type="button"  style="font-family: Inter;"
+        class="flex-1 px-4 py-3 text-[15px]  text-center  border-gray-300 transition-colors duration-150 focus:outline-none"
+        [ngClass]="{
+          'bg-[#FF9500] text-white  rounded-[6px]': rotationMode === 'custom',
+          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6]  rounded-0': rotationMode !== 'custom'
+        }"
+        (click)="rotationMode = 'custom'"
+      >
+        Custom Dates
+      </button>
+    </div>
+
+
+      <!-- Automatic Rotation Fields -->
+      <div *ngIf="rotationMode === 'automatic'" class="space-y-5">
+      
+        <div class="space-y-2">
+            <label class="block text-base text-gray-700">Rotation Pattern :  </label>
+            <div class="flex   items-center flex-col md:flex-row md:gap-y-5 justify-between space-x-3 text-sm">
+                <p-inputNumber
+                    inputId="rotationInterval"
+                    [(ngModel)]="rotationInterval"
+                    [min]="1"
+                    mode="decimal"
+                    [showButtons]="true"
+                    decrementButtonClass="!bg-white "
+                    incrementButtonClass="!bg-white"
+                    buttonLayout="horizontal"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    required
+                    [max]="rotationPeriod"
+                ></p-inputNumber>
+                <div class="flex flex-col items-center gap-2 justify-center">
+             <i class="pi pi-arrow-right-arrow-left text-gray-500"></i>
+            
+            </div>
+                 <p-inputNumber
+                    inputId="rotationPeriod"
+                    [(ngModel)]="rotationPeriod"
+                    [min]="1"
+                    [max]="2"          
+                    mode="decimal"
+                    [showButtons]="true"
+                    decrementButtonClass="!bg-white"
+                    incrementButtonClass="!bg-white"
+                    buttonLayout="horizontal"
+                    incrementButtonIcon="pi pi-plus"
+                    decrementButtonIcon="pi pi-minus"
+                    required
+                    required
+                ></p-inputNumber>
+                 
+            </div>
+            <h1 class="text-sm text-gray-500 ">{{rotationInterval}}  weeks per  {{rotationPeriod}}</h1>
+            
+        </div>
+      </div>
+
+      <!-- Custom Dates Fields -->
+          <!-- Custom Dates Fields -->
+          <div *ngIf="rotationMode === 'custom'" class="space-y-2 ml-[10px] ">
+              <label for="customDates" class="block text-sm font-medium text-gray-700">Select dates</label>
+        
+                <p-datepicker
+                    inputId="customDates"
+                    [(ngModel)]="customDates"
+                    selectionMode="multiple"
+                    [inline]="true"
+                    [numberOfMonths]="2"
+                    [showWeek]="true"
+                    [minDate]="startDate"
+                    [maxDate]="endDate"
+                    panelStyleClass="my-compact-datepicker"
+                    #customDatesModel="ngModel"
+                    #customDatesPicker 
+                    (onMonthChange)="onViewChanged()" 
+                    (onYearChange)="onViewChanged()">  
+                    [required]="true">
+                </p-datepicker>
+           
+              <!-- Basic validation message example -->
+              <small *ngIf="customDatesModel.invalid && customDatesModel.dirty && rotationMode === 'custom'" class="text-red-500 text-xs">At least one custom date is required.</small>
+           </div>
+
+
+  
+
+  </div>
+
+  <!-- Footer Actions -->
+  <ng-template #footer>
+    <div class="flex justify-end gap-4 w-full px-6 pt-4  border-t border-gray-200">
+       <button
+            style="font-family: inter;"
+            class="text-[#4B5563] bg-[#F3F4F6] border-0 rounded-[5px] px-4 py-2 text-[15px]"
+       
+            (click)="closeDialog()"
+        >
+     Cancel</button>
+        <button
+       
+        style="font-family: inter;"
+        class="text-white bg-primary border-0 rounded-[5px] px-4 py-2 text-[15px]"
+            (click)="submitRotation()"
+            [disabled]="!isFormValid()"
+        >
+        Create Rotation
+    </button>
+    </div>
+  </ng-template>
+</p-dialog>

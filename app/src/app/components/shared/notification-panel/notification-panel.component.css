@@ -1,0 +1,16 @@
+:host ::ng-deep .small-overlay-badge .p-badge {
+    font-size: 11px !important ;/* Increase text size */
+   display: flex;
+   justify-content: center;
+   padding-bottom: 1px;
+   align-items: center;
+     /* Add more padding */
+    min-width: 17px!important;  /* Ensure minimum width */
+    height: 17px!important;     /* Ensure minimum height */
+  }
+  :host ::ng-deep .custom-overlay-panel .p-overlaypanel-content {
+    padding: 0 !important;
+  }
+  .custom-overlay-panel .p-overlaypanel-content {
+    padding: 0 !important;
+  }

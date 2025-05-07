@@ -23,4 +23,5 @@ public class AuthController {
         LoginResponseDTO response = userService.login(loginRequestDTO);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
-    }}
+    }
+}

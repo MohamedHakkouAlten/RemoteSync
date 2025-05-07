@@ -2,10 +2,10 @@ package com.alten.remotesync.adapter.rest;
 
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
-import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
+import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.report.record.response.ReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
 import com.alten.remotesync.domain.report.enumeration.ReportStatus;
@@ -25,16 +25,8 @@ import java.util.UUID;
 @RequestMapping("/api/v1/rc")
 @RequiredArgsConstructor
 public class RcController {
+
     private final ProjectService projectService;
-
-
-    @GetMapping("/rc/projects-count")
-    public ResponseEntity<?> getRCCompletedProjectsCount(){
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseWrapper.success(projectService.getCompletedProjectsCount(),HttpStatus.OK));
-    }
-
-
     private final AssignedRotationService assignedRotationService;
     private final ReportService reportService;
 
@@ -53,16 +45,16 @@ public class RcController {
                 ));
     }
 
-//    @GetMapping("/projects/count")
-//    @PreAuthorize("hasAuthority('RC:READ')")
-//    public ResponseEntity<?> countActiveProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(ResponseWrapper.success(
-//                        projectService.countActiveProjects(GlobalDTO.fromUserId(userPrincipal.userId())),
-//                        HttpStatus.OK
-//                ));
-//    }
+    @GetMapping("/projects/count")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> countActiveProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(
+                        projectService.countActiveProjects(),
+                        HttpStatus.OK
+                ));
+    }
     @GetMapping("/projects/largest-team")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getLargestTeamProject(@AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -79,11 +71,10 @@ public class RcController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
-                        projectService.countCancelledProjects(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        projectService.countCancelledProjects(),
                         HttpStatus.OK
                 ));
     }
-
     @GetMapping("/rc/rotations/sub-factory/{subFactoryId}/{page}/{size}")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRotationsBySubFactory(@PathVariable UUID subFactoryId,

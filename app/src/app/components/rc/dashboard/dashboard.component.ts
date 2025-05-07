@@ -1,30 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-interface NavLink {
-  label: string;
-  route?: string; // Optional: Add route path if using Angular Router
-}
-interface ProjectStatus {
-  name: string;
-  project: string;
-  statuses: { date: string; type: 'Remote' | 'On-site' | null }[]; // More flexible structure
-}
+import { Component, OnInit } from '@angular/core';
+import { RotationReport } from '../../../models/report.model';
+import { addWeeks, format, startOfWeek } from 'date-fns';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
+import { RotationStatus } from '../../../enums/rotation-status.enum';
 
-interface PendingRequest {
-  id: number; // Add an ID for unique key in *ngFor
-  name: string;
-  status: 'Remote' | 'On-site';
-  dateRange: string;
-  reason: string;
-}
-// Define an interface for the simpler structure matching the image columns directly
-interface ProjectStatusSimple {
-    name: string;
-    project: string;
-    status_20250414: 'Remote' | 'On-site' | null;
-    status_20250421: 'Remote' | 'On-site' | null;
-    status_20250429_1: 'Remote' | 'On-site' | null; // Assuming duplicate date needs distinction
-    status_20250429_2: 'Remote' | 'On-site' | null;
-}
+import { Router } from '@angular/router';
+import { UserUtils } from '../../../utilities/UserUtils';
+import { Rotation } from '../../../models/rotation.model';
+import { User } from '../../../models/user.model';
+import { RotationService } from '../../../services/rotation.service';
+
+
+
+
+
 
 @Component({
   selector: 'app-dashboard',
@@ -35,14 +24,19 @@ interface ProjectStatusSimple {
 
 export class DashboardComponent implements OnInit {
 
-  // Properties to make the component more dynamic later
-  userName: string = 'John Anderson';
-  userAvatarUrl: string = 'assets/images/avatar.png'; // Replace with your actual path
-  logoUrl: string = 'assets/images/alten.png'; // Replace with your actual path
-  activeLink: string = 'Projects'; // To control the active state
 
-  // Icons (using inline SVGs in the template is often easier with Tailwind)
+navigateToCalendar() {
+this.router.navigate(['RemoteSync/Rc/Calendar'])
+}
 
+
+
+
+
+
+
+
+userUtils=UserUtils;
 
   //left panel stats 
   activeProjects: number = 27;
@@ -61,47 +55,62 @@ export class DashboardComponent implements OnInit {
   largestTeamProject: string = 'Project Beta';
   largestTeamMembersCount: number = 12;
   // Replace with your actual avatar paths
-  teamAvatars: string[] = [
-    'assets/images/avatar1.png',
-    'assets/images/avatar2.png',
-    'assets/images/avatar3.png',
-    'assets/images/avatar4.png',
-  ];
+
   // Calculate how many are hidden
-  overflowAvatarsCount: number = Math.max(0, this.largestTeamMembersCount - this.teamAvatars.length);
+  overflowAvatarsCount: number = 4;
 
 //calendar 
-welcomeName: string = 'Mohammed Alami';
-tableData: ProjectStatusSimple[] = []; // Use the simpler interface for now
+
+tableData: Rotation[] = []; // Use the simpler interface for now
 totalRecords: number = 150; // Total number of entries for pagination
-
+welcomeName: string=""
 // Fixed date columns based on the image
-dateColumns: string[] = [
-  '14/04/2025',
-  '21/04/2025',
-  '29/04/2025', // First instance
-  '29/04/2025'  // Second instance
-];
+dateColumns:  string[] =this.loadWeeksDates()
 
+user1: User = { id_user: 'user001', firstName: 'Alice', lastName: 'Smith' };
+user2: User = { id_user: 'user002', firstName: 'Bob', lastName: 'Jones' };
+users:User[]=[this.user1,this.user2]
 //recent reports 
-pendingRequests: PendingRequest[] = [];
-  constructor() { }
+
+pendingRequests: RotationReport[] = [];
+
+constructor(private authService :AuthFacadeService,private rotationService:RotationService,private router:Router){
+
+}
 
   ngOnInit(): void {
-    this.tableData = [
-      { name: 'Youssef El Amrani', project: 'Project Alpha', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Leila Tazi', project: 'Project Delta', status_20250414: 'On-site', status_20250421: 'On-site', status_20250429_1: 'On-site', status_20250429_2: 'On-site' },
-      { name: 'Omar Alaoui', project: 'Project Gamma', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Omar Alaoui', project: 'Project Gamma', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Omar Alaoui', project: 'Project Gamma', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Omar Alaoui', project: 'Project Gamma', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Hassan Benjelloun', project: 'Project Alpha', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      // Add more mock data rows if needed to test pagination visually (up to 10 for the first page)
-      { name: 'Another Person 1', project: 'Project Beta', status_20250414: 'On-site', status_20250421: 'Remote', status_20250429_1: 'On-site', status_20250429_2: 'Remote' },
-      { name: 'Another Person 2', project: 'Project Epsilon', status_20250414: 'Remote', status_20250421: 'Remote', status_20250429_1: 'Remote', status_20250429_2: 'Remote' },
-      { name: 'Another Person 3', project: 'Project Zeta', status_20250414: 'On-site', status_20250421: 'On-site', status_20250429_1: 'On-site', status_20250429_2: 'On-site' },
 
-    ];
+
+    this.welcomeName = this.authService.getFirstName()+" "+this.authService.getLastName();
+
+    this.tableData  = [
+      // Rotation 1: Standard 2 weeks OnSite, 2 weeks Remote (Cycle 4)
+      {
+          user: this.user1,
+          startDate: '2025-03-03', // Monday
+          endDate: '2025-06-16',   // Sunday
+          shift: 2, // 2 weeks OnSite
+          cycle: 4, // 4 week total cycle
+          customDates: [] // No overrides
+      },
+      // Rotation 2: 3 weeks OnSite, 1 week Remote (Cycle 4) with Custom Date Overrides
+      {
+          user: this.user2,
+          startDate: '2025-02-05', // Monday
+          endDate: '2025-07-28',   // Sunday
+          shift: 3, // 3 weeks OnSite
+          cycle: 4, // 4 week total cycle
+          customDates: [
+              { date: '2025-04-27', rotationStatus: RotationStatus.Off },    // Specific day Off (Valentine's Day)
+              { date: '2025-05-04', rotationStatus: RotationStatus.Remote }, // Explicitly OnSite (might override cycle)
+              { date: '2025-03-04', rotationStatus: RotationStatus.Remote }, // Force Remote during expected OnSite
+              { date: '2025-04-01', rotationStatus: RotationStatus.Off }     // Custom date outside initial cycle logic test
+          ]
+      },
+      // Rotation 3: 1 week OnSite, 1 week Remote (Cycle 2) - Shorter cycle
+     
+  ];
+
     // In a real app, you'd fetch this data from a service, possibly using the PaginatorState event
     // For now, we just simulate having the first 10 records for display.
     // totalRecords is set above to simulate the full dataset size for the paginator.
@@ -129,21 +138,36 @@ pendingRequests: PendingRequest[] = [];
    }
 
    // Helper function to get the status based on index (since dates can be duplicated)
-   getStatus(rowData: ProjectStatusSimple, index: number): 'Remote' | 'On-site' | null {
-        switch(index) {
-            case 0: return rowData.status_20250414;
-            case 1: return rowData.status_20250421;
-            case 2: return rowData.status_20250429_1;
-            case 3: return rowData.status_20250429_2;
-            default: return null;
-        }
-   
+   getStatus(rowData:Rotation, date :string): RotationStatus {
+return this.rotationService.getDateRotationStatus(rowData,date);
+  }
+  loadWeeksDates():string[]{
+
+
+    const dateFormat = 'yyyy-MM-dd';
+
+// --- End Configuration ---
+
+
+// Find the start of the current week
+const startOfCurrentWeek = startOfWeek(new Date());
+
+const dateColumns: string[] = [];
+
+// Generate the dates for the current week and the next (numberOfWeeks - 1) weeks
+for (let i = 0; i < 4; i++) {
+  // Calculate the start date for the target week (0=current, 1=next, etc.)
+  const weekStartDate = addWeeks(startOfCurrentWeek, i);
+
+  // Format the date as required
+  const formattedDate = format(weekStartDate, dateFormat);
+
+  // Add the formatted date string to the array
+  dateColumns.push(formattedDate);
+}
+return dateColumns;
+
   }
 
-  // Example function if clicking a link should change the active state
-  setActiveLink(linkName: string): void {
-    this.activeLink = linkName;
-    // Add navigation logic here if needed (e.g., using Angular Router)
-  }
 
 }
