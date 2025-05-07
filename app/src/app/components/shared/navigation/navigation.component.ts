@@ -1,12 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { BadgeModule } from 'primeng/badge';
-import { TooltipModule } from 'primeng/tooltip';
-import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { NotificationPanelComponent } from "../notification-panel/notification-panel.component";
@@ -29,6 +24,9 @@ import { UserAvatarComponent } from "../shared-ui/user-avatar/user-avatar.compon
     RouterModule,
     NotificationPanelComponent,
     UserAvatarComponent
+],
+providers:[
+  AuthService
 ]
 })
 export class NavigationComponent implements OnInit {
@@ -46,7 +44,8 @@ export class NavigationComponent implements OnInit {
    
 
     
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService) {
+   }
 
   /**
    * Updates the user name display from authentication data
@@ -63,17 +62,20 @@ export class NavigationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("jjjj"+this.authService.getUser()?.firstName)
     // Get user's first and last name from AuthService
 this.updateUserName()
     this.userInitials=this.userUtils.getUserInitials(this.authService.getUser())
     // Subscribe to user info changes to update name when user logs in/out
     this.authService.userInfo$.subscribe(userInfo => {
+     
       if (userInfo) {
         this.userName = `${userInfo.firstName} ${userInfo.lastName}`;
       } else {
         this.userName = 'Guest User';
       }
     });
+    
     
     // Set up user menu items
     this.menuItems = [
@@ -117,10 +119,10 @@ this.updateUserName()
       ];
     } else if (userRoles.includes('RC')) {
       this.navItems = [
-        { label: 'Dashboard', routerLink: '/RemoteSync/Rc/Dashboard' },
+        { label: 'Dashboard', routerLink: '/RemoteSync/RC/Dashboard' },
         { label: 'Project', routerLink: '/RemoteSync/RC/Project' },
         { label: 'Report', routerLink: '/RemoteSync/RC/Report' },
-        { label: 'Calendar', routerLink: '/RemoteSync/Rc/Calendar' }
+        { label: 'Calendar', routerLink: '/RemoteSync/RC/Calendar' }
       ];
     } else if (userRoles.includes('ADMIN')) {
       this.navItems = [

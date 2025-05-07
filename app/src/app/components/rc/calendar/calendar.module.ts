@@ -16,6 +16,11 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SelectButton } from 'primeng/selectbutton';
 import { ThreeStateToggleComponent } from "../../shared/three-state-toggle/three-state-toggle.component";
 import { RotationComponent } from "../rotation/rotation.component";
+import { RotationService } from '../../../services/rotation.service';
+import { ClientService } from '../../../services/client.service';
+import { ProjectService } from '../../../services/project.service';
+import { FactoryService } from '../../../services/factory.service';
+import { SubfactoryService } from '../../../services/subfactory.service';
 
 @NgModule({
   declarations: [
@@ -30,15 +35,20 @@ import { RotationComponent } from "../rotation/rotation.component";
     InputTextModule,
     DropdownModule,
     AvatarModule,
-    ToggleSwitch,
     NavigationComponent,
     InputIcon,
     IconField,
     AutoCompleteModule,
-    SelectButton,
-    ReactiveFormsModule,
     ThreeStateToggleComponent,
-    RotationComponent
+    RotationComponent,
+
+],
+providers :[
+  RotationService,
+  ClientService,
+  ProjectService,
+  FactoryService,
+  SubfactoryService
 ]
 })
 export class CalendarModule { }

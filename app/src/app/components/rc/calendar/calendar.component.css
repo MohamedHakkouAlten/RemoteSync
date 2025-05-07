@@ -127,7 +127,7 @@
 border: none !important;
 background-color: var(--color-secondary);
 font-family: Inter;
-font-size: 14px;
+font-size: 12px;
 border-radius: 4px !important;
 
 
@@ -170,4 +170,8 @@ color: #6a7282 !important;
     box-shadow: none !important;
   }
 
+  :host ::ng-deep .p-autocomplete .p-autocomplete-option {
+
+    font-size: 12px;
+  }
 

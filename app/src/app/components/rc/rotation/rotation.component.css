@@ -116,3 +116,22 @@
     outline: 2px solid #007bff;
     outline-offset: 1px;
 }
+
+
+:host ::ng-deep .customDates .p-datepicker .p-datepicker-panel {
+  position: static !important;
+  
+ 
+}
+:host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day {
+  width: 22px !important;
+  height:22px !important;
+  font-size: 12px;
+  color: white;
+  background: var(--color-mainBlue);
+}
+:host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day.p-disabled , .p-component:disabled {
+   
+  color: black;
+  background: transparent !important;
+}

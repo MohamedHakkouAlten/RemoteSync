@@ -40,6 +40,7 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {
     // Load initial state from localStorage on service creation
+    console.log("i m here")
     this.loadInitialAuthState();
   }
 
@@ -244,7 +245,8 @@ export class AuthService {
     // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
   }
   getUser(): User | null {
-    return {firstName: this.userInfoSubject.value?.firstName,lastName:this.userInfoSubject.value?.lastName} as User ;
+    
+    return (this.userInfoSubject.getValue()==null)?{firstName: this.userInfoSubject.value?.firstName,lastName:this.userInfoSubject.value?.lastName} as User : null;
     // Or read directly: return localStorage.getItem(this.FIRST_NAME_KEY);
   }
   /**

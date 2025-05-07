@@ -50,6 +50,7 @@
   --color-primary : #FFA500;
   --color-primary : #FF9500; /*FFA500 */
   --color-secondary: #F9FAFB;
+  --color-mainBlue :#3B82F6;
 }
 
 :host ::ng-deep .lightgray  {

@@ -1,4 +1,4 @@
-<app-navigation></app-navigation>
+
 
 <p-dialog
   header="Create Rotation"
@@ -14,7 +14,7 @@
   
  
   >
-  <div class="p-3 space-y-6  bg-white">
+  <div #maindiv class="p-3 space-y-6   bg-white">
     <!-- 1. Select Project -->
     <div class="space-y-2">
       <label for="project" style="font-family: inter;" class="block text-base font-medium text-[#333333]">Select Project</label>
@@ -66,7 +66,7 @@
         [showIcon]="true"
         iconDisplay="input"  
         dateFormat="M dd, yy"
-        [minDate]="startDate"
+        [minDate]="startDate()"
         [style]="{'width': '100%'}"
         inputStyleClass="w-full"
         [required]="true"
@@ -173,6 +173,7 @@
                     inputId="rotationInterval"
                     [(ngModel)]="rotationInterval"
                     [min]="1"
+                    (ngModelChange)="loadAutoRotationDates()"
                     mode="decimal"
                     [showButtons]="true"
                     decrementButtonClass="!bg-white "
@@ -191,8 +192,9 @@
                     inputId="rotationPeriod"
                     [(ngModel)]="rotationPeriod"
                     [min]="1"
-                    [max]="2"          
+                    [max]="12"          
                     mode="decimal"
+                    (ngModelChange)="loadAutoRotationDates()"
                     [showButtons]="true"
                     decrementButtonClass="!bg-white"
                     incrementButtonClass="!bg-white"
@@ -204,36 +206,41 @@
                 ></p-inputNumber>
                  
             </div>
-            <h1 class="text-sm text-gray-500 ">{{rotationInterval}}  weeks per  {{rotationPeriod}}</h1>
+            <h1 class="text-sm text-gray-500 ">{{rotationInterval()}}  weeks per  {{rotationPeriod()}}</h1>
             
         </div>
       </div>
 
       <!-- Custom Dates Fields -->
           <!-- Custom Dates Fields -->
-          <div *ngIf="rotationMode === 'custom'" class="space-y-2 ml-[10px] ">
+          <div *ngIf="rotationMode === 'custom'" class=" space-y-2 w-full ">
               <label for="customDates" class="block text-sm font-medium text-gray-700">Select dates</label>
-        
+          <div class=" justify-center flex  ">
                 <p-datepicker
+                class="customDates"
                     inputId="customDates"
-                    [(ngModel)]="customDates"
+                    [(ngModel)]="selectedDates"
                     selectionMode="multiple"
                     [inline]="true"
                     [numberOfMonths]="2"
-                    [showWeek]="true"
-                    [minDate]="startDate"
-                    [maxDate]="endDate"
+                    
+                    [minDate]="startDate()"
+                    [maxDate]="endDate()"
                     panelStyleClass="my-compact-datepicker"
                     #customDatesModel="ngModel"
                     #customDatesPicker 
-                    (onMonthChange)="onViewChanged()" 
-                    (onYearChange)="onViewChanged()">  
-                    [required]="true">
+                    dateFormat="yyyy-mm-dd"
+                    [appendTo]="maindiv"
+                  (onSelect)="onSelectDate($event)"
+                    (ngModelChange)="onDeSelectDate($event)"
+                   >  
+                    
                 </p-datepicker>
-           
+            
               <!-- Basic validation message example -->
               <small *ngIf="customDatesModel.invalid && customDatesModel.dirty && rotationMode === 'custom'" class="text-red-500 text-xs">At least one custom date is required.</small>
-           </div>
+            </div>
+            </div>
 
 
   

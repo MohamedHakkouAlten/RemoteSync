@@ -14,7 +14,7 @@ export interface Peroid { // Consider renaming to Period (typo)
   
   //TODO : Remove T from backend date
   export interface Rotation {
-    user: User;
+    user?: User;
     startDate: string; // Expect 'YYYY-MM-DD' 
     endDate: string;   // Expect 'YYYY-MM-DD'
     shift: number;     // Number of weeks 'OnSite' (should be > 0 for cycle logic)

@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { RotationStatus } from "../enums/rotation-status.enum";
 import { addWeeks, differenceInCalendarWeeks, differenceInWeeks, isAfter, isBefore, isEqual, isValid, parseISO, startOfWeek } from "date-fns";
-import { Peroid, Rotation } from "../models/rotation.model";
+import { CustomDate, Peroid, Rotation } from "../models/rotation.model";
+import { User } from "../models/user.model";
 
 
 
@@ -16,9 +17,7 @@ function parseAndValidate(dateString: string | undefined | null): Date | null {
 }
 
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class RotationService {
 
   // Assuming you fetch/manage the list of all rotations elsewhere
@@ -36,6 +35,62 @@ export class RotationService {
       return [];
   }
 
+   getUsersRotations(): Rotation[] {
+    // Check if transformedUsers has data
+
+    const transformedUsers: User[] = [
+        { id_user: 1, firstName: 'Sarah   ', lastName: ' Wilson' },
+        { id_user: 2, firstName: 'Michael ', lastName: ' Chen' },
+        { id_user: 3, firstName: 'Emily   ', lastName: ' Davis' },
+        { id_user: 4, firstName: 'David   ', lastName: ' Kim' },
+        { id_user: 5, firstName: 'Lisa    ', lastName: ' Thompson' },
+        { id_user: 6, firstName: 'Chris   ', lastName: ' Evans' }, // Example different names
+        { id_user: 7, firstName: 'Anna    ', lastName: ' Lee' },
+        { id_user: 8, firstName: 'Ben     ', lastName: ' Carter' },
+        { id_user: 9, firstName: 'Olivia  ', lastName: ' Martinez' },
+        { id_user: 10, firstName: 'James  ', lastName: ' Rodriguez' },
+      ];
+    return transformedUsers.map((user, index) => {
+      // For each user in the transformed list, create a Rotation object
+
+      // Generate EXAMPLE rotation details (customize these as needed)
+      const month = (`0${Math.floor(index / 3) + 1}`).slice(-2); // Example month 01-04
+      const day = (`0${(index % 9) + 1}`).slice(-2); // Example day 01-09
+      const startDate = `2025-${month}-${day}`; // Example: Vary start dates
+      const endDate = '2025-12-31'; // Example: Fixed end date
+      const shift = (index % 3) + 1; // Example: Cycle shift 1, 2, 3
+      const cycle = shift + 1 + (index % 2); // Example: Slightly varying cycle
+      let customDates: CustomDate[] = [];
+
+      // Add some example custom dates based on user ID (or index)
+      if (user.id_user === 3) { // Emily Davis example overrides
+        customDates = [
+          { date: '2025-04-14', rotationStatus: RotationStatus.Off }, // Tax day off!
+        ];
+      } else if (user.id_user === 8) { // Ben Carter different overrides
+        customDates = [
+          { date: '2025-07-07', rotationStatus: RotationStatus.Remote }
+        ];
+      }
+
+      // Construct the Rotation object using the current user
+      const rotation: Rotation = {
+        user: user, // <-- Use the user object directly from transformedUsers
+        startDate: startDate,
+        endDate: endDate,
+        shift: shift,
+        cycle: cycle,
+        customDates: customDates
+      };
+
+      return rotation;
+    })
+   
+
+
+
+   
+  }
   /**
    * Determines the status (OnSite, Remote, Off) of a rotation for a specific date.
    * Checks custom dates first, then calculates based on shift/cycle if applicable.
@@ -54,10 +109,12 @@ export class RotationService {
       if (!rotation || !dateString) {
           return RotationStatus.Off; // Cannot determine status without rotation or date
       }
-
+      
+     
       // --- 1. Check Custom Dates ---
       // Directly compare date strings assuming consistent 'YYYY-MM-DD' format.
       if (rotation.customDates && rotation.customDates.length > 0) {
+
           // Use find for cleaner access
           const customMatch = rotation.customDates.find(cd => cd.date === dateString);
           if (customMatch) {
@@ -95,6 +152,7 @@ export class RotationService {
       const rotationStartWeek = startOfWeek(rotationStartDate, weekOptions);
       const rotationEndWeek = startOfWeek(rotationEndDate, weekOptions);
 
+      
       // --- Boundary Checks ---
       // Check if the target date is outside the rotation's entire valid week range
       if (isBefore(targetWeekStart, rotationStartWeek) || isAfter(targetWeekStart, rotationEndWeek)) {
@@ -124,6 +182,47 @@ export class RotationService {
       // If it gets here unexpectedly, Off is a safe default.
       // return RotationStatus.Off; // Should ideally be unreachable if logic above is sound
   }
+
+
+   updateRotationStatusForDate(
+    rotation: Rotation | null | undefined, // Allow null/undefined input
+    dateString: string | null | undefined, // Allow null/undefined/empty input
+    newStatus: RotationStatus
+): Rotation | null | undefined { // Return type matches input possibilities
+
+    // --- 1. Input Validation ---
+    if (!rotation || !dateString) {
+        console.warn("updateRotationStatusForDate: Invalid input provided.", { rotation, dateString, newStatus });
+        return rotation; // Return original object/null/undefined if invalid input
+    }
+
+    // --- 2. Ensure customDates Array Exists ---
+    // If rotation.customDates is null or undefined, initialize it as an empty array.
+    if (!rotation.customDates) {
+        rotation.customDates = [];
+    }
+
+    // --- 3. Find Existing Custom Date ---
+    // Find the index of the custom date entry matching the dateString.
+    const existingDateIndex = rotation.customDates.findIndex(cd => cd.date === dateString);
+
+    // --- 4. Update or Add Custom Date ---
+    if (existingDateIndex > -1) {
+        // Date FOUND: Update the status of the existing entry
+        console.log(`Updating existing custom date ${dateString} for user ${rotation.user?.id_user} to ${newStatus}`);
+        rotation.customDates[existingDateIndex].rotationStatus = newStatus;
+    } else {
+        // Date NOT FOUND: Add a new entry to the customDates array
+        console.log(`Adding new custom date ${dateString} with status ${newStatus} for user ${rotation.user?.id_user}`);
+        const newCustomDate: CustomDate = {
+            date: dateString,
+            rotationStatus: newStatus
+        };
+        rotation.customDates.push(newCustomDate);
+    }
+
+    // --- 5. Return Updated Rotation ---
+    // The input 'rotation' object has been modified directly (mutated).
+    return rotation;
 }
-
-
+}
