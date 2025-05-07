@@ -52,12 +52,14 @@ public class UserServiceImp implements UserService {
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         User dbUser = (loginRequestDTO.usernameOrEmail().contains("@")) ? userDomainRepository.findByEmail(loginRequestDTO.usernameOrEmail()) : userDomainRepository.findByUsername(loginRequestDTO.usernameOrEmail());
 
+        if(dbUser.isDeleted()) throw new UserDisabledException("Authentication failed account disabled");
+
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dbUser.getUsername(), loginRequestDTO.password()));
 
         if (!authentication.isAuthenticated())
             throw new UserNotFoundException("Authentication failed user was not found");
 
-        if(dbUser.isDeleted()) throw new UserDisabledException("Authentication failed account disabled");
+
 
         return new LoginResponseDTO(jwtService.generateAccessToken(dbUser), jwtService.generateRefreshToken(dbUser), dbUser.getFirstName(), dbUser.getLastName(), dbUser.getRoles().stream().map(r -> String.valueOf(r.getAuthority())).toList());
     }

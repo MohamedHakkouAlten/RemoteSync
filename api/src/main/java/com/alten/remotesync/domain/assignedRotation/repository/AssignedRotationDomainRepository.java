@@ -19,9 +19,16 @@ import java.util.UUID;
 @Repository
 public interface AssignedRotationDomainRepository extends JpaRepository<AssignedRotation, AssignedRotationId> {
     Optional<AssignedRotation> findAssignedRotationByUser_UserIdAndProject_ProjectIdAndRotationAssignmentStatus(UUID user_userId, UUID project_projectId, RotationAssignmentStatus rotationAssignmentStatus, Sort sort);
+
     Optional<List<AssignedRotation>> findAllAssignedRotationByUser_UserIdAndProject_ProjectIdAndRotationAssignmentStatus(UUID user_userId, UUID project_projectId, RotationAssignmentStatus rotationAssignmentStatus, Sort sort);
+
     Optional<AssignedRotation> findAssignedRotationByUser_UserIdAndProjectIsNullAndRotationAssignmentStatus(UUID user_userId, RotationAssignmentStatus rotationAssignmentStatus, Sort sort);
+
     Optional<List<AssignedRotation>> findAllAssignedRotationByUser_UserIdAndRotationAssignmentStatus(UUID user_userId, RotationAssignmentStatus rotationAssignmentStatus, Sort sort);
+
+    Optional<Page<AssignedRotation>> findAllAssignedRotationByUser_FirstNameContainsAndUser_LastNameContainsAndRotationAssignmentStatus(String firstName, String lastName, RotationAssignmentStatus status, Pageable pageable);
+
+    Optional<Page<AssignedRotation>> findAllAssignedRotationByUser_SubFactory_Factory_FactoryIdAndRotationAssignmentStatus(UUID id_factory, RotationAssignmentStatus status, Pageable pageable);
     @Query("SELECT ar FROM AssignedRotation ar " +
             "JOIN FETCH ar.user u " +
             "JOIN FETCH ar.rotation r " +

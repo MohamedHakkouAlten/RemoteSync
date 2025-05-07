@@ -2,6 +2,8 @@ package com.alten.remotesync.application.assignedRotation.service;
 
 import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
 import com.alten.remotesync.application.assignedRotation.mapper.AssignedRotationMapper;
+import com.alten.remotesync.application.assignedRotation.record.request.UsersRotationsByFactoryDTO;
+import com.alten.remotesync.application.assignedRotation.record.request.UsersRotationsByNameDTO;
 import com.alten.remotesync.application.assignedRotation.record.response.AssignedRotationDTO;
 import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
@@ -79,6 +81,8 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         return 0f;
     }
 
+
+
     @Override
     public PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -145,4 +149,38 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 assignedRotationPage.getSize()
         );
     }
+
+    @Override
+    public PagedAssignedRotationDTO getUsersActiveRotationsByName(UsersRotationsByNameDTO usersRotationsByNameDTO) {
+
+        Page<AssignedRotation> pagedAssignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_FirstNameContainsAndUser_LastNameContainsAndRotationAssignmentStatus(usersRotationsByNameDTO.name(),
+                usersRotationsByNameDTO.name(),
+                RotationAssignmentStatus.ACTIVE,
+                PageRequest.of(usersRotationsByNameDTO.pageNumber(),
+                        (usersRotationsByNameDTO.pageSize() != null) ? usersRotationsByNameDTO.pageSize() : 10)).orElseThrow(() -> new AssignedRotationNotFoundException("No rotations were found for this name"));
+
+        System.out.println(pagedAssignedRotations.getContent().stream().toList());
+        return new PagedAssignedRotationDTO(pagedAssignedRotations.getContent().stream().map(assignedRotationMapper::toAssignedRotationDTO).toList(),
+                pagedAssignedRotations.getTotalPages(),
+                pagedAssignedRotations.getTotalElements(),
+                usersRotationsByNameDTO.pageNumber() + 1,
+                usersRotationsByNameDTO.pageSize());
+    }
+
+    @Override
+    public PagedAssignedRotationDTO getUsersActiveRotationsByFactory(UsersRotationsByFactoryDTO usersRotationsByFactoryDTO) {
+
+        Page<AssignedRotation> pagedAssignedRotations = assignedRotationDomainRepository.findAllAssignedRotationByUser_SubFactory_Factory_FactoryIdAndRotationAssignmentStatus(usersRotationsByFactoryDTO.factoryId(),
+                RotationAssignmentStatus.ACTIVE,
+                PageRequest.of(usersRotationsByFactoryDTO.pageNumber(),
+                        (usersRotationsByFactoryDTO.pageSize() != null) ? usersRotationsByFactoryDTO.pageSize() : 10)).orElseThrow(() -> new AssignedRotationNotFoundException("No rotations were found for this name"));
+
+        System.out.println(pagedAssignedRotations.getContent().stream().toList());
+        return new PagedAssignedRotationDTO(pagedAssignedRotations.getContent().stream().map(assignedRotationMapper::toAssignedRotationDTO).toList(),
+                pagedAssignedRotations.getTotalPages(),
+                pagedAssignedRotations.getTotalElements(),
+                usersRotationsByFactoryDTO.pageNumber() + 1,
+                usersRotationsByFactoryDTO.pageSize());
+    }
+
 }

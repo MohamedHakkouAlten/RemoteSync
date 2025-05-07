@@ -171,10 +171,9 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO) {
-        Integer activeCount = projectDomainRepository.fetchActiveProjectsCount(globalDTO.userId())
-                .orElse(0);
-        return projectMapper.toProjectsCount(activeCount);
+    public Integer countActiveProjects() {
+
+        return projectDomainRepository.countByStatusEquals(ProjectStatus.ACTIVE);
     }
     @Override
     public ProjectsCountDTO countCancelledProjects(GlobalDTO globalDTO) {

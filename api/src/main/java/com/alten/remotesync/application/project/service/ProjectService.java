@@ -1,5 +1,6 @@
 package com.alten.remotesync.application.project.service;
 
+import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 
 import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
@@ -44,7 +45,7 @@ public interface ProjectService {
 
     PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
 
-    ProjectsCountDTO countActiveProjects(GlobalDTO globalDTO);
+    Integer countActiveProjects();
 
     ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
 
