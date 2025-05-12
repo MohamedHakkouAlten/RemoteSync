@@ -3,14 +3,14 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTr
 import { Observable, of } from 'rxjs'; // Import 'of'
 import { map, switchMap, take } from 'rxjs/operators'; // Import 'switchMap'
 
-import { AuthService } from '../services/auth.service';
+import { AuthFacadeService } from '../services/auth-facade.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthFacadeService, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -84,15 +84,15 @@ export class RoleGuard implements CanActivate {
     const primaryRole = userRoles.find(role => ['ADMIN', 'RC', 'ASSOCIATE'].includes(role)) || userRoles[0]; // Find a known role or take the first
 
     const roleDashboardMap: { [key: string]: string } = {
-      'ADMIN': '/RemoteSync/Admin/Dashboard',
-      'RC': '/RemoteSync/RC/Dashboard',
-      'ASSOCIATE': '/RemoteSync/Associate/Dashboard',
+      'ADMIN': '/remotesync/admin/dashboard',
+      'RC': '/remotesync/rc/dashboard',
+      'ASSOCIATE': '/remotesync/associate/dashboard',
       // Add more role-dashboard mappings as needed
     };
 
     // Get the dashboard URL for the user's primary role, or default if no match/no roles
     // Consider a fallback if userRoles is empty or primaryRole is undefined
-    const dashboardUrl = roleDashboardMap[primaryRole] || '/RemoteSync/Login'; // Default fallback
+    const dashboardUrl = roleDashboardMap[primaryRole] || '/remoteSync/login'; // Default fallback
     console.log(`RoleGuard: Redirecting user without required role to: ${dashboardUrl}`);
 
     return this.router.createUrlTree([dashboardUrl]);

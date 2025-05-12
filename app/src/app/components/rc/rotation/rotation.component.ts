@@ -17,6 +17,12 @@ import { addMonths, addWeeks, eachDayOfInterval, endOfMonth, endOfWeek, format, 
 import { CustomDate, Rotation } from '../../../models/rotation.model';
 import { RotationService } from '../../../services/rotation.service';
 import { RotationStatus } from '../../../enums/rotation-status.enum';
+import { ProjectListItem, ProjectService } from '../../../services/project.service';
+import { ListItem } from '../calendar/calendar.component';
+import { UserListItem, UserService } from '../../../services/auth/user.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
 
 
 // Interfaces for clarity (adjust based on your actual data models)
@@ -32,14 +38,13 @@ interface Collaborator {
 }
 
 export interface RotationOutput {
-  projectId: number | null;
-  collaboratorIds: number[];
-  mode: 'automatic' | 'custom';
-  startDate?: Date | null;
-  endDate?: Date | null;
-  rotationInterval?: number;
-  rotationPeriod?: number;
-  selectedDates?: Date[] | null;
+  associates: string[]
+  projectId: string | undefined;
+  startDate: string; // Expect 'YYYY-MM-DD' 
+  endDate: string;   // Expect 'YYYY-MM-DD'
+  shift: number;     // Number of weeks 'OnSite' (should be > 0 for cycle logic)
+  cycle?: number;     // Total length of the cycle in weeks (should be >= shift)
+  customDates?: CustomDate[]|null; // Make optional if not always present
 }
 @Component({
   selector: 'app-rotation',
@@ -56,28 +61,31 @@ export interface RotationOutput {
     ButtonModule,
     AutoCompleteModule,
     DatePickerModule,
-    InputTextModule
+    InputTextModule,
+     ToastModule
   ],
   providers: [
-    RotationService
+    RotationService,
+    MessageService,
+    TranslateService
   ]
 })
 export class RotationComponent implements OnInit {
 
   // --- Inputs ---
   @Input() visible: boolean = true;
-  projects: Project[] = []; // Provide actual projects via Input
-  collaborators: Collaborator[] = []; // Provide actual collaborators via Input
+  projects=signal<ListItem[]>([]); // Provide actual projects via Input
+  collaborators=signal<ListItem[]>( []); // Provide actual collaborators via Input
   isLoadingProjects: boolean = false
   isLoadingCollaborators: boolean = false;
 
   // --- Outputs ---
 
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() createRotation = new EventEmitter<RotationOutput>();
+  @Output() createRotation = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
   // --- Internal State ---
-  selectedProject: Project | null = null;
+  selectedProject=signal< ListItem | null> (null);
   rotationMode: 'automatic' | 'custom' = 'automatic'; // Default mode
   startDate = signal<Date>(new Date()); // Default start date
   endDate = signal<Date>(addMonths(new Date(), 2));
@@ -86,39 +94,34 @@ export class RotationComponent implements OnInit {
   
   autoDates=signal< Date[]>( []);
   selectedDates:Date[]=[];
-  customDates = signal<CustomDate[]>([]);
-  selectedCollaborators: Collaborator[] = [];
+  customDates = signal<CustomDate[]|null>(null);
+  selectedCollaborators=signal<ListItem[]>( []); 
   dateFormat = 'yyyy-MM-dd';
   // Suggestions array for p-autoComplete
-  filteredCollaborators: Collaborator[] = [];
+  filteredCollaborators: ListItem[] = [];
   selectedWeeks = new Set<string>(); // To keep track of selected weeks (use string key: "year-week")
   lastClickedDate: Date | null = null;
-  rotation =signal<Rotation>({
-    
+  rotation :Signal<RotationOutput> =computed(()=>({
+    associates:  this.selectedCollaborators().map((collaborator)=>collaborator.id),
       startDate: format(this.startDate(), this.dateFormat),
       endDate: format(this.endDate(), this.dateFormat),
       cycle: this.rotationPeriod(),
       shift: this.rotationInterval(),
-      customDates:[]
-     
-  })
+      customDates: this.customDates(),
+      projectId: this.selectedProject()?.id
+  }))
 
 
 
 
-  constructor(private rotationService: RotationService) {
+  constructor(private rotationService: RotationService,
+         private projectService :ProjectService,
+         private userService :UserService,
+         private messageService: MessageService,
+         private translate : TranslateService
+  ) {
 
-    effect(()=>{
 
-     this.rotation.set({
-      startDate: format(this.startDate(), this.dateFormat),
-      endDate: format(this.endDate(), this.dateFormat),
-      cycle: this.rotationPeriod(),
-      shift: this.rotationInterval(),
-      customDates: this.customDates()
-     })
-    
-    })
   
 
   }
@@ -179,32 +182,13 @@ export class RotationComponent implements OnInit {
   }
   loadRotationInitialData() {
     // Mock data - Replace with actual service calls
-    this.isLoadingProjects = true;
-    this.isLoadingCollaborators = true;
-    setTimeout(() => {
-      this.projects = [
-        { id: 1, name: 'Mobile App Refresh' },
-        { id: 2, name: 'Web Platform Upgrade' },
-        { id: 3, name: 'Data Analytics Pipeline' },
-        { id: 4, name: 'Backend API Refactor' },
-      ];
-      this.isLoadingProjects = false;
-    }, 500);
-    setTimeout(() => {
-      this.collaborators = [
-        { id: 101, name: 'John Smith', avatar: 'https://via.placeholder.com/30/007bff/ffffff?text=JS' },
-        { id: 102, name: 'Emma Wilson', avatar: 'https://via.placeholder.com/30/dc3545/ffffff?text=EW' },
-        { id: 103, name: 'Youssef Amrani' },
-        { id: 104, name: 'Amira Benali' },
-        { id: 105, name: 'Karim Tazi' },
-        { id: 106, name: 'John Smith', avatar: 'https://via.placeholder.com/30/007bff/ffffff?text=JS' },
-        { id: 107, name: 'Emma Wilson', avatar: 'https://via.placeholder.com/30/dc3545/ffffff?text=EW' },
-        { id: 108, name: 'Youssef Amrani' },
-        { id: 109, name: 'Amira Benali' },
-        { id: 110, name: 'Karim Tazi' },
-      ];
-      this.isLoadingCollaborators = false;
-    }, 700);
+    this.isLoadingProjects = false;
+    this.isLoadingCollaborators = false;
+    this.projectService.getProjectList().subscribe((projects)=>
+      this.projects.set(projects.map(project=>({id:project.projectId,name:project.label}))))
+   console.log(this.projects())
+   this.userService.getUsersList().subscribe((users)=>this.collaborators.set(users.map(user=>({id:user.userId,name:user.name}))))
+   
 
 
   }
@@ -217,18 +201,18 @@ export class RotationComponent implements OnInit {
   filterCollaborators(event: { originalEvent: Event, query: string }) {
     const query = event.query.toLowerCase();
     // Filter from the master list, EXCLUDING those already selected
-    this.filteredCollaborators = this.collaborators.filter(collaborator => {
-      const notSelected = !this.selectedCollaborators.some(sel => sel.id === collaborator.id);
+    this.filteredCollaborators = this.collaborators().filter(collaborator => {
+      const notSelected = !this.selectedCollaborators().some(sel => sel.id === collaborator.id);
       const nameMatches = collaborator.name.toLowerCase().includes(query);
       return notSelected && nameMatches;
     });
   }
 
   // *** NEW: Method to remove a collaborator from the selected list ***
-  removeCollaborator(collaboratorToRemove: Collaborator): void {
-    this.selectedCollaborators = this.selectedCollaborators.filter(
+  removeCollaborator(collaboratorToRemove: ListItem): void {
+    this.selectedCollaborators.set(this.selectedCollaborators().filter(
       collaborator => collaborator.id !== collaboratorToRemove.id
-    );
+    ));
   }
   onDialogHide(): void {
     this.visible = false;
@@ -243,36 +227,51 @@ export class RotationComponent implements OnInit {
   }
 
   submitRotation(): void {
-    if (!this.isFormValid()) {
+    console.log(this.rotation())
+    if (this.rotation().associates.length<=0) {
       // Optional: Show a warning message (e.g., using p-toast)
-      console.warn('Form is invalid.');
-      return;
+      this.messageService.add({
+        severity:'error',
+        summary: this.translate.instant('rotation.MissingCollaborators'),
+        life: 5000
+      })
+ 
+    }else {
+      console.log(this.rotation())
+      this.rotationService.addUsersRotation(this.rotation()).subscribe((isAdded)=>
+      {
+        console.log(isAdded)
+        if(isAdded){
+          this.visible=false
+          this.createRotation.emit(true)}
+      }
+      )
     }
 
-    const output: RotationOutput = {
-      projectId: this.selectedProject?.id ?? null,
-      collaboratorIds: this.selectedCollaborators.map(c => c.id),
-      mode: this.rotationMode,
-    };
+  //   const output: RotationOutput = {
+  //     projectId: this.selectedProject?.projectId ?? null,
+  //     collaboratorIds: [4],
+  //     mode: this.rotationMode,
+  //   };
 
-    if (this.rotationMode === 'automatic') {
-      output.startDate = this.startDate();
-      output.endDate = this.endDate();
-      output.rotationInterval = this.rotationInterval();
-      output.rotationPeriod = this.rotationPeriod();
-    } else {
-   //   output.selectedDates = this.selectedDates;
-    }
+  //   if (this.rotationMode === 'automatic') {
+  //     output.startDate = this.startDate();
+  //     output.endDate = this.endDate();
+  //     output.rotationInterval = this.rotationInterval();
+  //     output.rotationPeriod = this.rotationPeriod();
+  //   } else {
+  //  //   output.selectedDates = this.selectedDates;
+  //   }
 
 
-    this.visible = false; // Close dialog on successful submission
+    // Close dialog on successful submission
 
     // Consider resetting the form fields here if needed for the next opening
     // this.resetForm();
   }
   // handle selecting a week 
   onSelectDate(clickedDate: Date): void {
-    const startOfSelectedWeek = startOfWeek(clickedDate);
+    const startOfSelectedWeek = startOfWeek(clickedDate,{weekStartsOn:1});
     const endOfSelectedWeek = endOfWeek(clickedDate);
     const formattedWeekStartDate = format(startOfSelectedWeek, this.dateFormat);
 
@@ -331,10 +330,9 @@ export class RotationComponent implements OnInit {
     }
 
     if (customDatesChanged) {
-      this.rotation.set({
-        ...currentRotation,
-        customDates: newCustomDates,
-      });
+      this.customDates.set(
+        newCustomDates,
+      );
       console.log('Rotation updated:', this.rotation());
     }
 
@@ -374,7 +372,7 @@ export class RotationComponent implements OnInit {
         if (!newlySelectedDates.includes(autoDate)) {
           // This week was in autoDates but not in newlySelectedDates
           // Re-parse to Date object (ensure timezone consistency if it matters)
-          deselectedWeekStart = startOfWeek(autoDate); // Add time to avoid timezone issues on parse
+          deselectedWeekStart = startOfWeek(autoDate,{weekStartsOn:1}); // Add time to avoid timezone issues on parse
           break;
         }
       }
@@ -385,9 +383,9 @@ export class RotationComponent implements OnInit {
         // and the Set logic above simplifies to weeks.
         // For more robust week-based deselection finding:
         for (const autoDate of currentAutoDates) {
-            const weekOfAutoDate = startOfWeek(autoDate);
+            const weekOfAutoDate = startOfWeek(autoDate,{weekStartsOn:1});
             const isWeekStillSelected = newlySelectedDates.some(selDate =>
-              isEqual(startOfWeek(selDate), weekOfAutoDate)
+              isEqual(startOfWeek(selDate,{weekStartsOn:1}), weekOfAutoDate)
             );
             if (!isWeekStillSelected) {
               deselectedWeekStart = weekOfAutoDate;
@@ -397,6 +395,7 @@ export class RotationComponent implements OnInit {
       }
 
 
+      
       if (deselectedWeekStart) {
         const formattedDeselectedWeekDate = format(deselectedWeekStart, this.dateFormat);
         const currentRotation = this.rotation();
@@ -419,13 +418,13 @@ export class RotationComponent implements OnInit {
         console.log('Default status for deselected week:', defaultStatusForWeek);
 
         let customDatesChanged = false;
-
+        
         // Using signal's update for immutable changes
-        this.rotation.update(currRot => {
-          if (!currRot) return currRot; // Should be caught by earlier check, but good practice
+       
+  
 
-          const customDateIndex = (currRot.customDates || []).findIndex(cd => cd.date === formattedDeselectedWeekDate);
-          let newCustomDates = currRot.customDates ? [...currRot.customDates] : [];
+          const customDateIndex = (currentRotation.customDates || []).findIndex(cd => cd.date === formattedDeselectedWeekDate);
+          let newCustomDates = currentRotation.customDates ? [...currentRotation.customDates] : [];
 
           if (defaultStatusForWeek !== RotationStatus.Remote) {
             // Default is OnSite. Deselecting means making it Remote (custom).
@@ -453,10 +452,12 @@ export class RotationComponent implements OnInit {
           }
 
           if (customDatesChanged) {
-            return { ...currRot, customDates: newCustomDates };
+            this.customDates.set(
+              newCustomDates,
+            );
           }
-          return currRot; // No actual change to customDates
-        });
+      
+        
 
         if (customDatesChanged) {
             console.log('Rotation updated due to deselection:', this.rotation());
@@ -465,7 +466,7 @@ export class RotationComponent implements OnInit {
         // Update autoDates by removing all dates from the deselected week
         const weekToRemove = deselectedWeekStart; // For clarity
         this.autoDates.update(currentDays =>
-          currentDays.filter(day => !isEqual(startOfWeek(day), weekToRemove))
+          currentDays.filter(day => !isEqual(startOfWeek(day,{weekStartsOn:1}), weekToRemove))
         );
 
         this.selectedDates = this.autoDates(); // Update the mirror property
@@ -491,18 +492,7 @@ export class RotationComponent implements OnInit {
   
     return customDates ? customDates.findIndex(cd => cd.date === weekDay) : -1;
   }
-  isFormValid(): boolean {
-    if (!this.selectedProject || this.selectedCollaborators.length === 0) {
-      return false;
-    }
 
-    if (this.rotationMode === 'automatic') {
-      return !!this.startDate && !!this.endDate && this.rotationInterval() > 0 && this.rotationPeriod() > 0 && this.rotationInterval <= this.rotationPeriod;
-      // Add date range validation if needed (startDate <= endDate)
-    } else { // custom mode
-      return !!this.selectedDates && this.selectedDates.length > 0;
-    }
-  }
 
   // Optional: Reset form fields
   // resetForm(): void {

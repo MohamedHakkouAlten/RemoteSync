@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RotationService } from '../../services/rotation.service';
-import { AuthService } from '../../services/auth.service';
+import { NavigationComponent } from '../../components/shared/navigation/navigation.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
-  standalone: false,
+  standalone: true,
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css',
+  imports:[
+    NavigationComponent,
+    RouterOutlet
+  ]
 
 })
 export class MainLayoutComponent {

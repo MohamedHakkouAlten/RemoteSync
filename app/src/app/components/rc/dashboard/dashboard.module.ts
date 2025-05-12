@@ -18,7 +18,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TableModule } from 'primeng/table';       // Import TableModule
 import { TagModule } from 'primeng/tag';   
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
-import { AuthService } from '../../../services/auth.service';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
 import { RotationService } from '../../../services/rotation.service';
 import { ProjectStatsCardComponent } from "../../shared/rc-ui/project-stats-card/project-stats-card.component";
 import { SiteStatsCardComponent } from "../../shared/rc-ui/site-stats-card/site-stats-card.component";
@@ -44,7 +44,7 @@ import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-ava
     UserAvatarComponent
 ],
 providers:[
-  AuthService,
+  AuthFacadeService,
   RotationService
 ]
 })

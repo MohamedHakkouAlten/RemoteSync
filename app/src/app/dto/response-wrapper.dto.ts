@@ -5,6 +5,16 @@
 
 import { HttpStatusCode } from '@angular/common/http';
 
+export interface PagedData<T> {
+  assignedRotations : T 
+  currentPage: number
+  pageSize :number
+
+  totalElements :number
+
+  totalPages :number
+
+}
 // Base response wrapper interface
 export interface ResponseWrapperDto<T> {
   status: 'success' | 'error' | 'warning' | 'info' | 'status';

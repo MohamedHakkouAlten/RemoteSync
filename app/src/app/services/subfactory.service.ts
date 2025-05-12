@@ -16,7 +16,7 @@ export class SubfactoryService {
    
           tempSubFactories.push({
             id: `${i}-Sub${i % 2 === 1 ? 'A' : 'B'}`,
-            value: `Sub-Assembly Unit ${String.fromCharCode(64 + i)}`
+            name: `Sub-Assembly Unit ${String.fromCharCode(64 + i)}`
           });
        
     }

@@ -1,0 +1,78 @@
+{
+  "navigation": {
+    "dashboard": "Panel de control",
+    "project": "Proyecto",
+    "report": "Informe",
+    "calendar": "Calendario",
+    "notification": "Notificación",
+    "notifications": "Notificaciones",
+    "settings": "Configuración",
+    "signOut": "Cerrar sesión",
+    "profile": "Perfil"
+  },
+  "login": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "signInToContinue": "Inicie sesión para continuar en RemoteSync",
+    "usernameOrEmail": "Nombre de usuario o Email",
+    "enterUsernameOrEmail": "Ingrese su nombre de usuario o email",
+    "password": "Contraseña",
+    "enterPassword": "Ingrese su contraseña",
+    "signIn": "Iniciar sesión",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "loginSuccessful": "Inicio de sesión exitoso",
+    "welcomeBackUser": "¡Bienvenido de nuevo, {{name}}!",
+    "loginFailed": "Error de inicio de sesión",
+    "invalidCredentials": "Credenciales inválidas. Por favor, inténtelo de nuevo.",
+    "enterValidCredentials": "Por favor, ingrese un nombre de usuario o email y contraseña válidos."
+  },
+  "forgotPassword": {
+    "title": "¿Olvidó su contraseña?",
+    "subtitle": "Ingrese su dirección de correo electrónico y le enviaremos instrucciones para restablecer su contraseña",
+    "emailAddress": "Dirección de correo electrónico",
+    "enterEmail": "Ingrese su correo electrónico",
+    "sendResetLink": "Enviar enlace de restablecimiento",
+    "sending": "Enviando...",
+    "backToLogin": "Volver al inicio de sesión",
+    "resetLinkSent": "Enlace de restablecimiento enviado",
+    "checkYourEmail": "Por favor, revise su correo electrónico para obtener instrucciones para restablecer su contraseña.",
+    "resetLinkFailed": "Error al enviar el enlace",
+    "emailNotFound": "Correo electrónico no encontrado. Por favor, inténtelo de nuevo.",
+    "enterValidEmail": "Por favor, ingrese una dirección de correo electrónico válida."
+  },
+  "resetPassword": {
+    "title": "Establezca su nueva contraseña",
+    "subtitle": "Por favor, ingrese su nueva contraseña a continuación y confírmela.",
+    "newPassword": "Nueva contraseña",
+    "enterNewPassword": "Ingrese nueva contraseña",
+    "confirmPassword": "Confirmar nueva contraseña",
+    "confirmNewPassword": "Confirme nueva contraseña",
+    "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir letras mayúsculas, minúsculas y números.",
+    "passwordsMismatch": "Las contraseñas no coinciden.",
+    "updatePassword": "Actualizar contraseña",
+    "updating": "Actualizando...",
+    "passwordUpdated": "Contraseña actualizada",
+    "passwordUpdateSuccess": "¡Su contraseña ha sido actualizada con éxito!",
+    "passwordUpdateFailed": "Error al restablecer la contraseña",
+    "invalidToken": "Token de restablecimiento inválido. Por favor, solicite un nuevo enlace de restablecimiento de contraseña.",
+    "invalidLink": "Enlace inválido",
+    "linkExpired": "El enlace de restablecimiento de contraseña es inválido o ha expirado.",
+    "errorUpdatingPassword": "Error al actualizar la contraseña",
+    "correctErrors": "Por favor, corrija los errores a continuación.",
+    "fillPasswordFields": "Por favor, complete correctamente ambos campos de contraseña."
+  },
+  "branding": {
+    "trackPresence": "Rastree la presencia de su equipo",
+    "onSiteOrRemote": "¿En sitio o remoto?",
+    "realTimeVisibility": "Visibilidad en tiempo real de las rotaciones de consultores",
+    "stats": {
+      "clients": "500+ Clientes",
+      "consultants": "10,000+ Consultores",
+      "planning": "98% Planificación mejorada"
+    }
+  },
+  "languages": {
+    "english": "Inglés",
+    "french": "Francés",
+    "spanish": "Español"
+  }
+}

@@ -4,12 +4,14 @@ import { startOfWeek, addWeeks, format, addDays, subWeeks } from 'date-fns';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
 import { RotationService } from '../../../services/rotation.service';
-import { Rotation } from '../../../models/rotation.model';
+import { Rotation, UserRotation } from '../../../models/rotation.model';
 import { RotationStatus } from '../../../enums/rotation-status.enum';
 import { ClientService } from '../../../services/client.service';
-import { ProjectService } from '../../../services/project.service';
+import { ProjectListItem, ProjectService } from '../../../services/project.service';
 import { FactoryService } from '../../../services/factory.service';
 import { SubfactoryService } from '../../../services/subfactory.service';
+import { MessageService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
 
 
 
@@ -18,8 +20,8 @@ export interface ViewMode {
   value: 'month' | 'week'; // Add more modes if needed
 }
 export interface ListItem {
-  id:string | number,
-  value : string|number
+  id:string,
+  name : string
 }
 
 @Component({
@@ -31,6 +33,7 @@ export interface ListItem {
 
 
 export class CalendarComponent implements OnInit {
+
 clearFilters() {
  this.selectedClient=null;
  this.selectedProject = null;
@@ -41,16 +44,16 @@ clearFilters() {
 }
 
   // --- Configuration & State ---
-  rotations    = signal<Rotation[]>([]);
+  userRotations    = signal<UserRotation[]>([]);
   clients     =signal<ListItem[]>([])
-  projects    =signal<ListItem[]>([])
+  projects    =signal<ProjectListItem[]>([])
   factorys    =signal<ListItem[]>([])
   subFactorys =signal<ListItem[]>([])
 
-  clientList=computed(()=>this.clients().map((client)=>client.value))
-  projectList=computed(()=>this.projects().map((project)=>project.value))
-  factoryList=computed(()=>this.factorys().map((factorys)=>factorys.value))
-  subFactoryList=computed(()=>this.subFactorys().map((subFactory)=>subFactory.value))
+  clientList=computed(()=>this.clients().map((client)=>client.name))
+  projectList=computed(()=>this.projects().map((project)=>project.label))
+  factoryList=computed(()=>this.factorys().map((factorys)=>factorys.name))
+  subFactoryList=computed(()=>this.subFactorys().map((subFactory)=>subFactory.name))
 
   selectedClient  : string | null = null;
   selectedProject: string | null = null;
@@ -59,8 +62,22 @@ clearFilters() {
 
 
   activeFilter:string|number=0
+  isDialogVisible:boolean=false
   //rotation 
-  isDialogVisible = false;
+  showRotationCreatedToast(isCreated:boolean){
+
+if(isCreated){
+
+   this.messageService.add({
+          severity:'success',
+          summary:this.translate.instant('rotation.created'),
+          life:5000
+          
+        })
+        this.loadRotation()
+}
+  }
+  
   // Dates representing the start of each week/day shown
 
   numberOfWeeksToShow: number = 8; // How many weeks to display in 'month' (weekly) view
@@ -74,6 +91,7 @@ clearFilters() {
   ];
   selectedViewMode: ViewMode = this.viewModes[0]; // Default to 'month' (weekly view)
 
+  
 
   searchClient(event: AutoCompleteCompleteEvent): void {
     const filtered = this.filterListItems(event.query, this.clients());
@@ -82,8 +100,8 @@ clearFilters() {
 
   }
   searchProject(event: AutoCompleteCompleteEvent): void {
-    const filtered = this.filterListItems(event.query, this.projects());
-    this.projects.set([...filtered]); // Update the suggestions signal
+    // const filtered = this.filterListItems(event.query, this.projects());
+     this.projects.set([...this.projects()]); // Update the suggestions signal
 
   }
   searchFactory(event: AutoCompleteCompleteEvent): void {
@@ -105,7 +123,7 @@ clearFilters() {
       const lowerCaseQuery = query.toLowerCase();
       // Filter based on the query
       return sourceItems.filter(item =>
-        item.value.toString().toLowerCase().includes(lowerCaseQuery)
+        item.name.toString().toLowerCase().includes(lowerCaseQuery)
       );
     }
   }
@@ -116,27 +134,42 @@ clearFilters() {
     private clientService:ClientService,
     private projectService : ProjectService,
     private factoryService : FactoryService,
-    private subFactoryService : SubfactoryService
+    private subFactoryService : SubfactoryService,
+    private messageService:MessageService,
+    private translate:TranslateService
 
 
   ) { }
   ngOnInit(): void {
 
     this.loadFilterLists()
-
-    this.rotations.set([...this.rotationService.getUsersRotations()])
+    this.loadRotation()
+    this.userRotations.set([...this.rotationService.getUsersRotations()])
 
   }
+loadRotation(){
+  this.rotationService.getActiveUsersRotation(0, 10).subscribe(
+   (pagedData) => {
+    console.log(pagedData)
+     this.userRotations.set([...pagedData.assignedRotations])
+    },
+   
+  )};
+  
+
 
   showDialog() {
-    this.isDialogVisible = true;
+   this.isDialogVisible = true;
     console.log(this.clientList())
   }
 loadFilterLists(){
     // --- Populate Client List ---
     this.clients.set(this.clientService.getClientList()); // Update the signal's value
     // --- Populate Project List ---
-    this.projects.set(this.projectService.getProjectList()); // Update the signal's value
+
+    this.projectService.getProjectList().subscribe((projects)=>{console.log(projects);this.projects.set([...projects]);    })
+
+
     // --- Populate Factory List ---
     this.factorys.set(this.factoryService.getFactoryList()); // Update the signal's value
     // --- Populate Sub-Factory List ---
@@ -235,11 +268,11 @@ loadFilterLists(){
     const dateKey = this.formatDateKey(date);
     // Convert the new ToggleState number back to the string status
     const newStatus = this.fromToggleType(newState);
-
+    console.log(rotation.rotationId)
     // Update the schedule data for the specific user and date
-    this.rotations().forEach(currRotation => {
-      if (currRotation === rotation) {
-        this.rotationService.updateRotationStatusForDate(currRotation, dateKey, newStatus);
+    this.userRotations().forEach(currRotation => {
+      if (currRotation.rotation === rotation) {
+        this.rotationService.updateRotationStatusForDate(currRotation.rotation, dateKey, newStatus);
       }
     })
 

@@ -10,7 +10,7 @@ export class ClientService {
             for (let i = 1; i <= 10; i++) {
               tempClients.push({
                 id: `CL-${i.toString().padStart(3, '0')}`,
-                value: `Client Name ${i}`
+                name: `Client Name ${i}`
               });
             }
             return tempClients;

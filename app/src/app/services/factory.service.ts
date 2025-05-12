@@ -12,7 +12,7 @@ export class FactoryService {
         for (let i = 1; i <= 10; i++) {
           tempFactories.push({
             id: `FCT-${factoryLocations[i-1].substring(0, 3).toUpperCase()}`,
-            value: `${factoryLocations[i-1]} Sector Factory`
+           name: `${factoryLocations[i-1]} Sector Factory`
           });
         }
         return tempFactories;

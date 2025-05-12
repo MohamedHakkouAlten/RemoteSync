@@ -11,10 +11,15 @@ export interface Peroid { // Consider renaming to Period (typo)
     rotationStatus: RotationStatus;
   }
   
+  export interface UserRotation{
+ user:User;
+ rotation:Rotation
+
+  }
   
   //TODO : Remove T from backend date
   export interface Rotation {
-    user?: User;
+    rotationId?:string
     startDate: string; // Expect 'YYYY-MM-DD' 
     endDate: string;   // Expect 'YYYY-MM-DD'
     shift: number;     // Number of weeks 'OnSite' (should be > 0 for cycle logic)

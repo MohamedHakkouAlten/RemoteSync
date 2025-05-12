@@ -14,13 +14,14 @@
   
  
   >
+  <p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
   <div #maindiv class="p-3 space-y-6   bg-white">
     <!-- 1. Select Project -->
     <div class="space-y-2">
       <label for="project" style="font-family: inter;" class="block text-base font-medium text-[#333333]">Select Project</label>
       <p-dropdown
         inputId="project"
-        [options]="projects"
+        [options]="projects()"
         [(ngModel)]="selectedProject"
         optionLabel="name"
         placeholder="Select project"
@@ -252,7 +253,7 @@
     <div class="flex justify-end gap-4 w-full px-6 pt-4  border-t border-gray-200">
        <button
             style="font-family: inter;"
-            class="text-[#4B5563] bg-[#F3F4F6] border-0 rounded-[5px] px-4 py-2 text-[15px]"
+            class="text-[#4B5563] bg-[#F3F4F6] cursor-pointer border-0 rounded-[5px] px-4 py-2 text-[15px]"
        
             (click)="closeDialog()"
         >
@@ -260,9 +261,9 @@
         <button
        
         style="font-family: inter;"
-        class="text-white bg-primary border-0 rounded-[5px] px-4 py-2 text-[15px]"
+        class="text-white bg-primary border-0 cursor-pointer rounded-[5px] px-4 py-2 text-[15px]"
             (click)="submitRotation()"
-            [disabled]="!isFormValid()"
+          
         >
         Create Rotation
     </button>

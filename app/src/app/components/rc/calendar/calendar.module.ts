@@ -21,6 +21,9 @@ import { ClientService } from '../../../services/client.service';
 import { ProjectService } from '../../../services/project.service';
 import { FactoryService } from '../../../services/factory.service';
 import { SubfactoryService } from '../../../services/subfactory.service';
+import { TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -41,6 +44,7 @@ import { SubfactoryService } from '../../../services/subfactory.service';
     AutoCompleteModule,
     ThreeStateToggleComponent,
     RotationComponent,
+      ToastModule
 
 ],
 providers :[
@@ -48,7 +52,9 @@ providers :[
   ClientService,
   ProjectService,
   FactoryService,
-  SubfactoryService
+  SubfactoryService,
+      MessageService,
+      TranslateService
 ]
 })
 export class CalendarModule { }

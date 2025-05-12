@@ -1,8 +1,13 @@
 import { Injectable } from "@angular/core";
 import { RotationStatus } from "../enums/rotation-status.enum";
 import { addWeeks, differenceInCalendarWeeks, differenceInWeeks, isAfter, isBefore, isEqual, isValid, parseISO, startOfWeek } from "date-fns";
-import { CustomDate, Peroid, Rotation } from "../models/rotation.model";
+import { CustomDate, Peroid, Rotation, UserRotation } from "../models/rotation.model";
 import { User } from "../models/user.model";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { catchError, map, Observable, of } from "rxjs";
+import { PagedData, ResponseWrapperDto } from "../dto/response-wrapper.dto";
+import { environment } from "../../environments/environment";
+import { RotationOutput } from "../components/rc/rotation/rotation.component";
 
 
 
@@ -20,22 +25,44 @@ function parseAndValidate(dateString: string | undefined | null): Date | null {
 @Injectable()
 export class RotationService {
 
-  // Assuming you fetch/manage the list of all rotations elsewhere
-  // For demonstration, it's passed as an argument below.
+readonly apiUrl=environment.apiUrl
+constructor(private http:HttpClient){
 
-  /**
-   * Filters a list of rotations to find those active within a given period.
-   * "Active" means the rotation's date range overlaps with the period's date range.
-   *
-   * @param period - The period with start_date and end_date strings.
-   * @param allRotations - An array of all Rotation objects to filter.
-   * @returns An array of active rotations, or an empty array if none are found or inputs are invalid.
-   */
+}
+
+addUsersRotation(rotation:RotationOutput):Observable<boolean>{
+   const url = this.apiUrl+'/user/rc/createRotation';
+   return this.http.post<ResponseWrapperDto<any>>(url,rotation).pipe(
+    map((response)=>{
+     return (response.status='success') ? true:false
+    })
+   )
+}
+
+getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedData<UserRotation[]>> {
+  const url = this.apiUrl+'/user/rc/rotations';
+  const params = new HttpParams()
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+    })
+  );
+}
   getActiveRotationsByPeroid(period: Peroid, allRotations: Rotation[]): Rotation[] {
       return [];
   }
 
-   getUsersRotations(): Rotation[] {
+   getUsersRotations(): UserRotation[] {
     // Check if transformedUsers has data
 
     const transformedUsers: User[] = [
@@ -74,13 +101,14 @@ export class RotationService {
       }
 
       // Construct the Rotation object using the current user
-      const rotation: Rotation = {
+      const rotation: UserRotation = {
         user: user, // <-- Use the user object directly from transformedUsers
-        startDate: startDate,
+        rotation:{startDate: startDate,
         endDate: endDate,
         shift: shift,
         cycle: cycle,
         customDates: customDates
+        }
       };
 
       return rotation;
@@ -91,15 +119,7 @@ export class RotationService {
 
    
   }
-  /**
-   * Determines the status (OnSite, Remote, Off) of a rotation for a specific date.
-   * Checks custom dates first, then calculates based on shift/cycle if applicable.
-   *
-   * @param rotation - The Rotation object.
-   * @param dateString - The target date string ('YYYY-MM-DD').
-   * @param options - Optional date-fns options like { weekStartsOn: 1 } for Monday.
-   * @returns The RotationStatus for the given date.
-   */
+
   getDateRotationStatus(
       rotation: Rotation,
       dateString: string,
@@ -209,11 +229,11 @@ export class RotationService {
     // --- 4. Update or Add Custom Date ---
     if (existingDateIndex > -1) {
         // Date FOUND: Update the status of the existing entry
-        console.log(`Updating existing custom date ${dateString} for user ${rotation.user?.id_user} to ${newStatus}`);
+
         rotation.customDates[existingDateIndex].rotationStatus = newStatus;
     } else {
         // Date NOT FOUND: Add a new entry to the customDates array
-        console.log(`Adding new custom date ${dateString} with status ${newStatus} for user ${rotation.user?.id_user}`);
+
         const newCustomDate: CustomDate = {
             date: dateString,
             rotationStatus: newStatus

@@ -15,13 +15,13 @@
   :host {
     --orange-primary: #FF8C00;
     --card-bg: #fff;
-    --page-bg: #f7f8fa;
+    --page-bg: #f3f4f6;
     --text-secondary: #495057;
   }
   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
     padding: 0.75rem 1rem 0.75rem 2.75rem;
     border-radius: 6px !important;
-    border: 1px solid var(--page-bg) !important;
+    border: 2px solid var(--page-bg) !important;
     height: 44px !important;
     font-size: 0.95rem;
     width: 100%;
@@ -58,7 +58,7 @@
     border-radius: 6px !important;
     background-color: var(--card-bg) !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
-    border: 1px solid var(--page-bg) !important;
+    border: 2px solid var(--page-bg) !important;
   }
   :host ::ng-deep .filter-dropdown.p-dropdown:hover,
   :host ::ng-deep .filter-dropdown.p-dropdown:focus-within {
@@ -87,7 +87,7 @@
     height: 44px !important;
     font-size: 0.95rem;
     border-radius: 6px !important;
-    border: 1px solid var(--page-bg) !important;
+    border: 2px solid var(--page-bg) !important;
     background-color: var(--card-bg) !important;
     color: var(--text-secondary) !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
@@ -205,7 +205,7 @@
 
 /* Status badge styling refinement inside dialog */
 .report-detail-dialog-new .status-badge {
-    border: 1px solid transparent; /* Add base border */
+    border: 2px solid transparent; /* Add base border */
     font-weight: 500; /* medium */
 }
 
