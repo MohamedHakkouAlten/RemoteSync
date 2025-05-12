@@ -1,6 +1,6 @@
 package com.alten.remotesync.application.report.service;
 
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
 import com.alten.remotesync.application.report.record.response.PagedReportDTO;
@@ -14,6 +14,6 @@ import java.util.UUID;
 public interface ReportService {
     ReportDTO createAssociateReport(CreateAssociateReportDTO createAssociateReportDTO);
     PagedReportDTO getAssociateReports(AssociateReportDTO associateReportDTO);
-    PagedReportDTO getRcReports(PagedGlobalIdDTO pagedGlobalIdDTO);
+    PagedReportDTO getRcReports(PagedGlobalDTO pagedGlobalDTO);
     ReportDTO updateReportStatus(UUID reportId, ReportStatus status);
 }

@@ -1,16 +1,20 @@
 package com.alten.remotesync.adapter.rest;
 
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
+import com.alten.remotesync.application.assignedRotation.record.request.CreateAssignedRotationDTO;
 import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
+import com.alten.remotesync.application.assignedRotation.record.response.PagedRotationsDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.report.record.response.ReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
+import com.alten.remotesync.application.user.service.UserService;
 import com.alten.remotesync.domain.report.enumeration.ReportStatus;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +26,14 @@ import java.util.Date;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/rc")
+@RequestMapping("/api/v1/user/rc")
 @RequiredArgsConstructor
 public class RcController {
 
     private final ProjectService projectService;
     private final AssignedRotationService assignedRotationService;
     private final ReportService reportService;
+    private final UserService userService;
 
     @GetMapping("/projects/{pageNumber}/{pageSize}")
     @PreAuthorize("hasAuthority('RC:READ')")
@@ -36,7 +41,7 @@ public class RcController {
                                          @PathVariable @Min(0) Integer pageNumber,
                                          @PathVariable @Min(1) Integer pageSize) {
 
-        PagedGlobalIdDTO requestDTO = new PagedGlobalIdDTO(userPrincipal.userId(), pageNumber, pageSize);
+        PagedGlobalDTO requestDTO = new PagedGlobalDTO(userPrincipal.userId(), pageNumber, pageSize);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
@@ -120,5 +125,50 @@ public class RcController {
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
 
+    @GetMapping("/rotations")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getUsersActiveRotation(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+           @ModelAttribute PagedGlobalDTO globalDTO
+            ) {
 
+        PagedRotationsDTO response = assignedRotationService.getUsersActiveRotations(globalDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(response, HttpStatus.OK));
+    }
+    @GetMapping("/projects/byLabel")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcProjectsByLabel(
+            @RequestParam
+            @Size(max = 20, message = "Label must not exceed 20 characters")
+         String label
+    ) {
+        System.out.println(label);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(projectService.getRcProjectsByLabel(label), HttpStatus.OK));
+    }
+    @GetMapping("/users/byName")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcUsersByName(
+            @RequestParam
+            @Size(max = 20, message = "Label must not exceed 20 characters")
+            String name
+    ) {
+        System.out.println(name);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(userService.getRCUsersByName(name), HttpStatus.OK));
+    }
+    @PostMapping("/createRotation")
+    @PreAuthorize("hasAuthority('RC:WRITE')")
+    public ResponseEntity<?> createAssignedRotation(
+            @RequestBody CreateAssignedRotationDTO createAssignedRotationDTO
+            ) {
+        System.out.println(createAssignedRotationDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(assignedRotationService.createAssignedRotation(createAssignedRotationDTO), HttpStatus.OK));
+    }
 }

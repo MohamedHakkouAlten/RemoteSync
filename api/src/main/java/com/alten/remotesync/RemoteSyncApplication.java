@@ -1,8 +1,11 @@
 package com.alten.remotesync;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.alten.remotesync.domain.customDate.model.CustomDate;
+import com.alten.remotesync.domain.rotation.enumeration.RotationStatus;
 import com.alten.remotesync.kernel.utilty.RolePrivileges.DefaultRolePrivileges;
 import com.alten.remotesync.kernel.utilty.RolePrivileges.DefaultRoles;
 import org.springframework.boot.SpringApplication;
@@ -50,7 +53,7 @@ public class RemoteSyncApplication {
         SpringApplication.run(RemoteSyncApplication.class, args);
     }
 
-    //@Bean
+  //@Bean
     public CommandLineRunner init(
             AssignedRotationDomainRepository assignedRotationRepository,
             ClientDomainRepository clientRepository,
@@ -255,8 +258,79 @@ public class RemoteSyncApplication {
                     .isDeleted(false)
                     .subFactory(subFactory5)
                     .build();
-
-            List<User> users = List.of(adminUser, managerUser, normalUser1, normalUser2, techUser, clientUser);
+            User normalUser3 = User.builder()
+                    .firstName("firstname3")
+                    .lastName("lastname3")
+                    .email("firstname3.firstname3@remotesync.com")
+                    .username("firstlast3")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10063L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            User normalUser4 = User.builder()
+                    .firstName("firstname4")
+                    .lastName("lastname4")
+                    .email("firstname4.firstname4@remotesync.com")
+                    .username("firstlast4")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10064L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            User normalUser5 = User.builder()
+                    .firstName("firstname5")
+                    .lastName("lastname5")
+                    .email("firstname5.firstname5@remotesync.com")
+                    .username("firstlast5")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10065L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            User normalUser6 = User.builder()
+                    .firstName("firstname6")
+                    .lastName("lastname6")
+                    .email("firstname6.firstname6@remotesync.com")
+                    .username("firstlast6")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10066L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            User normalUser7 = User.builder()
+                    .firstName("firstname7")
+                    .lastName("lastname7")
+                    .email("firstname7.firstname7@remotesync.com")
+                    .username("firstlast4")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10067L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            User normalUser8 = User.builder()
+                    .firstName("firstname8")
+                    .lastName("lastname8")
+                    .email("firstname8.firstname8@remotesync.com")
+                    .username("firstlast8")
+                    .password(passwordEncoder.encode("client123"))
+                    .reference(10068L)
+                    .phoneNumber("+212600000006")
+                    .roles(List.of(roles.get(2)))
+                    .isDeleted(false)
+                    .subFactory(subFactory5)
+                    .build();
+            List<User> users = List.of(adminUser, managerUser, normalUser1, normalUser2, techUser, clientUser,normalUser3,normalUser4,normalUser5,normalUser6,normalUser7,normalUser8);
             userRepository.saveAll(users);
 
             // Create Clients
@@ -318,7 +392,8 @@ public class RemoteSyncApplication {
                     .label("CRM System")
                     .titre("Customer Relationship Management System")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(LocalDateTime.now().plusDays(90)) // 90 days from now
+                    .deadLine(LocalDate.parse("2025-07-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client1)
                     .build();
@@ -327,7 +402,8 @@ public class RemoteSyncApplication {
                     .label("Mobile Banking App")
                     .titre("Next-Gen Mobile Banking Application")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(LocalDateTime.now().plusDays(120)) // 120 days from now
+                    .deadLine(LocalDate.parse("2025-07-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client2)
                     .build();
@@ -336,7 +412,8 @@ public class RemoteSyncApplication {
                     .label("Patient Portal")
                     .titre("Online Patient Management Portal")
                     .status(ProjectStatus.PENDING)
-                    .deadLine(LocalDateTime.now().plusDays(60)) // 60 days from now
+                    .deadLine(LocalDate.parse("2025-08-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client3)
                     .build();
@@ -345,7 +422,8 @@ public class RemoteSyncApplication {
                     .label("E-Learning Platform")
                     .titre("Interactive E-Learning Platform")
                     .status(ProjectStatus.COMPLETED)
-                    .deadLine(LocalDateTime.now().plusDays(30)) // 30 days ago
+                    .deadLine(LocalDate.parse("2025-07-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client4)
                     .build();
@@ -354,7 +432,8 @@ public class RemoteSyncApplication {
                     .label("Inventory Management")
                     .titre("Retail Inventory Management System")
                     .status(ProjectStatus.INACTIVE)
-                    .deadLine(LocalDateTime.now().plusDays(45)) // 45 days from now
+                    .deadLine(LocalDate.parse("2025-07-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client5)
                     .build();
@@ -363,7 +442,8 @@ public class RemoteSyncApplication {
                     .label("Analytics Dashboard")
                     .titre("Business Intelligence Analytics Dashboard")
                     .status(ProjectStatus.ACTIVE)
-                    .deadLine(LocalDateTime.now().plusDays(75)) // 75 days from now
+                    .deadLine(LocalDate.parse("2025-07-11"))
+                    .startDate(LocalDate.parse("2025-04-11"))
                     .isDeleted(false)
                     .owner(client1)
                     .build();
@@ -374,48 +454,68 @@ public class RemoteSyncApplication {
             // Create Rotations
             Rotation rotation1 = Rotation.builder()
                     .name("Sprint 1")
-                    .startDate(new Date(System.currentTimeMillis() - 15 * 24 * 60 * 60 * 1000L)) // 15 days ago
-                    .endDate(new Date(System.currentTimeMillis() + 15 * 24 * 60 * 60 * 1000L)) // 15 days from now
-                    .rotationSequence(1)
+                    .startDate( LocalDate.parse("2025-05-01"))
+                    .endDate(LocalDate.parse("2025-06-01"))
+                    .shift(1)
+                    .cycle(3)
                     .customDates(List.of(
-                            new Date(),
-                            new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000L),
-                            new Date(System.currentTimeMillis() + 10 * 24 * 60 * 60 * 1000L)
+                         new CustomDate( LocalDate.parse("2025-05-28"), RotationStatus.ONSITE),
+                                    new CustomDate(    LocalDate.parse("2025-05-15"), RotationStatus.REMOTE)
+
+
                     ))
                     .build();
-
             Rotation rotation2 = Rotation.builder()
                     .name("Sprint 2")
-                    .startDate(new Date(System.currentTimeMillis() + 16 * 24 * 60 * 60 * 1000L)) // 16 days from now
-                    .endDate(new Date(System.currentTimeMillis() + 30 * 24 * 60 * 60 * 1000L)) // 30 days from now
-                    .rotationSequence(2)
-                    .build(); // Simple rotation with just start and end dates
+                    .startDate(LocalDate.parse("2025-06-02"))
+                    .endDate(LocalDate.parse("2025-07-01"))
+                    .shift(1)
+                    .cycle(2)
+                    .build();
 
             Rotation rotation3 = Rotation.builder()
                     .name("Sprint 3")
-                    .startDate(new Date(System.currentTimeMillis() + 31 * 24 * 60 * 60 * 1000L)) // 31 days from now
-                    .endDate(new Date(System.currentTimeMillis() + 45 * 24 * 60 * 60 * 1000L)) // 45 days from now
-                    .rotationSequence(3)
-                    .customDates(List.of(new Date(System.currentTimeMillis() + 35 * 24 * 60 * 60 * 1000L)))
+                    .startDate(LocalDate.parse("2025-07-02"))
+                    .endDate(LocalDate.parse("2025-08-01"))
+                    .shift(1)
+                    .cycle(4)
+
                     .build();
 
             Rotation rotation4 = Rotation.builder()
                     .name("Sprint 4")
-                    .startDate(new Date(System.currentTimeMillis() + 46 * 24 * 60 * 60 * 1000L)) // 46 days from now
-                    .endDate(new Date(System.currentTimeMillis() + 60 * 24 * 60 * 60 * 1000L)) // 60 days from now
-                    .rotationSequence(4)
-                    .customDates(List.of(new Date(System.currentTimeMillis() + 50 * 24 * 60 * 60 * 1000L)))
+                    .startDate(LocalDate.parse("2025-08-02"))
+                    .endDate(LocalDate.parse("2025-09-01"))
+                    .shift(1)
+                    .cycle(3)
+                    .customDates(List.of(
+                                    new CustomDate(       LocalDate.parse("2025-08-10"), RotationStatus.REMOTE),
+                                    new CustomDate(      LocalDate.parse("2025-08-25"), RotationStatus.OFF)
+                    ))
                     .build();
 
             Rotation rotation5 = Rotation.builder()
                     .name("Sprint 5")
-                    .startDate(new Date(System.currentTimeMillis() + 61 * 24 * 60 * 60 * 1000L)) // 61 days from now
-                    .endDate(new Date(System.currentTimeMillis() + 75 * 24 * 60 * 60 * 1000L)) // 75 days from now
-                    .rotationSequence(5)
-                    .customDates(List.of(new Date(System.currentTimeMillis() + 65 * 24 * 60 * 60 * 1000L)))
+                    .startDate(LocalDate.parse("2025-09-02"))
+                    .endDate(LocalDate.parse("2025-10-01"))
+                    .shift(1)
+                    .cycle(2)
+                    .customDates(List.of(
+                                    new CustomDate(       LocalDate.parse("2025-09-12"), RotationStatus.ONSITE),
+                                    new CustomDate(      LocalDate.parse("2025-09-20"), RotationStatus.REMOTE)
+                    ))
                     .build();
 
-            List<Rotation> rotations = List.of(rotation1, rotation2, rotation3, rotation4, rotation5);
+            Rotation rotation6 = Rotation.builder()
+                    .name("Sprint 6")
+                    .startDate(LocalDate.parse("2025-10-02"))
+                    .endDate(LocalDate.parse("2025-11-01"))
+                    .shift(1)
+                    .cycle(3)
+
+                    .build();
+
+            List<Rotation> rotations = List.of(rotation1, rotation2, rotation3, rotation4, rotation5,rotation6);
             rotationRepository.saveAll(rotations);
 
             // Create AssignedRotations
@@ -448,6 +548,56 @@ public class RemoteSyncApplication {
                     .project(project6)
                     .createdBy(managerUser)
                     .build();
+            AssignedRotation assignedRotation33 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser3.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser3)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+            AssignedRotation assignedRotation34 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser4.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser4)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+            AssignedRotation assignedRotation35 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser5.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser5)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+            AssignedRotation assignedRotation36 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser6.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser6)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+            AssignedRotation assignedRotation37 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser7.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser7)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+
+            AssignedRotation assignedRotation38 = AssignedRotation.builder()
+                    .assignedRotationId(new AssignedRotationId(normalUser8.getUserId(), rotation1.getRotationId()))
+                    .user(normalUser8)
+                    .rotation(rotation1)
+                    .rotationAssignmentStatus(RotationAssignmentStatus.ACTIVE)
+                    .project(project6)
+                    .createdBy(managerUser)
+                    .build();
+
 
             // Overridden rotation for normalUser2
             AssignedRotation assignedRotation4 = AssignedRotation.builder()
@@ -469,7 +619,7 @@ public class RemoteSyncApplication {
                     .createdBy(adminUser)
                     .build();
 
-            List<AssignedRotation> assignedRotations = List.of(assignedRotation1, assignedRotation2, assignedRotation3, assignedRotation4, assignedRotation5);
+            List<AssignedRotation> assignedRotations = List.of(assignedRotation1, assignedRotation2, assignedRotation3, assignedRotation4, assignedRotation5,assignedRotation33,assignedRotation34,assignedRotation35,assignedRotation36,assignedRotation37,assignedRotation38);
             assignedRotationRepository.saveAll(assignedRotations);
 
             // Create Logs

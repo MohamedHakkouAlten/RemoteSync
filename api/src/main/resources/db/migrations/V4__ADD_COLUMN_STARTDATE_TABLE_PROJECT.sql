@@ -9,3 +9,7 @@ SET @column_exists = (
 SET @sql = IF(@column_exists = 0,
     'ALTER TABLE project ADD COLUMN start_date DATETIME',
     'SELECT "Column already exists, no action taken"');
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;

@@ -18,7 +18,8 @@ import java.util.UUID;
 public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     Optional<List<ProjectProjection>> findAllByOwner_ClientId(UUID clientId);
 
-    Optional<List<ProjectProjection>> findAllByLabelContains(String label);
+    Optional<List<ProjectProjection>> findTop10ByLabelContainsIgnoreCase(String label);
+    Optional<List<ProjectProjection>> findAllBy(Pageable pageable);
 
     @Query("SELECT p FROM AssignedRotation ar " +
             "INNER JOIN Project p ON p.projectId = ar.project.projectId " +

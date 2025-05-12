@@ -2,7 +2,7 @@ package com.alten.remotesync.application.project.service;
 
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
@@ -18,7 +18,7 @@ import java.util.List;
 public interface ProjectService {
     ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
+    PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO);
 
     ProjectDTO getProjectDetails(GlobalDTO globalDTO);
 
@@ -42,11 +42,13 @@ public interface ProjectService {
 
     List<ProjectDropDownDTO> getRcProjectsByLabel(String label);
 
-    PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO);
+    PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO);
 
     ProjectsCountDTO countActiveProjects();
 
     ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
 
     ProjectsCountDTO countCancelledProjects();
+
+    PagedProjectDTO searchProjectsByLabel(String label);
 }

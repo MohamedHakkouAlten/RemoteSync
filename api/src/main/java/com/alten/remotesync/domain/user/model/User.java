@@ -44,7 +44,7 @@ public class User implements UserDetails {
 
         private String phoneNumber;
 
-        @ManyToMany(fetch = FetchType.EAGER)
+        @ManyToMany(fetch = FetchType.LAZY)
         protected List<Role> roles;
 
         private boolean isDeleted;

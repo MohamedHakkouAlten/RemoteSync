@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -29,9 +30,9 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
-    private LocalDateTime deadLine;
+    private LocalDate deadLine;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     private Boolean isDeleted;
 

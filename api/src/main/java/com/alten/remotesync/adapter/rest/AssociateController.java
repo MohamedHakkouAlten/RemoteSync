@@ -3,7 +3,7 @@ package com.alten.remotesync.adapter.rest;
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
@@ -151,12 +151,12 @@ public class AssociateController {
 
     @GetMapping({"/associate/projects/old"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedGlobalDTO pagedGlobalDTO) {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success(projectService.getAssociateOldProjects(
                                 GlobalDTO.fromUserId(userPrincipal.userId()),
-                                pagedGlobalIdDTO),
+                                pagedGlobalDTO),
                         HttpStatus.OK));
     }
 

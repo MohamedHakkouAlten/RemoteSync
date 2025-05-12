@@ -4,7 +4,7 @@ import com.alten.remotesync.adapter.exception.client.ClientNotFoundException;
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalIdDTO;
+import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
@@ -37,18 +37,18 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO) {
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjects(
                         globalDTO.userId(),
-                        PageRequest.of(pagedGlobalIdDTO.pageNumber(),
-                                (pagedGlobalIdDTO.pageSize() != null) ? pagedGlobalIdDTO.pageSize() : 10))
+                        PageRequest.of(pagedGlobalDTO.pageNumber(),
+                                (pagedGlobalDTO.pageSize() != null) ? pagedGlobalDTO.pageSize() : 10))
                 .orElseThrow(()->new UserNotFoundException("user not found"));
 
         return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
                 pagedProjects.getTotalElements(),
-                pagedGlobalIdDTO.pageNumber() + 1,
-                pagedGlobalIdDTO.pageSize()
+                pagedGlobalDTO.pageNumber() + 1,
+                pagedGlobalDTO.pageSize()
         );
     }
 
@@ -141,7 +141,8 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public List<ProjectDropDownDTO> getRcProjectsByLabel(String label) {
-        return projectDomainRepository.findAllByLabelContains(label).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
+        if(label.isBlank()) return projectDomainRepository.findAllBy(PageRequest.of(0,10)).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
+        return projectDomainRepository.findTop10ByLabelContainsIgnoreCase(label).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
     }
 
 
@@ -155,18 +156,18 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalIdDTO pagedGlobalIdDTO) {
+    public PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO) {
         Page<Project> pagedProjects = projectDomainRepository.fetchAssociateProjects(
                         globalDTO.userId(),
-                        PageRequest.of(pagedGlobalIdDTO.pageNumber(),
-                                pagedGlobalIdDTO.pageSize() != null ? pagedGlobalIdDTO.pageSize() : 10))
+                        PageRequest.of(pagedGlobalDTO.pageNumber(),
+                                pagedGlobalDTO.pageSize() != null ? pagedGlobalDTO.pageSize() : 10))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return new PagedProjectDTO(
                 pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
                 pagedProjects.getTotalElements(),
-                pagedGlobalIdDTO.pageNumber() + 1,
-                pagedGlobalIdDTO.pageSize()
+                pagedGlobalDTO.pageNumber() + 1,
+                pagedGlobalDTO.pageSize()
         );
     }
 
@@ -177,6 +178,11 @@ public class ProjectServiceImp implements ProjectService {
     @Override
     public ProjectsCountDTO countCancelledProjects() {
         return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.CANCELLED));
+    }
+
+    @Override
+    public PagedProjectDTO searchProjectsByLabel(String label) {
+        return null;
     }
 
     @Override

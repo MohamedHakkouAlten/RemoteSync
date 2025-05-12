@@ -4,6 +4,8 @@ import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignme
 import com.alten.remotesync.domain.assignedRotation.model.embeddable.AssignedRotationId;
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 
+import com.alten.remotesync.domain.assignedRotation.projection.ActiveAssignedRotationProjection;
+import com.alten.remotesync.domain.rotation.model.Rotation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,5 +28,8 @@ public interface AssignedRotationDomainRepository extends JpaRepository<Assigned
 
     Page<AssignedRotation> findAllByUser_SubFactory_SubFactoryID(UUID subFactoryId, Pageable pageable);
     Page<AssignedRotation> findAllByProject_Owner_ClientId(UUID clientId, Pageable pageable);
+    Page<ActiveAssignedRotationProjection> findAllByRotationAssignmentStatus(RotationAssignmentStatus status, Pageable pageable);
+    Optional<AssignedRotation> findByUser_UserIdAndRotationAssignmentStatus(UUID userID,RotationAssignmentStatus status);
+
 
 }

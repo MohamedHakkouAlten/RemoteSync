@@ -8,12 +8,14 @@ import com.alten.remotesync.application.user.mapper.UserMapper;
 import com.alten.remotesync.application.user.record.request.LoginRequestDTO;
 import com.alten.remotesync.application.user.record.request.UpdateUserProfileDTO;
 import com.alten.remotesync.application.user.record.response.LoginResponseDTO;
+import com.alten.remotesync.application.user.record.response.UserDropDownDTO;
 import com.alten.remotesync.application.user.record.response.UserProfileDTO;
 import com.alten.remotesync.domain.role.repository.RoleDomainRepository;
 import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.domain.user.repository.UserDomainRepository;
 import com.alten.remotesync.kernel.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,5 +69,10 @@ public class UserServiceImp implements UserService {
     @Override
     public Integer getRcCountTotalAssociates(String role) {
         return userDomainRepository.countAllByRoles(List.of(roleDomainRepository.findByAuthority(role).orElseThrow(() -> new RoleNotFoundException("Role not found"))));
+    }
+
+    @Override
+    public List<UserDropDownDTO> getRCUsersByName(String name) {
+        return userDomainRepository.findTop10ByFullNameContainingIgnoreCase(name, PageRequest.of(0,10)).orElseThrow(()->new UserNotFoundException("this user doesn t exist")).stream().map(user->new UserDropDownDTO(user.getUserId(), user.getFirstName()+" "+user.getLastName())).toList();
     }
 }

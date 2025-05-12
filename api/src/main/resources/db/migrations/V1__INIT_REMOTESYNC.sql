@@ -1,9 +1,9 @@
 CREATE TABLE assigned_rotation
 (
     rotation_assignment_status VARCHAR(255) NULL,
-    override_date              datetime NULL,
-    created_at                 datetime NULL,
-    updated_at                 datetime NULL,
+    override_date              date NULL,
+    created_at                 date NULL,
+    updated_at                 date NULL,
     created_by_user_id         BINARY(16)   NULL,
     updated_by_user_id         BINARY(16)   NULL,
     user_user_id               BINARY(16)   NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE log
 (
     id             BINARY(16)   NOT NULL,
     entity_id      BINARY(16)   NULL,
-    timestamp      datetime NULL,
+    timestamp      date NULL,
     ip_address     VARCHAR(255) NULL,
     action_type    VARCHAR(255) NULL,
     status         VARCHAR(255) NULL,
@@ -56,7 +56,7 @@ CREATE TABLE notification
     title            VARCHAR(255) NULL,
     `description`    VARCHAR(255) NULL,
     status           VARCHAR(255) NULL,
-    created_at       datetime NULL,
+    created_at       date NULL,
     receiver_user_id BINARY(16)   NULL,
     CONSTRAINT pk_notification PRIMARY KEY (id)
 );
@@ -74,7 +74,7 @@ CREATE TABLE project
     label           VARCHAR(255) NULL,
     titre           VARCHAR(255) NULL,
     status          VARCHAR(255) NULL,
-    dead_line       datetime NULL,
+    dead_line       date NULL,
     is_deleted      BIT(1) NOT NULL,
     owner_client_id BINARY(16)   NULL,
     CONSTRAINT pk_project PRIMARY KEY (project_id)
@@ -88,8 +88,8 @@ CREATE TABLE report
     type               VARCHAR(255) NULL,
     status             VARCHAR(255) NULL,
     `description`      VARCHAR(255) NULL,
-    created_at         datetime NULL,
-    updated_at         datetime NULL,
+    created_at         date NULL,
+    updated_at         date NULL,
     created_by_user_id BINARY(16)   NULL,
     updated_by_user_id BINARY(16)   NULL,
     CONSTRAINT pk_report PRIMARY KEY (report_id)
@@ -112,8 +112,8 @@ CREATE TABLE rotation
 (
     rotation_id       BINARY(16)   NOT NULL,
     name              VARCHAR(255) NULL,
-    start_date        datetime NULL,
-    end_date          datetime NULL,
+    start_date        date NULL,
+    end_date          date NULL,
     rotation_sequence INT NOT NULL,
     CONSTRAINT pk_rotation PRIMARY KEY (rotation_id)
 );
@@ -121,7 +121,9 @@ CREATE TABLE rotation
 CREATE TABLE rotation_custom_dates
 (
     rotation_rotation_id BINARY(16) NOT NULL,
-    custom_dates         datetime NULL
+    custom_date        date NULL,
+    rotation_status VARCHAR(10)
+
 );
 
 CREATE TABLE sub_factory
@@ -146,8 +148,8 @@ CREATE TABLE user
     `reference`               BIGINT       NOT NULL,
     phone_number              VARCHAR(255) NULL,
     is_deleted                BIT(1)       NOT NULL,
-    created_at                datetime NULL,
-    updated_at                datetime NULL,
+    created_at                date NULL,
+    updated_at                date NULL,
     sub_factory_sub_factoryid BINARY(16)   NULL,
     CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
