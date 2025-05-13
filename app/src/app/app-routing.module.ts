@@ -107,7 +107,7 @@ const routes: Routes = [
   { path: 'remotesync/rc/project', loadChildren: () => import('./components/rc/project/project.module').then(m => m.ProjectModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'remotesync/rc/report', loadChildren: () => import('./components/rc/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'remotesync/rc/profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
-  { path: 'remotesync/rc/calendar', loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
+  { path: 'remotesync/rc/calendar', loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule) },
   
   // Language-prefixed routes for RC
   ...supportedLanguages.map(lang => ({
@@ -138,7 +138,7 @@ const routes: Routes = [
     path: `${lang}/remotesync/rc/calendar`,
     loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule),
     canActivate: [RoleGuard],
-    data: { roles: ['RC', 'ADMIN'] }
+    data: { roles: ['RC', 'ADMIN','ASSOCIATE'] }
   })),
   // END ROUTES FOR RC
 

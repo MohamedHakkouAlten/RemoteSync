@@ -1,5 +1,5 @@
 export interface User {
-  id_user?: string|number; // Recommend idUser
+  userId?: string; // Recommend idUser
   firstName?: string;
   lastName?: string;
 }

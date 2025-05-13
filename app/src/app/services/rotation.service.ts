@@ -8,6 +8,7 @@ import { catchError, map, Observable, of } from "rxjs";
 import { PagedData, ResponseWrapperDto } from "../dto/response-wrapper.dto";
 import { environment } from "../../environments/environment";
 import { RotationOutput } from "../components/rc/rotation/rotation.component";
+import { UpdateUserRotationDTO } from "../dto/rotation/updateUserRotationDTO";
 
 
 
@@ -33,6 +34,14 @@ constructor(private http:HttpClient){
 addUsersRotation(rotation:RotationOutput):Observable<boolean>{
    const url = this.apiUrl+'/user/rc/createRotation';
    return this.http.post<ResponseWrapperDto<any>>(url,rotation).pipe(
+    map((response)=>{
+     return (response.status='success') ? true:false
+    })
+   )
+}
+updateUsersRotation(rotation:UpdateUserRotationDTO):Observable<boolean>{
+   const url = this.apiUrl+'/user/rc/updateRotation';
+   return this.http.put<ResponseWrapperDto<any>>(url,rotation).pipe(
     map((response)=>{
      return (response.status='success') ? true:false
     })
@@ -66,16 +75,16 @@ getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedDa
     // Check if transformedUsers has data
 
     const transformedUsers: User[] = [
-        { id_user: 1, firstName: 'Sarah   ', lastName: ' Wilson' },
-        { id_user: 2, firstName: 'Michael ', lastName: ' Chen' },
-        { id_user: 3, firstName: 'Emily   ', lastName: ' Davis' },
-        { id_user: 4, firstName: 'David   ', lastName: ' Kim' },
-        { id_user: 5, firstName: 'Lisa    ', lastName: ' Thompson' },
-        { id_user: 6, firstName: 'Chris   ', lastName: ' Evans' }, // Example different names
-        { id_user: 7, firstName: 'Anna    ', lastName: ' Lee' },
-        { id_user: 8, firstName: 'Ben     ', lastName: ' Carter' },
-        { id_user: 9, firstName: 'Olivia  ', lastName: ' Martinez' },
-        { id_user: 10, firstName: 'James  ', lastName: ' Rodriguez' },
+        { userId: '1', firstName: 'Sarah   ', lastName: ' Wilson' },
+        { userId: '2', firstName: 'Michael ', lastName: ' Chen' },
+        { userId: '3', firstName: 'Emily   ', lastName: ' Davis' },
+        { userId: '4', firstName: 'David   ', lastName: ' Kim' },
+        { userId: '5', firstName: 'Lisa    ', lastName: ' Thompson' },
+        { userId: '6', firstName: 'Chris   ', lastName: ' Evans' }, // Example different names
+        { userId: '7', firstName: 'Anna    ', lastName: ' Lee' },
+        { userId: '8', firstName: 'Ben     ', lastName: ' Carter' },
+        { userId: '9', firstName: 'Olivia  ', lastName: ' Martinez' },
+        { userId: '10', firstName: 'James  ', lastName: ' Rodriguez' },
       ];
     return transformedUsers.map((user, index) => {
       // For each user in the transformed list, create a Rotation object
@@ -90,11 +99,11 @@ getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedDa
       let customDates: CustomDate[] = [];
 
       // Add some example custom dates based on user ID (or index)
-      if (user.id_user === 3) { // Emily Davis example overrides
+      if (user.userId === '3') { // Emily Davis example overrides
         customDates = [
           { date: '2025-04-14', rotationStatus: RotationStatus.Off }, // Tax day off!
         ];
-      } else if (user.id_user === 8) { // Ben Carter different overrides
+      } else if (user.userId === '8') { // Ben Carter different overrides
         customDates = [
           { date: '2025-07-07', rotationStatus: RotationStatus.Remote }
         ];

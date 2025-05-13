@@ -12,6 +12,7 @@ import { FactoryService } from '../../../services/factory.service';
 import { SubfactoryService } from '../../../services/subfactory.service';
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
+import { UpdateUserRotationDTO } from '../../../dto/rotation/updateUserRotationDTO';
 
 
 
@@ -144,8 +145,7 @@ if(isCreated){
 
     this.loadFilterLists()
     this.loadRotation()
-    this.userRotations.set([...this.rotationService.getUsersRotations()])
-
+  
   }
 loadRotation(){
   this.rotationService.getActiveUsersRotation(0, 10).subscribe(
@@ -264,17 +264,37 @@ loadFilterLists(){
     }
   }
   // *** NEW METHOD TO HANDLE THE UPDATE ***
-  updateRemoteState(rotation: Rotation, date: Date, newState: ToggleState) {
+  updateRemoteState(userRotation: UserRotation, date: Date, newState: ToggleState) {
     const dateKey = this.formatDateKey(date);
+    const rotation=userRotation.rotation
     // Convert the new ToggleState number back to the string status
     const newStatus = this.fromToggleType(newState);
-    console.log(rotation.rotationId)
-    // Update the schedule data for the specific user and date
-    this.userRotations().forEach(currRotation => {
-      if (currRotation.rotation === rotation) {
-        this.rotationService.updateRotationStatusForDate(currRotation.rotation, dateKey, newStatus);
-      }
+    
+   console.log(userRotation.user.userId)
+   this.rotationService.updateRotationStatusForDate(rotation, dateKey, newStatus);
+   const updateRotation:UpdateUserRotationDTO={
+
+    userId:userRotation.user.userId!,
+    shift:rotation.shift,
+    cycle:rotation.cycle,
+    endDate:rotation.endDate,
+    startDate:rotation.startDate,
+    customDates:rotation.customDates,
+    projectId:userRotation.project
+   }
+   this.rotationService.updateUsersRotation(updateRotation).subscribe(isUpdated=>{
+    if(isUpdated)this.messageService.add({
+     severity:'seccuess',
+   summary:this.translate.instant("rotation.updated")
     })
+   })
+   console.log(updateRotation)
+    // Update the schedule data for the specific user and date
+    // this.userRotations().forEach(currRotation => {
+    //   if (currRotation.rotation === rotation) {
+    //     this.rotationService.updateRotationStatusForDate(currRotation.rotation, dateKey, newStatus);
+    //   }
+    // })
 
 
   }

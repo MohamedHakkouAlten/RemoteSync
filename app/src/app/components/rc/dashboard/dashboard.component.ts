@@ -67,16 +67,16 @@ welcomeName: string=""
 // Fixed date columns based on the image
 dateColumns:  string[] =this.loadWeeksDates()
 
-user1: User = { id_user: 'user001', firstName: 'Alice', lastName: 'Smith' };
-user2: User = { id_user: 'user002', firstName: 'Bob', lastName: 'Jones' };
-user3: User = { id_user: 'user003', firstName: 'Charlie', lastName: 'Brown' };
-user4: User = { id_user: 'user004', firstName: 'Diana', lastName: 'Prince' };
-user5: User = { id_user: 'user005', firstName: 'Edward', lastName: 'Norton' };
-user6: User = { id_user: 'user006', firstName: 'Fiona', lastName: 'Apple' };
-user7: User = { id_user: 'user007', firstName: 'George', lastName: 'Lucas' };
-user8: User = { id_user: 'user008', firstName: 'Hannah', lastName: 'Baker' };
-user9: User = { id_user: 'user009', firstName: 'Ian', lastName: 'Somerhalder' };
-user10: User = { id_user: 'user010', firstName: 'Jane', lastName: 'Goodall' };
+user1: User = { userId: 'user001', firstName: 'Alice', lastName: 'Smith' };
+user2: User = { userId: 'user002', firstName: 'Bob', lastName: 'Jones' };
+user3: User = { userId: 'user003', firstName: 'Charlie', lastName: 'Brown' };
+user4: User = { userId: 'user004', firstName: 'Diana', lastName: 'Prince' };
+user5: User = { userId: 'user005', firstName: 'Edward', lastName: 'Norton' };
+user6: User = { userId: 'user006', firstName: 'Fiona', lastName: 'Apple' };
+user7: User = { userId: 'user007', firstName: 'George', lastName: 'Lucas' };
+user8: User = { userId: 'user008', firstName: 'Hannah', lastName: 'Baker' };
+user9: User = { userId: 'user009', firstName: 'Ian', lastName: 'Somerhalder' };
+user10: User = { userId: 'user010', firstName: 'Jane', lastName: 'Goodall' };
 
 users: User[] = [
     this.user1, this.user2, this.user3, this.user4, this.user5,

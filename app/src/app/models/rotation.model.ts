@@ -13,7 +13,8 @@ export interface Peroid { // Consider renaming to Period (typo)
   
   export interface UserRotation{
  user:User;
- rotation:Rotation
+ rotation:Rotation;
+ project? :string
 
   }
   

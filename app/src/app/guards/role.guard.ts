@@ -19,12 +19,13 @@ export class RoleGuard implements CanActivate {
 
     return this.authService.isAuthenticated$.pipe(
       take(1), // Check authentication status once
-      switchMap(isAuthenticated => { // Use switchMap to handle the async result
+      switchMap(isAuthenticated => { 
+        console.log(isAuthenticated)// Use switchMap to handle the async result
         // --- 1. Authentication Check ---
         if (!isAuthenticated) {
           // Not authenticated, redirect to login
           console.log('RoleGuard: Not authenticated, redirecting to login.');
-          return of(this.router.createUrlTree(['/RemoteSync/Login'], { // Wrap UrlTree in 'of' to return Observable<UrlTree>
+          return of(this.router.createUrlTree(['/remotesync/login'], { // Wrap UrlTree in 'of' to return Observable<UrlTree>
             queryParams: { returnUrl: state.url }
           }));
         }

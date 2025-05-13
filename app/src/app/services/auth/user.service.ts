@@ -44,6 +44,7 @@ export class UserService {
    * Loads initial state from storage
    */
   private loadInitialState(): void {
+    console.log("validdddd"+ this.hasValidAuthData())
     if (this.hasValidAuthData()) {
       const firstName = this.getFirstNameFromStorage() || '';
       const lastName = this.getLastNameFromStorage() || '';
@@ -111,6 +112,27 @@ export class UserService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  isTokenExpired(token:string){
+  
+console.log(this.getExpirationDateFromToken(token))
+return true;
+  }
+ getExpirationDateFromToken(token:string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const payload = JSON.parse(jsonPayload);
+
+    return payload ? payload.exp : null;
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+}
   /**
    * Gets the refresh token
    */

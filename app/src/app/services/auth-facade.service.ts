@@ -36,13 +36,23 @@ export class AuthFacadeService {
     return this.authService.login(credentials);
   }
 
+  refreshToken():Observable<ResponseWrapperDto<LoginResponseDTO>>{
+    return this.authService.refreshToken()
+  }
+
   /**
    * Request a password reset email
    */
   forgotPassword(data: ForgotPasswordRequestDto): Observable<any> {
     return this.authService.forgotPassword(data);
   }
+  clearUserData(){
+    return this.userService.clearUserData()
+  }
 
+   storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string, roles: string[]): void {
+    return this.userService.storeUserData(accessToken, refreshToken, firstName, lastName, roles)
+   }
   /**
    * Reset password with token
    */
@@ -67,6 +77,9 @@ export class AuthFacadeService {
     return this.userService.getToken();
   }
 
+  isTokenExpired(token:string):boolean{
+    return this.userService.isTokenExpired(token);
+  }
   /**
    * Gets the current refresh token
    */
