@@ -24,6 +24,7 @@ import { SubfactoryService } from '../../../services/subfactory.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { ToastModule } from 'primeng/toast';
     AutoCompleteModule,
     ThreeStateToggleComponent,
     RotationComponent,
-      ToastModule
+      ToastModule,
+      PaginatorModule,
 
 ],
 providers :[

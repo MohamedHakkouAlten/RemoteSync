@@ -1,25 +1,29 @@
 import { Injectable } from '@angular/core';
 import { ListItem } from '../components/rc/calendar/calendar.component';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
+export interface SubFactoryListItem{
+  subFactoryID:string,
+  label:string
+}
 
 @Injectable()
 export class SubfactoryService {
 
-  constructor() { }
-  getSubFactoryList():ListItem[]{
-    const tempSubFactories: ListItem[] = [];
-    // Ensure factorys signal has been set if needed for ID generation,
-    // but using the temp array directly is safer here if synchronous.
+  private readonly rcApiUrl=environment.apiUrl+'/user/rc/subFactories'
+   constructor(private http:HttpClient) { }
+   getSubFactoryList():Observable<SubFactoryListItem[]>{
+     const url = this.rcApiUrl
+ 
+       return this.http.get<ResponseWrapperDto<SubFactoryListItem[]>>(url).pipe(
+ 
+         map((response)=>{
+            return response.data as SubFactoryListItem[]
+         })
+       )
     
-    for (let i = 1; i <= 10; i++) {
-      const mainFactoryIndex = Math.floor((i - 1) / 2);
-      // Check bounds if needed
-   
-          tempSubFactories.push({
-            id: `${i}-Sub${i % 2 === 1 ? 'A' : 'B'}`,
-            name: `Sub-Assembly Unit ${String.fromCharCode(64 + i)}`
-          });
-       
-    }
-    return tempSubFactories;
-  }
+     
+   }
 }

@@ -1,18 +1,21 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
 // src/app/rotation-schedule/rotation-schedule.model.ts
 import { startOfWeek, addWeeks, format, addDays, subWeeks } from 'date-fns';
-import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
 import { RotationService } from '../../../services/rotation.service';
 import { Rotation, UserRotation } from '../../../models/rotation.model';
 import { RotationStatus } from '../../../enums/rotation-status.enum';
-import { ClientService } from '../../../services/client.service';
+import { ClientListItem, ClientService } from '../../../services/client.service';
 import { ProjectListItem, ProjectService } from '../../../services/project.service';
-import { FactoryService } from '../../../services/factory.service';
-import { SubfactoryService } from '../../../services/subfactory.service';
+import { FactoryListItem, FactoryService } from '../../../services/factory.service';
+import { SubFactoryListItem, SubfactoryService } from '../../../services/subfactory.service';
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { UpdateUserRotationDTO } from '../../../dto/rotation/updateUserRotationDTO';
+import { debounceTime, distinctUntilChanged, of, Subject, Subscription, switchMap } from 'rxjs';
+import { PagedData } from '../../../dto/response-wrapper.dto';
+import { PaginatorState } from 'primeng/paginator';
 
 
 
@@ -21,8 +24,8 @@ export interface ViewMode {
   value: 'month' | 'week'; // Add more modes if needed
 }
 export interface ListItem {
-  id:string,
-  name : string
+  id: string,
+  name: string
 }
 
 @Component({
@@ -35,50 +38,106 @@ export interface ListItem {
 
 export class CalendarComponent implements OnInit {
 
-clearFilters() {
- this.selectedClient=null;
- this.selectedProject = null;
- this.selectedFactory = null;
- this.selectedSubFactory = null;
+
+  clearFilters() {
+    this.selectedClient = null;
+    this.selectedProject = null;
+    this.selectedFactory = null;
+    this.selectedSubFactory = null;
+    this.searchValue='';
+    this.rotationService.getActiveUsersRotation(0,10).subscribe(rotations=>this.userRotations.set(rotations))
 
 
-}
+  }
 
   // --- Configuration & State ---
-  userRotations    = signal<UserRotation[]>([]);
-  clients     =signal<ListItem[]>([])
-  projects    =signal<ProjectListItem[]>([])
-  factorys    =signal<ListItem[]>([])
-  subFactorys =signal<ListItem[]>([])
+  userRotations = signal<PagedData<UserRotation[]>>({
+    assignedRotations:[],
+    totalElements:0,
+    totalPages:0,
+    pageSize:0,
+    currentPage:0
 
-  clientList=computed(()=>this.clients().map((client)=>client.name))
-  projectList=computed(()=>this.projects().map((project)=>project.label))
-  factoryList=computed(()=>this.factorys().map((factorys)=>factorys.name))
-  subFactoryList=computed(()=>this.subFactorys().map((subFactory)=>subFactory.name))
+  });
+  clients = signal<ClientListItem[]>([])
+  projects = signal<ProjectListItem[]>([])
+  factories:FactoryListItem[]=[]
+  subFactories: SubFactoryListItem[]=[]
+  currentFactories = signal<FactoryListItem[]>([])
+  currentSubFactories = signal<SubFactoryListItem[]>([])
+  // clientList=computed(()=>this.clients().map((client)=>client.name))
+  //  projectList=computed(()=>this.projects().map((project)=>project.label))
+  // factoryList=computed(()=>this.factories().map((factories)=>factories.name))
+  //subFactoryList = computed(() => this.subFactories().map((subFactory) => subFactory.name))
 
-  selectedClient  : string | null = null;
+  selectedClient: string | null = null;
   selectedProject: string | null = null;
   selectedFactory: string | null = null;
-  selectedSubFactory:string | null = null;
+  selectedSubFactory: string | null = null;
 
+  searchValue: string = ''
 
-  activeFilter:string|number=0
-  isDialogVisible:boolean=false
+  private searchUserInputChange$ = new Subject<string>();
+  private searchProjectInputChange$ = new Subject<string>();
+  private searchClientInputChange$ = new Subject<string>();
+
+  totalRecords=computed(()=>this.userRotations().totalElements)
+ 
+  first=0
+  activeFilter= signal<'user'|'client'|'project'|'factory'|'subFactory'>('user')
+  isDialogVisible: boolean = false
+  state=computed(()=>
+    {
+      return {
+        userRotations:this.activeFilter(),
+        page:signal(0),
+        row:signal(10)
+      }
+
+  })
+
+    onPageChange(event: PaginatorState): void {
+    
+   this.first = event.first  ?? 0;
+   const page = event.page  ?? 0;
+   const rows = event.rows ?? this.state().row();
+
+   this.state().page.set(page)
+   this.state().row.set(rows)
+
+      this.rotationService.getActiveUsersRotation(page, rows).subscribe(
+      (pagedData) => {
+        console.log(pagedData)
+        this.userRotations.set(pagedData)
+      },
+
+   )
+   //  this.rotationService.getActiveUsersRotation()
+     
+    }
   //rotation 
-  showRotationCreatedToast(isCreated:boolean){
+  showRotationCreatedToast(isCreated: boolean) {
 
-if(isCreated){
+    if (isCreated) {
 
-   this.messageService.add({
-          severity:'success',
-          summary:this.translate.instant('rotation.created'),
-          life:5000
-          
-        })
-        this.loadRotation()
-}
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.instant('rotation.created'),
+        life: 5000
+
+      })
+      this.loadRotation()
+    }
   }
-  
+  onSearchInput(): void {
+
+        this.selectedProject=null;
+    this.selectedClient=null;
+    this.selectedFactory=null;
+    this.selectedSubFactory=null;
+    this.searchUserInputChange$.next(this.searchValue);
+    console.log(this.searchValue)
+  }
   // Dates representing the start of each week/day shown
 
   numberOfWeeksToShow: number = 8; // How many weeks to display in 'month' (weekly) view
@@ -92,52 +151,101 @@ if(isCreated){
   ];
   selectedViewMode: ViewMode = this.viewModes[0]; // Default to 'month' (weekly view)
 
-  
+
 
   searchClient(event: AutoCompleteCompleteEvent): void {
-    const filtered = this.filterListItems(event.query, this.clients());
-
-    this.clients.set([...filtered]); // Update the suggestions signal
+    const query = event.query
+    if (!query) this.clients.set([...this.clients()])
+    this.searchClientInputChange$.next(event.query)
 
   }
   searchProject(event: AutoCompleteCompleteEvent): void {
-    // const filtered = this.filterListItems(event.query, this.projects());
-     this.projects.set([...this.projects()]); // Update the suggestions signal
+    const query = event.query
+    if (!query) this.projects.set([...this.projects()])
 
+    this.searchProjectInputChange$.next(event.query)
   }
+
   searchFactory(event: AutoCompleteCompleteEvent): void {
-    const filtered = this.filterListItems(event.query, this.factorys());
-    this.factorys.set([...filtered]); // Update the suggestions signal
+   const query=event.query 
+     if (!query) this.currentFactories.set([...this.factories]); 
+    else {
+      const lowerCaseQuery = query.toLowerCase();
+      // Filter based on the query
+      this. currentFactories.update(() =>
+        this.factories.filter(factory=>factory.label.toString().toLowerCase().includes(lowerCaseQuery)) 
+      
+      
+      );
+    }
+
 
   }
   searchSubFactory(event: AutoCompleteCompleteEvent): void {
-    const filtered = this.filterListItems(event.query, this.subFactorys());
-
-    this.subFactorys.set([...filtered]); // Update the suggestions signal
-
-  }
-  private filterListItems(query: string, sourceItems: ListItem[]): ListItem[] {
-    if (!query) {
-      // Return a copy of the full list if query is empty
-      return [...sourceItems];
-    } else {
+const query=event.query 
+     if (!query) this.currentSubFactories.set([...this.subFactories]); 
+    else {
       const lowerCaseQuery = query.toLowerCase();
-      // Filter based on the query
-      return sourceItems.filter(item =>
-        item.name.toString().toLowerCase().includes(lowerCaseQuery)
+      this. currentSubFactories.update(()=>
+        this.subFactories.filter(subFactory=>subFactory.label.toString().toLowerCase().includes(lowerCaseQuery)) 
+      
+      
       );
     }
+  }
+  fetchUserRotationsByProject($event: AutoCompleteSelectEvent) {
+    this.selectedFactory=null;
+    this.selectedSubFactory=null;
+    this.searchValue=''
+    const projectId = $event.value.projectId
+    this.rotationService.getActiveUsersRotationByProject(0, 10, projectId).subscribe((pagedData) =>
+      this.userRotations.set(pagedData)
+    )
+    this.activeFilter.set('project')
+  }
+
+  fetchUserRotationsByClient($event: AutoCompleteSelectEvent) {
+       this.selectedFactory=null;
+    this.selectedSubFactory=null;
+    this.selectedClient=null;
+    this.searchValue=''
+    const clientId = $event.value.clientId
+    this.rotationService.getActiveUsersRotationByClient(0, 10, clientId).subscribe((pagedData) =>
+      this.userRotations.set(pagedData)
+    )
+    this.activeFilter.set('client')
+  }
+    fetchUserRotationsByFactory($event: AutoCompleteSelectEvent) {
+    this.selectedProject=null;
+    this.selectedClient=null;
+    this.searchValue=''
+    const factoryId = $event.value.factoryId
+    this.rotationService.getActiveUsersRotationByFactory(0, 10,factoryId).subscribe((pagedData) =>
+      this.userRotations.set(pagedData)
+    )
+    this.activeFilter.set('factory')
+  }
+    fetchUserRotationsBySubFactory($event: AutoCompleteSelectEvent) {
+    this.selectedProject=null;
+    this.selectedSubFactory=null;
+    this.selectedClient=null;
+    this.searchValue=''
+    const subFactoryId = $event.value.subFactoryID
+    this.rotationService.getActiveUsersRotationBySubFactory(0, 10,subFactoryId).subscribe((pagedData) =>
+      this.userRotations.set(pagedData)
+    )
+    this.activeFilter.set('subFactory')
   }
 
   toggleValue: ToggleState = 0; // Initial state
 
   constructor(private rotationService: RotationService,
-    private clientService:ClientService,
-    private projectService : ProjectService,
-    private factoryService : FactoryService,
-    private subFactoryService : SubfactoryService,
-    private messageService:MessageService,
-    private translate:TranslateService
+    private clientService: ClientService,
+    private projectService: ProjectService,
+    private factoryService: FactoryService,
+    private subFactoryService: SubfactoryService,
+    private messageService: MessageService,
+    private translate: TranslateService
 
 
   ) { }
@@ -145,39 +253,40 @@ if(isCreated){
 
     this.loadFilterLists()
     this.loadRotation()
-  
+    this.setupSearchDebounce()
+
   }
-loadRotation(){
-  this.rotationService.getActiveUsersRotation(0, 10).subscribe(
-   (pagedData) => {
-    console.log(pagedData)
-     this.userRotations.set([...pagedData.assignedRotations])
-    },
-   
-  )};
-  
+  loadRotation() {
+    this.rotationService.getActiveUsersRotation(this.state().page(),this.state().row()).subscribe(
+      (pagedData) => {
+        console.log(pagedData)
+        this.userRotations.set(pagedData)
+      },
+
+    )
+  };
+
 
 
   showDialog() {
-   this.isDialogVisible = true;
-    console.log(this.clientList())
+    this.isDialogVisible = true;
+
   }
-loadFilterLists(){
-    // --- Populate Client List ---
-    this.clients.set(this.clientService.getClientList()); // Update the signal's value
-    // --- Populate Project List ---
+  loadFilterLists() {
 
-    this.projectService.getProjectList().subscribe((projects)=>{console.log(projects);this.projects.set([...projects]);    })
+    this.clientService.getClientListByLabel().subscribe((clients) => { this.clients.set(clients); })
 
+    this.projectService.getProjectList().subscribe((projects) => { this.projects.set(projects); })
 
-    // --- Populate Factory List ---
-    this.factorys.set(this.factoryService.getFactoryList()); // Update the signal's value
-    // --- Populate Sub-Factory List ---
-    this.subFactorys.set(this.subFactoryService.getSubFactoryList()); // Update the signal's value
+    this.factoryService.getFactoryList().subscribe((factories) => { this.factories=factories; })
+
+    this.subFactoryService.getSubFactoryList().subscribe((subFactories) => { this.subFactories=subFactories; })
 
 
   }
+  loadProjects() {
 
+  }
 
   displayedDates = computed(() => {
     const currentStart = this.currentStartDate();
@@ -266,29 +375,29 @@ loadFilterLists(){
   // *** NEW METHOD TO HANDLE THE UPDATE ***
   updateRemoteState(userRotation: UserRotation, date: Date, newState: ToggleState) {
     const dateKey = this.formatDateKey(date);
-    const rotation=userRotation.rotation
+    const rotation = userRotation.rotation
     // Convert the new ToggleState number back to the string status
     const newStatus = this.fromToggleType(newState);
-    
-   console.log(userRotation.user.userId)
-   this.rotationService.updateRotationStatusForDate(rotation, dateKey, newStatus);
-   const updateRotation:UpdateUserRotationDTO={
 
-    userId:userRotation.user.userId!,
-    shift:rotation.shift,
-    cycle:rotation.cycle,
-    endDate:rotation.endDate,
-    startDate:rotation.startDate,
-    customDates:rotation.customDates,
-    projectId:userRotation.project
-   }
-   this.rotationService.updateUsersRotation(updateRotation).subscribe(isUpdated=>{
-    if(isUpdated)this.messageService.add({
-     severity:'seccuess',
-   summary:this.translate.instant("rotation.updated")
+    console.log(userRotation.user.userId)
+    this.rotationService.updateRotationStatusForDate(rotation, dateKey, newStatus);
+    const updateRotation: UpdateUserRotationDTO = {
+
+      userId: userRotation.user.userId!,
+      shift: rotation.shift,
+      cycle: rotation.cycle,
+      endDate: rotation.endDate,
+      startDate: rotation.startDate,
+      customDates: rotation.customDates,
+      projectId: userRotation.project
+    }
+    this.rotationService.updateUsersRotation(updateRotation).subscribe(isUpdated => {
+      if (isUpdated) this.messageService.add({
+        severity: 'seccuess',
+        summary: this.translate.instant("rotation.updated")
+      })
     })
-   })
-   console.log(updateRotation)
+    console.log(updateRotation)
     // Update the schedule data for the specific user and date
     // this.userRotations().forEach(currRotation => {
     //   if (currRotation.rotation === rotation) {
@@ -298,6 +407,46 @@ loadFilterLists(){
 
 
   }
+  private setupSearchDebounce(): void {
+    this.searchClientInputChange$.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+      switchMap(searchTerm => {
 
+        return this.clientService.getClientListByLabel(searchTerm);
+      })
+    ).subscribe(results => {
+
+      this.clients.set(results);
+
+    });
+
+    this.searchProjectInputChange$.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+      switchMap(searchTerm => {
+        return this.projectService.getProjectList(searchTerm);
+      })
+    ).subscribe(results => {
+
+      console.log(results)
+      this.projects.set(results); // Assuming PagedData has 'content'
+
+    });
+
+    this.searchUserInputChange$.pipe(
+      debounceTime(1000),
+      distinctUntilChanged(),
+      switchMap(searchTerm => {
+
+        return this.rotationService.getActiveUsersRotationByName(0, 10, searchTerm);
+      })
+    ).subscribe(results => {
+      if (results && (results as PagedData<UserRotation[]>).assignedRotations) {
+        console.log(results)
+        this.userRotations.set(results); // Assuming PagedData has 'content'
+      }
+    });
+  }
 
 }

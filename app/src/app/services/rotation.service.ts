@@ -26,13 +26,13 @@ function parseAndValidate(dateString: string | undefined | null): Date | null {
 @Injectable()
 export class RotationService {
 
-readonly apiUrl=environment.apiUrl
+private readonly rcApiUrl=environment.apiUrl+'/user/rc/rotations'
 constructor(private http:HttpClient){
 
 }
 
 addUsersRotation(rotation:RotationOutput):Observable<boolean>{
-   const url = this.apiUrl+'/user/rc/createRotation';
+   const url = this.rcApiUrl+'/createRotation';
    return this.http.post<ResponseWrapperDto<any>>(url,rotation).pipe(
     map((response)=>{
      return (response.status='success') ? true:false
@@ -40,16 +40,121 @@ addUsersRotation(rotation:RotationOutput):Observable<boolean>{
    )
 }
 updateUsersRotation(rotation:UpdateUserRotationDTO):Observable<boolean>{
-   const url = this.apiUrl+'/user/rc/updateRotation';
+   const url = this.rcApiUrl+'/updateRotation';
    return this.http.put<ResponseWrapperDto<any>>(url,rotation).pipe(
     map((response)=>{
      return (response.status='success') ? true:false
     })
    )
 }
+getActiveUsersRotationByName(pageNumber: number, pageSize: number,name:string): Observable<PagedData<UserRotation[]>> {
+  const url = this.rcApiUrl+'/byName';
+  console.log(name)
+  const params = new HttpParams()
+    .set('name', name)
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
 
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+    })
+  );
+
+}
+getActiveUsersRotationByProject(pageNumber: number, pageSize: number,projectId:string): Observable<PagedData<UserRotation[]>> {
+  const url = this.rcApiUrl+'/byProject';
+  const params = new HttpParams()
+    .set('projectId', projectId)
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+    })
+  );
+}
+
+getActiveUsersRotationByClient(pageNumber: number, pageSize: number,clientId:string): Observable<PagedData<UserRotation[]>> {
+  const url = this.rcApiUrl+'/byClient';
+
+  const params = new HttpParams()
+    .set('clientId', clientId)
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+    })
+  );
+}
+getActiveUsersRotationByFactory(pageNumber: number, pageSize: number,factoryId:string): Observable<PagedData<UserRotation[]>> {
+  const url = this.rcApiUrl+'/byFactory';
+
+  const params = new HttpParams()
+    .set('factoryId',factoryId)
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+    })
+  );
+}
+getActiveUsersRotationBySubFactory(pageNumber: number, pageSize: number,subFactoryId:string): Observable<PagedData<UserRotation[]>> {
+  const url = this.rcApiUrl+'/bySubFactory';
+
+  const params = new HttpParams()
+    .set('subFactoryId',subFactoryId)
+    .set('pageNumber', pageNumber)
+    .set('pageSize', pageSize);
+
+  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+    map(response => {
+      if (response.status === 'success' && response.data) {
+        return response.data;
+      }
+      throw new Error('Failed to fetch active user rotations');
+    }),
+    catchError(error => {
+      console.error('Error in getActiveUsersRotation:', error);
+      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+    })
+  );
+}
 getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedData<UserRotation[]>> {
-  const url = this.apiUrl+'/user/rc/rotations';
+  const url = this.rcApiUrl;
   const params = new HttpParams()
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);

@@ -11,10 +11,10 @@ export interface ProjectListItem{
 
 @Injectable()
 export class ProjectService {
-  readonly apiUrl=environment.apiUrl
+  private readonly rcApiUrl=environment.apiUrl+'/user/rc/projects'
   constructor(private http:HttpClient) { }
   getProjectList(label:string=''):Observable<ProjectListItem[]>{
-    const url = this.apiUrl+'/user/rc/projects/byLabel';
+    const url = this.rcApiUrl+'/byLabel';
     const params = new HttpParams()
       .set('label', label)
 

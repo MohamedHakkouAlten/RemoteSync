@@ -27,35 +27,35 @@
               <!-- Search Users (PrimeNG Input) -->
               <p-iconfield>
                 <p-inputicon styleClass="pi pi-search !top-[52%] !text-[14px]" />
-                <input type="text" style="font-family: Inter;" class="!border-0 !bg-secondary !max-w-[210px] !text-sm"
+                <input type="text" style="font-family: Inter;" [(ngModel)]="searchValue" (input)="onSearchInput()" class="!border-0 !bg-secondary !max-w-[210px] !text-sm"
                   pInputText placeholder="Search" />
               </p-iconfield>
               <div class="flex !max-w-[210px] items-center pl-2  !bg-secondary ">
                 <i class="pi  pi-user text-gray-500 !text-base"></i>
 
-                <p-autocomplete  [(ngModel)]="selectedClient" [dropdown]="true" placeholder="Client" class="!border-0 !text-sm"
-                  [suggestions]="clientList()" (completeMethod)="searchClient($event)" />
+                <p-autocomplete  [(ngModel)]="selectedClient" (onSelect)="fetchUserRotationsByClient($event)"  [dropdown]="true" placeholder="Client" class="!border-0 !text-sm"
+                  [suggestions]="clients()" (completeMethod)="searchClient($event)" />
 
               </div>
               <div class="flex items-center pl-2 !max-w-[210px]  !bg-secondary ">
                 <i class="pi pi-briefcase text-gray-500 !text-base"></i>
 
-                <p-autocomplete [(ngModel)]="selectedProject" [dropdown]="true" placeholder="Project" class="!border-0 "
-                  [suggestions]="projectList()" (completeMethod)="searchProject($event)" />
+                <p-autocomplete  [(ngModel)]="selectedProject"  (onSelect)="fetchUserRotationsByProject($event)" [dropdown]="true" placeholder="Project" class="!border-0 "
+                  [suggestions]="projects()"  (completeMethod)="searchProject($event)" />
 
               </div>
               <div class="flex items-center pl-2 !max-w-[210px] !bg-secondary ">
                 <i class="pi pi-map-marker text-gray-500 !text-base"></i>
 
-                <p-autocomplete [(ngModel)]="selectedFactory" [dropdown]="true" placeholder="Factory" class="!border-0 "
-                  [suggestions]="factoryList()" (completeMethod)="searchFactory($event)" />
+                <p-autocomplete [(ngModel)]="selectedFactory" (onSelect)="fetchUserRotationsByFactory($event)" [dropdown]="true" placeholder="Factory" class="!border-0 "
+                  [suggestions]="currentFactories()" (completeMethod)="searchFactory($event)" />
 
               </div>
               <div class="flex items-center pl-2 !max-w-[210px] !bg-secondary ">
                 <i class="pi pi-building text-gray-500 !text-base"></i>
 
-                <p-autocomplete [(ngModel)]="selectedSubFactory" [dropdown]="true" placeholder="SubFactory"
-                  class="!border-0 " [suggestions]="subFactoryList()" (completeMethod)="searchSubFactory($event)" />
+                <p-autocomplete [(ngModel)]="selectedSubFactory" (onSelect)="fetchUserRotationsBySubFactory($event)" [dropdown]="true" placeholder="SubFactory"
+                  class="!border-0 " [suggestions]="currentSubFactories()" (completeMethod)="searchSubFactory($event)" />
 
               </div>
             </div>
@@ -129,7 +129,7 @@
             </div>
           </div>
           <!-- User Rows (Using Flexbox) -->
-          <div *ngFor="let  rotation of userRotations(); let i = index"
+          <div *ngFor="let  rotation of userRotations().assignedRotations; let i = index"
             class="flex flex-row items-center gap-x-2 px-2 py-3 border-b border-gray-100 bg-white ">
 
             <!-- User Info Cell: Fixed width, doesn't shrink -->
@@ -163,14 +163,15 @@
           </div>
 
           <!-- No Users Found Message -->
-          <div *ngIf="userRotations().length === 0" class="text-center py-8 text-gray-500">
+          <div *ngIf="userRotations().assignedRotations.length===0" class="text-center py-8 text-gray-500">
             No users found matching your criteria.
           </div>
 
         </div>
       </div>
       <!-- Legend (Using standard Tailwind) -->
-      <div class="flex items-center space-x-6 mt-6 pt-4 border-t border-gray-200">
+      <div class="flex items-center justify-between space-x-6 mt-6 pt-4 border-t border-gray-200">
+        <div class="flex gap-4">
         <div class="flex items-center space-x-2">
           <span class="w-3 h-3 rounded-full bg-orange-500"></span>
           <span class="text-sm text-gray-600">On-site</span>
@@ -183,6 +184,12 @@
           <span class="w-3 h-3 rounded-full bg-gray-300"></span>
           <span class="text-sm text-gray-600">Off</span>
         </div>
+        </div>
+
+        
+        <p-paginator [rows]="this.state().row()" [totalRecords]="totalRecords()" [first]="first" (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[10, 20, 30]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
+    
+  
       </div>
 
     </div> <!-- End Content Card -->
