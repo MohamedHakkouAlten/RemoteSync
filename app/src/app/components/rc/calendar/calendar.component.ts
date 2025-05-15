@@ -198,7 +198,7 @@ const query=event.query
     this.selectedSubFactory=null;
     this.searchValue=''
     const projectId = $event.value.projectId
-    this.rotationService.getActiveUsersRotationByProject(0, 10, projectId).subscribe((pagedData) =>
+    this.rotationService.getActiveUsersRotationByProject(this.state().page(), this.state().row(), projectId).subscribe((pagedData) =>
       this.userRotations.set(pagedData)
     )
     this.activeFilter.set('project')
@@ -210,7 +210,7 @@ const query=event.query
     this.selectedClient=null;
     this.searchValue=''
     const clientId = $event.value.clientId
-    this.rotationService.getActiveUsersRotationByClient(0, 10, clientId).subscribe((pagedData) =>
+    this.rotationService.getActiveUsersRotationByClient(this.state().page(), this.state().row(), clientId).subscribe((pagedData) =>
       this.userRotations.set(pagedData)
     )
     this.activeFilter.set('client')
@@ -220,7 +220,7 @@ const query=event.query
     this.selectedClient=null;
     this.searchValue=''
     const factoryId = $event.value.factoryId
-    this.rotationService.getActiveUsersRotationByFactory(0, 10,factoryId).subscribe((pagedData) =>
+    this.rotationService.getActiveUsersRotationByFactory(this.state().page(), this.state().row(),factoryId).subscribe((pagedData) =>
       this.userRotations.set(pagedData)
     )
     this.activeFilter.set('factory')
@@ -231,7 +231,7 @@ const query=event.query
     this.selectedClient=null;
     this.searchValue=''
     const subFactoryId = $event.value.subFactoryID
-    this.rotationService.getActiveUsersRotationBySubFactory(0, 10,subFactoryId).subscribe((pagedData) =>
+    this.rotationService.getActiveUsersRotationBySubFactory(this.state().page(), this.state().row(),subFactoryId).subscribe((pagedData) =>
       this.userRotations.set(pagedData)
     )
     this.activeFilter.set('subFactory')
@@ -439,7 +439,7 @@ const query=event.query
       distinctUntilChanged(),
       switchMap(searchTerm => {
 
-        return this.rotationService.getActiveUsersRotationByName(0, 10, searchTerm);
+        return this.rotationService.getActiveUsersRotationByName(this.state().page(), this.state().row(), searchTerm);
       })
     ).subscribe(results => {
       if (results && (results as PagedData<UserRotation[]>).assignedRotations) {
