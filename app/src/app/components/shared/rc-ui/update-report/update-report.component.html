@@ -1,0 +1,77 @@
+<p-dialog [(visible)]="visible" [modal]="true"
+          [style]="{width: '90vw', maxWidth: '550px'}"  
+          [draggable]="false" [resizable]="false" [dismissableMask]="false"
+          (onHide)="closeReportModal()" styleClass="report-detail-dialog-new"
+        >
+    <!-- Only render content when a report is selected -->
+    <ng-container *ngIf="report!">
+
+
+        <!-- Dialog Content Area -->
+        <div class="pt-0 pb-5 px-5 space-y-6"> <!-- Adjusted padding -->
+            <!-- Report Header inside content -->
+            <div class="flex items-center gap-4">
+                <app-user-avatar [size]="50" [textSize]="17" [userInitials]="userUtils.getUserInitials(report.createdBy)" />
+                <div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-0 leading-tight">{{ report!.title }}</h2>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+
+            <!-- Date Section -->
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Date</label>
+                <p class="text-sm text-gray-800">{{ report!.createdAt| date:'MMM d, yyyy' }}</p>
+            </div>
+
+            <!-- Status Section -->
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Status</label>
+                <span class="status-badge px-3 py-1 rounded-full text-xs font-semibold inline-block capitalize"
+                      [ngClass]="getStatusClass(report!.status!)">
+                   {{report!.status?.toString()?.toLocaleLowerCase() }} <!-- Use TitleCasePipe -->
+                </span>
+            </div>
+
+            <!-- Description Section -->
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Description</label>
+                <div class="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-200 whitespace-pre-wrap min-h-[80px]">
+                    {{ report!.description || 'No description available.' }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog Footer with Action Buttons -->
+    </ng-container> <!-- End *ngIf="report!" -->
+    <ng-template  pTemplate="footer">
+        <div *ngIf="report?.status==reportStatus.PENDING || report?.status==reportStatus.OPENED" class="flex justify-between items-center w-full gap-3">
+            <!-- Reject Button -->
+            <button pButton type="button"
+                    class="p-button-outlined cursor-pointer p-button-danger flex-1 !py-2.5 !px-4 !text-sm"
+                    (click)="updateReportStatus(reportStatus.REJECTED)"
+                    pTooltip="Mark as Pending/Rejected" tooltipPosition="top">
+                <i class="pi pi-times mr-2"></i>
+                <span>Reject</span>
+            </button>
+
+            <!-- In Progress Button -->
+            <button pButton type="button"
+                    class="p-button-outlined cursor-pointer p-button-info flex-1 !py-2.5 !px-4 !text-sm"
+                    (click)="updateReportStatus(reportStatus.OPENED)"
+                    pTooltip="Mark as In Progress" tooltipPosition="top">
+                <i class="pi pi-clock mr-2"></i>
+                <span>In Progress</span>
+            </button>
+
+            <!-- Accept Button -->
+            <button pButton type="button"
+                    class="p-button-success cursor-pointer flex-1 !py-2.5 !px-4 !text-sm"
+                    (click)="updateReportStatus(reportStatus.ACCEPTED)"
+                    pTooltip="Mark as Completed/Accepted" tooltipPosition="top">
+                <i class="pi pi-check mr-2"></i>
+                <span>Accept</span>
+            </button>
+        </div>
+    </ng-template>
+</p-dialog>

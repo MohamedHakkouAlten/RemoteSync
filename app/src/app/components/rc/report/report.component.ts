@@ -1,7 +1,15 @@
 // src/app/report/report.component.ts
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common'; // DatePipe still needed if used elsewhere or prefer it over template pipe
 import { PaginatorState } from 'primeng/paginator';
+import { ReportService } from '../../../services/report.service';
+import { RCReport } from '../../../models/report.model';
+import { ReportStatus } from '../../../enums/report-status.enum';
+import { UserUtils } from '../../../utilities/UserUtils';
+import { format } from 'date-fns';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { PagedReports } from '../../../dto/response-wrapper.dto';
+import { MessageService } from 'primeng/api';
 
 // --- Interface & Data ---
 interface Report {
@@ -24,149 +32,230 @@ interface Report {
 })
 export class ReportComponent implements OnInit {
 
-  allReports: Report[] = [];
+  allReports = signal<PagedReports>({
+      reports:[],
+      totalElements:0,
+      totalPages:0,
+      pageSize:0,
+      currentPage:0
+  
+    });
+  
+    
   filteredReports: Report[] = [];
   paginatedReports: Report[] = [];
 
+  state = computed(() => {
+    return {
+      filter: this.activeFilter(),
+      page: signal(0),
+      row: signal(6)
+
+    }
+  })
+  activeFilter = signal<'status' | 'date' | 'user'|'none'>('none')
+  userUtils = UserUtils
   // --- Filtering State ---
   searchTerm: string = '';
   selectedDateRange: Date[] | null = null;
   selectedStatus: string | null = null;
   selectedUser: string | null = null;
 
+  private searchUserInputChange$ = new Subject<string>();
+
   // --- Status Options ---
   statusOptions = [
-    { label: 'All Status', value: null },
-    { label: 'Completed', value: 'completed' },
-    { label: 'In Progress', value: 'in progress' },
-    { label: 'Pending', value: 'pending' }
+
+    { label: 'Completed', value: 'ACCEPTED' },
+    { label: 'In Progress', value: 'OPENED' },
+    { label: 'Pending', value: 'PENDING' },
+    { label: 'Rejected', value: 'REJECTED' }
   ];
 
   // --- Pagination State ---
-  totalRecords: number = 0;
-  rows: number = 6;
-  first: number = 0;
+  totalRecords=computed(()=>this.allReports().totalElements)
+
 
   // --- Modal State ---
   displayReportModal: boolean = false;
-  selectedReportForModal: Report | null = null;
-  modalKey: number = 0; // Used to force modal rerender if needed
+  selectedReport: RCReport | null = null;
+ // Used to force modal rerender if needed
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private datePipe: DatePipe // Keep injection if used in TS logic, otherwise optional
-  ) {}
+    private reportService: ReportService,
+    private messageService:MessageService
+  ) { }
 
   ngOnInit(): void {
-    this.loadMockReports();
-    this.applyFiltersAndPagination();
+
+    this.setupDebouncing()
+    this.reportService.getReports().subscribe(pagedData => {
+      this.allReports.set(pagedData);
+    })
+    console.log(this.allReports())
+   
+
   }
 
-  loadMockReports(): void {
-    // Use a single avatar image for all reports to avoid 404 errors
-    this.allReports = [
-        { id: 1, authorName: 'Sarah Wilson', authorDept: 'Design', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Q1 Performance Review', date: new Date(2024, 3, 15), status: 'completed', description: 'Quarterly performance review covering team achievements, challenges, and goals for Q1 2024. Including detailed metrics on project deliverables and team productivity.' },
-        { id: 2, authorName: 'Michael Chen', authorDept: 'Engineering', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Project Progress Report', date: new Date(2024, 3, 14), status: 'in progress', description: 'Weekly update on the Project Phoenix development milestones, blocker identification, and resource allocation.' },
-        { id: 3, authorName: 'Emily Davis', authorDept: 'Marketing', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Marketing Campaign Analysis', date: new Date(2024, 3, 13), status: 'pending', description: 'Analysis of the recent "Spring Forward" campaign results, including lead generation, conversion rates, and ROI.' },
-        { id: 4, authorName: 'David Kim', authorDept: 'Product', authorAvatarUrl: 'assets/images/avatar1.png', title: 'User Research Findings', date: new Date(2024, 3, 12), status: 'completed', description: 'Summary of findings from recent user interviews regarding the checkout process improvements. Key pain points and recommendations outlined.' },
-        { id: 5, authorName: 'Lisa Thompson', authorDept: 'Operations', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Operations Overview', date: new Date(2024, 3, 11), status: 'in progress', description: 'Monthly overview of operational efficiency metrics, including server uptime, support ticket resolution times, and infrastructure costs.' },
-        { id: 6, authorName: 'Sarah Wilson', authorDept: 'Design', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Team Performance Review', date: new Date(2024, 3, 10), status: 'completed', description: 'Review of the design team\'s performance over the last month, focusing on project completion rates and cross-functional collaboration.' },
-        { id: 7, authorName: 'Michael Chen', authorDept: 'Engineering', authorAvatarUrl: 'assets/images/avatar1.png', title: 'Infrastructure Audit', date: new Date(2024, 3, 9), status: 'pending', description: 'Results of the quarterly security and infrastructure audit, highlighting areas for improvement and required patching schedules.' },
-    ];
-    this.totalRecords = this.allReports.length;
+
+
+
+
+
+  onStatusChange() {
+    if (this.activeFilter() !== 'status') this.activeFilter.set('status')
+         this.selectedDateRange=null
+
+    this.searchTerm=''
+    this.setReports()
   }
 
-  applyFiltersAndPagination(): void {
-    // Filter logic remains the same
-    this.filteredReports = this.allReports.filter(report => {
-      const searchTermMatch = !this.searchTerm ||
-                              report.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                              report.authorName.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const dateMatch = !this.selectedDateRange || !this.selectedDateRange[0] ||
-                         (this.selectedDateRange[0] && !this.selectedDateRange[1] &&
-                          report.date >= this.selectedDateRange[0]) ||
-                         (this.selectedDateRange[0] && this.selectedDateRange[1] &&
-                          report.date >= this.selectedDateRange[0] && report.date <= this.selectedDateRange[1]);
-      const statusMatch = !this.selectedStatus || report.status === this.selectedStatus;
-      const userMatch = !this.selectedUser || report.authorName === this.selectedUser;
-      return searchTermMatch && dateMatch && statusMatch && userMatch;
-    });
-    this.totalRecords = this.filteredReports.length;
-    this.updatePaginatedReports();
-    this.cdRef.markForCheck();
-  }
+  onDateChange() {
+    if (this.activeFilter() !== 'date') this.activeFilter.set('date')
 
-  onFilterChange(): void {
-    this.first = 0;
-    this.applyFiltersAndPagination();
+    this.selectedStatus=null
+    this.searchTerm=''
+    this.setReports()
   }
+  onNameChange(){
+     if (this.activeFilter() !== 'user') this.activeFilter.set('user')
+         this.selectedDateRange=null
+    this.selectedStatus=null
 
+    this.setReports()
+  }
   onPageChange(event: PaginatorState): void {
-   this.first = event.first ?? 0;
-   this.rows = event.rows ?? this.rows;
-   this.updatePaginatedReports();
-   this.cdRef.markForCheck();
+
+    const rows = event.rows ?? this.state().row();
+    const page = event.page ?? this.state().page();
+    this.state().row.set(rows)
+    this.state().page.set(page)
+    if(this.activeFilter()=='user') this.reportService.getReportsByName(page, rows,this.searchTerm).subscribe(pagedData => { this.allReports.set(pagedData); });
+    else this.setReports()
   }
 
-  updatePaginatedReports(): void {
-     const startIndex = this.first;
-     const endIndex = this.first + this.rows;
-     this.paginatedReports = this.filteredReports.slice(startIndex, endIndex);
-   }
+  setReports() {
+    const rows = this.state().row()
+    const page = this.state().page()
+    switch (this.activeFilter()) {
 
-  viewReport(report: Report): void {
-    // Defensive: Always close any open modal first
-    if (this.displayReportModal) {
-      this.closeReportModal();
+      case 'status': { this.reportService.getReportsByStatus(page, rows, this.selectedStatus!)
+        .subscribe(pagedData => { this.allReports.set(pagedData); });break }
+      case 'date' : {
+        if (this.selectedDateRange) {
+      const startDate = format(this.selectedDateRange[0],'yyyy-MM-dd');
+      const endDate =  format(this.selectedDateRange[1],'yyyy-MM-dd');
+      this.reportService.getReportsByDateRange(page, rows, startDate,endDate)
+      .subscribe(pagedData => { this.allReports.set(pagedData); });
     }
-    this.selectedReportForModal = report;
-    this.displayReportModal = true;
-    this.modalKey++;
-    console.log('Opening report modal for:', report, 'modalKey:', this.modalKey);
-    this.cdRef.markForCheck();
+    break
+      }
+    case 'user':{
+      this.searchUserInputChange$.next(this.searchTerm)
+    break;
+    }
+      default: this.reportService.getReports(page, rows).subscribe(pagedData => { this.allReports.set(pagedData); });
+    }
+  }
+
+  clearFilters(){
+
+    this.selectedDateRange=null
+    this.selectedStatus=null
+    this.searchTerm=''
+    this.activeFilter.set('none')
+    this.setReports()
+
+  }
+  viewReport(report: RCReport): void {
+    // Defensive: Always close any open modal first
+       this.displayReportModal=true
+    this.selectedReport = report;
+    // this.displayReportModal = true;
+    // this.modalKey++;
+    // console.log('Opening report modal for:', report, 'modalKey:', this.modalKey);
+    // this.cdRef.markForCheck();
   }
 
   closeReportModal(): void {
     this.displayReportModal = false;
-    this.selectedReportForModal = null;
-    this.modalKey++;
-    console.log('Closing report modal, modalKey:', this.modalKey);
+    this.selectedReport = null;
+   
+
     this.cdRef.markForCheck();
   }
-
-  updateReportStatus(newStatus: 'completed' | 'in progress' | 'pending'): void {
-    if (!this.selectedReportForModal) return;
-    const reportIdToUpdate = this.selectedReportForModal.id;
-    console.log(`Updating report ${reportIdToUpdate} status to: ${newStatus} (Simulated)`);
-    const reportIndex = this.allReports.findIndex(r => r.id === reportIdToUpdate);
-    if (reportIndex > -1) {
-      this.allReports[reportIndex].status = newStatus;
-      this.applyFiltersAndPagination(); // Refresh list
-    } else {
-      console.warn(`Report with ID ${reportIdToUpdate} not found.`);
-    }
-    this.closeReportModal();
+  
+  setupDebouncing(){
+        this.searchUserInputChange$.pipe(
+          debounceTime(1000),
+          distinctUntilChanged(),
+          switchMap(searchTerm => {
+    
+            return this.reportService.getReportsByName(this.state().page(), this.state().row(),searchTerm)
+          })
+        ).subscribe(pagedData => { this.allReports.set(pagedData); });;
   }
-
-  getStatusClass(status: 'completed' | 'in progress' | 'pending'): string {
-    // CSS classes remain the same
-    switch (status) {
-        case 'completed': return 'bg-green-100 text-green-700 border border-green-200'; // Added border for definition
-        case 'in progress': return 'bg-blue-100 text-blue-700 border border-blue-200'; // Added border
-        case 'pending': return 'bg-yellow-100 text-yellow-700 border border-yellow-200'; // Added border
-        default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
+  updateReportStatus(newStatus: ReportStatus): void {
+    this.reportService.updateReport(this.selectedReport?.reportId!,newStatus).subscribe({
+      next : ()=>{
+        this.setReports()
+        this.displayReportModal=false
+        this.messageService.add({
+          severity:'success',
+          summary:"report updated successfully"
+        })
+      },
+      error :(err)=>{
+        console.log(err)
+        this.displayReportModal=false
+        this.messageService.add({
+          severity:'error',
+          summary:err
+        })
       }
+    })
+  }
+getStatusBgColor(status:ReportStatus):string{
+     switch (status) {
+      case ReportStatus.ACCEPTED: return '#ccf0e0'; // Added border for definition
+      case ReportStatus.PENDING: return '#ccd5f0';
+      case ReportStatus.OPENED: return '#ccd5f0'; // Added border
+      case ReportStatus.REJECTED: return '#f4f5e6'; // Added border
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
+    }
+  }
+  getStatusTextColor(status:ReportStatus):string{
+     switch (status) {
+      case ReportStatus.ACCEPTED: return '#0da669'; // Added border for definition
+      case ReportStatus.PENDING: return '#0d33a6';
+      case ReportStatus.OPENED: return '#0d33a6'; // Added border
+      case ReportStatus.REJECTED: return '#a3a60d'; // Added border
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
+    }
+  }
+  getStatusClass(status: ReportStatus): string {
+    // CSS classes remain the same
+
+    switch (status) {
+      case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200'; // Added border for definition
+      case ReportStatus.PENDING: return 'bg-blue-100 text-blue-700 border border-blue-200';
+      case ReportStatus.OPENED: return 'bg-blue-100 text-blue-700 border border-blue-200'; // Added border
+      case ReportStatus.REJECTED: return 'bg-yellow-100 text-yellow-700 border border-yellow-200'; // Added border
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
+    }
   }
 
   get paginationSummary(): string {
-      if (this.totalRecords === 0) return 'Showing 0 reports';
-      const start = this.first + 1;
-      const end = Math.min(this.first + this.rows, this.totalRecords);
-      return `Showing ${start}–${end} of ${this.totalRecords} reports`;
-   }
+    if (this.totalRecords() === 0) return 'Showing 0 reports';
+    const row = this.state().row();
+    const start = row * this.state().page()
+    const end = Math.min(start + row, this.totalRecords());
+    return `Showing ${start + 1}–${end} of ${this.totalRecords()} reports`;
+  }
 
-   clearDateRange(): void {
-      this.selectedDateRange = null;
-      this.onFilterChange();
+  clearDateRange(): void {
+    this.selectedDateRange = null;
+
   }
 }

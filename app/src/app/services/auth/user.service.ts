@@ -1,12 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { ResponseWrapperDto } from '../../dto/response-wrapper.dto';
 
 // User info interface
 export interface UserInfo {
   firstName: string;
   lastName: string;
   roles: string[];
+}
+export interface UserListItem{
+  userId:string,
+  name:string
 }
 
 @Injectable({
@@ -28,7 +35,8 @@ export class UserService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private router: Router) {
+  constructor(private http:HttpClient,
+    private router: Router) {
     this.loadInitialState();
   }
 
@@ -36,6 +44,7 @@ export class UserService {
    * Loads initial state from storage
    */
   private loadInitialState(): void {
+    console.log("validdddd"+ this.hasValidAuthData())
     if (this.hasValidAuthData()) {
       const firstName = this.getFirstNameFromStorage() || '';
       const lastName = this.getLastNameFromStorage() || '';
@@ -47,7 +56,17 @@ export class UserService {
       this.clearUserData();
     }
   }
+  readonly apiUrl=environment.apiUrl
 
+
+  getUsersList(name=''):Observable<UserListItem[]>{
+
+    const url=this.apiUrl+'/user/rc/users/byName'
+    const params=new HttpParams().set('name',name)
+    return this.http.get<ResponseWrapperDto<UserListItem[]>>(url,{params}).pipe(
+      map(response=>response.data as UserListItem[] )
+    )
+  }
   /**
    * Stores user authentication data
    */
@@ -93,6 +112,27 @@ export class UserService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  isTokenExpired(token:string){
+  
+console.log(this.getExpirationDateFromToken(token))
+return true;
+  }
+ getExpirationDateFromToken(token:string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    const payload = JSON.parse(jsonPayload);
+
+    return payload ? payload.exp : null;
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+}
   /**
    * Gets the refresh token
    */

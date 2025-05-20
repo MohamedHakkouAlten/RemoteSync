@@ -1,5 +1,5 @@
 
-import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, Renderer2, AfterViewInit, output, input, signal, effect, computed, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -13,7 +13,17 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext'; // Often needed by dropdown/multiselect filtering
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DatePickerModule } from 'primeng/datepicker';
-import { NavigationComponent } from "../../shared/navigation/navigation.component";
+import { addMonths, addWeeks, eachDayOfInterval, endOfMonth, endOfWeek, format,  isBefore, isEqual, startOfMonth, startOfWeek } from 'date-fns';
+import { CustomDate, Rotation } from '../../../models/rotation.model';
+import { RotationService } from '../../../services/rotation.service';
+import { RotationStatus } from '../../../enums/rotation-status.enum';
+import {  ProjectService } from '../../../services/project.service';
+import { ListItem } from '../calendar/calendar.component';
+import {  UserService } from '../../../services/auth/user.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { TranslateService } from '@ngx-translate/core';
+
 
 // Interfaces for clarity (adjust based on your actual data models)
 interface Project {
@@ -28,14 +38,13 @@ interface Collaborator {
 }
 
 export interface RotationOutput {
-  projectId: number | null;
-  collaboratorIds: number[];
-  mode: 'automatic' | 'custom';
-  startDate?: Date | null;
-  endDate?: Date | null;
-  rotationInterval?: number;
-  rotationPeriod?: number;
-  customDates?: Date[] | null;
+  associates: string[]
+  projectId: string | undefined;
+  startDate: string; // Expect 'YYYY-MM-DD' 
+  endDate: string;   // Expect 'YYYY-MM-DD'
+  shift: number;     // Number of weeks 'OnSite' (should be > 0 for cycle logic)
+  cycle?: number;     // Total length of the cycle in weeks (should be >= shift)
+  customDates?: CustomDate[]|null; // Make optional if not always present
 }
 @Component({
   selector: 'app-rotation',
@@ -52,115 +61,158 @@ export interface RotationOutput {
     ButtonModule,
     AutoCompleteModule,
     DatePickerModule,
-    InputTextModule, NavigationComponent]
+    InputTextModule,
+     ToastModule
+  ],
+  providers: [
+    RotationService,
+    MessageService,
+    TranslateService
+  ]
 })
 export class RotationComponent implements OnInit {
 
   // --- Inputs ---
   @Input() visible: boolean = true;
-  @Input() projects: Project[] = []; // Provide actual projects via Input
-  @Input() collaborators: Collaborator[] = []; // Provide actual collaborators via Input
-  @Input() isLoadingProjects: boolean = false;
-
-  @Input() isLoadingCollaborators: boolean = false;
+  projects=signal<ListItem[]>([]); // Provide actual projects via Input
+  collaborators=signal<ListItem[]>( []); // Provide actual collaborators via Input
+  isLoadingProjects: boolean = false
+  isLoadingCollaborators: boolean = false;
 
   // --- Outputs ---
+
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() createRotation = new EventEmitter<RotationOutput>();
+  @Output() createRotation = new EventEmitter<boolean>();
   @Output() cancel = new EventEmitter<void>();
-
   // --- Internal State ---
-  selectedProject: Project | null = null;
+  selectedProject=signal< ListItem | null> (null);
   rotationMode: 'automatic' | 'custom' = 'automatic'; // Default mode
-  startDate: Date | null = new Date(); // Default start date
-  endDate: Date | null = null;
-  rotationInterval: number = 1;
-  rotationPeriod: number = 6;
-  customDates: Date[] | null = null;
-  selectedCollaborators: Collaborator[] = [];
-
+  startDate = signal<Date>(new Date()); // Default start date
+  endDate = signal<Date>(addMonths(new Date(), 2));
+  rotationInterval = signal<number>(1);
+  rotationPeriod = signal<number>(3);
+  
+  autoDates=signal< Date[]>( []);
+  selectedDates:Date[]=[];
+  customDates = signal<CustomDate[]|null>(null);
+  selectedCollaborators=signal<ListItem[]>( []); 
+  dateFormat = 'yyyy-MM-dd';
   // Suggestions array for p-autoComplete
-  filteredCollaborators: Collaborator[] = [];
-  private weekClickListeners: Function[] = []; // To store listener cleanup functions
+  filteredCollaborators: ListItem[] = [];
   selectedWeeks = new Set<string>(); // To keep track of selected weeks (use string key: "year-week")
+  lastClickedDate: Date | null = null;
+  rotation :Signal<RotationOutput> =computed(()=>({
+    associates:  this.selectedCollaborators().map((collaborator)=>collaborator.id),
+      startDate: format(startOfWeek(this.startDate(),{weekStartsOn:1}), this.dateFormat),
+      endDate: format(startOfWeek(this.endDate(),{weekStartsOn:1}), this.dateFormat),
+      cycle: this.rotationPeriod(),
+      shift: this.rotationInterval(),
+      customDates: this.customDates(),
+      projectId: this.selectedProject()?.id
+  }))
 
-  constructor(private renderer: Renderer2) { }
+
+
+
+  constructor(private rotationService: RotationService,
+         private projectService :ProjectService,
+         private userService :UserService,
+         private messageService: MessageService,
+         private translate : TranslateService
+  ) {
+
 
   
-  private _datePickerElementRef: ElementRef | undefined;
-  private listenersAttached = false; // Flag to avoid attaching multiple times unnecessarily
 
-  @ViewChild('customDatesPicker', { read: ElementRef }) set datePickerElementRef(elRef: ElementRef | undefined) {
-    // This setter is called when the element reference is resolved or changes.
-    console.log('DatePicker ElementRef Setter Called. Ref:', elRef); // Debug log
-
-    if (elRef && !this.listenersAttached) {
-      // Only setup if we get a valid reference AND haven't set up listeners yet
-      console.log('DatePicker ElementRef is valid, proceeding with setup.');
-      this._datePickerElementRef = elRef;
-      // Use setTimeout here as well, to ensure internal p-datepicker rendering is complete
-      // even after the element itself is available in the DOM.
-      setTimeout(() => {
-        if (this._datePickerElementRef) { // Double-check ref inside timeout
-             console.log('Running setup from setter timeout.');
-             this.setupWeekClickListeners();
-             this.reapplySelectedStyles(); // Apply styles for any pre-selected weeks
-             this.listenersAttached = true; // Mark listeners as attached
-        } else {
-             console.warn('DatePicker ElementRef became undefined before setter timeout completed.');
-        }
-      }, 0);
-    } else if (!elRef) {
-       // Element was removed (e.g., *ngIf became false)
-       console.log('DatePicker ElementRef became undefined (removed from DOM?). Clearing listeners.');
-       this.clearWeekClickListeners();
-       this._datePickerElementRef = undefined;
-       this.listenersAttached = false; // Reset flag
-    } else if (elRef && this.listenersAttached) {
-        // Element ref is already set and listeners were attached.
-        // This might happen on certain change detection cycles. Usually no action needed.
-        // console.log('DatePicker ElementRef setter called, but listeners already attached.');
-    }
   }
 
-  // Getter is optional, used internally
-  get datePickerElementRef(): ElementRef | undefined {
-    return this._datePickerElementRef;
-  }
+
+
+
   ngOnInit(): void {
- 
-  
-    if (!this.endDate) {
-      const today = new Date();
-      this.endDate = new Date(today.getFullYear(), 11, 31); // Dec 31st
+
+    this.loadRotationInitialData();
+
+
+    this.loadAutoRotationDates()
+   
+
+  }
+
+  loadAutoRotationDates() {
+    const dates = this.getStartOfWeeksInMonth()
+   this.autoDates.set([])
+    const currRotation:Rotation= 
+      {
+        startDate:format(this.startDate(), this.dateFormat),
+        endDate: format(this.endDate(), this.dateFormat),
+        cycle:this.rotationPeriod() ,
+        shift:this.rotationInterval() ,
+      }
+     
+
+    dates.forEach(date => {
+      console.log(date+" "+this.rotationService.getDateRotationStatus(currRotation, date))
+
+      if(this.rotationService.getDateRotationStatus(currRotation, date)== RotationStatus.OnSite) {
+          const start = startOfWeek(Date.parse(date));
+          const end = endOfWeek(Date.parse(date));
+        
+          this.autoDates.update((currDates)=>[...currDates, ...eachDayOfInterval({ start, end })]);
+        }
+      
+    })
+    this.selectedDates=this.autoDates()
+
+    console.log(this.selectedDates)
+
+  }
+
+  getStartOfWeeksInMonth( ): string[] {
+    const result: string[] = [];
+    let current = startOfWeek(startOfMonth(this.startDate()), { weekStartsOn:0 });
+    const end = endOfMonth(this.endDate());
+
+    while (isBefore(current, end) || current.getTime() === end.getTime()) {
+      result.push(format(current, this.dateFormat));
+      current = addWeeks(current, 1);
     }
 
-    // Example: Add some default selected collaborators if needed for testing
-    // if (this.collaborators.length >= 2) {
-    //   this.selectedCollaborators = [this.collaborators[0], this.collaborators[1]];
-    // }
+    return result;
+  }
+  loadRotationInitialData() {
+    // Mock data - Replace with actual service calls
+    this.isLoadingProjects = false;
+    this.isLoadingCollaborators = false;
+    this.projectService.getProjectList().subscribe((projects)=>
+      this.projects.set(projects.map(project=>({id:project.projectId,name:project.label}))))
+   console.log(this.projects())
+   this.userService.getUsersList().subscribe((users)=>this.collaborators.set(users.map(user=>({id:user.userId,name:user.name}))))
+   
+
+
   }
 
 
-  
+
 
   // --- Methods ---
- // *** NEW: Method for p-autoComplete suggestions ***
- filterCollaborators(event: { originalEvent: Event, query: string }) {
-  const query = event.query.toLowerCase();
-  // Filter from the master list, EXCLUDING those already selected
-  this.filteredCollaborators = this.collaborators.filter(collaborator => {
-    const notSelected = !this.selectedCollaborators.some(sel => sel.id === collaborator.id);
-    const nameMatches = collaborator.name.toLowerCase().includes(query);
-    return notSelected && nameMatches;
-  });
-}
+  // *** NEW: Method for p-autoComplete suggestions ***
+  filterCollaborators(event: { originalEvent: Event, query: string }) {
+    const query = event.query.toLowerCase();
+    // Filter from the master list, EXCLUDING those already selected
+    this.filteredCollaborators = this.collaborators().filter(collaborator => {
+      const notSelected = !this.selectedCollaborators().some(sel => sel.id === collaborator.id);
+      const nameMatches = collaborator.name.toLowerCase().includes(query);
+      return notSelected && nameMatches;
+    });
+  }
 
-// *** NEW: Method to remove a collaborator from the selected list ***
-removeCollaborator(collaboratorToRemove: Collaborator): void {
-    this.selectedCollaborators = this.selectedCollaborators.filter(
-        collaborator => collaborator.id !== collaboratorToRemove.id
-    );
+  // *** NEW: Method to remove a collaborator from the selected list ***
+  removeCollaborator(collaboratorToRemove: ListItem): void {
+    this.selectedCollaborators.set(this.selectedCollaborators().filter(
+      collaborator => collaborator.id !== collaboratorToRemove.id
+    ));
   }
   onDialogHide(): void {
     this.visible = false;
@@ -175,46 +227,278 @@ removeCollaborator(collaboratorToRemove: Collaborator): void {
   }
 
   submitRotation(): void {
-    if (!this.isFormValid()) {
+    console.log(this.rotation())
+    if (this.rotation().associates.length<=0) {
       // Optional: Show a warning message (e.g., using p-toast)
-      console.warn('Form is invalid.');
-      return;
+      this.messageService.add({
+        severity:'error',
+        summary: this.translate.instant('rotation.MissingCollaborators'),
+        life: 5000
+      })
+ 
+    }else {
+      console.log(this.rotation())
+      this.rotationService.addUsersRotation(this.rotation()).subscribe({
+        next:(isAdded)=>
+      {
+        console.log(isAdded)
+        if(isAdded){
+          this.visible=false
+          this.createRotation.emit(true)}
+      },
+      error :(err)=>      this.messageService.add({
+        severity:'error',
+        summary: err.message,
+        life: 5000
+      })
+      })
     }
 
-    const output: RotationOutput = {
-      projectId: this.selectedProject?.id ?? null,
-      collaboratorIds: this.selectedCollaborators.map(c => c.id),
-      mode: this.rotationMode,
-    };
+  //   const output: RotationOutput = {
+  //     projectId: this.selectedProject?.projectId ?? null,
+  //     collaboratorIds: [4],
+  //     mode: this.rotationMode,
+  //   };
 
-    if (this.rotationMode === 'automatic') {
-      output.startDate = this.startDate;
-      output.endDate = this.endDate;
-      output.rotationInterval = this.rotationInterval;
-      output.rotationPeriod = this.rotationPeriod;
-    } else {
-      output.customDates = this.customDates;
-    }
+  //   if (this.rotationMode === 'automatic') {
+  //     output.startDate = this.startDate();
+  //     output.endDate = this.endDate();
+  //     output.rotationInterval = this.rotationInterval();
+  //     output.rotationPeriod = this.rotationPeriod();
+  //   } else {
+  //  //   output.selectedDates = this.selectedDates;
+  //   }
 
-    this.createRotation.emit(output);
-    this.visible = false; // Close dialog on successful submission
-    this.visibleChange.emit(false);
+
+    // Close dialog on successful submission
+
     // Consider resetting the form fields here if needed for the next opening
     // this.resetForm();
   }
+  // handle selecting a week 
+  onSelectDate(clickedDate: Date): void {
+    const startOfSelectedWeek = startOfWeek(clickedDate,{weekStartsOn:1});
+    const endOfSelectedWeek = endOfWeek(clickedDate);
+    const formattedWeekStartDate = format(startOfSelectedWeek, this.dateFormat);
 
-  isFormValid(): boolean {
-    if (!this.selectedProject || this.selectedCollaborators.length === 0) {
-      return false;
+    const currentRotation = this.rotation();
+    if (!currentRotation) {
+      console.warn("onDateClicked: No current rotation found. Aborting.");
+      return;
     }
 
-    if (this.rotationMode === 'automatic') {
-      return !!this.startDate && !!this.endDate && this.rotationInterval > 0 && this.rotationPeriod > 0 && this.rotationInterval <= this.rotationPeriod;
-      // Add date range validation if needed (startDate <= endDate)
-    } else { // custom mode
-      return !!this.customDates && this.customDates.length > 0;
+    // Determine the "default" status of the week before any custom overrides
+    const defaultStatusForWeek = this.rotationService.getDateRotationStatus(
+      {
+        startDate: currentRotation.startDate,
+        endDate: currentRotation.endDate,
+        cycle: currentRotation.cycle,
+        shift: currentRotation.shift,
+      },
+      formattedWeekStartDate
+    );
+
+    const existingCustomDates = currentRotation.customDates ? [...currentRotation.customDates] : [];
+    let newCustomDates = existingCustomDates; // Start with a copy
+
+    const customDateIndex = this.getCustomDateIndx(startOfSelectedWeek); // Use the already calculated startOfSelectedWeek
+
+    let customDatesChanged = false;
+
+    if (defaultStatusForWeek !== RotationStatus.OnSite) {
+      // Case 1: Default is Remote. Clicking should make it OnSite.
+      if (customDateIndex !== -1) {
+        // Custom date already exists, update its status
+        if (newCustomDates[customDateIndex].rotationStatus !== RotationStatus.OnSite) {
+          newCustomDates[customDateIndex] = {
+            ...newCustomDates[customDateIndex],
+            rotationStatus: RotationStatus.OnSite,
+          };
+          customDatesChanged = true;
+        }
+      } else {
+        // No custom date, add a new one as OnSite
+        newCustomDates.push({
+          date: formattedWeekStartDate,
+          rotationStatus: RotationStatus.OnSite,
+        });
+        customDatesChanged = true;
+      }
+    } else {
+      // Case 2: Default is NOT Remote (e.g., OnSite).
+      // Clicking should remove any custom override for this date, reverting it to its default.
+      if (customDateIndex !== -1) {
+        // Custom date exists, remove it
+        newCustomDates.splice(customDateIndex, 1);
+        customDatesChanged = true;
+      }
+      // If no custom date exists, there's nothing to remove, and the state effectively remains default.
     }
+
+    if (customDatesChanged) {
+      this.customDates.set(
+        newCustomDates,
+      );
+      console.log('Rotation updated:', this.rotation());
+    }
+
+    // Update autoDates: Add unique days from the selected week
+    // This assumes autoDates accumulates all days from clicked weeks.
+    // If it should only be the *current* selected week, the logic would be simpler:
+    // this.autoDates.set(eachDayOfInterval({ start: startOfSelectedWeek, end: endOfSelectedWeek }));
+    this.autoDates.update(currentSelectedDays => {
+      const daysInClickedWeek = eachDayOfInterval({ start: startOfSelectedWeek, end: endOfSelectedWeek });
+      const updatedDays = [...currentSelectedDays]; // Start with existing days
+
+      daysInClickedWeek.forEach(dayToAdd => {
+        // Add only if not already present to avoid duplicates
+        if (!updatedDays.some(existingDay => isEqual(existingDay, dayToAdd))) {
+          updatedDays.push(dayToAdd);
+        }
+      });
+      return updatedDays.sort((a,b) => a.getTime() - b.getTime()); 
+    });
+
+    this.selectedDates = this.autoDates(); // Update if this property is used for binding
+
+    console.log('Date Clicked. AutoDates:', this.autoDates());
+    // The console.log for rotation is better placed after the .set if customDatesChanged
   }
+
+  onDeSelectDate(newlySelectedDates: Date[]): void {
+    const currentAutoDates = this.autoDates();
+
+    if (newlySelectedDates.length < currentAutoDates.length) {
+      // A date/week was deselected. Find which week.
+      let deselectedWeekStart: Date | null = null;
+
+      // Iterate through weeks represented in currentAutoDates
+
+      for (const autoDate of currentAutoDates) {
+        if (!newlySelectedDates.includes(autoDate)) {
+          // This week was in autoDates but not in newlySelectedDates
+          // Re-parse to Date object (ensure timezone consistency if it matters)
+          deselectedWeekStart = startOfWeek(autoDate,{weekStartsOn:1}); // Add time to avoid timezone issues on parse
+          break;
+        }
+      }
+
+      if (!deselectedWeekStart) {
+        // Fallback: If the Set logic didn't pinpoint, use the original finding method but with isEqual
+        // This might happen if autoDates has individual days and selection is also per day,
+        // and the Set logic above simplifies to weeks.
+        // For more robust week-based deselection finding:
+        for (const autoDate of currentAutoDates) {
+            const weekOfAutoDate = startOfWeek(autoDate,{weekStartsOn:1});
+            const isWeekStillSelected = newlySelectedDates.some(selDate =>
+              isEqual(startOfWeek(selDate,{weekStartsOn:1}), weekOfAutoDate)
+            );
+            if (!isWeekStillSelected) {
+              deselectedWeekStart = weekOfAutoDate;
+              break;
+            }
+          }
+      }
+
+
+      
+      if (deselectedWeekStart) {
+        const formattedDeselectedWeekDate = format(deselectedWeekStart, this.dateFormat);
+        const currentRotation = this.rotation();
+
+        if (!currentRotation) {
+          console.warn("onDatesChange: No current rotation found. Aborting update.");
+          return;
+        }
+
+        // Get default status ONCE
+        const defaultStatusForWeek = this.rotationService.getDateRotationStatus(
+          {
+            startDate: currentRotation.startDate,
+            endDate: currentRotation.endDate,
+            cycle: currentRotation.cycle,
+            shift: currentRotation.shift,
+          },
+          formattedDeselectedWeekDate
+        );
+        console.log('Default status for deselected week:', defaultStatusForWeek);
+
+        let customDatesChanged = false;
+        
+        // Using signal's update for immutable changes
+       
+  
+
+          const customDateIndex = (currentRotation.customDates || []).findIndex(cd => cd.date === formattedDeselectedWeekDate);
+          let newCustomDates = currentRotation.customDates ? [...currentRotation.customDates] : [];
+
+          if (defaultStatusForWeek !== RotationStatus.Remote) {
+            // Default is OnSite. Deselecting means making it Remote (custom).
+            if (customDateIndex !== -1) {
+              if (newCustomDates[customDateIndex].rotationStatus !== RotationStatus.Remote) {
+                newCustomDates[customDateIndex] = {
+                  ...newCustomDates[customDateIndex],
+                  rotationStatus: RotationStatus.Remote,
+                };
+                customDatesChanged = true;
+              }
+            } else {
+              newCustomDates.push({
+                date: formattedDeselectedWeekDate,
+                rotationStatus: RotationStatus.Remote,
+              });
+              customDatesChanged = true;
+            }
+          } else { // Default is Remote (or anything else)
+            // Deselecting means removing any custom override.
+            if (customDateIndex !== -1) {
+              newCustomDates.splice(customDateIndex, 1);
+              customDatesChanged = true;
+            }
+          }
+
+          if (customDatesChanged) {
+            this.customDates.set(
+              newCustomDates,
+            );
+          }
+      
+        
+
+        if (customDatesChanged) {
+            console.log('Rotation updated due to deselection:', this.rotation());
+        }
+
+        // Update autoDates by removing all dates from the deselected week
+        const weekToRemove = deselectedWeekStart; // For clarity
+        this.autoDates.update(currentDays =>
+          currentDays.filter(day => !isEqual(startOfWeek(day,{weekStartsOn:1}), weekToRemove))
+        );
+
+        this.selectedDates = this.autoDates(); // Update the mirror property
+
+        console.log('After deselection - AutoDates:', this.autoDates());
+      } else {
+        console.warn("onDatesChange: Deselection detected, but couldn't identify the specific deselected week.");
+      }
+    } else if (newlySelectedDates.length > currentAutoDates.length) {
+      // Dates were added. This function's current structure is primarily for deselection.
+      // Addition logic would typically be in `onDateClicked` or a similar handler.
+      console.log("onDatesChange: Dates were added. This function primarily handles deselections.");
+    }
+    // If lengths are equal, no change in count of selected days.
+    // Could add logic here if specific date *swaps* need handling without count change.
+  }
+
+
+
+  getCustomDateIndx(date:Date):number{
+    const weekDay = format(date, this.dateFormat);
+    const customDates = this.rotation()?.customDates;
+  
+    return customDates ? customDates.findIndex(cd => cd.date === weekDay) : -1;
+  }
+
 
   // Optional: Reset form fields
   // resetForm(): void {
@@ -225,140 +509,11 @@ removeCollaborator(collaboratorToRemove: Collaborator): void {
   //   this.endDate = new Date(today.getFullYear(), 11, 31);
   //   this.rotationInterval = 1;
   //   this.rotationPeriod = 6;
-  //   this.customDates = null;
+  //   this.selectedDates = null;
   //   this.selectedCollaborators = [];
   // }
   onViewChanged(): void {
-    // Use setTimeout to allow the DOM to update before querying
-    setTimeout(() => {
-       if (this.datePickerElementRef) {
-          this.setupWeekClickListeners();
-          this.reapplySelectedStyles(); // Re-apply styles after view change
-       }
-    }, 0);
-  }
 
-  private clearWeekClickListeners(): void {
-    this.weekClickListeners.forEach(removeListener => removeListener());
-    this.weekClickListeners = [];
-  }
-
-  private setupWeekClickListeners(): void {
-    this.clearWeekClickListeners();
-
-    // Check moved inside setup function for safety, called from multiple places
-    if (!this.datePickerElementRef) {
-       console.warn('DatePicker ElementRef not available in setupWeekClickListeners');
-       return;
-    }
-
-    const nativeEl = this.datePickerElementRef.nativeElement;
-    // Robust query: ensure we are inside the datepicker table body
-    const weekNumberCells = nativeEl.querySelectorAll('.p-datepicker-calendar-container .p-datepicker-calendar tbody td.p-datepicker-weeknumber');
-
-    if (weekNumberCells.length === 0) {
-        // This might happen briefly during transitions, log if it persists
-        // console.warn('No week number cells found during setup.');
-    }
-
-    weekNumberCells.forEach((cell: HTMLElement) => {
-      this.renderer.setAttribute(cell, 'tabindex', '0');
-      this.renderer.setAttribute(cell, 'role', 'button');
-      this.renderer.setStyle(cell, 'cursor', 'pointer'); // Ensure cursor style
-
-      const removeClickListener = this.renderer.listen(cell, 'click', (event) => {
-        this.handleWeekClick(event, cell);
-      });
-      this.weekClickListeners.push(removeClickListener);
-
-       const removeKeyListener = this.renderer.listen(cell, 'keydown', (event: KeyboardEvent) => {
-         if (event.key === 'Enter' || event.key === ' ') {
-           event.preventDefault();
-           this.handleWeekClick(event, cell);
-         }
-       });
-      this.weekClickListeners.push(removeKeyListener);
-    });
-  }
-
-  private handleWeekClick(event: Event, cell: HTMLElement): void {
-    const weekNumberText = cell.textContent?.trim();
-    const year = this.findYearForWeekCell(cell);
-
-    if (weekNumberText && year !== null) {
-      const weekNumber = parseInt(weekNumberText, 10);
-      const weekKey = `${year}-${weekNumber}`;
-
-      if (this.selectedWeeks.has(weekKey)) {
-        this.selectedWeeks.delete(weekKey);
-        this.renderer.removeClass(cell, 'selected-week');
-        this.renderer.removeAttribute(cell, 'aria-pressed');
-      } else {
-        // Optional: Clear previous selection if only one week should be selected
-        // this.clearAllWeekSelections();
-        this.selectedWeeks.add(weekKey);
-        this.renderer.addClass(cell, 'selected-week');
-        this.renderer.setAttribute(cell, 'aria-pressed', 'true');
-      }
-      console.log('Selected Weeks:', Array.from(this.selectedWeeks));
-    }
-  }
-
-  private findYearForWeekCell(weekCell: HTMLElement): number | null {
-     let currentElement: HTMLElement | null = weekCell;
-     // Go up until we find the table container for the specific month's calendar
-     while (currentElement && !currentElement.classList.contains('p-datepicker-calendar-container')) {
-         currentElement = currentElement.parentElement;
-     }
-
-     if (currentElement) {
-         const monthElement = currentElement.querySelector('.p-datepicker-month');
-         const yearElement = currentElement.querySelector('.p-datepicker-year');
-         if (yearElement && yearElement.textContent) {
-             const year = parseInt(yearElement.textContent, 10);
-             const weekNumber = parseInt(weekCell.textContent || '0', 10);
-             const monthText = monthElement?.textContent?.toLowerCase() || '';
-
-             // Handle ISO week date edge cases (Week 1 in Dec, Week 52/53 in Jan)
-             if (weekNumber >= 52 && monthText.includes('jan')) {
-                 return year - 1; // Week belongs to the previous year
-             }
-             if (weekNumber === 1 && monthText.includes('dec')) {
-                 return year + 1; // Week belongs to the next year
-             }
-             return year; // Default case
-         }
-     }
-    console.warn("Could not determine year for week cell reliably.");
-    const fallbackYearEl = this.datePickerElementRef?.nativeElement?.querySelector('.p-datepicker-year');
-    return fallbackYearEl ? parseInt(fallbackYearEl.textContent || '0', 10) : new Date().getFullYear();
-  }
-
-  private reapplySelectedStyles(): void {
-      if (!this.datePickerElementRef) return;
-      const nativeEl = this.datePickerElementRef.nativeElement;
-      const weekNumberCells = nativeEl.querySelectorAll('.p-datepicker-calendar-container .p-datepicker-calendar tbody td.p-datepicker-weeknumber');
-
-      weekNumberCells.forEach((cell: HTMLElement) => {
-          const weekNumberText = cell.textContent?.trim();
-          const year = this.findYearForWeekCell(cell); // Use the same logic to find year
-          if (weekNumberText && year !== null) {
-              const weekNumber = parseInt(weekNumberText, 10);
-              const weekKey = `${year}-${weekNumber}`;
-              if (this.selectedWeeks.has(weekKey)) {
-                  this.renderer.addClass(cell, 'selected-week');
-                  this.renderer.setAttribute(cell, 'aria-pressed', 'true');
-              } else {
-                  // Ensure deselected state is clean
-                  this.renderer.removeClass(cell, 'selected-week');
-                  this.renderer.removeAttribute(cell, 'aria-pressed');
-              }
-          } else {
-               // Ensure clean state if year/week couldn't be determined
-               this.renderer.removeClass(cell, 'selected-week');
-               this.renderer.removeAttribute(cell, 'aria-pressed');
-          }
-      });
   }
 
 }

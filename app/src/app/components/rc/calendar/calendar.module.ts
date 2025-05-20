@@ -16,6 +16,15 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { SelectButton } from 'primeng/selectbutton';
 import { ThreeStateToggleComponent } from "../../shared/three-state-toggle/three-state-toggle.component";
 import { RotationComponent } from "../rotation/rotation.component";
+import { RotationService } from '../../../services/rotation.service';
+import { ClientService } from '../../../services/client.service';
+import { ProjectService } from '../../../services/project.service';
+import { FactoryService } from '../../../services/factory.service';
+import { SubfactoryService } from '../../../services/subfactory.service';
+import { TranslateService } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
   declarations: [
@@ -30,15 +39,24 @@ import { RotationComponent } from "../rotation/rotation.component";
     InputTextModule,
     DropdownModule,
     AvatarModule,
-    ToggleSwitch,
     NavigationComponent,
     InputIcon,
     IconField,
     AutoCompleteModule,
-    SelectButton,
-    ReactiveFormsModule,
     ThreeStateToggleComponent,
-    RotationComponent
+    RotationComponent,
+      ToastModule,
+      PaginatorModule,
+
+],
+providers :[
+  RotationService,
+  ClientService,
+  ProjectService,
+  FactoryService,
+  SubfactoryService,
+      MessageService,
+      TranslateService
 ]
 })
 export class CalendarModule { }

@@ -69,7 +69,12 @@
       "consultants": "10 000+ Consultants",
       "planning": "98% Planification améliorée"
     }
+   
   },
+   "rotation":{
+        "MissingCollaborators":"Pour ajouter une rotation, un collaborateur doit être sélectionné."
+      }
+   ,
   "languages": {
     "english": "Anglais",
     "french": "Français",

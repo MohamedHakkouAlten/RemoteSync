@@ -70,6 +70,11 @@
       "planning": "98% Improved Planning"
     }
   },
+    "rotation":{
+        "MissingCollaborators":"In order to add rotation a collaborator needs to be selected",
+        "created":"The rotation was created successfully",
+        "updated":"The rotation was updated successfully"
+      },
   "languages": {
     "english": "English",
     "french": "French",

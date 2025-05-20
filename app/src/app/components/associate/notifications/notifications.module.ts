@@ -7,12 +7,10 @@ import { NotificationsComponent } from './notifications.component';
 import { CardModule } from 'primeng/card';
 import { TabViewModule } from 'primeng/tabview';
 import { BadgeModule } from 'primeng/badge';
-import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
-import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
 import { TabsModule } from 'primeng/tabs';
 import { PaginatorModule } from 'primeng/paginator';
+import { NotificationCardComponent } from "../../shared/associate-ui/notification-card/notification-card.component";
 
 
 @NgModule({
@@ -25,12 +23,10 @@ import { PaginatorModule } from 'primeng/paginator';
     CardModule,
     TabViewModule,
     BadgeModule,
-    ButtonModule,
-    AvatarModule,
-    ScrollPanelModule,
     PaginatorModule,
     NavigationComponent,
     TabsModule,
+    NotificationCardComponent
 ]
 })
 export class NotificationsModule { }

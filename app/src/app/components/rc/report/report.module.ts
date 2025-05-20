@@ -14,8 +14,13 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
-import { DialogModule } from 'primeng/dialog';
 import { NavigationComponent } from "../../shared/navigation/navigation.component"; // <-- Add DialogModule
+import { ReportService } from '../../../services/report.service';
+import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
+import { UserUtils } from '../../../utilities/UserUtils';
+import { UpdateReportComponent } from "../../shared/rc-ui/update-report/update-report.component";
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -33,8 +38,14 @@ import { NavigationComponent } from "../../shared/navigation/navigation.componen
     ButtonModule,
     AvatarModule,
     TagModule,
-    DialogModule,
-    NavigationComponent
+    NavigationComponent,
+    UserAvatarComponent,
+    UpdateReportComponent,
+     ToastModule
+],
+providers :[
+  ReportService,
+  MessageService
 ]
   // No providers needed here unless DatePipe isn't provided elsewhere
 })

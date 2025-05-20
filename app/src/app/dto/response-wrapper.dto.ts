@@ -4,6 +4,31 @@
  */
 
 import { HttpStatusCode } from '@angular/common/http';
+import { RCReport } from '../models/report.model';
+import { UserRotation } from '../models/rotation.model';
+
+export interface PagedData {
+ 
+  currentPage: number
+  pageSize :number
+
+  totalElements :number
+
+  totalPages :number
+
+}
+export interface PagedRotation extends PagedData {
+ 
+  assignedRotations :UserRotation[]
+
+
+}
+export interface PagedReports extends PagedData{
+ 
+  reports :RCReport[]
+
+
+}
 
 // Base response wrapper interface
 export interface ResponseWrapperDto<T> {

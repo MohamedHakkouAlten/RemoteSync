@@ -3,12 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
 import { CommonModule } from '@angular/common';
-import { BadgeModule } from 'primeng/badge';
-import { TooltipModule } from 'primeng/tooltip';
-import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { NotificationPanelComponent } from "../notification-panel/notification-panel.component";
@@ -28,12 +23,7 @@ import { LanguageService, SupportedLanguage } from '../../../services/language/l
     CommonModule,
     AvatarModule,
     AvatarGroupModule,
-    BadgeModule,
-    TooltipModule,
-    OverlayBadgeModule,
-    MenubarModule,
     ButtonModule,
-    RippleModule,
     MenuModule,
     RouterModule,
     NotificationPanelComponent,
@@ -66,6 +56,7 @@ export class NavigationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+//    console.log("jjjj"+this.authService.getUser()?.firstName)
     // Subscribe to language changes
     this.languageService.currentLanguage$.subscribe((lang) => {
       this.currentLanguage = lang;
@@ -81,6 +72,7 @@ export class NavigationComponent implements OnInit {
     
     // Subscribe to user info changes to update name when user logs in/out
     this.authService.userInfo$.subscribe(userInfo => {
+     
       if (userInfo) {
         this.userName = `${userInfo.firstName} ${userInfo.lastName}`;
       } else {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
@@ -57,6 +57,57 @@ export class AuthService {
   /**
    * Logout the current user
    */
+  refreshToken(): Observable<ResponseWrapperDto<LoginResponseDTO>>{
+     const refreshToken = this.userService.getRefreshToken();
+    // this.userService.clearUserData()
+        const headers = new HttpHeaders({
+      'Authorization': `Bearer ${refreshToken}`
+    });
+      return this.http.get<ResponseWrapperDto<LoginResponseDTO>>(`${this.API_URL}/refreshToken`,{headers}).pipe(
+      map(response => {
+        console.log('Response in map:', response);
+        if (response && response.status === 'success' && response.data) {
+          return response; // No need to cast here, it's already typed by http.get
+        }
+        console.error('Invalid login response format in map:', response);
+        // This error will now be caught by the catchError below
+        throw new Error('Login failed: Invalid response format from server.');
+      }),
+      tap((loginData: ResponseWrapperDto<LoginResponseDTO>) => {
+        // Ensure loginData and loginData.data are not null before accessing nested properties
+        if (loginData && loginData.data) {
+            this.userService.storeUserData(
+                loginData.data.accessToken,
+                loginData.data.refreshToken,
+                loginData.data.firstName,
+                loginData.data.lastName,
+                loginData.data.roles
+            );
+        } else {
+            // This case should ideally be caught by the map operator,
+            // but good to have a defensive check here too.
+            console.error('Tap operator received invalid loginData:', loginData);
+            // Optionally throw an error here too if this state is critical
+            // throw new Error('Tap: loginData or loginData.data is null/undefined');
+        }
+      }),
+      catchError((error) => {
+        // This will catch errors from http.get(), map(), or tap()
+        console.log("Error caught in catchError:", error);
+
+        // Differentiate between HttpErrorResponse and other errors
+        if (error instanceof HttpErrorResponse) {
+          console.error(`HTTP Error: ${error.status} - ${error.message}`, error.error);
+          // Handle specific HTTP errors if needed
+        } else {
+          console.error('Application Error:', error.message);
+        }
+
+        this.userService.clearUserData();
+        return throwError(() => error); // Re-throw the error for the subscriber to handle
+      })
+    );
+  }
   logout(): Observable<void> {
     const refreshToken = this.userService.getRefreshToken();
     
@@ -75,6 +126,7 @@ export class AuthService {
     } else {
       return of(undefined);
     }
+  
   }
 
   /**
