@@ -9,7 +9,11 @@
 
 <!-- left panel -->
 
-  <aside class="w-[19%] bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen">
+  <aside class=" bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen"
+      [ngClass]="{
+      'flex-1/5':isPendingReports,
+      'flex-1/7':!isPendingReports
+    }">
     <!-- Section: Active Projects -->
      <div class="space-x-5">
 <app-project-stats-card [projectStats]="activeProjects"  icon="pi pi-chart-bar" title="Active Projects"/>
@@ -81,7 +85,11 @@
 
   <!-- Calendar-->
 
-  <div class="p-6 md:p-8  w-[60%] space-y-6"> <!-- Add padding and vertical spacing -->
+  <div     [ngClass]="{
+      'flex-3/5':isPendingReports,
+      'flex-5/7':!isPendingReports
+    }"
+     class="p-6 md:p-8   space-y-6"> <!-- Add padding and vertical spacing -->
 
     <!-- Header Section -->
     <div class="flex flex-col  md:flex-row justify-between  md:items-center space-y-4 md:space-y-0">
@@ -204,7 +212,12 @@
  
   </div>
    <!-- Recent reports section-->
-   <aside *ngIf="pendingRequests.length>0" class="w-[21%] bg-white p-6 space-y-6 border-l border-gray-200 min-h-screen">
+   <aside *ngIf="isPendingReports" class=" bg-white p-6 space-y-6 border-l border-gray-200 min-h-screen"
+    [ngClass]="{
+      'flex-1/5':isPendingReports,
+      'flex-1/7':!isPendingReports
+    }"
+    >
     <!-- Section Header -->
     <div class="flex justify-between items-center">
       <h2 class="text-lg font-semibold text-gray-900">Pending Requests</h2>

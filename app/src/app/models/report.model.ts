@@ -12,6 +12,7 @@ export interface RotationReport {
   export interface RCReport{
                 reportId?: string,
                 title?: string,
+                description:string,
                 status?: ReportStatus,
                 createdBy :User
                 createdAt: "2025-05-12T00:00:00"

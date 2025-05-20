@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { RotationStatus } from "../enums/rotation-status.enum";
-import { addWeeks, differenceInCalendarWeeks, differenceInWeeks, isAfter, isBefore, isEqual, isValid, parseISO, startOfWeek } from "date-fns";
+import {  differenceInWeeks, isAfter, isBefore,  isValid, parseISO, startOfWeek } from "date-fns";
 import { CustomDate, Peroid, Rotation, UserRotation } from "../models/rotation.model";
 import { User } from "../models/user.model";
-import { HttpClient, HttpParams } from "@angular/common/http";
-import { catchError, map, Observable, of } from "rxjs";
-import { PagedData, ResponseWrapperDto } from "../dto/response-wrapper.dto";
+import { HttpClient, HttpErrorResponse, HttpParams } from "@angular/common/http";
+import { catchError, map, Observable, of, throwError } from "rxjs";
+import { PagedRotation, ResponseWrapperDto } from "../dto/response-wrapper.dto";
 import { environment } from "../../environments/environment";
 import { RotationOutput } from "../components/rc/rotation/rotation.component";
 import { UpdateUserRotationDTO } from "../dto/rotation/updateUserRotationDTO";
@@ -31,23 +31,38 @@ constructor(private http:HttpClient){
 
 }
 
-addUsersRotation(rotation:RotationOutput):Observable<boolean>{
+addUsersRotation(rotation:RotationOutput):Observable<boolean|string>{
    const url = this.rcApiUrl+'/createRotation';
    return this.http.post<ResponseWrapperDto<any>>(url,rotation).pipe(
     map((response)=>{
      return (response.status='success') ? true:false
     })
+    ,
+    catchError((error)=>{
+      if(error instanceof HttpErrorResponse && error.status===507){
+
+      return throwError(()=>new Error(error.error.message))
+      }
+      return of("error")
+    })
    )
 }
-updateUsersRotation(rotation:UpdateUserRotationDTO):Observable<boolean>{
+updateUsersRotation(rotation:UpdateUserRotationDTO):Observable<boolean|string>{
    const url = this.rcApiUrl+'/updateRotation';
    return this.http.put<ResponseWrapperDto<any>>(url,rotation).pipe(
     map((response)=>{
      return (response.status='success') ? true:false
+    }),
+    catchError((error)=>{
+      if(error instanceof HttpErrorResponse && error.status===507){
+
+      return throwError(()=>new Error(error.error.message))
+      }
+      return of("error")
     })
    )
 }
-getActiveUsersRotationByName(pageNumber: number, pageSize: number,name:string): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotationByName(pageNumber: number, pageSize: number,name:string): Observable<PagedRotation> {
   const url = this.rcApiUrl+'/byName';
   console.log(name)
   const params = new HttpParams()
@@ -55,7 +70,7 @@ getActiveUsersRotationByName(pageNumber: number, pageSize: number,name:string): 
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -64,19 +79,19 @@ getActiveUsersRotationByName(pageNumber: number, pageSize: number,name:string): 
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation); // fallback
     })
   );
 
 }
-getActiveUsersRotationByProject(pageNumber: number, pageSize: number,projectId:string): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotationByProject(pageNumber: number, pageSize: number,projectId:string): Observable<PagedRotation> {
   const url = this.rcApiUrl+'/byProject';
   const params = new HttpParams()
     .set('projectId', projectId)
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -85,12 +100,12 @@ getActiveUsersRotationByProject(pageNumber: number, pageSize: number,projectId:s
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation); // fallback
     })
   );
 }
 
-getActiveUsersRotationByClient(pageNumber: number, pageSize: number,clientId:string): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotationByClient(pageNumber: number, pageSize: number,clientId:string): Observable<PagedRotation> {
   const url = this.rcApiUrl+'/byClient';
 
   const params = new HttpParams()
@@ -98,7 +113,7 @@ getActiveUsersRotationByClient(pageNumber: number, pageSize: number,clientId:str
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -107,11 +122,11 @@ getActiveUsersRotationByClient(pageNumber: number, pageSize: number,clientId:str
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation);
     })
   );
 }
-getActiveUsersRotationByFactory(pageNumber: number, pageSize: number,factoryId:string): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotationByFactory(pageNumber: number, pageSize: number,factoryId:string): Observable<PagedRotation> {
   const url = this.rcApiUrl+'/byFactory';
 
   const params = new HttpParams()
@@ -119,7 +134,7 @@ getActiveUsersRotationByFactory(pageNumber: number, pageSize: number,factoryId:s
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -128,11 +143,11 @@ getActiveUsersRotationByFactory(pageNumber: number, pageSize: number,factoryId:s
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation);
     })
   );
 }
-getActiveUsersRotationBySubFactory(pageNumber: number, pageSize: number,subFactoryId:string): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotationBySubFactory(pageNumber: number, pageSize: number,subFactoryId:string): Observable<PagedRotation> {
   const url = this.rcApiUrl+'/bySubFactory';
 
   const params = new HttpParams()
@@ -140,7 +155,7 @@ getActiveUsersRotationBySubFactory(pageNumber: number, pageSize: number,subFacto
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -149,17 +164,17 @@ getActiveUsersRotationBySubFactory(pageNumber: number, pageSize: number,subFacto
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>);
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation);
     })
   );
 }
-getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedData<UserRotation[]>> {
+getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedRotation> {
   const url = this.rcApiUrl;
   const params = new HttpParams()
     .set('pageNumber', pageNumber)
     .set('pageSize', pageSize);
 
-  return this.http.get<ResponseWrapperDto<PagedData<UserRotation[]>>>(url, { params }).pipe(
+  return this.http.get<ResponseWrapperDto<PagedRotation>>(url, { params }).pipe(
     map(response => {
       if (response.status === 'success' && response.data) {
         return response.data;
@@ -168,7 +183,7 @@ getActiveUsersRotation(pageNumber: number, pageSize: number): Observable<PagedDa
     }),
     catchError(error => {
       console.error('Error in getActiveUsersRotation:', error);
-      return of({ items: [], totalItems: 0 } as unknown as PagedData<UserRotation[]>); // fallback
+      return of({ items: [], totalItems: 0 } as unknown as PagedRotation); // fallback
     })
   );
 }

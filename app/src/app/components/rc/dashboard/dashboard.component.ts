@@ -7,10 +7,10 @@ import { RotationStatus } from '../../../enums/rotation-status.enum';
 import { Router } from '@angular/router';
 import { UserUtils } from '../../../utilities/UserUtils';
 import { Rotation, UserRotation } from '../../../models/rotation.model';
-import { User } from '../../../models/user.model';
 import { RotationService } from '../../../services/rotation.service';
 import { DashBoardService } from '../../../services/dash-board.service';
 import { DashBoardDataDTO } from '../../../dto/rc/dashboardDataDTO';
+import { TranslateService } from '@ngx-translate/core';
 
 
 
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit {
 
 
 navigateToCalendar() {
-this.router.navigate(['RemoteSync/Rc/Calendar'])
+this.router.navigate([this.translate.currentLang+'/remotesync/rc/calendar'])
 }
 
 
@@ -61,6 +61,8 @@ userUtils=UserUtils;
   // Calculate how many are hidden
   overflowAvatarsCount: number =0;
 
+  isPendingReports:boolean=false
+
   
 //calendar 
 
@@ -70,21 +72,7 @@ welcomeName: string=""
 // Fixed date columns based on the image
 dateColumns:  string[] =this.loadWeeksDates()
 
-user1: User = { userId: 'user001', firstName: 'Alice', lastName: 'Smith' };
-user2: User = { userId: 'user002', firstName: 'Bob', lastName: 'Jones' };
-user3: User = { userId: 'user003', firstName: 'Charlie', lastName: 'Brown' };
-user4: User = { userId: 'user004', firstName: 'Diana', lastName: 'Prince' };
-user5: User = { userId: 'user005', firstName: 'Edward', lastName: 'Norton' };
-user6: User = { userId: 'user006', firstName: 'Fiona', lastName: 'Apple' };
-user7: User = { userId: 'user007', firstName: 'George', lastName: 'Lucas' };
-user8: User = { userId: 'user008', firstName: 'Hannah', lastName: 'Baker' };
-user9: User = { userId: 'user009', firstName: 'Ian', lastName: 'Somerhalder' };
-user10: User = { userId: 'user010', firstName: 'Jane', lastName: 'Goodall' };
 
-users: User[] = [
-    this.user1, this.user2, this.user3, this.user4, this.user5,
-    this.user6, this.user7, this.user8, this.user9, this.user10
-];
 displayedProjectMembers: string[] = [];
 
 
@@ -92,11 +80,17 @@ displayedProjectMembers: string[] = [];
 
 pendingRequests: RCReport[] = [];
 
-constructor(private authService :AuthFacadeService,private dashBoardService : DashBoardService,private rotationService:RotationService,private router:Router,private cd :ChangeDetectorRef){
+constructor(private translate:TranslateService,
+  private authService :AuthFacadeService,
+  private dashBoardService : DashBoardService,
+  private rotationService:RotationService,
+  private router:Router,
+  private cd :ChangeDetectorRef){
 
 }
 
   ngOnInit(): void {
+    
 
     this.dashBoardService.getDashBoardData().subscribe((res:DashBoardDataDTO)=>{
       this.activeProjects=res.activeProjectCount
@@ -114,14 +108,15 @@ constructor(private authService :AuthFacadeService,private dashBoardService : Da
       this.displayedProjectMembers=res.largestMembersProject.usersList!
       this.overflowAvatarsCount=this.largestTeamMembersCount-this.displayedProjectMembers.length
       this.pendingRequests=res.pendingReports
+      if(this.pendingRequests.length>0)this.isPendingReports=true
       
 
-      console.log(res)
+  
     })
   
     this.welcomeName = this.authService.getFirstName()+" "+this.authService.getLastName();
 
-    this.rotationService.getActiveUsersRotation(0,10).subscribe((pagedData)=>{this.tableData=pagedData.assignedRotations;console.log(this.tableData)})
+    this.rotationService.getActiveUsersRotation(0,10).subscribe((pagedData)=>{this.totalRecords=pagedData.totalElements;this.tableData=pagedData.assignedRotations;console.log(this.tableData)})
   
   // ];
 
@@ -135,10 +130,9 @@ constructor(private authService :AuthFacadeService,private dashBoardService : Da
    loadData(event: any) {
        console.log('Lazy load event:', event);
        // In a real app:
-       // const page = event.first / event.rows;
-       // const rows = event.rows;
-       // const sortField = event.sortField;
-       // const sortOrder = event.sortOrder;
+       const page = event.first / event.rows;
+       const rows = event.rows;
+       this.rotationService.getActiveUsersRotation(page,rows).subscribe((pagedData)=>{this.tableData=pagedData.assignedRotations;console.log(this.tableData)})
        // Call your service to fetch data based on these parameters
        // this.myService.getData(page, rows, sortField, sortOrder).subscribe(data => {
        //      this.tableData = data.items;

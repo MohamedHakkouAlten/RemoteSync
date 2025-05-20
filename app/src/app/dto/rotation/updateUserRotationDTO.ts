@@ -1,3 +1,4 @@
+import { RotationStatus } from "../../enums/rotation-status.enum";
 import { CustomDate } from "../../models/rotation.model";
 
 export interface UpdateUserRotationDTO{
@@ -7,5 +8,7 @@ export interface UpdateUserRotationDTO{
    endDate: string;   // Expect 'YYYY-MM-DD'
    shift: number;     // Number of weeks 'OnSite' (should be > 0 for cycle logic)
    cycle?: number;     // Total length of the cycle in weeks (should be >= shift)
-   customDates?: CustomDate[]|null;   
+   customDates?: CustomDate[]|null; 
+   updatedDate?:string  
+   updatedStatus?:RotationStatus
 }

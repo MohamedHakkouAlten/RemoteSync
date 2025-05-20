@@ -17,9 +17,9 @@ import { addMonths, addWeeks, eachDayOfInterval, endOfMonth, endOfWeek, format, 
 import { CustomDate, Rotation } from '../../../models/rotation.model';
 import { RotationService } from '../../../services/rotation.service';
 import { RotationStatus } from '../../../enums/rotation-status.enum';
-import { ProjectListItem, ProjectService } from '../../../services/project.service';
+import {  ProjectService } from '../../../services/project.service';
 import { ListItem } from '../calendar/calendar.component';
-import { UserListItem, UserService } from '../../../services/auth/user.service';
+import {  UserService } from '../../../services/auth/user.service';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
@@ -103,8 +103,8 @@ export class RotationComponent implements OnInit {
   lastClickedDate: Date | null = null;
   rotation :Signal<RotationOutput> =computed(()=>({
     associates:  this.selectedCollaborators().map((collaborator)=>collaborator.id),
-      startDate: format(this.startDate(), this.dateFormat),
-      endDate: format(this.endDate(), this.dateFormat),
+      startDate: format(startOfWeek(this.startDate(),{weekStartsOn:1}), this.dateFormat),
+      endDate: format(startOfWeek(this.endDate(),{weekStartsOn:1}), this.dateFormat),
       cycle: this.rotationPeriod(),
       shift: this.rotationInterval(),
       customDates: this.customDates(),
@@ -238,14 +238,20 @@ export class RotationComponent implements OnInit {
  
     }else {
       console.log(this.rotation())
-      this.rotationService.addUsersRotation(this.rotation()).subscribe((isAdded)=>
+      this.rotationService.addUsersRotation(this.rotation()).subscribe({
+        next:(isAdded)=>
       {
         console.log(isAdded)
         if(isAdded){
           this.visible=false
           this.createRotation.emit(true)}
-      }
-      )
+      },
+      error :(err)=>      this.messageService.add({
+        severity:'error',
+        summary: err.message,
+        life: 5000
+      })
+      })
     }
 
   //   const output: RotationOutput = {

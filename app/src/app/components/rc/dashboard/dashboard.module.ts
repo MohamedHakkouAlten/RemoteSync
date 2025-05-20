@@ -24,6 +24,7 @@ import { ProjectStatsCardComponent } from "../../shared/rc-ui/project-stats-card
 import { SiteStatsCardComponent } from "../../shared/rc-ui/site-stats-card/site-stats-card.component";
 import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
 import { DashBoardService } from '../../../services/dash-board.service';
+import { TranslateService } from '@ngx-translate/core';
 @NgModule({
   declarations: [
     DashboardComponent
@@ -47,7 +48,8 @@ import { DashBoardService } from '../../../services/dash-board.service';
 providers:[
   AuthFacadeService,
   RotationService,
-  DashBoardService
+  DashBoardService,
+  TranslateService
 ]
 })
 export class DashboardModule { }

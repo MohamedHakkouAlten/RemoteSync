@@ -1,6 +1,6 @@
 export enum ReportStatus{
-     ACCEPTED,
-    REJECTED,
-    OPENED,
+     ACCEPTED="ACCEPTED",
+    REJECTED="REJECTED",
+    OPENED="OPENED",
     PENDING="PENDING"
 }
