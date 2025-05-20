@@ -8,5 +8,7 @@ import java.util.List;
 
 @Service
 public interface SubFactoryService {
+    Long getTotalCapacity();
     List<SubFactoryDropDownDTO> getRcSubFactoriesByFactory(GlobalDTO globalDTO);
+    List<SubFactoryDropDownDTO> getRcSubFactories();
 }

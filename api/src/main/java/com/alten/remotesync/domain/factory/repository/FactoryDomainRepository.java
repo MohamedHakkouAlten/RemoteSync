@@ -12,4 +12,6 @@ import java.util.UUID;
 @Repository
 public interface FactoryDomainRepository extends JpaRepository<Factory, UUID> {
     Optional<List<FactoryProjection>> findAllBy();
+    Optional<List<FactoryProjection>> findAllByLabelContainingIgnoreCase(String label);
+
 }

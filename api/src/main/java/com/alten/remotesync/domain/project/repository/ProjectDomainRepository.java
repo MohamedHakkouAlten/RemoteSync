@@ -2,8 +2,12 @@ package com.alten.remotesync.domain.project.repository;
 
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.domain.project.model.Project;
+import com.alten.remotesync.domain.project.projection.ProjectDashBoardProjection;
+import com.alten.remotesync.domain.project.projection.ProjectLargestMembersProjection;
+import com.alten.remotesync.domain.project.projection.ProjectMembersProjection;
 import com.alten.remotesync.domain.project.projection.ProjectProjection;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -68,7 +72,7 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
     Optional<Page<Project>> fetchAssociateOldProjectsByClient(@Param("userId") UUID userId,@Param("clientId") UUID clientId,Pageable pageable);
 
     @Query("SELECT p from Project p ORDER by p.deadLine-p.startDate DESC LIMIT 1")
-    Optional<Project> findLongestDurationProject();
+    Optional<ProjectDashBoardProjection> findLongestDurationProject();
 
     Integer countDistinctByStatusEquals(ProjectStatus status);
 
@@ -87,4 +91,37 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID> {
             "GROUP BY p.projectId " +
             "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
     Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
+
+
+    @Query(value = """ 
+                  SELECT
+                   p.projectId AS projectId,
+                    p.label AS label,
+                    p.titre AS titre,
+                    p.status AS status,
+                    p.deadLine AS deadLine,
+                    p.startDate AS startDate,             
+                    COUNT(DISTINCT ur.userId) AS usersCount
+                    FROM AssignedRotation ar
+                  INNER JOIN ar.project p 
+                  INNER JOIN  ar.user ur 
+                  GROUP BY   p
+                  ORDER BY  usersCount DESC Limit 1
+            """)
+    Optional<ProjectLargestMembersProjection> fetchRCProjectWithLargestTeam();
+    @Query(value = """
+        SELECT
+           CONCAT(SUBSTRING(ur.firstName, 1, 1), SUBSTRING(ur.lastName, 1, 1)) AS initials
+           
+        FROM
+            AssignedRotation ar
+        INNER JOIN
+            ar.user ur
+        WHERE
+            ar.project.projectId = :projectId
+        GROUP BY   ur.userId
+         ORDER By ur.userId DESC Limit 5
+     
+        """)
+    Optional<List<ProjectMembersProjection>> findFirst5UsersByProject(@Param("projectId") UUID projectId);
 }

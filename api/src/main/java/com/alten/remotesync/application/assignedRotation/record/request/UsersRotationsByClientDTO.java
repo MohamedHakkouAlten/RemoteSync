@@ -2,14 +2,12 @@ package com.alten.remotesync.application.assignedRotation.record.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.UUID;
-
-public record UsersRotationsByFactoryDTO(
-        @NotNull(message = "Factory can't be null")
-        String factoryId,
+public record UsersRotationsByClientDTO(
+        @NotEmpty(message = "project cannot be empty")
+        String clientId,
 
         @Min(value = 0,message = "Page number must be at least 1")
         @NotNull(message = "Page number cannot be null")

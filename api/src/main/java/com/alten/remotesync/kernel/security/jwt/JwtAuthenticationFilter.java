@@ -2,6 +2,7 @@ package com.alten.remotesync.kernel.security.jwt;
 
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,10 +53,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Instant expirationTime = jwtService.extractClaim(jwt, claims -> claims.getExpiration().toInstant());
                 boolean isTokenValid = jwtService.isTokenValid(jwt, userEmail);
 
-                if (isRefreshToken && !request.getServletPath().equals("/api/v1/auth/refresh")) {
+                if (isRefreshToken && !request.getServletPath().equals("/api/v1/auth/refreshToken")) {
                     sendJsonResponse(response, HttpServletResponse.SC_FORBIDDEN, "Invalid Token Usage", "Refresh token cannot be used to access resources", tokenType, expirationTime, userEmail);
                     return;
                 }
+
 
                 if (!isRefreshToken && !isTokenValid) {
                     sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token", "Invalid or expired token", tokenType, expirationTime, userEmail);
@@ -72,12 +74,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) {
+
+            sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT expired", e.getMessage(), null, null, null);
         } catch (Exception exception) {
             sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication Error", exception.getMessage(), null, null, null);
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
     }
-
     private void sendJsonResponse(HttpServletResponse response, int status, String error, String message, String tokenType, Instant expirationTime, String userEmail) throws IOException {
         response.setStatus(status);
         response.setContentType("application/json");

@@ -5,24 +5,27 @@ import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
 import com.alten.remotesync.adapter.exception.user.UserNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
+
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
 import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
-import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
-import com.alten.remotesync.application.project.record.response.ProjectDropDownDTO;
-import com.alten.remotesync.application.project.record.response.ProjectsCountDTO;
-import com.alten.remotesync.application.project.record.response.ProjectDTO;
+import com.alten.remotesync.application.project.record.response.*;
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.domain.project.model.Project;
+import com.alten.remotesync.domain.project.projection.ProjectDashBoardProjection;
+import com.alten.remotesync.domain.project.projection.ProjectLargestMembersProjection;
+import com.alten.remotesync.domain.project.projection.ProjectMembersProjection;
 import com.alten.remotesync.domain.project.repository.ProjectDomainRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -105,10 +108,23 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public ProjectDTO getLongestDurationProject() {
+    public ProjectDashBoardDTO getLongestDurationProject() {
 
-        Project project = projectDomainRepository.findLongestDurationProject().orElseThrow(() -> new ProjectNotFoundException("No projects exist"));
-        return projectMapper.toProjectDTO(project);
+
+        return projectMapper.toProjectDashBoardDTO(projectDomainRepository.findLongestDurationProject()
+                .orElseThrow(() -> new ProjectNotFoundException("No projects exist")));
+    }
+
+    @Override
+    @Transactional
+    public ProjectLargestMembersDTO getRCLargestMembersProject() {
+        ProjectLargestMembersProjection largestMembersProjection=projectDomainRepository.fetchRCProjectWithLargestTeam().orElseThrow(()->new ProjectNotFoundException("no project was found"));
+        System.out.println(largestMembersProjection.getProjectId()+"v"+largestMembersProjection.getUsersCount());
+        List<String> membersProjections=projectDomainRepository.findFirst5UsersByProject(largestMembersProjection.getProjectId()).orElseThrow(()->new ProjectNotFoundException("project not found")).stream().map(ProjectMembersProjection::getInitials).toList();
+        return new ProjectLargestMembersDTO(largestMembersProjection.getProjectId(), largestMembersProjection.getLabel(), largestMembersProjection.getTitre(),
+                largestMembersProjection.getStatus(),largestMembersProjection.getDeadLine(),largestMembersProjection.getStartDate(),
+                membersProjections, largestMembersProjection.getUsersCount());
+
     }
 
     @Override

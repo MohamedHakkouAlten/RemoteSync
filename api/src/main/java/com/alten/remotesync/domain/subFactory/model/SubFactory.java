@@ -22,7 +22,7 @@ import java.util.UUID;
 public class SubFactory {
     @Id
     @UuidGenerator
-    private UUID subFactoryID ;
+    private UUID subFactoryID;
     private int capacity;
     private String label;
     private String title;

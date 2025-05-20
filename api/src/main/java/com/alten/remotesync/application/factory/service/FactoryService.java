@@ -9,4 +9,5 @@ import java.util.List;
 public interface FactoryService {
     Long getTotalFactoriesCount();
     List<FactoryDropDownDTO> getRcFactories();
+    List<FactoryDropDownDTO> getRcFactoriesByLabel(String label);
 }

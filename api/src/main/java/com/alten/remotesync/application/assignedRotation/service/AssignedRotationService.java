@@ -1,7 +1,7 @@
 package com.alten.remotesync.application.assignedRotation.service;
 
+import com.alten.remotesync.application.assignedRotation.record.request.*;
 import com.alten.remotesync.application.assignedRotation.record.response.AssignedRotationDTO;
-import com.alten.remotesync.application.assignedRotation.record.request.CreateAssignedRotationDTO;
 import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
 import com.alten.remotesync.application.assignedRotation.record.response.PagedRotationsDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
@@ -19,12 +19,15 @@ public interface AssignedRotationService {
     AssignedRotationDTO getAssociateCurrentRotationWithoutProject(GlobalDTO globalDTO);
     List<AssignedRotationDTO> getAssociateOldRotationsWithoutProject(GlobalDTO globalDTO); // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
     Float onSiteAssociatesPercentage();
-//    PagedAssignedRotationDTO getUsersActiveRotationsByName(UsersRotationsByNameDTO usersRotationsByNameDTO);
-//    PagedAssignedRotationDTO getUsersActiveRotationsByFactory(UsersRotationsByFactoryDTO usersRotationsByFactoryDTO);
+    PagedRotationsDTO getUsersActiveRotationsByName(UsersRotationsByNameDTO usersRotationsByNameDTO);
+    PagedRotationsDTO getUsersActiveRotationsByProject(UsersRotationsByProjectDTO usersRotationsByProjectDTO);
+    PagedRotationsDTO getUsersActiveRotationsByClient(UsersRotationsByClientDTO usersRotationsByClientDTO);
+    PagedRotationsDTO getUsersActiveRotationsByFactory(UsersRotationsByFactoryDTO usersRotationsByFactoryDTO);
+    PagedRotationsDTO getUsersActiveRotationsBySubFactory(UsersRotationsBySubFactoryDTO usersRotationsBySubFactoryDTO);
     PagedRotationsDTO getUsersActiveRotations(PagedGlobalDTO globalDTO);
     PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size);
-    void updateRotationByDate(UUID userId, Date date);
+    void updateRotationByDate(UpdateRotationDTO updateRotationDTO);
     PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size);
     CreateAssignedRotationDTO createAssignedRotation(CreateAssignedRotationDTO createAssignedRotationDTO);
-
+    Long currentWeekOnSiteAssociatesCount();
 }

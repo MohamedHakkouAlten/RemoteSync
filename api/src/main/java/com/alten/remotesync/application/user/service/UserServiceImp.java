@@ -14,12 +14,14 @@ import com.alten.remotesync.domain.role.repository.RoleDomainRepository;
 import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.domain.user.repository.UserDomainRepository;
 import com.alten.remotesync.kernel.security.jwt.JwtService;
+import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -74,5 +76,12 @@ public class UserServiceImp implements UserService {
     @Override
     public List<UserDropDownDTO> getRCUsersByName(String name) {
         return userDomainRepository.findTop10ByFullNameContainingIgnoreCase(name, PageRequest.of(0,10)).orElseThrow(()->new UserNotFoundException("this user doesn t exist")).stream().map(user->new UserDropDownDTO(user.getUserId(), user.getFirstName()+" "+user.getLastName())).toList();
+    }
+
+    @Override
+    public LoginResponseDTO refreshToken(UserPrincipal userPrincipal) {
+       User user =userDomainRepository.findById(userPrincipal.userId()).orElseThrow(()->new UserNotFoundException("User not found"));
+        if(user.isDeleted()) throw new UserDisabledException("Authentication failed account disabled");
+        return new LoginResponseDTO(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user), user.getFirstName(), user.getLastName(), user.getRoles().stream().map(r -> String.valueOf(r.getAuthority())).toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.alten.remotesync.adapter.exception;
 
 import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
+import com.alten.remotesync.adapter.exception.assignedRotation.CapacityExceededException;
 import com.alten.remotesync.adapter.exception.client.ClientNotFoundException;
 import com.alten.remotesync.adapter.exception.factory.FactoryNotFoundException;
 import com.alten.remotesync.adapter.exception.project.ProjectNotFoundException;
@@ -57,7 +58,12 @@ public class GlobalExceptionHandler {
         // ADDING LOGS HERE FOR THE DATABASE !
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
+    @ExceptionHandler(CapacityExceededException.class)
+    public ResponseEntity<?> capacityExceededException(CapacityExceededException e) {
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
+        // ADDING LOGS HERE FOR THE DATABASE !
+        return new ResponseEntity<>(response, HttpStatus.INSUFFICIENT_STORAGE);
+    }
     @ExceptionHandler(ReportNotFoundException.class)
     public ResponseEntity<?> reportNotFoundException(ReportNotFoundException e) {
         Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
