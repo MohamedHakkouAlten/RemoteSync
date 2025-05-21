@@ -1,0 +1,100 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+/* ==========================================================================
+   Global Toast Notification Styles
+   ========================================================================== */
+.p-toast {
+  z-index: 9999 !important;
+  position: fixed !important;
+}
+
+.p-toast-message {
+  margin: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.p-toast-top-right,
+.p-toast-top-left,
+.p-toast-top-center {
+  top: 1rem !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+/* Mobile-specific toast styling */
+@media (max-width: 768px) {
+  .p-toast {
+    width: 100% !important;
+    right: 0 !important;
+    left: 0 !important;
+  }
+
+  .p-toast-message {
+    width: calc(100% - 2rem) !important;
+    margin: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+  }
+}
+
+@theme {
+  --color-primary : #FFA500;
+  --color-primary : #FF9500; /*FFA500 */
+  --color-secondary: #F9FAFB;
+  --color-mainBlue :#3B82F6;
+}
+
+:host ::ng-deep .lightgray  {
+  background-color: rgb(193, 30, 30);
+}
+:root p,span,h1,h3,h2,tr,th,label,a{
+  font-family: inter;
+}
+:root {
+  /* Override PrimeNG button label font weight */
+  --p-button-label-font-weight: 300; /* Example: Set to semi-bold */
+  /* You can use other values like: normal, bold, 300, 400, 500, 700, etc. */
+}
+
+:host ::ng-deep .p-button-label{
+  font-weight: 100 !important;
+}
+
+.my-compact-datepicker .p-datepicker-calendar .p-datepicker-day {
+    width: 22px !important;
+    height:22px !important;
+    font-size: 12px;
+  }
+
+  .p-datepicker-day-selected {
+    background: var(--color-primary) !important;
+    color: white;
+
+}
+.p-datepicker-weekday {
+  font-weight: 500 !important;
+  font-family: inter;
+  font-size: 14px !important;
+
+}
+.p-datepicker-select-year, .p-datepicker-select-month {
+  font-weight: 500 !important;
+  font-family: inter;
+  font-size: 15px !important;
+}
+.p-datepicker-weeknumber {
+  font-size: 15px !important;
+}
+.p-datepicker-weekheader {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+}
