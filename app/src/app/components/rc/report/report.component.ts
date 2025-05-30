@@ -2,7 +2,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common'; // DatePipe still needed if used elsewhere or prefer it over template pipe
 import { PaginatorState } from 'primeng/paginator';
-import { ReportService } from '../../../services/report.service';
 import { RCReport } from '../../../models/report.model';
 import { ReportStatus } from '../../../enums/report-status.enum';
 import { UserUtils } from '../../../utilities/UserUtils';
@@ -10,6 +9,7 @@ import { format } from 'date-fns';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { PagedReports } from '../../../dto/response-wrapper.dto';
 import { MessageService } from 'primeng/api';
+import { RcService } from '../../../services/rc.service';
 
 // --- Interface & Data ---
 interface Report {
@@ -27,21 +27,24 @@ interface Report {
   selector: 'app-report',
   standalone: false,
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css'],
-  providers: [DatePipe],
+  styleUrls: ['./report.component.css']
 })
 export class ReportComponent implements OnInit {
 
+  // Report data
   allReports = signal<PagedReports>({
       reports:[],
       totalElements:0,
       totalPages:0,
       pageSize:0,
       currentPage:0
+  });
   
-    });
-  
-    
+  // Loading states
+  isLoading: boolean = false;
+  loadingError: boolean = false;
+  loadingTimeout: any = null;
+      
   filteredReports: Report[] = [];
   paginatedReports: Report[] = [];
 
@@ -50,7 +53,6 @@ export class ReportComponent implements OnInit {
       filter: this.activeFilter(),
       page: signal(0),
       row: signal(6)
-
     }
   })
   activeFilter = signal<'status' | 'date' | 'user'|'none'>('none')
@@ -61,11 +63,11 @@ export class ReportComponent implements OnInit {
   selectedStatus: string | null = null;
   selectedUser: string | null = null;
 
-  private searchUserInputChange$ = new Subject<string>();
+  // Create a subject for search debouncing exactly like ProjectComponent
+  private searchSubject = new Subject<string>();
 
   // --- Status Options ---
   statusOptions = [
-
     { label: 'Completed', value: 'ACCEPTED' },
     { label: 'In Progress', value: 'OPENED' },
     { label: 'Pending', value: 'PENDING' },
@@ -75,149 +77,280 @@ export class ReportComponent implements OnInit {
   // --- Pagination State ---
   totalRecords=computed(()=>this.allReports().totalElements)
 
-
   // --- Modal State ---
   displayReportModal: boolean = false;
   selectedReport: RCReport | null = null;
- // Used to force modal rerender if needed
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private reportService: ReportService,
-    private messageService:MessageService
+    private rcService: RcService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
-
-    this.setupDebouncing()
-    this.reportService.getReports().subscribe(pagedData => {
-      this.allReports.set(pagedData);
-    })
-    console.log(this.allReports())
-   
-
+    // Setup search debounce exactly like in ProjectComponent
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      // Reset to first page when search changes
+      this.state().page.set(0);
+      this.loadReports();
+    });
+    
+    // Initial load of reports
+    this.loadReports();
   }
-
-
-
-
-
 
   onStatusChange() {
     if (this.activeFilter() !== 'status') this.activeFilter.set('status')
-         this.selectedDateRange=null
-
-    this.searchTerm=''
-    this.setReports()
+    this.selectedDateRange = null
+    this.searchTerm = ''
+    
+    // Reset to first page and load data immediately (like ProjectComponent.onFilterChange)
+    this.state().page.set(0);
+    this.loadReports();
   }
 
   onDateChange() {
     if (this.activeFilter() !== 'date') this.activeFilter.set('date')
-
-    this.selectedStatus=null
-    this.searchTerm=''
-    this.setReports()
+    this.selectedStatus = null
+    this.searchTerm = ''
+    
+    // Reset to first page and load data immediately
+    this.state().page.set(0);
+    this.loadReports();
   }
-  onNameChange(){
-     if (this.activeFilter() !== 'user') this.activeFilter.set('user')
-         this.selectedDateRange=null
-    this.selectedStatus=null
-
-    this.setReports()
+  
+  onNameChange() {
+    if (this.activeFilter() !== 'user') this.activeFilter.set('user')
+    this.selectedDateRange = null
+    this.selectedStatus = null
+    
+    // Reset to first page and load data immediately
+    this.state().page.set(0);
+    this.loadReports();
   }
-  onPageChange(event: PaginatorState): void {
-
-    const rows = event.rows ?? this.state().row();
-    const page = event.page ?? this.state().page();
-    this.state().row.set(rows)
-    this.state().page.set(page)
-    if(this.activeFilter()=='user') this.reportService.getReportsByName(page, rows,this.searchTerm).subscribe(pagedData => { this.allReports.set(pagedData); });
-    else this.setReports()
+  
+  onSearchTermChange() {
+    if (this.activeFilter() !== 'none') this.activeFilter.set('none')
+    this.selectedDateRange = null
+    this.selectedStatus = null
+    this.searchSubject.next(this.searchTerm);
   }
 
-  setReports() {
-    const rows = this.state().row()
-    const page = this.state().page()
-    switch (this.activeFilter()) {
+  onPageChange(event: any) {
+    // Check if event is a PaginatorState or convert it
+    const paginatorEvent = event as PaginatorState;
+    
+    // Get page and rows per page from event
+    const page = paginatorEvent.page !== undefined ? paginatorEvent.page : 0;
+    const rows = paginatorEvent.rows !== undefined ? paginatorEvent.rows : 6;
+    
+    // Update state
+    this.state().page.set(page);
+    this.state().row.set(rows);
+    
+    // Load reports with new pagination
+    this.loadReports();
+  }
 
-      case 'status': { this.reportService.getReportsByStatus(page, rows, this.selectedStatus!)
-        .subscribe(pagedData => { this.allReports.set(pagedData); });break }
-      case 'date' : {
-        if (this.selectedDateRange) {
-      const startDate = format(this.selectedDateRange[0],'yyyy-MM-dd');
-      const endDate =  format(this.selectedDateRange[1],'yyyy-MM-dd');
-      this.reportService.getReportsByDateRange(page, rows, startDate,endDate)
-      .subscribe(pagedData => { this.allReports.set(pagedData); });
+  /**
+   * Load reports based on current filters and pagination
+   */
+  loadReports() {
+    // Show loading state
+    this.isLoading = true;
+    this.loadingError = false;
+    
+    // Set a timeout to show loading state for at least 300ms for UX
+    this.loadingTimeout = setTimeout(() => {
+      this.isLoading = false;
+    }, 800);
+    
+    // Build search criteria
+    const criteria: any = {
+      pageNumber: this.state().page(),
+      pageSize: this.state().row()
+    };
+
+    // Add search term filter if present
+    if (this.searchTerm) {
+      criteria.title = this.searchTerm.trim();
     }
-    break
+    
+    // Add status filter if present
+    if (this.selectedStatus) {
+      criteria.status = this.selectedStatus as any;
+    }
+    
+    // Add date filter if date range is selected
+    if (this.selectedDateRange && this.selectedDateRange.length === 2 && this.selectedDateRange[0]) {
+      const startDate = this.selectedDateRange[0];
+      criteria.startDate = format(startDate, 'yyyy-MM-dd');
+    }
+
+    // Clean the criteria object by removing undefined, null, or empty string values
+    const cleanedCriteria = Object.fromEntries(
+      Object.entries(criteria).filter(([_, value]) => 
+        value !== undefined && value !== null && value !== ''
+      )
+    );
+    
+    // Call API with cleaned criteria
+    this.rcService.getRcReports(cleanedCriteria).subscribe(
+      response => {
+        // Clear loading state
+        this.isLoading = false;
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+        }
+        
+        // Update reports data
+        if (response && response.data && response.data.reportDTOs) {
+          // Map the backend data structure to PagedReports format
+          console.log('Backend response:', response.data);
+          
+          // Convert reportDTOs to RCReport[] format using any to avoid type conflicts
+          const reportDTOs: any[] = response.data.reportDTOs;
+          const mappedReports: RCReport[] = reportDTOs.map((dto: any) => {
+            // Convert string status to ReportStatus enum if needed
+            const reportStatus = dto.status as ReportStatus;
+            
+            return {
+              reportId: dto.reportId,
+              title: dto.title,
+              description: dto.description || '',
+              status: reportStatus,
+              createdBy: dto.createdBy,
+              createdAt: dto.createdAt
+            } as RCReport;
+          });
+          
+          const pagedReports: PagedReports = {
+            reports: mappedReports,
+            totalElements: mappedReports.length,
+            totalPages: 1, // Since we're getting all reports at once
+            pageSize: mappedReports.length,
+            currentPage: 0
+          };
+          this.allReports.set(pagedReports);
+        } else {
+          // Handle empty response
+          this.allReports.set({
+            reports: [],
+            totalElements: 0,
+            totalPages: 0,
+            pageSize: this.state().row(),
+            currentPage: this.state().page()
+          });
+        }
+      },
+      error => {
+        console.error('Error loading reports:', error);
+        this.isLoading = false;
+        this.loadingError = true;
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+        }
       }
-    case 'user':{
-      this.searchUserInputChange$.next(this.searchTerm)
-    break;
-    }
-      default: this.reportService.getReports(page, rows).subscribe(pagedData => { this.allReports.set(pagedData); });
-    }
+    );
   }
+//       this.fetchAllReports();
+//       return;
+//     }
+    
+//     // Create basic DTO and only add properties that have values
+//     const pagedDto: Record<string, any> = {};
+    
+//     const page = this.state().page();
+//     const rows = this.state().row();
+    
+//     if (page !== undefined && page !== null) {
+//       pagedDto['pageNumber'] = page;
+//     }
+    
+//     if (rows !== undefined && rows !== null) {
+//       pagedDto['pageSize'] = rows;
+//     }
+    
+//     // Only add startDate if we have a valid date
+//     if (this.selectedDateRange && this.selectedDateRange[0]) {
+//       pagedDto['startDate'] = format(this.selectedDateRange[0], 'yyyy-MM-dd');
+//     }
+    
+//     this.reportService.getRcReports(pagedDto).subscribe(
+//       pagedData => { 
+//         this.allReports.set(pagedData);
+//         this.isLoading = false;
+//         if (this.loadingTimeout) {
+//           clearTimeout(this.loadingTimeout);
+//         }
+//       },
+//       error => {
+//         console.error('Error loading reports by date:', error);
+//         this.isLoading = false;
+//         this.loadingError = true;
+//         if (this.loadingTimeout) {
+//           clearTimeout(this.loadingTimeout);
+//         }
+//       }
+//     );
+//   }
 
   clearFilters(){
-
-    this.selectedDateRange=null
-    this.selectedStatus=null
-    this.searchTerm=''
+    this.selectedDateRange = null
+    this.selectedStatus = null
+    this.searchTerm = ''
     this.activeFilter.set('none')
-    this.setReports()
-
+    this.state().page.set(0);
+    this.loadReports()
   }
+  
   viewReport(report: RCReport): void {
     // Defensive: Always close any open modal first
-       this.displayReportModal=true
+    this.displayReportModal = true
     this.selectedReport = report;
-    // this.displayReportModal = true;
-    // this.modalKey++;
-    // console.log('Opening report modal for:', report, 'modalKey:', this.modalKey);
-    // this.cdRef.markForCheck();
   }
 
   closeReportModal(): void {
     this.displayReportModal = false;
     this.selectedReport = null;
-   
-
     this.cdRef.markForCheck();
   }
   
-  setupDebouncing(){
-        this.searchUserInputChange$.pipe(
-          debounceTime(1000),
-          distinctUntilChanged(),
-          switchMap(searchTerm => {
+  // Method no longer needed since we're using a simpler approach like ProjectComponent
+  setupDebouncing() {
+    // Empty - implementation moved to ngOnInit
+  }
+
+  updateReportStatus(newStatus: any): void {
+    // Ensure we have a valid report status
+    const reportStatus = newStatus as ReportStatus;
     
-            return this.reportService.getReportsByName(this.state().page(), this.state().row(),searchTerm)
+    if (this.selectedReport?.reportId && reportStatus) {
+      this.rcService.updateReport(this.selectedReport.reportId, reportStatus).subscribe({
+        next: () => {
+          this.loadReports()
+          this.displayReportModal = false
+          this.messageService.add({
+            severity: 'success',
+            summary: "Report updated successfully"
           })
-        ).subscribe(pagedData => { this.allReports.set(pagedData); });;
+        },
+        error: (error: any) => {
+          console.log(error)
+          this.displayReportModal = false
+          this.messageService.add({
+            severity: 'error',
+            summary: error?.message || 'Failed to update report'
+          })
+        }
+      })
+    }
   }
-  updateReportStatus(newStatus: ReportStatus): void {
-    this.reportService.updateReport(this.selectedReport?.reportId!,newStatus).subscribe({
-      next : ()=>{
-        this.setReports()
-        this.displayReportModal=false
-        this.messageService.add({
-          severity:'success',
-          summary:"report updated successfully"
-        })
-      },
-      error :(err)=>{
-        console.log(err)
-        this.displayReportModal=false
-        this.messageService.add({
-          severity:'error',
-          summary:err
-        })
-      }
-    })
-  }
-getStatusBgColor(status:ReportStatus):string{
-     switch (status) {
+  getStatusBgColor(status: ReportStatus): string {
+    switch (status) {
       case ReportStatus.ACCEPTED: return '#ccf0e0'; // Added border for definition
       case ReportStatus.PENDING: return '#ccd5f0';
       case ReportStatus.OPENED: return '#ccd5f0'; // Added border
@@ -225,8 +358,9 @@ getStatusBgColor(status:ReportStatus):string{
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
     }
   }
-  getStatusTextColor(status:ReportStatus):string{
-     switch (status) {
+  
+  getStatusTextColor(status: ReportStatus): string {
+    switch (status) {
       case ReportStatus.ACCEPTED: return '#0da669'; // Added border for definition
       case ReportStatus.PENDING: return '#0d33a6';
       case ReportStatus.OPENED: return '#0d33a6'; // Added border
@@ -234,9 +368,9 @@ getStatusBgColor(status:ReportStatus):string{
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
     }
   }
+  
   getStatusClass(status: ReportStatus): string {
     // CSS classes remain the same
-
     switch (status) {
       case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200'; // Added border for definition
       case ReportStatus.PENDING: return 'bg-blue-100 text-blue-700 border border-blue-200';
@@ -256,6 +390,7 @@ getStatusBgColor(status:ReportStatus):string{
 
   clearDateRange(): void {
     this.selectedDateRange = null;
-
+    this.state().page.set(0);
+    this.loadReports();
   }
 }

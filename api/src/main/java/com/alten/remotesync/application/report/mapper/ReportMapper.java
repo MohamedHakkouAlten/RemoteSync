@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface ReportMapper {
     ReportDTO toReportDTO(Report report);
-    ReportProjectionDTO toReportProjectionDTO(ReportProjection reportProjection);
+    //ReportProjectionDTO toReportProjectionDTO(ReportProjection reportProjection);
+
     Report toAssociateReport(CreateAssociateReportDTO createAssociateReportDTO);
 }

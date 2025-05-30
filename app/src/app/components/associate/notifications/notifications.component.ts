@@ -1,19 +1,34 @@
-import { Component, computed, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { Notification } from '../../../models/notification.model';
-import { NotificationType } from '../../../enums/notification-type.enum';
+import { AssociateService } from '../../../services/associate.service';
+import { NotificationDTO, PagedNotificationDTO } from '../../../dto/notification.dto';
+import { PagedNotificationSearchDTO } from '../../../dto/paged-notification-search.dto';
+import { NotificationStatus } from '../../../dto/notification-status.enum';
+import { finalize } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
-// Define an interface for notification structure
-// Define the interface WITHOUT styling properties
-
+// Local interface for mapped notification data with UI-specific properties
+interface Notification {
+  id: string;
+  type: 'report' | 'rotation' | 'general';
+  title: string;
+  senderInitial: string;
+  senderName: string;
+  timestamp: string;
+  message: string;
+  isRead: boolean;
+  status: NotificationStatus;
+  statusClass: string;
+}
 
 // Interface for Tab Configuration
 interface TabConfig {
- 
+  title: string;
   value: string; // Unique identifier for the tab
-
+  filterFn: (notification: Notification) => boolean; // Function to filter notifications
   countSignal: () => number; // Function returning the count signal for the badge
 }
+
 @Component({
   selector: 'app-notifications',
   standalone: false,
@@ -21,24 +36,37 @@ interface TabConfig {
   styleUrl: './notifications.component.css'
 })
 export class NotificationsComponent implements OnInit {
-
+  // Search and filter controls
+  titleFilter = signal<string>('');
+  statusFilter = signal<NotificationStatus | null>(null);
+  dateFilter = signal<Date | null>(null);
+  today = new Date(); // For date picker max date
+  
+  // Status dropdown options
+  statusOptions = [
+    { label: 'Urgent', value: NotificationStatus.URGENT },
+    { label: 'Important', value: NotificationStatus.IMPORTANT },
+    { label: 'Normal', value: NotificationStatus.NORMAL },
+    { label: 'Info', value: NotificationStatus.INFO },
+    { label: 'Alert', value: NotificationStatus.ALERT },
+    { label: 'Request', value: NotificationStatus.REQUEST }
+  ];
 
   private allNotifications = signal<Notification[]>([]); // Holds ALL notifications (using signals)
-  private unReadNotifications = signal<Notification[]>([]); 
-  private reportsNotifications = signal<Notification[]>([]); 
-  private calendarNotifications = signal<Notification[]>([]); 
+  loading = signal<boolean>(false); // Loading state
+
   // Computed signals for counts
-  allCount = signal<number>(0);
-  unreadCount = signal<number>(0);
-  reportCount =signal<number>(0);
-  calendarCount = signal<number>(0); 
+  allCount = computed(() => this.allNotifications().length);
+  urgentCount = computed(() => this.allNotifications().filter(n => n.status === NotificationStatus.URGENT).length);
+  importantCount = computed(() => this.allNotifications().filter(n => n.status === NotificationStatus.IMPORTANT).length);
+  normalCount = computed(() => this.allNotifications().filter(n => n.status === NotificationStatus.NORMAL || n.status === NotificationStatus.INFO).length);
 
   // Tab Configuration
   tabs: TabConfig[] = [
-    { value: 'all',  countSignal: this.allCount },
-    {  value: 'unread', countSignal: this.unreadCount },
-    {  value: 'reports',countSignal: this.reportCount },
-    {  value: 'calendar',  countSignal: this.calendarCount } // Example mapping
+    { title: 'All', value: 'all', filterFn: (n) => true, countSignal: this.allCount },
+    { title: 'Urgent', value: 'urgent', filterFn: (n) => n.status === NotificationStatus.URGENT, countSignal: this.urgentCount },
+    { title: 'Important', value: 'important', filterFn: (n) => n.status === NotificationStatus.IMPORTANT, countSignal: this.importantCount },
+    { title: 'Normal', value: 'normal', filterFn: (n) => n.status === NotificationStatus.NORMAL || n.status === NotificationStatus.INFO, countSignal: this.normalCount }
   ];
 
   // Active Tab State
@@ -46,222 +74,206 @@ export class NotificationsComponent implements OnInit {
 
   // Pagination State
   first = signal<number>(0); // Index of the first record displayed
-  rows = signal<number>(2); // Number of rows per page
-  totalRecords = computed(()=>{
-    
-      switch(this.activeTabValue()){
-        case 'unread' :return this.unreadCount();
-        case 'reports':return this.reportCount();
-        case 'calendar' :return this.calendarCount();
-        default :return this.allCount();
-      
-    }
-  }); // Total number of notifications *for the active filter*
+  rows = signal<number>(10); // Number of rows per page
+  totalRecords = signal<number>(0); // Total number of notifications *for the active filter*
+  totalPages = signal<number>(0); // Total number of pages
+  currentPage = signal<number>(0); // Current page number (0-based indexing)
 
   // Filtered list based on active tab (computed signal)
-  // filteredNotifications = computed(() => {
-  //   const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.filterFn || (() => true);
-  //   return this.allNotifications().filter(currentFilterFn);
-  // });
+  filteredNotifications = computed(() => {
+    const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.filterFn || (() => true);
+    return this.allNotifications().filter(currentFilterFn);
+  });
 
-  
   // Displayed list based on pagination applied to filtered list (computed signal)
   displayedNotifications = computed(() => {
-    const list = this.activeList();
+    const filtered = this.filteredNotifications();
     const startIndex = this.first();
     const endIndex = startIndex + this.rows();
-    return list.slice(startIndex, endIndex);
+    return filtered.slice(startIndex, endIndex);
   });
-  private activeList = computed(() => {
-    switch (this.activeTabValue()) {
-      case 'unread':   return this.unReadNotifications();
-      case 'reports':  return this.reportsNotifications();
-      case 'calendar': return this.calendarNotifications();
-      default:         return this.allNotifications();
-    }
-  });
+
+  constructor(
+    private associateService: AssociateService,
+    private datePipe: DatePipe
+  ) {}
 
   ngOnInit(): void {
     this.loadNotifications();
-    // Initial calculation of totalRecords for the default tab
-   // this.updateTotalRecords();
   }
 
   loadNotifications(): void {
-    // Simulate fetching data
+    this.loading.set(true);
+    
+    const searchParams: PagedNotificationSearchDTO = {
+      pageNumber: this.currentPage(),
+      pageSize: this.rows()
+    };
+    
+    // Apply title filter if provided
+    if (this.titleFilter() && this.titleFilter().trim()) {
+      searchParams.title = this.titleFilter().trim();
+    }
+    
+    // Apply status filter - either from the dropdown or from tab selection
+    if (this.statusFilter()) {
+      // Dropdown selection takes precedence over tab selection
+      searchParams.status = this.statusFilter() as NotificationStatus; // Cast to remove null possibility
+    } else if (this.activeTabValue() === 'urgent') {
+      searchParams.status = NotificationStatus.URGENT;
+    } else if (this.activeTabValue() === 'important') {
+      searchParams.status = NotificationStatus.IMPORTANT;
+    } else if (this.activeTabValue() === 'normal') {
+      searchParams.status = NotificationStatus.NORMAL;
+    }
+    
+    // Apply date filter if provided
+    if (this.dateFilter()) {
+      // Format date to ISO format (YYYY-MM-DD)
+      const formattedDate = this.datePipe.transform(this.dateFilter(), 'yyyy-MM-dd');
+      if (formattedDate) {
+        searchParams.createdAt = formattedDate;
+      }
+    }
+    
+    this.associateService.getAssociateNotifications(searchParams)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (response) => {
+          if (response.data) {
+            const pagedData = response.data;
+            
+            // Map the backend DTOs to our UI model
+            const mappedNotifications = pagedData.notificationDTOs.map(dto => this.mapNotificationDto(dto));
+            
+            // Update all signals
+            this.allNotifications.set(mappedNotifications);
+            this.totalRecords.set(pagedData.totalElements);
+            this.totalPages.set(pagedData.totalPages);
+            this.currentPage.set(pagedData.currentPage);
+          }
+        },
+        error: (error) => {
+          console.error('Error loading notifications:', error);
+          this.allNotifications.set([]);
+        }
+      });
+  }
+  
+  // Search filter methods
+  
+  /**
+   * Apply all active filters and reload notifications
+   */
+  applyFilters(): void {
+    this.currentPage.set(0); // Reset to first page
+    this.first.set(0);
+    this.loadNotifications();
+  }
+  
+  /**
+   * Clear all filters and reload notifications
+   */
+  clearFilters(): void {
+    this.titleFilter.set('');
+    this.statusFilter.set(null);
+    this.dateFilter.set(null);
+    this.applyFilters();
+  }
+  
+  /**
+   * Check if any filters are active
+   */
+  hasActiveFilters(): boolean {
+    return !!(this.titleFilter() || this.statusFilter() || this.dateFilter());
+  }
+
+  // Map DTO from backend to local notification model with UI properties
+  private mapNotificationDto(dto: NotificationDTO): Notification {
+    // Determine notification type based on status
+    let type: 'report' | 'rotation' | 'general' = 'general';
+    if (dto.status === NotificationStatus.URGENT || dto.status === NotificationStatus.IMPORTANT) {
+      type = 'report';
+    } else if (dto.status === NotificationStatus.REQUEST) {
+      type = 'rotation';
+    }
+    
+    // Extract initials for the avatar
+    const initials = this.getInitials(dto.title);
+    
+    // Format timestamp
+    const timestamp = this.formatTimestamp(dto.createdAt);
+    
+    // Determine status class for styling
+    const statusClass = this.getStatusClass(dto.status);
+    
+    return {
+      id: dto.notificationId,
+      type,
+      title: dto.title,
+      senderInitial: initials,
+      senderName: 'System Notification', // The API doesn't provide a sender name
+      timestamp,
+      message: dto.description,
+      isRead: false, // The API doesn't indicate if a notification is read
+      status: dto.status,
+      statusClass
+    };
+  }
+  
+  // Helper method to get initials from a string
+  private getInitials(name: string): string {
+    if (!name) return 'SN';
+    const words = name.split(' ');
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return (words[0][0] || 'S').toUpperCase();
+  }
+  
+  // Helper method to format timestamp
+  private formatTimestamp(dateString: string): string {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
     const now = new Date();
-    this.unreadCount.set(8);
-    this.allCount.set(4);
-    this.reportCount.set(2);
-    this.calendarCount.set(2);
-
-    this.calendarNotifications.set([
-      {
-        id: 22,
-        type: NotificationType.Rotation,
-        sender: { firstName: 'Michael', lastName: 'Chen' },
-        message: 'assigned you to the Project Aurora task force.',
-        timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
-        isRead: false,
-
-      },
-      {
-        id: 31,
-        type: NotificationType.Rotation,
-        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
-        isRead: false,
-        sender: { firstName: 'Mic', lastName: 'drop' },
-        // No actions needed for this type often
-      },
-      {
-        id: 21,
-        type: NotificationType.Report,
-        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
-        isRead: false,
-        sender: { firstName: 'Mic', lastName: 'drop' },
-        // No actions needed for this type often
-      },
-      {
-        id: 5,
-        type: NotificationType.Rotation,
-        message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
-        timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
-        isRead: false,
-        sender: { firstName: 'Walk', lastName: 'Talk' },
-
-      },
-    ])
-
-
-    this.unReadNotifications.set([
-      {
-        id: 22,
-        type: NotificationType.Rotation,
-        sender: { firstName: 'Michael', lastName: 'Chen' },
-        message: 'assigned you to the Project Aurora task force.',
-        timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
-        isRead: false,
-
-      },
-      {
-        id: 31,
-        type: NotificationType.Rotation,
-        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
-        isRead: false,
-        sender: { firstName: 'Mic', lastName: 'drop' },
-        // No actions needed for this type often
-      },
-      {
-        id: 21,
-        type: NotificationType.Report,
-        message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
-        isRead: false,
-        sender: { firstName: 'Mic', lastName: 'drop' },
-        // No actions needed for this type often
-      },
-      {
-        id: 5,
-        type: NotificationType.Rotation,
-        message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
-        timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
-        isRead: false,
-        sender: { firstName: 'Walk', lastName: 'Talk' },
-
-      },
-    ])
-
-    const data: Notification[] =[
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
     
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} min ago`;
     
-          {
-            id: 1,
-            type:NotificationType.Report,
-            sender: { firstName: 'Sarah', lastName: 'Johnson' },
-            message: 'approved your quarterly report.',
-            timestamp: new Date(now.getTime() - 5 * 60 * 1000), // 5 minutes ago
-            isRead: false
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
     
-          },
-          {
-            id: 2,
-            type: NotificationType.Rotation,
-            sender: { firstName: 'Michael', lastName: 'Chen' },
-            message: 'assigned you to the Project Aurora task force.',
-            timestamp: new Date(now.getTime() - 1 * 60 * 60 * 1000), // 1 hour ago
-            isRead: false,
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     
-          },
-          {
-            id: 3,
-            type: NotificationType.Rotation,
-            message: 'The reporting system will be offline for maintenance tonight from 12AM-2AM EST.',
-            timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000), // 3 hours ago
-            isRead: false,
-            sender: { firstName: 'Mic', lastName: 'drop' },
-            // No actions needed for this type often
-          },
-          {
-            id: 4,
-            type: NotificationType.Report,
-            sender: { firstName: 'Cheef', lastName: 'Beef' },
-            message: 'commented on your project plan: "Great timeline structure, let\'s discuss the resource allocation tomorrow."',
-            timestamp: new Date(now.setDate(now.getDate() - 1)), // Yesterday
-            isRead: true, // Example of a read notification
-    
-          },
-          {
-            id: 5,
-            type: NotificationType.Rotation,
-            message: "Don't forget: Quarterly planning meeting tomorrow at 10:00 AM in Conference Room B.",
-            timestamp: new Date(now.setDate(now.getDate() - 2)), // 2 days ago
-            isRead: false,
-            sender: { firstName: 'Walk', lastName: 'Talk' },
-    
-          },
-          // Add more notifications as needed for testing scroll
-    
-        ];
-    this.allNotifications.set(data);
+    return date.toLocaleDateString();
   }
-  handleNotificationDismiss(notificationId: string|number) {
-  if(this.unreadCount()>0)  this.unreadCount.update(count=>count-1)
-    this.updateSpecificNotificationList(this.allNotifications, notificationId);
-  this.updateSpecificNotificationList(this.reportsNotifications, notificationId);
-  this.updateSpecificNotificationList(this.calendarNotifications, notificationId);
-  this.updateSpecificNotificationList(this.unReadNotifications, notificationId);
-  this.deleteReadNotification(notificationId);
+  
+  // Helper method to get CSS class based on notification status
+  private getStatusClass(status: NotificationStatus): string {
+    switch (status) {
+      case NotificationStatus.URGENT:
+        return 'bg-red-100 text-red-800';
+      case NotificationStatus.IMPORTANT:
+        return 'bg-amber-100 text-amber-800';
+      case NotificationStatus.ALERT:
+        return 'bg-orange-100 text-orange-800';
+      case NotificationStatus.REQUEST:
+        return 'bg-teal-100 text-teal-800';
+      case NotificationStatus.NORMAL:
+      case NotificationStatus.INFO:
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
   }
 
-
-  private updateSpecificNotificationList(
-    listSignal: WritableSignal<Notification[]>, // Pass the signal itself
-    notificationId: string | number
-  ): void {
-    listSignal.update(currentNotifications =>
-      this.markNotificationAsReadInArray(currentNotifications, notificationId)
-    );
-}
-deleteReadNotification(notificationId:string|number){
-  this.unReadNotifications.update(notifications => notifications.filter(n=>!n.isRead))
-}
-  private markNotificationAsReadInArray(
-    notifications: Notification[],
-    notificationId: string | number
-  ): Notification[] {
-    return notifications.map(notification =>
-      notification.id === notificationId
-        ? { ...notification, isRead: true } // Create new object if ID matches
-        : notification                     // Return original object otherwise
-    );
-  }
   // Update total records based on the currently filtered list
-  // updateTotalRecords(): void {
-  //   this.totalRecords.set(this.filteredNotifications().length);
-  // }
+  updateTotalRecords(): void {
+    this.totalRecords.set(this.filteredNotifications().length);
+  }
 
   // --- Event Handlers ---
 
@@ -270,20 +282,78 @@ deleteReadNotification(notificationId:string|number){
     if (event.first !== undefined && event.rows !== undefined) {
         this.first.set(event.first);
         this.rows.set(event.rows);
-        // No need to explicitly update displayedNotifications, computed signal handles it
+        
+        // Calculate the new page number
+        if (event.page !== undefined) {
+          this.currentPage.set(event.page); // Using 0-based indexing
+        }
+        
+        // Reload data with new pagination
+        this.loadNotifications();
     }
   }
 
-   // Triggered when tab changes
-   onTabChange(newValue: string|number): void {
+  // Triggered when tab changes
+  onTabChange(newValue: string|number): void {
     this.activeTabValue.set(newValue);
     this.first.set(0); // Reset pagination to the first page
- //   this.updateTotalRecords(); // Update total records for the new filter
-    // No need to explicitly update displayedNotifications, computed signal handles it
+    this.currentPage.set(0); // Reset to page 0
+    
+    // Reload notifications with the new filter
+    this.loadNotifications();
   }
 
+  viewCalendar(id: string): void {
+    console.log(`Viewing calendar related to notification ${id}`);
+  }
 
+  viewReport(id: string): void {
+    console.log(`Viewing report related to notification ${id}`);
+  }
+
+  dismissNotification(id: string): void {
+    console.log(`Dismissing notification ${id}`);
+    this.allNotifications.update(currentNotifications =>
+        currentNotifications.filter(n => n.id !== id)
+    );
+    // Re-calculate totalRecords based on potentially new filtered list size
+    this.updateTotalRecords();
+
+    // Adjust 'first' if the current page becomes empty after deletion (more complex with signals)
+    // Check if the current 'first' is now beyond the new totalRecords
+    const currentFirst = this.first();
+    const currentRows = this.rows();
+    const newTotal = this.totalRecords();
+    if (currentFirst >= newTotal && newTotal > 0) {
+        const newLastPageFirst = Math.floor((newTotal - 1) / currentRows) * currentRows;
+        this.first.set(newLastPageFirst);
+    } else if (newTotal === 0) {
+        this.first.set(0); // Reset if list becomes empty
+    }
+    // Computed signals 'filteredNotifications' and 'displayedNotifications' will update automatically
+  }
+
+  markAllAsRead(): void {
+    console.log('Marking all as read');
+    this.allNotifications.update(notifications =>
+        notifications.map(n => ({ ...n, isRead: true }))
+    );
+    // If the current tab is 'unread', the list will automatically become empty.
+    // If we are on the 'unread' tab, we might need to reset pagination and update totalRecords.
+    if(this.activeTabValue() === 'unread') {
+        this.first.set(0);
+        this.updateTotalRecords(); // totalRecords will become 0
+    }
+    // Counts and displayed list will update automatically via signals.
+  }
+
+  // Helper for *ngFor trackBy
+  trackById(index: number, notification: Notification): string {
+    return notification.id;
+  }
   
-
-
+  // Helper for tab tracking
+  trackByTabValue(index: number, tab: TabConfig): string {
+    return tab.value as string;
+  }
 }

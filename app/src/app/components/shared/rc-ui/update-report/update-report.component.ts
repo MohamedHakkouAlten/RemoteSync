@@ -51,5 +51,23 @@ updateReportStatus(status:ReportStatus) {
       }
     }
   
-
+    getStatusBgColor(status: ReportStatus): string {
+      switch (status) {
+        case ReportStatus.ACCEPTED: return '#ccf0e0'; // Light green
+        case ReportStatus.PENDING: return '#ccd5f0'; // Light blue
+        case ReportStatus.OPENED: return '#ccd5f0'; // Light blue
+        case ReportStatus.REJECTED: return '#f4f5e6'; // Light yellow
+        default: return '#f1f1f1'; // Light gray
+      }
+    }
+  
+    getStatusTextColor(status: ReportStatus): string {
+      switch (status) {
+        case ReportStatus.ACCEPTED: return '#0da669'; // Green
+        case ReportStatus.PENDING: return '#0d33a6'; // Blue
+        case ReportStatus.OPENED: return '#0d33a6'; // Blue
+        case ReportStatus.REJECTED: return '#a3a60d'; // Yellow
+        default: return '#707070'; // Gray
+      }
+    }
 }

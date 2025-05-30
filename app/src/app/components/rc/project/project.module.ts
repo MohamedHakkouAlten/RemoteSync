@@ -24,6 +24,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 // InputTextarea might be needed if you add a description field later
 // import { InputTextareaModule } from 'primeng/inputtextarea';
 // ---------------------------------------
@@ -33,32 +34,31 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
         ProjectComponent
     ],
     imports: [
-        CommonModule,
-        FormsModule, // Make sure this is here for ngModel
-        ProjectsRoutingModule,
-
-        NavigationComponent, // Import shared component
-
-        // PrimeNG Modules
-        ButtonModule,
-        InputTextModule,
-        TableModule,
-        CheckboxModule,
-        AvatarModule,
-        AvatarGroupModule,
-        TagModule,
-        TooltipModule,
-        IconFieldModule,
-        InputIconModule,
-        // --- NEW: Add Dialog and Form Modules ---
-        DialogModule,
-        DropdownModule,
-        CalendarModule,
-        DropdownModule,
-        AutoCompleteModule
-
-        // InputTextareaModule // Add if needed
-        // ---------------------------------------
-    ]
+    CommonModule,
+    FormsModule, // Make sure this is here for ngModel
+    ProjectsRoutingModule,
+    NavigationComponent, // Import shared component
+    // PrimeNG Modules
+    ButtonModule,
+    InputTextModule,
+    TableModule,
+    CheckboxModule,
+    AvatarModule,
+    AvatarGroupModule,
+    TagModule,
+    TooltipModule,
+    IconFieldModule,
+    InputIconModule,
+    // --- NEW: Add Dialog and Form Modules ---
+    DialogModule,
+    DropdownModule,
+    CalendarModule,
+    DropdownModule,
+    AutoCompleteModule
+    // InputTextareaModule // Add if needed
+    // ---------------------------------------
+    ,
+    DefaultLayoutComponent
+]
 })
 export class ProjectModule { }

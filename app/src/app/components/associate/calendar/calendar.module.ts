@@ -9,6 +9,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';           // <-- Add for modal
 import { InputTextarea } from 'primeng/inputtextarea'; // <-- Add for note input
 import { RadioButtonModule } from 'primeng/radiobutton'; // <-- Add for event type selection
+import { ProgressSpinnerModule } from 'primeng/progressspinner'; // <-- Add for loading spinner
 
 // --- Routing & Component ---
 import { CalendarRoutingModule } from './calendar-routing.module';
@@ -29,6 +30,7 @@ import { NavigationComponent } from "../../shared/navigation/navigation.componen
     DialogModule,         // <-- Import
     InputTextarea,  // <-- Import
     RadioButtonModule,    // <-- Import
+    ProgressSpinnerModule, // <-- Import for loading state
     // Shared Components (if NavigationComponent is standalone, import it here)
     NavigationComponent // <-- Make sure this is correctly imported or declared standalone
   ]

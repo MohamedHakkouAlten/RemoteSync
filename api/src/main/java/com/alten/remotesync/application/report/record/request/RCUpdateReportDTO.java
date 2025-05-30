@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record RCUpdateReportDTO(
+public record RcUpdateReportDTO(
         @NotNull(message = "reportId must be provided")
         UUID reportId,
 

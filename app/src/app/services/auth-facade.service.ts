@@ -66,7 +66,7 @@ export class AuthFacadeService {
   logout(): Observable<void> {
     const result = this.authService.logout();
     // Navigate to login page after logout
-    this.router.navigate(['/RemoteSync/Login']);
+    this.router.navigate(['/remotesync/login']);
     return result;
   }
 

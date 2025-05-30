@@ -1,198 +1,221 @@
-<div class="p-6 md:p-8 bg-gray-50 min-h-screen">
-<p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
-  <!-- Header Section -->
-  <div class="mb-4">
-    <h1 class="text-2xl font-semibold text-gray-800">Rotation Schedule</h1>
-    <nav class="text-sm text-gray-500">
-      <span>Rotation Schedule <i class="pi pi-chevron-right !text-[11px] pl-3   "></i></span>
-    </nav>
-  </div>
-
-  <!-- Main Content Card -->
-  <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-    <!-- Top Controls Row -->
-    <div class="flex flex-col  justify-between  ">
-
-      <div class="flex  justify-between ">
-
-        <div class="flex flex-col gap-1">
-          <h2 class="text-xl font-bold text-gray-700 mr-4 hidden sm:block">Rotation Schedule</h2>
-
-          <div class="flex flex-row  justify-between items-center gap-2 flex-grow">
-
-            <!-- Other Filters (PrimeNG Buttons) -->
-            <!-- Add a custom class to target these specific filter buttons -->
-             <div class="space-y-2">
-            <div class="flex gap-4 items-center ">
-              <!-- Search Users (PrimeNG Input) -->
-              <p-iconfield>
-                <p-inputicon styleClass="pi pi-search !top-[52%] !text-[14px]" />
-                <input type="text" style="font-family: Inter;" [(ngModel)]="searchValue" (input)="onSearchInput()" class="!border-0 !bg-secondary !max-w-[210px] !text-sm"
-                  pInputText placeholder="Search" />
-              </p-iconfield>
-              <div class="flex !max-w-[210px] items-center pl-2  !bg-secondary ">
-                <i class="pi  pi-user text-gray-500 !text-base"></i>
-
-                <p-autocomplete  [(ngModel)]="selectedClient" (onSelect)="fetchUserRotationsByClient($event)"  [dropdown]="true" placeholder="Client" class="!border-0 !text-sm"
-                  [suggestions]="clients()" (completeMethod)="searchClient($event)" />
-
-              </div>
-              <div class="flex items-center pl-2 !max-w-[210px]  !bg-secondary ">
-                <i class="pi pi-briefcase text-gray-500 !text-base"></i>
-
-                <p-autocomplete  [(ngModel)]="selectedProject"  (onSelect)="fetchUserRotationsByProject($event)" [dropdown]="true" placeholder="Project" class="!border-0 "
-                  [suggestions]="projects()"  (completeMethod)="searchProject($event)" />
-
-              </div>
-              <div class="flex items-center pl-2 !max-w-[210px] !bg-secondary ">
-                <i class="pi pi-map-marker text-gray-500 !text-base"></i>
-
-                <p-autocomplete [(ngModel)]="selectedFactory" (onSelect)="fetchUserRotationsByFactory($event)" [dropdown]="true" placeholder="Factory" class="!border-0 "
-                  [suggestions]="currentFactories()" (completeMethod)="searchFactory($event)" />
-
-              </div>
-              <div class="flex items-center pl-2 !max-w-[210px] !bg-secondary ">
-                <i class="pi pi-building text-gray-500 !text-base"></i>
-
-                <p-autocomplete [(ngModel)]="selectedSubFactory" (onSelect)="fetchUserRotationsBySubFactory($event)" [dropdown]="true" placeholder="SubFactory"
-                  class="!border-0 " [suggestions]="currentSubFactories()" (completeMethod)="searchSubFactory($event)" />
-
-              </div>
-            </div>
-              <button
-              style="font-family: inter;"
-              class="text-[#4B5563] flex items-center cursor-pointer border-gray-400 justify-between  gap-2 rounded-full border-1  !h-6 px-4  text-[13px]"
-             (click)="clearFilters()"
-           
-          >
-          <i class="pi pi-times !text-[11px]" ></i>
-      
-        <span class="pb-0.5 tracking-wider"> clear </span> 
-        
-        </button>
-          </div>
-          </div>
-        </div>
-        <div class="flex items-end flex-col gap-2">
-
-          <button pButton type="button" label="Create a new Rotation" style="font-family: Comfortaa!important;"
-            class="!border-2 !text-sm !bg-white !text-primary !border-primary" (click)="showDialog()"></button>
-          <!-- Style pDropdown via CSS, maybe add a styleClass for targeting -->
-          <p-dropdown [options]="viewModes" [(ngModel)]="selectedViewMode" optionLabel="label"
-            (onChange)="onViewModeChange()" styleClass="!bg-primary  !border-0" placeholder="Select View">
-            <!-- Added view-mode-dropdown class -->
-            <ng-template pTemplate="selectedItem">
-              <div class="flex items-center  gap-1">
-                <i class="pi pi-calendar mr-1"></i>
-                <div>{{selectedViewMode.label}}</div>
-              </div>
-            </ng-template>
-            <ng-template let-option pTemplate="item">
-              <div class="flex items-center  gap-1">
-                <i class="pi pi-calendar mr-1"></i>
-                <div>{{option.label}}</div>
-              </div>
-            </ng-template>
-          </p-dropdown>
-        </div>
-
+<app-default-layout>
+  <div class="p-6 md:p-8 bg-gray-50 min-h-screen">
+    <p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
+      <!-- Header Section -->
+      <div class="mb-4">
+        <h1 class="text-2xl font-semibold text-gray-800">Rotation Schedule</h1>
+        <nav class="text-sm text-gray-500">
+          <span>Rotation Schedule <i class="pi pi-chevron-right !text-[11px] pl-3   "></i></span>
+        </nav>
       </div>
-      <!-- Filters -->
-      <!-- Calendar Navigation -->
-      <div class="flex items-center justify-between mb-4 px-2">
-        <!-- Basic PrimeNG text buttons -->
-        <button pButton type="button" icon="pi pi-angle-left" class="p-button-rounded p-button-text p-button-secondary"
-          (click)="previousPeriod()"></button>
-        <span class="text-base font-medium text-gray-700">{{ currentDateRangeLabel() }}</span>
-        <button pButton type="button" icon="pi pi-angle-right" class="p-button-rounded p-button-text p-button-secondary"
-          (click)="nextPeriod()"></button>
-      </div>
-
-      <!-- Calendar Grid -->
-      <div class="overflow-x-auto">
-        <div class="min-w-[800px]">
-
-          <!-- Header Row -->
-          <div class="flex flex-row items-baseline gap-x-2 px-2 py-3 rounded-t-md border-b border-gray-200">
-            <!-- User Label: Fixed width, doesn't shrink -->
-            <div class="w-[180px] flex-shrink-0 font-medium text-[#6B7280] text-sm pl-2">
-              <h1> User</h1>
-            </div>
-
-            <!-- Container for Dates: Takes remaining space, distributes dates -->
-            <div class="flex flex-row flex-grow gap-x-2">
-              <!-- Date Labels: Define basis/min-width, allow growing, center text -->
-              <div *ngFor="let date of displayedDates()"
-                class="min-w-[80px] flex-grow basis-[80px] font-medium text-[#6B7280] text-sm text-center">
-                <h1> {{ formatDateHeader(date) }} </h1>
-              </div>
-            </div>
-          </div>
-          <!-- User Rows (Using Flexbox) -->
-          <div *ngFor="let  rotation of userRotations().assignedRotations; let i = index"
-            class="flex flex-row items-center gap-x-2 px-2 py-3 border-b border-gray-100 bg-white ">
-
-            <!-- User Info Cell: Fixed width, doesn't shrink -->
-            <div class="w-[180px] flex-shrink-0 flex items-center space-x-3"> <!-- Added w-[180px] flex-shrink-0 -->
-              <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
-              <div>
-                <h1 class="font-medium text-gray-800 text-[12px]">{{ rotation.user!.firstName+' '+rotation.user!.lastName}}
-                </h1>
-                <h1 class="text-xs text-gray-500">Consultant</h1>
-              </div>
-            </div>
-            <!-- Container for Status Cells: Takes remaining space, distributes cells -->
-            <div class="flex flex-row flex-grow gap-x-2"> <!-- Wrapper div -->
-              <!-- Status Cells: Define basis/min-width, allow growing, center content -->
-              <div *ngFor="let date of displayedDates()"
-                class="min-w-[80px] flex-grow basis-[80px] flex justify-center items-center h-full">
-
-                <!-- PrimeNG ToggleSwitch with Custom Handle -->
-
-                <!-- PrimeNG ToggleSwitch with Custom Handle
-              <p-toggleSwitch styleClass="!h-1" [ngModel]="isUserWorking(user, date)"
-                (onChange)="onStatusToggle($event, user, date)" [styleClass]="getSwitchStyleClass(user, date)"
-                ariaLabelledBy="status-label-{{ rotation.id}}-{{formatDateKey(date)}}">
-
-              </p-toggleSwitch>
- -->
-                <app-three-state-toggle (valueChange)="updateRemoteState( rotation, date, $event)"
-                  [value]="getRemoteState( rotation.rotation,date)"></app-three-state-toggle>
-              </div>
-            </div>
-          </div>
-
-          <!-- No Users Found Message -->
-          <div *ngIf="userRotations().assignedRotations.length===0" class="text-center py-8 text-gray-500">
-            No users found matching your criteria.
-          </div>
-
-        </div>
-      </div>
-      <!-- Legend (Using standard Tailwind) -->
-      <div class="flex items-center justify-between space-x-6 mt-6 pt-4 border-t border-gray-200">
-        <div class="flex gap-4">
-        <div class="flex items-center space-x-2">
-          <span class="w-3 h-3 rounded-full bg-orange-500"></span>
-          <span class="text-sm text-gray-600">On-site</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-          <span class="text-sm text-gray-600">Remote</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="w-3 h-3 rounded-full bg-gray-300"></span>
-          <span class="text-sm text-gray-600">Off</span>
-        </div>
-        </div>
-
-        
-        <p-paginator [rows]="this.state().row()" [totalRecords]="totalRecords()" [first]="first" (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[5, 20, 30]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
     
-  
-      </div>
+      <!-- Main Content Card -->
+      <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+        <!-- Top Controls Row -->
+        <div class="flex flex-col  justify-between  ">
+    
+          <div class="flex  justify-between ">
+    
+            <div class="flex flex-col gap-1">
+              <h2 class="text-xl font-bold text-gray-700 mr-4 hidden sm:block">Rotation Schedule</h2>
+    
+              <div class="flex flex-row  justify-between items-center gap-2 flex-grow">
+    
+                <!-- Other Filters (PrimeNG Buttons) -->
+                <!-- Add a custom class to target these specific filter buttons -->
+                 <div class="space-y-2">
+                <div class="flex gap-4 items-center ">
+                  <!-- Search Users (PrimeNG Input) -->
+                  <p-iconfield>
+                    <p-inputicon styleClass="pi pi-search !top-[52%] !text-[14px]" />
+                    <input type="text" style="font-family: Inter;" [(ngModel)]="searchValue" (input)="onSearchInput()" class="!border-0 !bg-secondary !max-w-[210px] !text-sm"
+                      pInputText placeholder="Search" />
+                  </p-iconfield>
+                  <div class="flex !max-w-[210px] items-center pl-2 !bg-secondary">
+                    <i class="pi pi-user text-gray-500 !text-base"></i>
+    
+                    <p-dropdown [(ngModel)]="selectedClient" (onChange)="fetchUserRotationsByClient($event)" [options]="clients()" 
+                      optionLabel="label" placeholder="Client" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+                    </p-dropdown>
+    
+                  </div>
+                  <div class="flex !max-w-[210px] items-center pl-2 !bg-secondary">
+                    <i class="pi pi-briefcase text-gray-500 !text-base"></i>
+    
+                    <p-dropdown [(ngModel)]="selectedProject" (onChange)="fetchUserRotationsByProject($event)" [options]="projects()" 
+                      optionLabel="label" placeholder="Project" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+                    </p-dropdown>
+    
+                  </div>
+                  <div class="flex !max-w-[210px] items-center pl-2 !bg-secondary">
+                    <i class="pi pi-map-marker text-gray-500 !text-base"></i>
+    
+                    <p-dropdown [(ngModel)]="selectedFactory" (onChange)="fetchUserRotationsByFactory($event)" [options]="factories()" 
+                      optionLabel="label" placeholder="Factory" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+                    </p-dropdown>
+    
+                  </div>
+                  <div class="flex !max-w-[210px] items-center pl-2 !bg-secondary">
+                    <i class="pi pi-building text-gray-500 !text-base"></i>
+    
+                    <p-dropdown [(ngModel)]="selectedSubFactory" (onChange)="fetchUserRotationsBySubFactory($event)" [options]="subFactories()" 
+                      optionLabel="label" placeholder="SubFactory" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+                    </p-dropdown>
+    
+                  </div>
+                </div>
+                  <button
+                  style="font-family: inter;"
+                  class="text-[#4B5563] flex items-center cursor-pointer border-gray-400 justify-between  gap-2 rounded-full border-1  !h-6 px-4  text-[13px]"
+                 (click)="clearFilters()"
+               
+              >
+              <i class="pi pi-times !text-[11px]" ></i>
+          
+            <span class="pb-0.5 tracking-wider"> clear </span> 
+            
+            </button>
+              </div>
+              </div>
+            </div>
+            <div class="flex items-end flex-col gap-2">
+    
+              <button pButton type="button" label="Create a new Rotation" style="font-family: Comfortaa!important;"
+                class="!border-2 !text-sm !bg-white !text-primary !border-primary" (click)="openRotationModal()"></button>
+              <!-- Style pDropdown via CSS, maybe add a styleClass for targeting -->
+              <p-dropdown [options]="viewModes" [(ngModel)]="selectedViewMode" optionLabel="label"
+                (onChange)="onViewModeChange()" styleClass="!bg-primary  !border-0" placeholder="Select View">
+                <!-- Added view-mode-dropdown class -->
+                <ng-template pTemplate="selectedItem">
+                  <div class="flex items-center  gap-1">
+                    <i class="pi pi-calendar mr-1"></i>
+                    <div>{{selectedViewMode.label}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-option pTemplate="item">
+                  <div class="flex items-center  gap-1">
+                    <i class="pi pi-calendar mr-1"></i>
+                    <div>{{option.label}}</div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+    
+          </div>
+          <!-- Filters -->
+          <!-- Calendar Navigation -->
+          <div class="flex items-center justify-between mb-4 px-2">
+            <!-- Basic PrimeNG text buttons -->
+            <button pButton type="button" icon="pi pi-angle-left" class="p-button-rounded p-button-text p-button-secondary"
+              (click)="previousPeriod()"></button>
+            <span class="text-base font-medium text-gray-700">{{ currentDateRangeLabel() }}</span>
+            <button pButton type="button" icon="pi pi-angle-right" class="p-button-rounded p-button-text p-button-secondary"
+              (click)="nextPeriod()"></button>
+          </div>
+    
+          <!-- Calendar Grid -->
+          <div class="overflow-x-auto">
+            <div class="min-w-[800px]">
+    
+              <!-- Header Row -->
+              <div class="flex flex-row items-baseline gap-x-2 px-2 py-3 rounded-t-md border-b border-gray-200">
+                <!-- User Label: Fixed width, doesn't shrink -->
+                <div class="w-[180px] flex-shrink-0 font-medium text-[#6B7280] text-sm pl-2">
+                  <h1> User</h1>
+                </div>
+    
+                <!-- Container for Dates: Takes remaining space, distributes dates -->
+                <div class="flex flex-row flex-grow gap-x-2">
+                  <!-- Date Labels: Define basis/min-width, allow growing, center text -->
+                  <div *ngFor="let date of displayedDates()"
+                    class="min-w-[80px] flex-grow basis-[80px] font-medium text-[#6B7280] text-sm text-center">
+                    <h1> {{ formatDateHeader(date) }} </h1>
+                  </div>
+                </div>
+              </div>
+              <!-- User Rows (Using Flexbox) -->
+              <div *ngFor="let rotation of userRotations(); let i = index"
+                class="flex flex-row items-center gap-x-2 px-2 py-3 border-b border-gray-100 bg-white ">
+    
+                <!-- User Info Cell: Fixed width, doesn't shrink -->
+                <div class="w-[180px] flex-shrink-0 flex items-center space-x-3"> <!-- Added w-[180px] flex-shrink-0 -->
+                  <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                  <div>
+                    <h1 class="font-medium text-gray-800 text-[12px]">{{ rotation.fullName }}
+                    </h1>
+                    <h1 class="text-xs text-gray-500">Consultant</h1>
+                  </div>
+                </div>
+                <!-- Container for Status Cells: Takes remaining space, distributes cells -->
+                <div class="flex flex-row flex-grow gap-x-2"> <!-- Wrapper div -->
+                  <!-- Status Cells: Define basis/min-width, allow growing, center content -->
+                  <div *ngFor="let date of displayedDates()"
+                    class="min-w-[80px] flex-grow basis-[80px] flex justify-center items-center h-full">
+    
+                    <!-- PrimeNG ToggleSwitch with Custom Handle -->
+    
+                    <!-- PrimeNG ToggleSwitch with Custom Handle
+                  <p-toggleSwitch styleClass="!h-1" [ngModel]="isUserWorking(user, date)"
+                    (onChange)="onStatusToggle($event, user, date)" [styleClass]="getSwitchStyleClass(user, date)"
+                    ariaLabelledBy="status-label-{{ rotation.id}}-{{formatDateKey(date)}}">
+    
+                  </p-toggleSwitch>
+     -->
+                    <app-three-state-toggle (valueChange)="updateRemoteState(rotation, date, $event)"
+                      [value]="getRemoteState(rotation, date)"></app-three-state-toggle>
+                  </div>
+                </div>
+              </div>
+    
+              <!-- No Users Found Message -->
+              <div *ngIf="userRotations().length===0" class="text-center py-8 text-gray-500">
+                No users found matching your criteria.
+              </div>
+    
+            </div>
+          </div>
+          <!-- Pending Changes Actions Bar (only visible when there are changes) -->
+          <div *ngIf="hasPendingChanges()" class="flex items-center justify-between p-3 mt-4 mb-2 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="flex items-center">
+              <i class="pi pi-info-circle text-blue-500 mr-2"></i>
+              <span class="text-sm text-blue-700">You have pending changes that need to be saved.</span>
+            </div>
+            <div class="flex gap-2">
+              <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" (click)="cancelChanges()"></button>
+              <button pButton type="button" label="Save Changes" icon="pi pi-save" class="p-button-primary" (click)="saveChanges()"></button>
+            </div>
+          </div>
 
-    </div> <!-- End Content Card -->
+          <!-- Legend (Using standard Tailwind) -->
+          <div class="flex items-center justify-between space-x-6 mt-6 pt-4 border-t border-gray-200">
+            <div class="flex gap-4">
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+              <span class="text-sm text-gray-600">On-site</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+              <span class="text-sm text-gray-600">Remote</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="w-3 h-3 rounded-full bg-gray-300"></span>
+              <span class="text-sm text-gray-600">Off (No Assignment)</span>
+            </div>
+            </div>
+            
+    
+            
+            <p-paginator [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first" (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[5, 20, 30]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
+        
+      
+          </div>
+    
+        </div> <!-- End Content Card -->
+      </div>
+      <app-rotation [showModal]="showRotationModal" (modalClosed)="onRotationModalClosed()"></app-rotation>
   </div>
-  <app-rotation [(visible)]="isDialogVisible" (createRotation)="showRotationCreatedToast($event)">
-  </app-rotation>
+ </app-default-layout>

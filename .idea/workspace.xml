@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="589a8712-f6b0-41f3-b741-ce4a6e235c04" name="Changes" comment="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/request/PagedRotationsSearchDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/request/RcAssignRotationUserDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/request/RcUpdateAssociateRotationDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/AssociateCurrentRotationDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/OnSiteWeeksDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/PagedRcRecentAssociateRotations.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/RcCountCurrentAssociateOnSiteDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/response/RcRecentAssociateRotations.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/record/response/RcFactoriesCountDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/record/request/PagedNotificationSearchDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/record/response/NotificationDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/record/response/PagedNotificationDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/record/request/PagedProjectSearchDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/record/response/RcActiveProjectsCountDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/record/response/RcCompletedProjectsCountDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/record/response/RcProjectsCountDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/request/PagedReportSearchDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/record/response/RcSubFactoriesCapacityCountDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/record/response/AssociateProfileDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/record/response/RcSearchAssociateDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/record/response/UserDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/src/main/resources/db/migrations/V5__ROTATION_CUSTOM_DATE_STATUS.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/.editorconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/angular.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/app-routing.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/app.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/app.component.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/app.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/app.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/models/calendar.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/models/dashboard.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/models/interfaces.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/models/report.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/utils/calendar-helpers.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/associate/utils/ui-helpers.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login-routing.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/associate-project-by-client.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/associate-project-by-label.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/create-report.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/current-rotations.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/dashboard.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/associate/project.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/client.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/create-associate-report.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/dashboard.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/initial-projects.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/notification-status.enum.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/notification.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/paged-global-id.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/paged-notification-search.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/paged-project.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/paged-report-search.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/paged-report.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/profile.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/project-status.enum.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/project.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/projects-count.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/report-status.enum.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/report-type.enum.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/report.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/dto/user.dto.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/models/rc.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/services/associate.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/app/services/rc.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/tsconfig.app.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/tsconfig.spec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/RemoteSyncApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/RemoteSyncApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AssociateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AssociateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/RcController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/RcController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/mapper/AssignedRotationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/mapper/AssignedRotationMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/record/request/CreateAssignedRotationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/mapper/ClientMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/mapper/ClientMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/record/response/ClientDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/record/response/ClientDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/service/ClientService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/service/ClientService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/service/ClientServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/client/service/ClientServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/mapper/FactoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/mapper/FactoryMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/factory/service/FactoryServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/mapper/NotificationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/mapper/NotificationMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/notification/service/NotificationServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/mapper/ProjectMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/mapper/ProjectMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/record/response/ProjectsCountDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/mapper/ReportMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/mapper/ReportMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/request/CreateAssociateReportDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/request/CreateAssociateReportDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/request/RCUpdateReportDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/request/RCUpdateReportDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/response/RCPagedReportDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/response/RCPagedReportDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/mapper/SubFactoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/mapper/SubFactoryMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/record/response/SubFactoryDropDownDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/record/response/SubFactoryDropDownDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/subFactory/service/SubFactoryServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/assignedRotation/repository/AssignedRotationDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/assignedRotation/repository/AssignedRotationDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/customDate/model/CustomDate.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/customDate/model/CustomDate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/log/model/Log.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/log/model/Log.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/notification/model/Notification.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/notification/model/Notification.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/notification/repository/NotificationDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/notification/repository/NotificationDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/model/Project.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/model/Project.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/repository/ProjectDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/repository/ProjectDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/report/repository/ReportDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/report/repository/ReportDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/rotation/enumeration/RotationStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/rotation/enumeration/RotationStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/rotation/model/Rotation.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/rotation/model/Rotation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/model/SubFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/model/SubFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/projection/SubFactoryProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/projection/SubFactoryProjection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/repository/SubFactoryDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/subFactory/repository/SubFactoryDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/repository/UserDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/repository/UserDomainRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/resources/db/migrations/V1__INIT_REMOTESYNC.sql" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/resources/db/migrations/V1__INIT_REMOTESYNC.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/resources/db/migrations/V5__ADD_COLUMNS_SHIFT&amp;CYCLE_INSTEAD_SEQUENCE_TABLE_ROTATION.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/public/assets/i18n/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/public/assets/i18n/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/public/assets/i18n/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/public/assets/i18n/fr.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/three-state-toggle/three-state-toggle.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/three-state-toggle/three-state-toggle.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/dto/response-wrapper.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/response-wrapper.dto.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/auth-facade.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/auth-facade.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/client.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/dash-board.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/factory.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/project.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/report.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/rotation.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/services/subfactory.service.ts" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="backupV2" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MohamedHakkouAlten&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MohamedHakkouAlten/RemoteSync&quot;,
+    &quot;accountId&quot;: &quot;23667c6e-e609-4e7a-b826-c57f248e1b54&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2xcs52YuiohYeReffOSpwItKYjW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.RemoteSync.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/mhakkou/Documents/IdeaProjects/RemoteSync&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="RemoteSync" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.alten.remotesync.RemoteSyncApplication" />
+      <module name="remotesync" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="RemoteSync" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="RemoteSync" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="589a8712-f6b0-41f3-b741-ce4a6e235c04" name="Changes" comment="" />
+      <created>1748248512521</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748248512521</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing" />
+  </component>
+</project>

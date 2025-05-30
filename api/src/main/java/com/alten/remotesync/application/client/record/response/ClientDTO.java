@@ -1,4 +1,9 @@
 package com.alten.remotesync.application.client.record.response;
 
-public record ClientDTO() {
+import java.util.UUID;
+
+public record ClientDTO(
+        UUID clientId,
+        String label
+) {
 }

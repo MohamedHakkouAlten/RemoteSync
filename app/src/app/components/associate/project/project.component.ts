@@ -1,131 +1,421 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AssociateService } from '../../../services/associate.service';
+import { ProjectDTO } from '../../../dto/project.dto';
+import { PagedProjectDTO } from '../../../dto/paged-project.dto';
+import { ProjectStatus } from '../../../dto/project-status.enum';
+import { debounceTime, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
+import { Subject, of, Subscription } from 'rxjs';
+import { PagedProjectSearchDTO } from '../../../dto/paged-global-id.dto';
+import { AssociateProjectByLabelDTO } from '../../../dto/associate/associate-project-by-label.dto';
+import { AssociateProjectByClientDTO } from '../../../dto/associate/associate-project-by-client.dto';
+import { Client } from '../../../dto/client.dto';
 
-// Interface for Dropdown options
-interface SelectItem {
-  label: string;
-  value: string | null; // Allow null for "All" options
-}
+// Import shared interfaces from the models folder
+import { ClientSelectItem, StatusSelectItem } from '../models/interfaces';
 
-// Interface for Assignee Avatars
-interface Assignee {
-  image?: string; // URL to avatar image
-  label?: string; // Initials if no image
-  styleClass?: string; // Optional extra class
-}
+// Import utility helpers
+import { AssociateUIHelpers } from '../utils/ui-helpers';
 
-// Interface for Project Card Data
-interface ProjectCard {
-  id: number;
-  title: string;
-  category: string;
-  client: string;
-  dueDate: string; // Or Date object
-  progress: number;
-  assignees: Assignee[];
-  remainingAssignees?: number; // Number for the "+X" badge
-  status: 'In Progress' | 'At Risk' | 'Completed' | 'On Hold';
-  statusSeverity: 'warn' | 'danger' | 'success' | 'secondary'; // Maps to p-badge severity
-}
+// Define the specific string literal type for PrimeNG badge severity
+type BadgeSeverity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
+
 
 @Component({
   selector: 'app-project',
-  standalone: false,
   templateUrl: './project.component.html',
-  styleUrls: ['./project.component.css']
+  styleUrls: ['./project.component.css'],
+  standalone: false
 })
-export class ProjectComponent implements OnInit {
-
-  // --- Component Properties ---
+export class ProjectComponent implements OnInit, OnDestroy {
+  // UI state properties
   searchTerm: string = '';
-  selectedStatus: string | null = null; // Bound to status dropdown
-  selectedClient: string | null = null; // Bound to client dropdown
+  selectedStatus: ProjectStatus | null = null;
+  selectedClient: string | null = null;
 
-  allProjects: ProjectCard[] = []; // Holds the master list
-  filteredProjects: ProjectCard[] = []; // Holds the displayed list
+  // Data properties
+  pagedProjects: PagedProjectDTO | null = null;
+  isLoading: boolean = false;
+  loadingError: boolean = false;
+  
+  // Pagination properties
+  currentPage: number = 0;
+  pageSize: number = 10;
 
-  statusOptions: SelectItem[] = []; // Options for status dropdown
-  clientOptions: SelectItem[] = []; // Options for client dropdown
+  // Dropdown options
+  statusOptions: StatusSelectItem[] = [];
+  clientOptions: ClientSelectItem[] = [];
 
-  constructor() { }
+  // Private properties
+  private loadingTimeout: any = null;
+  private searchSubject = new Subject<string>();
+  private subscriptions: Subscription[] = [];
 
+  constructor(private associateService: AssociateService) { }
+
+  /**
+   * Initialize component data and setup subscriptions
+   */
   ngOnInit(): void {
-    // --- Load Sample Data ---
-    this.loadSampleProjects(); // Populate allProjects
+    // Initialize status filter options
+    this.initStatusOptions();
 
-    // --- Prepare Dropdown Options ---
+    // Load initial data (clients and projects)
+    this.loadInitialData();
+
+    // Setup search debounce
+    const searchSubscription = this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+    ).subscribe(() => {
+      this.currentPage = 0;
+      this.loadProjects();
+    });
+    
+    // Add to subscriptions array for cleanup
+    this.subscriptions.push(searchSubscription);
+  }
+  
+  /**
+   * Clean up subscriptions and timers on component destruction
+   */
+  ngOnDestroy(): void {
+    // Clear all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    
+    // Clear any pending timers
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
+  }
+  
+  /**
+   * Initialize status filter options
+   */
+  private initStatusOptions(): void {
     this.statusOptions = [
       { label: 'All Status', value: null },
-      { label: 'In Progress', value: 'In Progress' },
-      { label: 'At Risk', value: 'At Risk' },
-      { label: 'Completed', value: 'Completed' },
-      { label: 'On Hold', value: 'On Hold' }
+      { label: 'In Progress', value: ProjectStatus.ACTIVE },
+      { label: 'Completed', value: ProjectStatus.COMPLETED },
+      { label: 'At Risk', value: ProjectStatus.PENDING },
+      { label: 'On Hold', value: ProjectStatus.INACTIVE },
+      { label: 'Cancelled', value: ProjectStatus.CANCELLED }
     ];
-    // Dynamically create client options from the project data
-    this.clientOptions = this.generateClientOptions(this.allProjects);
-
-    // --- Initialize Displayed Projects ---
-    this.filterProjects(); // Apply initial (empty) filters
   }
 
-  /**
-   * Loads sample project data into the component.
-   * Replace this with actual data fetching from a service.
-   */
-  loadSampleProjects(): void {
-    this.allProjects = [
-      { id: 1, title: 'Website Redesign', category: 'Digital Transformation', client: 'TechCorp Inc.', dueDate: 'Oct 26, 2024', progress: 75, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], remainingAssignees: 2, status: 'In Progress', statusSeverity: 'warn' },
-      { id: 2, title: 'Mobile App Development', category: 'Product Development', client: 'InnovateTech', dueDate: 'Dec 15, 2024', progress: 45, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], status: 'At Risk', statusSeverity: 'danger' },
-      { id: 3, title: 'Cloud Migration', category: 'Infrastructure', client: 'DataFlow Systems', dueDate: 'Sep 30, 2024', progress: 100, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], remainingAssignees: 4, status: 'Completed', statusSeverity: 'success' },
-      { id: 4, title: 'CRM Implementation', category: 'Business Solutions', client: 'Global Services Ltd', dueDate: 'Nov 30, 2024', progress: 30, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], remainingAssignees: 1, status: 'On Hold', statusSeverity: 'secondary' },
-      { id: 5, title: 'Data Analytics Platform', category: 'Business Intelligence', client: 'Analytics Pro', dueDate: 'Jan 15, 2025', progress: 60, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], remainingAssignees: 3, status: 'In Progress', statusSeverity: 'warn' },
-      { id: 6, title: 'Security Audit', category: 'Cybersecurity', client: 'SecureNet Inc', dueDate: 'Oct 15, 2024', progress: 100, assignees: [{ image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }, { image: 'assets/images/avatar1.png' }], status: 'Completed', statusSeverity: 'success' },
-    ];
-    // IMPORTANT: Create dummy avatar image files in your assets folder (e.g., assets/images/avatar1.png)
-    // or use initials: assignees: [{ label: 'AV' }, { label: 'BS' }] etc.
-  }
-
-  /**
-   * Generates unique client options for the dropdown.
-   * @param projects - The full list of projects.
-   * @returns An array of SelectItem for the client dropdown.
-   */
-  generateClientOptions(projects: ProjectCard[]): SelectItem[] {
-    // Get unique client names
-    const uniqueClients = [...new Set(projects.map(p => p.client))];
-    // Create SelectItem objects
-    const clientItems = uniqueClients.map(client => ({ label: client, value: client }));
-    // Add "All Clients" option at the beginning
-    return [{ label: 'All Clients', value: null }, ...clientItems];
-  }
-
-  /**
-   * Filters the displayed projects based on current search term,
-   * selected status, and selected client.
-   */
-  filterProjects(): void {
-    let projectsToFilter = [...this.allProjects]; // Start with the full list
-
-    // Apply search term filter (case-insensitive)
-    if (this.searchTerm) {
-      const lowerSearchTerm = this.searchTerm.toLowerCase();
-      projectsToFilter = projectsToFilter.filter(project =>
-        project.title.toLowerCase().includes(lowerSearchTerm) ||
-        project.category.toLowerCase().includes(lowerSearchTerm)
-        // Add || project.client.toLowerCase().includes(lowerSearchTerm) if needed
-      );
+  loadInitialData(): void {
+    this.isLoading = true;
+    this.loadingError = false;
+    
+    // Clear any existing timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
     }
+    
+    // Set a timeout to show error if loading takes too long
+    this.loadingTimeout = setTimeout(() => {
+      if (this.isLoading) {
+        this.loadingError = true;
+      }
+    }, 15000); // 15 seconds timeout
+    this.associateService.getInitialProjects().pipe(
+      tap(response => {
+        if (response.status === 'success' && response.data) {
+          // Set clients for dropdown
+          this.loadClientsForDropdown(response.data.allClients);
+          
+          // Set initial projects - the response already contains a PagedProjectDTO
+          this.pagedProjects = response.data.projects;
+        } else {
+          this.pagedProjects = null;
+        }
+        
+        // Clear the timeout as we got a response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+        
+        this.isLoading = false;
+      }),
+      catchError(error => {
+        console.error('Error loading initial projects data:', error);
+        this.pagedProjects = null;
+        
+        // Clear the timeout as we got an error response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+        
+        this.isLoading = false;
+        this.loadingError = true;
+        return of(null);
+      })
+    ).subscribe();
+  }
 
-    // Apply status filter
+  loadProjects(): void {
+    this.isLoading = true;
+    this.loadingError = false;
+    
+    // Clear any existing timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
+    
+    // Set a timeout to show error if loading takes too long
+    this.loadingTimeout = setTimeout(() => {
+      if (this.isLoading) {
+        this.loadingError = true;
+      }
+    }, 15000); // 15 seconds timeout
+    if (this.searchTerm && this.searchTerm.trim() !== '') {
+      this.searchProjectsByLabel();
+    } else if (this.selectedClient) {
+      this.fetchProjectsByClient();
+    }
+    else {
+      this.fetchAllProjects();
+    }
+  }
+
+  fetchAllProjects(): void {
+    const pagedDto: PagedProjectSearchDTO = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize
+    };
+    if (this.searchTerm && this.searchTerm.trim() !== '') {
+      pagedDto.label = this.searchTerm;
+    }
     if (this.selectedStatus) {
-      projectsToFilter = projectsToFilter.filter(project => project.status === this.selectedStatus);
+      pagedDto.status = this.selectedStatus;
     }
-
-    // Apply client filter
-    if (this.selectedClient) {
-      projectsToFilter = projectsToFilter.filter(project => project.client === this.selectedClient);
-    }
-
-    this.filteredProjects = projectsToFilter; // Update the displayed list
+    this.associateService.getOldProjects(pagedDto).pipe(
+      tap(response => {
+        if (response.status === 'success' && response.data) {
+          this.pagedProjects = response.data;
+        } else {
+          this.pagedProjects = null;
+        }
+        this.isLoading = false;
+      }),
+      catchError(error => {
+        console.error('Error fetching all projects:', error);
+        this.pagedProjects = null;
+        
+        // Clear the timeout as we got an error response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+        
+        this.isLoading = false;
+        this.loadingError = true;
+        return of(null);
+      })
+    ).subscribe();
   }
 
+  searchProjectsByLabel(): void {
+    const pagedDto: PagedProjectSearchDTO = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize
+    };
+    if (this.searchTerm && this.searchTerm.trim() !== '') {
+      pagedDto.label = this.searchTerm;
+    }
+    if (this.selectedStatus) {
+      pagedDto.status = this.selectedStatus;
+    }
+    this.associateService.getOldProjects(pagedDto).pipe(
+      tap(response => {
+        if (response.status === 'success' && response.data) {
+          this.pagedProjects = response.data;
+        } else {
+          this.pagedProjects = null;
+        }
+        this.isLoading = false;
+      }),
+      catchError(error => {
+        console.error('Error searching projects by label:', error);
+        this.pagedProjects = null;
+        
+        // Clear the timeout as we got an error response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+        
+        this.isLoading = false;
+        this.loadingError = true;
+        return of(null);
+      })
+    ).subscribe();
+  }
+  
+  fetchProjectsByClient(): void {
+    if (!this.selectedClient) {
+        this.fetchAllProjects(); 
+        return;
+    }
+    const dto: AssociateProjectByClientDTO = {
+        clientId: this.selectedClient,
+        pageNumber: this.currentPage,
+        pageSize: this.pageSize
+    };
+    this.associateService.getAssociateProjectsByClient(dto).pipe(
+        tap(response => {
+            if (response.status === 'success' && response.data) {
+                this.pagedProjects = response.data;
+            } else {
+                this.pagedProjects = null;
+            }
+            this.isLoading = false;
+        }),
+        catchError(error => {
+          console.error('Error fetching projects by client:', error);
+          this.pagedProjects = null;
+          
+          // Clear the timeout as we got an error response
+          if (this.loadingTimeout) {
+            clearTimeout(this.loadingTimeout);
+            this.loadingTimeout = null;
+          }
+          
+          this.isLoading = false;
+          this.loadingError = true;
+          return of(null);
+      })
+    ).subscribe();
+  }
+
+  loadClientsForDropdown(clients: Client[]): void {
+    // Map Client objects to ClientSelectItem format
+    const mappedClients = clients.map(client => ({
+      id: client.clientId,
+      name: client.label || client.name || client.clientId // Use label as name, fallback to name or ID
+    }));
+    
+    // Add "All Clients" option at the beginning of the dropdown
+    this.clientOptions = [{ name: 'All Clients', id: null }, ...mappedClients];
+  }
+
+  onSearchTermChange(): void {
+    this.searchSubject.next(this.searchTerm);
+  }
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.loadProjects(); 
+  }
+  
+  onClientFilterChange(): void {
+    this.currentPage = 0;
+    this.searchTerm = ''; 
+    this.loadProjects();
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.page;
+    this.pageSize = event.rows;
+    this.loadProjects();
+  }
+
+  getProjectProgress(project: ProjectDTO): number {
+    if (!project || !project.startDate || !project.deadLine) return 0;
+    const start = new Date(project.startDate).getTime();
+    const end = new Date(project.deadLine).getTime();
+    const now = Date.now();
+
+    if (project.status === ProjectStatus.COMPLETED) return 100;
+    if (project.status === ProjectStatus.CANCELLED || project.status === ProjectStatus.INACTIVE) return 0; 
+    if (now >= end ) return 100; 
+    if (now < start) return 0;
+
+    const progress = ((now - start) / (end - start)) * 100;
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  }
+
+  getProjectStatusSeverity(status?: string): BadgeSeverity {
+    if (!status) return 'secondary';
+    
+    // Convert any status string to proper BadgeSeverity type
+    const statusLower = status.toLowerCase();
+    
+    if (statusLower.includes('active') || statusLower.includes('progress')) {
+      return 'warn';
+    } else if (statusLower.includes('risk') || statusLower.includes('danger')) {
+      return 'danger';
+    } else if (statusLower.includes('complete')) {
+      return 'success';
+    } else if (statusLower.includes('cancel')) {
+      return 'secondary';
+    } else if (statusLower.includes('hold') || statusLower.includes('inactive')) {
+      return 'secondary';
+    } else if (statusLower.includes('pend')) {
+      return 'info';
+    }
+    
+    return 'secondary';
+  }
+  
+  getProgressBarColor(project: ProjectDTO): string {
+    return AssociateUIHelpers.getProgressBarColor(project?.status);
+  }
+  
+  /**
+   * Get CSS class based on client sector/industry
+   * @param sector Client sector or industry (can be undefined)
+   * @returns CSS class for styling client avatar
+   */
+  getSectorClass(sector: string | undefined): string {
+    if (!sector) return 'default-sector';
+    
+    const sectorLower = sector.toLowerCase();
+    if (sectorLower.includes('tech') || sectorLower.includes('software')) {
+      return 'tech-sector';
+    } else if (sectorLower.includes('finance') || sectorLower.includes('bank')) {
+      return 'finance-sector';
+    } else if (sectorLower.includes('health') || sectorLower.includes('medical')) {
+      return 'health-sector';
+    } else if (sectorLower.includes('edu')) {
+      return 'education-sector';
+    } else if (sectorLower.includes('retail')) {
+      return 'retail-sector';
+    }
+    return 'default-sector';
+  }
+  
+  /**
+   * Get client initials for avatar display
+   * @param project Project containing client info
+   * @returns Client initials (2 characters) or default placeholder
+   */
+  getClientInitials(project: ProjectDTO): string {
+    if (!project || !project.owner || !project.owner.name) return 'CL';
+    
+    const clientName = project.owner.name;
+    const nameParts = clientName.split(' ');
+    
+    if (nameParts.length >= 2) {
+      return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+    } else if (nameParts.length === 1 && nameParts[0].length >= 2) {
+      return nameParts[0].substring(0, 2).toUpperCase();
+    } else {
+      return 'CL';
+    }
+  }
+  
+  /**
+   * Navigate to project details page
+   * @param project Project to view details for
+   */
+  viewProjectDetails(project: ProjectDTO): void {
+    if (project && project.projectId) {
+      // Navigate to project details page using the project ID
+      // this.router.navigate(['/associate/projects', project.projectId]);
+      console.log('View project details:', project.projectId);
+      // For now, just log the action as the navigation isn't implemented yet
+    }
+  }
 }

@@ -9,29 +9,35 @@ import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
+import com.alten.remotesync.application.project.record.request.PagedProjectSearchDTO;
 import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
 import com.alten.remotesync.application.project.record.response.*;
+import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
+import com.alten.remotesync.domain.assignedRotation.repository.AssignedRotationDomainRepository;
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.domain.project.model.Project;
-import com.alten.remotesync.domain.project.projection.ProjectDashBoardProjection;
 import com.alten.remotesync.domain.project.projection.ProjectLargestMembersProjection;
 import com.alten.remotesync.domain.project.projection.ProjectMembersProjection;
 import com.alten.remotesync.domain.project.repository.ProjectDomainRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class ProjectServiceImp implements ProjectService {
     private final ProjectDomainRepository projectDomainRepository;
+    private final AssignedRotationDomainRepository assignedRotationDomainRepository;
     private final ProjectMapper projectMapper;
+    private final EntityManager entityManager;
 
     @Override
     public ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO) {
@@ -40,136 +46,136 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO) {
-        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjects(
-                        globalDTO.userId(),
-                        PageRequest.of(pagedGlobalDTO.pageNumber(),
-                                (pagedGlobalDTO.pageSize() != null) ? pagedGlobalDTO.pageSize() : 10))
-                .orElseThrow(()->new UserNotFoundException("user not found"));
+    public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedProjectSearchDTO pagedProjectSearchDTO) {
+        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsFiltered(
+                globalDTO.userId(),
+                pagedProjectSearchDTO.label(),
+                pagedProjectSearchDTO.status(),
+                pagedProjectSearchDTO.clientId(),
+                PageRequest.of(pagedProjectSearchDTO.pageNumber(),
+                        (pagedProjectSearchDTO.pageSize() != null) ? pagedProjectSearchDTO.pageSize() : 10)).orElseThrow(() -> new UserNotFoundException("user not found"));
 
-        return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
+        return new PagedProjectDTO(pagedProjects.stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
                 pagedProjects.getTotalElements(),
-                pagedGlobalDTO.pageNumber() + 1,
-                pagedGlobalDTO.pageSize()
+                pagedProjectSearchDTO.pageNumber() + 1,
+                pagedProjectSearchDTO.pageSize()
         );
     }
+//
+//    @Override
+//    public ProjectDTO getProjectDetails(GlobalDTO globalDTO) {
+//        Project project = projectDomainRepository.findById(globalDTO.projectId())
+//                .orElseThrow(()->new ProjectNotFoundException("Project Not found"));
+//        return projectMapper.toProjectDTO(project);
+//
+//    }
+//
+//    @Override
+//    public PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO) {
+//
+//        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByLabel
+//                        (globalDTO.userId(),
+//                                associateProjectByLabelDTO.label(),
+//                                PageRequest.of(associateProjectByLabelDTO.pageNumber(),
+//                                        (associateProjectByLabelDTO.pageSize() != null) ? associateProjectByLabelDTO.pageSize() : 10))
+//                .orElseThrow(()->new UserNotFoundException("user not found"));
+//
+//        return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
+//                pagedProjects.getTotalPages(),
+//                pagedProjects.getTotalElements(),
+//                associateProjectByLabelDTO.pageNumber() + 1,
+//                associateProjectByLabelDTO.pageSize()
+//        );
+//    }
 
     @Override
-    public ProjectDTO getProjectDetails(GlobalDTO globalDTO) {
-        Project project = projectDomainRepository.findById(globalDTO.projectId())
-                .orElseThrow(()->new ProjectNotFoundException("Project Not found"));
-        return projectMapper.toProjectDTO(project);
-
-    }
-
-    @Override
-    public PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO) {
-
-        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByLabel
-                        (globalDTO.userId(),
-                                associateProjectByLabelDTO.label(),
-                                PageRequest.of(associateProjectByLabelDTO.pageNumber(),
-                                        (associateProjectByLabelDTO.pageSize() != null) ? associateProjectByLabelDTO.pageSize() : 10))
-                .orElseThrow(()->new UserNotFoundException("user not found"));
-
-        return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
-                pagedProjects.getTotalPages(),
-                pagedProjects.getTotalElements(),
-                associateProjectByLabelDTO.pageNumber() + 1,
-                associateProjectByLabelDTO.pageSize()
-        );
-    }
-
-    @Override
-    public ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO) {
+    public RcProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO) {
 
         return projectMapper.toProjectsCount(projectDomainRepository.fetchAssociateProjectsCount(globalDTO.userId())
                         .orElseThrow(()->new UserNotFoundException("user not found"))
         );
     }
 
-    @Override
-    public PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO) {
-
-        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByClient(
-                        globalDTO.userId(),
-                       associateProjectByClientDTO.clientId(),
-                        PageRequest.of(associateProjectByClientDTO.pageNumber(),
-                                (associateProjectByClientDTO.pageSize() != null) ? associateProjectByClientDTO.pageSize() : 10))
-                .orElseThrow(()->new UserNotFoundException("user not found"));
-
-        return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
-                pagedProjects.getTotalPages(),
-                pagedProjects.getTotalElements(),
-                associateProjectByClientDTO.pageNumber() + 1,
-               associateProjectByClientDTO.pageSize()
-        );
-    }
-
-    @Override
-    public ProjectDashBoardDTO getLongestDurationProject() {
-
-
-        return projectMapper.toProjectDashBoardDTO(projectDomainRepository.findLongestDurationProject()
-                .orElseThrow(() -> new ProjectNotFoundException("No projects exist")));
-    }
-
-    @Override
-    @Transactional
-    public ProjectLargestMembersDTO getRCLargestMembersProject() {
-        ProjectLargestMembersProjection largestMembersProjection=projectDomainRepository.fetchRCProjectWithLargestTeam().orElseThrow(()->new ProjectNotFoundException("no project was found"));
-        System.out.println(largestMembersProjection.getProjectId()+"v"+largestMembersProjection.getUsersCount());
-        List<String> membersProjections=projectDomainRepository.findFirst5UsersByProject(largestMembersProjection.getProjectId()).orElseThrow(()->new ProjectNotFoundException("project not found")).stream().map(ProjectMembersProjection::getInitials).toList();
-        return new ProjectLargestMembersDTO(largestMembersProjection.getProjectId(), largestMembersProjection.getLabel(), largestMembersProjection.getTitre(),
-                largestMembersProjection.getStatus(),largestMembersProjection.getDeadLine(),largestMembersProjection.getStartDate(),
-                membersProjections, largestMembersProjection.getUsersCount());
-
-    }
-
-    @Override
-    public ProjectsCountDTO getCompletedProjectsCount() {
-
-        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.COMPLETED));
-    }
-
-
-    @Override
-    public ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO) {
-
-        Project project = projectMapper.toProject(updateProjectDTO);
-        Project dbProject = projectDomainRepository.findById(project.getProjectId()).orElseThrow(() -> new ProjectNotFoundException("project doesn't exist"));
-        project.setIsDeleted(dbProject.getIsDeleted());
-        project.setOwner(dbProject.getOwner());
-        projectDomainRepository.save(project);
-        return projectMapper.toProjectDTO(project);
-    }
-
-    @Override
-    public ProjectsCountDTO getRcCountInactiveProjects() {
-        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.INACTIVE));
-    }
-
-    @Override
-    public List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO) {
-        return projectDomainRepository.findAllByOwner_ClientId(globalDTO.clientId()).orElseThrow(() -> new ClientNotFoundException("Client not found")).stream().map(projectMapper::toProjectDropDownDTO).toList();
-    }
-
-    @Override
-    public List<ProjectDropDownDTO> getRcProjectsByLabel(String label) {
-        if(label.isBlank()) return projectDomainRepository.findAllBy(PageRequest.of(0,10)).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
-        return projectDomainRepository.findTop10ByLabelContainsIgnoreCase(label).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
-    }
+//    @Override
+//    public PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO) {
+//
+//        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsByClient(
+//                        globalDTO.userId(),
+//                       associateProjectByClientDTO.clientId(),
+//                        PageRequest.of(associateProjectByClientDTO.pageNumber(),
+//                                (associateProjectByClientDTO.pageSize() != null) ? associateProjectByClientDTO.pageSize() : 10))
+//                .orElseThrow(()->new UserNotFoundException("user not found"));
+//
+//        return new PagedProjectDTO(pagedProjects.getContent().stream().map(projectMapper::toProjectDTO).toList(),
+//                pagedProjects.getTotalPages(),
+//                pagedProjects.getTotalElements(),
+//                associateProjectByClientDTO.pageNumber() + 1,
+//               associateProjectByClientDTO.pageSize()
+//        );
+//    }
+//
+//    @Override
+//    public ProjectDashBoardDTO getLongestDurationProject() {
+//        return projectMapper.toProjectDashBoardDTO(projectDomainRepository.findLongestDurationProject()
+//                .orElseThrow(() -> new ProjectNotFoundException("No projects exist")));
+//    }
+//
+//    //@Override
+//    @Transactional
+//    public ProjectLargestMembersDTO getRCLargestMembersProject() {
+//        ProjectLargestMembersProjection largestMembersProjection=projectDomainRepository.fetchRCProjectWithLargestTeam().orElseThrow(()->new ProjectNotFoundException("no project was found"));
+//        System.out.println(largestMembersProjection.getProjectId()+"v"+largestMembersProjection.getUsersCount());
+//        List<String> membersProjections=projectDomainRepository.findFirst5UsersByProject(largestMembersProjection.getProjectId()).orElseThrow(()->new ProjectNotFoundException("project not found")).stream().map(ProjectMembersProjection::getInitials).toList();
+//        return new ProjectLargestMembersDTO(largestMembersProjection.getProjectId(), largestMembersProjection.getLabel(), largestMembersProjection.getTitre(),
+//                largestMembersProjection.getStatus(),largestMembersProjection.getDeadLine(),largestMembersProjection.getStartDate(),
+//                membersProjections, largestMembersProjection.getUsersCount());
+//
+//    }
+//
+//    @Override
+//    public RcProjectsCountDTO getCompletedProjectsCount() {
+//
+//        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.COMPLETED));
+//    }
+//
+//
+//    @Override
+//    public ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO) {
+//
+//        Project project = projectMapper.toProject(updateProjectDTO);
+//        Project dbProject = projectDomainRepository.findById(project.getProjectId()).orElseThrow(() -> new ProjectNotFoundException("project doesn't exist"));
+//        project.setIsDeleted(dbProject.getIsDeleted());
+//        project.setOwner(dbProject.getOwner());
+//        projectDomainRepository.save(project);
+//        return projectMapper.toProjectDTO(project);
+//    }
+//
+//    @Override
+//    public RcProjectsCountDTO getRcCountInactiveProjects() {
+//        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.INACTIVE));
+//    }
+//
+//    @Override
+//    public List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO) {
+//        return projectDomainRepository.findAllByOwner_ClientId(globalDTO.clientId()).orElseThrow(() -> new ClientNotFoundException("Client not found")).stream().map(projectMapper::toProjectDropDownDTO).toList();
+//    }
+//
+//    @Override
+//    public List<ProjectDropDownDTO> getRcProjectsByLabel(String label) {
+//        if(label.isBlank()) return projectDomainRepository.findAllBy(PageRequest.of(0,10)).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
+//        return projectDomainRepository.findTop10ByLabelContainsIgnoreCase(label).orElseThrow(() -> new ProjectNotFoundException("No projects exist")).stream().map(projectMapper::toProjectDropDownDTO).toList();
+//    }
 
 
-    @Override
-    public ProjectDTO deleteProject(GlobalDTO globalDTO) {
-
-        Project project=projectDomainRepository.findById(globalDTO.projectId()).orElseThrow(() -> new ProjectNotFoundException("project doesn't exist"));
-        project.setIsDeleted(true);
-        projectDomainRepository.save(project);
-        return projectMapper.toProjectDTO(project);
-    }
+//    @Override
+//    public ProjectDTO deleteProject(GlobalDTO globalDTO) {
+//
+//        Project project=projectDomainRepository.findById(globalDTO.projectId()).orElseThrow(() -> new ProjectNotFoundException("project doesn't exist"));
+//        project.setIsDeleted(true);
+//        projectDomainRepository.save(project);
+//        return projectMapper.toProjectDTO(project);
+//    }
 
     @Override
     public PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO) {
@@ -188,24 +194,79 @@ public class ProjectServiceImp implements ProjectService {
     }
 
     @Override
-    public ProjectsCountDTO countActiveProjects() {
+    public RcProjectsCountDTO countActiveProjects() {
         return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.ACTIVE));
     }
     @Override
-    public ProjectsCountDTO countCancelledProjects() {
+    public RcProjectsCountDTO countCancelledProjects() {
         return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.CANCELLED));
     }
 
     @Override
-    public PagedProjectDTO searchProjectsByLabel(String label) {
-        return null;
+    public RcProjectsCountDTO getRcCountProjectByStatus(ProjectStatus projectStatus) {
+        return projectMapper.toProjectsCount(projectDomainRepository.countDistinctByStatusEquals(projectStatus));
+    }
+//
+//    @Override
+//    public RcCompletedProjectsCountDTO getRcCompletedProjectsCount() {
+//        return projectMapper.toRcCompletedProjectsCountDTO(projectDomainRepository.countDistinctByStatusEquals(ProjectStatus.COMPLETED));
+//    }
+//
+    @Override
+    public ProjectDTO getRcLongestDurationProject() {
+        Specification<Project> spec = (root, query, cb) -> {
+            query.orderBy(
+                    cb.desc(cb.function("DATEDIFF", Integer.class,
+                            root.get("deadLine"),
+                            root.get("startDate")))
+            );
+            return cb.conjunction();
+        };
+
+        Page<Project> result = projectDomainRepository.findAll(
+                spec,
+                PageRequest.of(0, 1) // LIMIT 1
+        );
+
+        return projectMapper.toProjectDTO(result.getContent().get(0));
     }
 
     @Override
-    public ProjectDTO getLargestTeamProject(GlobalDTO globalDTO) {
+    public ProjectDTO getRcLargestTeamProject() {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+        Root<AssignedRotation> root = query.from(AssignedRotation.class);
+
+        Join<AssignedRotation, Project> project = root.join("project");
+        Expression<Long> userCount = cb.countDistinct(root.get("user"));
+
+        query.multiselect(project, userCount);
+        query.where(cb.equal(root.get("rotationAssignmentStatus"), "ACTIVE"));
+        query.groupBy(project);
+        query.orderBy(cb.desc(userCount));
+
+        List<Object[]> result = entityManager.createQuery(query)
+                .setMaxResults(1)
+                .getResultList();
+
+        return projectMapper.toProjectDTO((Project) result.get(0)[0]);
+    }
+
+    @Override
+    public List<ProjectDropDownDTO> getRcAllProjectsByClient(GlobalDTO globalDTO) {
+        return projectDomainRepository.findAllByOwner_ClientId(globalDTO.clientId()).orElseThrow().stream().map(projectMapper::toProjectDropDownDTO).toList();
+    }
+
+    @Override
+    public List<ProjectDropDownDTO> getRcAllProjects() {
+        return projectDomainRepository.findAll().stream().map(projectMapper::toProjectDropDownDTO).toList();
+    }
+
+    /*@Override
+    public ProjectDTO getLargestTeamProject() {
         Project project = projectDomainRepository
                 .fetchProjectWithLargestTeam(globalDTO.userId())
                 .orElseThrow(() -> new ProjectNotFoundException("No project with a large team found"));
         return projectMapper.toProjectDTO(project);
-    }
+    }*/
 }

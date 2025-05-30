@@ -1,7 +1,6 @@
-// src/app/report/report.module.ts
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // <-- Import FormsModule
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { ReportRoutingModule } from './report-routing.module';
 import { ReportComponent } from './report.component';
@@ -14,23 +13,26 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
-import { NavigationComponent } from "../../shared/navigation/navigation.component"; // <-- Add DialogModule
-import { ReportService } from '../../../services/report.service';
-import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
-import { UserUtils } from '../../../utilities/UserUtils';
-import { UpdateReportComponent } from "../../shared/rc-ui/update-report/update-report.component";
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+
+// --- Shared Components ---
+import { NavigationComponent } from "../../shared/navigation/navigation.component";
+import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
+import { UpdateReportComponent } from "../../shared/rc-ui/update-report/update-report.component";
+import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 
 @NgModule({
   declarations: [
     ReportComponent
   ],
   imports: [
+    // Angular Modules
     CommonModule,
-    FormsModule, // <-- Add FormsModule
+    FormsModule,
     ReportRoutingModule,
-    // --- Add PrimeNG Modules ---
+    
+    // PrimeNG Modules
     InputTextModule,
     CalendarModule,
     DropdownModule,
@@ -38,15 +40,19 @@ import { ToastModule } from 'primeng/toast';
     ButtonModule,
     AvatarModule,
     TagModule,
+    ToastModule,
+    
+    // Standalone Components
     NavigationComponent,
     UserAvatarComponent,
     UpdateReportComponent,
-     ToastModule
-],
-providers :[
-  ReportService,
-  MessageService
-]
-  // No providers needed here unless DatePipe isn't provided elsewhere
+    DefaultLayoutComponent
+  ],
+  providers: [
+    MessageService,
+    DatePipe,
+    TitleCasePipe
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ReportModule { }

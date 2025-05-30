@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Notification {
     @Id
     @UuidGenerator
-    private UUID id;
+    private UUID notificationId;
 
     private String title;
     private String description;

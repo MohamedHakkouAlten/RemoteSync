@@ -1,8 +1,8 @@
 /* Adjust AvatarGroup spacing slightly if needed */
 :host ::ng-deep  .p-avatar {
     margin-left: -0.55rem; /* Adjust overlap */
-    
-    border: 1px solid !important; 
+    background: #FFF8E1;
+    border: 2px solid #FFBB55 !important; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,8 +12,8 @@
 
  
  :host ::ng-deep  .p-avatar .p-avatar-text {
-    font-family: inter !important;
-    font-weight: 500;
-   /* Adjust text size inside overflow avatar */
+    color: #F57C00;
+    font-weight: 700;
+   font-size: 0.75rem; /* Adjust text size inside overflow avatar */
  }
  

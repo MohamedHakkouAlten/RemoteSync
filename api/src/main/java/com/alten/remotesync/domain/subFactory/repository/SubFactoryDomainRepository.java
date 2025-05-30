@@ -12,8 +12,9 @@ import java.util.UUID;
 
 @Repository
 public interface SubFactoryDomainRepository extends JpaRepository<SubFactory, UUID> {
-    Optional<List<SubFactoryProjection>> findAllByFactory_FactoryId(UUID factoryId);
-    Optional<List<SubFactoryProjection>> findAllBy();
+    Optional<List<SubFactory>> findAllByFactory_FactoryId(UUID factoryId);
+    Optional<List<SubFactory>> findAllBy();
+
     @Query("SELECT SUM(sf.capacity) FROM SubFactory sf")
     Long TotalCapacity();
 }

@@ -1,0 +1,406 @@
+// dashboard.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+// Import enums and DTOs
+import { ReportStatus } from '../../../dto/report-status.enum';
+import { ProjectStatus } from '../../../dto/project-status.enum';
+import { ProjectDTO } from '../../../dto/project.dto';
+import { ReportDTO } from '../../../dto/report.dto';
+import { PagedProjectSearchDTO } from '../../../dto/paged-global-id.dto';
+
+// Import services
+import { AssociateService } from '../../../services/associate.service';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
+
+// Import shared models and helpers
+import { CalendarDay, CalendarEvent, DashboardStats } from '../models/dashboard.model';
+import { CalendarHelpers } from '../utils/calendar-helpers';
+import { AssociateUIHelpers } from '../utils/ui-helpers';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
+  standalone: false
+})
+export class DashboardComponent implements OnInit, OnDestroy {
+  // Expose enums to template
+  public ProjectStatus = ProjectStatus;
+  public ReportStatus = ReportStatus;
+  
+  // Loading state properties
+  isLoading: boolean = false;
+  loadingError: boolean = false;
+  
+  // User info properties
+  firstName: string = '';
+  lastName: string = '';
+  
+  // Dashboard statistics
+  dashboardStats: DashboardStats = {
+    totalProjects: 0,
+    onSiteWeeks: 0,
+    reportsCount: 0
+  };
+  
+  // Project and report data
+  currentProject: ProjectDTO | null = null;
+  previousProjects: ProjectDTO[] = [];
+  recentReports: ReportDTO[] = [];
+  onSiteWorkDaysLabel: string = "On-site Work Days";
+  
+  // Calendar properties
+  calendarValue: Date | null = null;
+  highlightedDates: Date[] = [];
+  calendarEvents: CalendarEvent[] = [];
+  currentDate: Date = new Date();
+  currentYear: number = this.currentDate.getFullYear();
+  currentMonth: number = this.currentDate.getMonth();
+  currentMonthName: string = CalendarHelpers.getMonthName(this.currentMonth);
+  weekdays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  daysInMonth: Date[] = [];
+  daysBeforeMonth: number[] = [];
+  daysAfterMonth: number[] = [];
+  
+  // Private properties
+  private loadingTimeout: any = null;
+  private subscriptions: Subscription[] = [];
+  
+  /**
+   * Calculate project progress as a percentage
+   */
+  getProjectProgress(project: ProjectDTO): number {
+    if (!project || !project.startDate || !project.deadLine) return 0;
+    const start = new Date(project.startDate).getTime();
+    const end = new Date(project.deadLine).getTime();
+    const now = Date.now();
+    if (isNaN(start) || isNaN(end) || start >= end) return 0;
+    const progress = ((now - start) / (end - start)) * 100;
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  }
+  
+  /**
+   * Setup calendar with initial data
+   */
+  setupCalendar(): void {
+    // Initialize calendar with current month
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.currentMonthName = CalendarHelpers.getMonthName(this.currentMonth);
+    
+    // Update calendar display
+    this.updateCalendar();
+  }
+  
+  /**
+   * Update calendar display based on selected month and year
+   */
+  updateCalendar(): void {
+    // Get current month and year from calendar value or current date
+    const calendarMonth = this.calendarValue ? this.calendarValue.getMonth() : this.currentMonth;
+    const calendarYear = this.calendarValue ? this.calendarValue.getFullYear() : this.currentYear;
+    
+    // Get calendar days using helper functions
+    this.daysInMonth = CalendarHelpers.getDaysInMonth(calendarYear, calendarMonth);
+    this.daysBeforeMonth = CalendarHelpers.getDaysBeforeMonth(calendarYear, calendarMonth);
+    this.daysAfterMonth = CalendarHelpers.getDaysAfterMonth(calendarYear, calendarMonth);
+    
+    // Update month name
+    this.currentMonthName = CalendarHelpers.getMonthName(calendarMonth);
+  }
+  
+  /**
+   * Check if a date has any events
+   */
+  isHighlighted(date: Date): boolean {
+    return this.highlightedDates.some(d =>
+      d.getDate() === date.getDate() && 
+      d.getMonth() === date.getMonth() && 
+      d.getFullYear() === date.getFullYear()
+    );
+  }
+  
+  /**
+   * Navigate to projects page
+   */
+  viewAllProjects(): void {
+    this.router.navigate(['/associate/projects']);
+  }
+
+  /**
+   * Navigate to reports page
+   */
+  viewAllReports(): void {
+    this.router.navigate(['/associate/reports']);
+  }
+  
+  /**
+   * Check if a date is today
+   */
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() && 
+           date.getMonth() === today.getMonth() && 
+           date.getFullYear() === today.getFullYear();
+  }
+  
+  /**
+   * Check if a date is selected
+   */
+  isSelected(date: Date): boolean {
+    if (!this.calendarValue) return false;
+    return date.getDate() === this.calendarValue.getDate() && 
+           date.getMonth() === this.calendarValue.getMonth() && 
+           date.getFullYear() === this.calendarValue.getFullYear();
+  }
+  
+  /**
+   * Navigate to previous month
+   */
+  prevMonth(): void {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.updateCalendar();
+  }
+  
+  /**
+   * Navigate to next month
+   */
+  nextMonth(): void {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.updateCalendar();
+  }
+  
+  /**
+   * Select a date in the calendar
+   */
+  selectDate(date: Date): void {
+    this.calendarValue = date;
+  }
+
+  constructor(
+    private authFacadeService: AuthFacadeService,
+    private associateService: AssociateService,
+    private router: Router,
+    private datePipe: DatePipe // Injection of DatePipe
+  ) {}
+
+  ngOnInit(): void {
+    // Set current date
+    this.currentDate = new Date();
+    this.calendarValue = this.currentDate;
+    
+    // Initialize empty highlighted dates (will be populated from API)
+    this.highlightedDates = [];
+    
+    // Initialize calendar
+    this.initializeCalendar();
+    
+    // Load dashboard data (including on-site dates for highlighting)
+    this.loadDashboardData();
+  }
+  
+  /**
+   * Clean up resources when component is destroyed
+   */
+  ngOnDestroy(): void {
+    // Clear any pending timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+      this.loadingTimeout = null;
+    }
+    
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  /**
+   * Load dashboard data from the backend
+   */
+  loadDashboardData(): void {
+    this.isLoading = true;
+    this.loadingError = false;
+    
+    // Clear any existing timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
+    
+    // Set a timeout to show error if loading takes too long
+    this.loadingTimeout = setTimeout(() => {
+      if (this.isLoading) {
+        this.loadingError = true;
+      }
+    }, 15000); // 15 seconds timeout
+    
+    // Subscribe to dashboard data
+    const dashboardSubscription = this.associateService.getDashboard().subscribe(res => {
+      if (res.status === 'success' && res.data) {
+        // Set user info
+        this.firstName = this.authFacadeService.getFirstName() || 'Associate';
+        this.lastName = this.authFacadeService.getLastName() || '';
+        
+        // Set current project
+        this.currentProject = res.data.currentProject;
+        
+        // Set previous projects
+        this.previousProjects = res.data.oldProjects || [];
+        
+        // Set recent reports
+        this.recentReports = res.data.recentReports || [];
+        
+        // Update dashboard stats
+        this.dashboardStats = {
+          totalProjects: res.data.projectsCount || 0,
+          reportsCount: res.data.reportsCount || 0,
+          onSiteWeeks: Array.isArray(res.data.onSiteWeeks) ? res.data.onSiteWeeks.length : 0
+        };
+        
+        // Process calendar data
+        if (res.data.onSiteWeeks && Array.isArray(res.data.onSiteWeeks)) {
+          // Convert string dates to Date objects for calendar highlighting
+          this.highlightedDates = res.data.onSiteWeeks.map((dateStr: string) => new Date(dateStr));
+          
+          // Create calendar events from on-site dates
+          this.calendarEvents = res.data.onSiteWeeks.map((dateStr: string) => ({
+            date: new Date(dateStr),
+            type: 'on-site',
+            title: 'On-site work day'
+          }));
+          
+          // Setup calendar
+          this.setupCalendar();
+          
+          // Update calendar with the new highlighted dates
+          this.updateCalendar();
+        }
+      } else {
+        console.error('Failed to load dashboard data');
+        
+        // Clear the timeout as we got a response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+        
+        this.isLoading = false;
+        this.loadingError = true;
+      }
+    }, error => {
+      console.error('Error loading dashboard data:', error);
+      
+      // Clear the timeout as we got a response
+      if (this.loadingTimeout) {
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = null;
+      }
+      
+      this.isLoading = false;
+      this.loadingError = true;
+    });
+  }
+
+  mapProjectToTemplate(project: ProjectDTO | null): any {
+    if (!project) return null;
+    
+    const startDateStr = this.datePipe.transform(project.startDate, 'mediumDate') || 'N/A';
+    const deadlineStr = this.datePipe.transform(project.deadLine, 'mediumDate') || 'N/A';
+    
+    let displayStatus = project.status;
+    if (project.status === ProjectStatus.COMPLETED) {
+      displayStatus = ProjectStatus.COMPLETED; 
+    }
+    
+    return {
+      label: project.label,
+      progressValue: this.getProjectProgress(project),
+      client: project.owner?.name || 'N/A',
+      timeline: `${startDateStr} - ${deadlineStr}`,
+      teamSize: 'N/A', 
+      status: displayStatus,
+      duration: this.calculateDuration(project.startDate, project.deadLine),
+      
+      startDate: project.startDate,
+      deadLine: project.deadLine
+    };
+  }
+
+  calculateDuration(startDate: Date | string | undefined, deadline: Date | string | undefined): string {
+    if (!startDate || !deadline) return 'N/A';
+    try {
+      const start = new Date(startDate);
+      const end = new Date(deadline);
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return 'Invalid dates';
+      }
+      
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      return `${diffDays} days`;
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
+  mapReportToTemplate(report: ReportDTO | null): any {
+     if (!report) return null;
+     
+     let statusSeverity = 'warn'; 
+     if (report.status === ReportStatus.ACCEPTED) statusSeverity = 'success';
+     if (report.status === ReportStatus.REJECTED) statusSeverity = 'danger';
+     if (report.status === ReportStatus.PENDING) statusSeverity = 'warn';
+     if (report.status === ReportStatus.OPENED) statusSeverity = 'info';
+
+     // Format the createdAt date
+     const formattedDate = this.datePipe.transform(report.createdAt, 'dd MMM yyyy') || 'N/A';
+     
+     // Transform status to a more user-friendly format
+     const displayStatus = report.status?.replace('_', ' ') || 'N/A';
+
+     return {
+        title: report.title || 'Untitled Report',
+        status: displayStatus,
+        date: formattedDate,
+        statusSeverity: statusSeverity,
+        reason: report.reason || 'No reason provided',
+        description: report.description || 'No description available',
+        type: report.type?.replace('_', ' ') || 'N/A',
+        createdAt: report.createdAt,
+  
+// Initialize calendar
+this.setupCalendar();
+  
+// Load dashboard data (including on-site dates for highlighting)
+this.loadDashboardData();
+}
+           date.getMonth() === this.calendarValue.getMonth() && 
+           date.getFullYear() === this.calendarValue.getFullYear();
+  }
+  
+  isHighlighted(date: Date): boolean {
+    return this.highlightedDates.some(d =>
+      d.getDate() === date.getDate() && 
+      d.getMonth() === date.getMonth() && 
+      d.getFullYear() === date.getFullYear()
+    );
+  }
+
+  viewAllProjects(): void {
+    this.router.navigate(['/associate/projects']);
+  }
+
+  viewAllReports(): void {
+    this.router.navigate(['/associate/reports']);
+  }
+  
+  initializeCalendar(): void {
+    this.updateCalendar();
+  }
+}

@@ -1,73 +1,76 @@
-<div class="reports-page p-4 sm:p-6 bg-white max-h-screen">
-<p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
-
-    <!-- Page Header -->
-    <header class="mb-6">
-        <h1 class="text-2xl font-semibold text-gray-800">Reports</h1>
-    </header>
-
-    <!-- Filter Bar (Keep as before) -->
-    <div class="filter-bar mb-2 flex flex-wrap items-center gap-3 sm:gap-4">
-        <span class="p-input-icon-left search-input w-full max-w-xs">
-            <i class="pi pi-search text-gray-400"></i>
-            <input type="text" pInputText placeholder="Search reports..." class="w-full !h-10 !text-sm" [(ngModel)]="searchTerm" (ngModelChange)="onNameChange()" />
-        </span>
-        <div class="relative">
-            <p-calendar [(ngModel)]="selectedDateRange" selectionMode="range" [readonlyInput]="true" placeholder="Select date range" dateFormat="M d, yy" [showIcon]="true" iconDisplay="input" inputId="dateRange" appendTo="body" (onClose)="onDateChange()"  class="calendar-orange" [styleClass]="'!h-10 !text-sm'">
-                 <ng-template pTemplate="inputicon" class="absolute right-2 top-1/2 -translate-y-1/2"> <i class="pi pi-calendar text-gray-500"></i> </ng-template>
-            </p-calendar>
-        </div>
-        <p-dropdown [(ngModel)]="selectedStatus" [options]="statusOptions" optionLabel="label" optionValue="value" placeholder="All Status" (onChange)="onStatusChange()" styleClass="filter-dropdown !h-10 !text-sm" [style]="{'min-width': '120px'}" appendTo="body">
-            <ng-template pTemplate="selectedItem">
-                <span class="capitalize">{{selectedStatus ? (selectedStatus | titlecase) : 'All Status'}}</span>
-            </ng-template>
-            <ng-template let-option pTemplate="item">
-                <span class="capitalize">{{option.label}}</span>
-            </ng-template>
-        </p-dropdown>
-           
-    </div>
-           <button
-              style="font-family: inter;"
-              class="text-[#717a86] flex items-baseline cursor-pointer mb-4 justify-between  gap-1 rounded-[5px]   !h-6   text-[14px]"
-              (click)="clearFilters()"
-           
-          >
-          <i class="pi pi-times-circle !text-[13px]" ></i>
-      
-        <span class="pb-0.5 tracking-wider"> Clear </span> 
+<app-default-layout>
+    <div class="reports-page p-4 sm:p-6 bg-white max-h-screen">
+        <p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
         
-        </button>
-    <!-- Reports Grid (Keep as before) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-        <div *ngFor="let report of allReports()?.reports" class="report-card bg-white rounded-lg  border-2 border-gray-100 p-4 flex flex-col justify-between transition-shadow hover:shadow-md">
-            <div>
-                <div class="flex items-center gap-3 mb-3">
-                 <app-user-avatar [textColor]="getStatusTextColor(report.status!)" [bgColor]="getStatusBgColor(report.status!)" [size]="50" [textSize]="18" [userInitials]="userUtils.getUserInitials(report.createdBy)" />
-                    <div>
-                        <div class="font-medium text-gray-800 text-sm">{{ report.createdBy.firstName+' '+report.createdBy.lastName }}</div>
-                        <div class="text-xs text-gray-500"></div>
-                    </div>
+            <!-- Page Header -->
+            <header class="mb-6">
+                <h1 class="text-2xl font-semibold text-gray-800">Reports</h1>
+            </header>
+        
+            <!-- Filter Bar (Keep as before) -->
+            <div class="filter-bar mb-2 flex flex-wrap items-center gap-3 sm:gap-4">
+                <span class="p-input-icon-left search-input w-full max-w-xs">
+                    <i class="pi pi-search text-gray-400"></i>
+                    <input type="text" pInputText placeholder="Search reports..." class="w-full !h-10 !text-sm" [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()" />
+                </span>
+                <div class="relative">
+                    <p-calendar [(ngModel)]="selectedDateRange" selectionMode="range" [readonlyInput]="true" placeholder="Select date range" dateFormat="M d, yy" [showIcon]="true" iconDisplay="input" inputId="dateRange" appendTo="body" (onClose)="onDateChange()"  class="calendar-orange" [styleClass]="'!h-10 !text-sm'">
+                         <ng-template pTemplate="inputicon" class="absolute right-2 top-1/2 -translate-y-1/2"> <i class="pi pi-calendar text-gray-500"></i> </ng-template>
+                    </p-calendar>
                 </div>
-                <h3 class="text-base font-semibold text-gray-900 mb-2">{{ report.title }}</h3>
-                <div class="flex items-center gap-1.5 text-xs text-gray-500 mb-3"> <i class="pi pi-calendar text-sm"></i> <span>{{ report.createdAt| date:'MMM d, yyyy' }}</span> </div>
-                <div> <span class="status-badge px-2.5 py-0.5 rounded-full text-xs font-medium inline-block capitalize" [ngClass]="getStatusClass(report.status!)"> {{ report.status?.toString()?.toLocaleLowerCase() }} </span> </div>
+                <p-dropdown [(ngModel)]="selectedStatus" [options]="statusOptions" optionLabel="label" optionValue="value" placeholder="All Status" (onChange)="onStatusChange()" styleClass="filter-dropdown !h-10 !text-sm" [style]="{'min-width': '120px'}" appendTo="body">
+                    <ng-template pTemplate="selectedItem">
+                        <span class="capitalize">{{selectedStatus ? (selectedStatus | titlecase) : 'All Status'}}</span>
+                    </ng-template>
+                    <ng-template let-option pTemplate="item">
+                        <span class="capitalize">{{option.label}}</span>
+                    </ng-template>
+                </p-dropdown>
+                   
             </div>
-            <div class="mt-4 pt-4 border-t border-gray-100"> <button pButton type="button" label="View Report" class="w-full p-button-outlined p-button-danger !h-9 !text-sm" (click)="viewReport(report)"></button> </div>
-        </div>
+                   <button
+                      style="font-family: inter;"
+                      class="text-[#717a86] flex items-baseline cursor-pointer mb-4 justify-between  gap-1 rounded-[5px]   !h-6   text-[14px]"
+                      (click)="clearFilters()"
+                   
+                  >
+                  <i class="pi pi-times-circle !text-[13px]" ></i>
+              
+                <span class="pb-0.5 tracking-wider"> Clear </span> 
+                
+                </button>
+            <!-- Reports Grid (Keep as before) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
+                <!-- Check if we have reports data -->
+                <div *ngFor="let report of allReports()?.reports" class="report-card bg-white rounded-lg border-2 border-gray-100 p-4 flex flex-col justify-between transition-shadow hover:shadow-md">
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                         <app-user-avatar [textColor]="getStatusTextColor(report.status!)" [bgColor]="getStatusBgColor(report.status!)" [size]="50" [textSize]="18" [userInitials]="userUtils.getUserInitials(report.createdBy)" />
+                            <div>
+                                <div class="font-medium text-gray-800 text-sm">{{ report.createdBy.firstName+' '+report.createdBy.lastName }}</div>
+                                <div class="text-xs text-gray-500"></div>
+                            </div>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-900 mb-2">{{ report.title }}</h3>
+                        <div class="flex items-center gap-1.5 text-xs text-gray-500 mb-3"> <i class="pi pi-calendar text-sm"></i> <span>{{ report.createdAt| date:'MMM d, yyyy' }}</span> </div>
+                        <div> <span class="status-badge px-2.5 py-0.5 rounded-full text-xs font-medium inline-block capitalize" [ngClass]="getStatusClass(report.status!)"> {{ report.status?.toString()?.toLocaleLowerCase() }} </span> </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100"> <button pButton type="button" label="View Report" class="w-full p-button-outlined p-button-danger !h-9 !text-sm" (click)="viewReport(report)"></button> </div>
+                </div>
+                
+                <div *ngIf="allReports().reports.length === 0" class="col-span-full text-center text-gray-500 py-10"> There are no reports to display. </div>
+            </div>
         
-        <div *ngIf="allReports().reports.length<0" class="col-span-full text-center text-gray-500 py-10"> There are no reports to display. </div>
-    </div>
-
-    <!-- Pagination Footer (Keep as before) -->
-    <div class="pagination-footer flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-3 rounded-lg shadow border border-gray-100" *ngIf="totalRecords() > 0">
-        <span class="text-sm text-gray-600">{{ paginationSummary }}</span>
-        <p-paginator [rows]="state().row()" [totalRecords]="totalRecords()"  (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[2, 12, 24]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
-    
-    </div>
-
-</div> <!-- End reports-page -->
-
-
-<!-- ======================= UPDATED REPORT DETAIL DIALOG ======================= -->
-<app-update-report [report]="selectedReport"  (updateReport)="updateReportStatus($event)" [(visible)]="displayReportModal"/>
+            <!-- Pagination Footer (Keep as before) -->
+            <div class="pagination-footer flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-3 rounded-lg shadow border border-gray-100" *ngIf="totalRecords() > 0">
+                <span class="text-sm text-gray-600">{{ paginationSummary }}</span>
+                <p-paginator [rows]="state().row()" [totalRecords]="totalRecords()" (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[2, 12, 24]" styleClass="p-0 bg-transparent border-none"> </p-paginator>
+            
+            </div>
+        
+        </div> <!-- End reports-page -->
+        
+        
+        <!-- ======================= UPDATED REPORT DETAIL DIALOG ======================= -->
+        <app-update-report [report]="selectedReport" (updateReport)="updateReportStatus($event)" [(visible)]="displayReportModal"/>
+</app-default-layout>

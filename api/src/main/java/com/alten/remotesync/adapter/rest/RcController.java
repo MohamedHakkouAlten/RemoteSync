@@ -2,25 +2,26 @@ package com.alten.remotesync.adapter.rest;
 
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
 import com.alten.remotesync.application.assignedRotation.record.request.*;
-import com.alten.remotesync.application.assignedRotation.record.response.PagedAssignedRotationDTO;
-import com.alten.remotesync.application.assignedRotation.record.response.PagedRotationsDTO;
+import com.alten.remotesync.application.assignedRotation.record.response.*;
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
+import com.alten.remotesync.application.client.record.response.ClientDropDownDTO;
 import com.alten.remotesync.application.client.service.ClientService;
-import com.alten.remotesync.application.factory.record.response.RCDashBoardDTO;
+import com.alten.remotesync.application.factory.record.response.FactoryDropDownDTO;
+import com.alten.remotesync.application.factory.record.response.RcFactoriesCountDTO;
 import com.alten.remotesync.application.factory.service.FactoryService;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
+import com.alten.remotesync.application.project.record.response.ProjectDTO;
+import com.alten.remotesync.application.project.record.response.RcProjectsCountDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 
-import com.alten.remotesync.application.report.record.request.RCReportByDateRangeDTO;
-import com.alten.remotesync.application.report.record.request.RCReportByStatusDTO;
-import com.alten.remotesync.application.report.record.request.RCReportByUserDTO;
-import com.alten.remotesync.application.report.record.request.RCUpdateReportDTO;
-import com.alten.remotesync.application.report.record.response.ReportDTO;
+import com.alten.remotesync.application.report.record.request.*;
+import com.alten.remotesync.application.report.record.response.PagedReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
+import com.alten.remotesync.application.subFactory.record.response.RcSubFactoriesCapacityCountDTO;
 import com.alten.remotesync.application.subFactory.service.SubFactoryService;
+import com.alten.remotesync.application.user.record.response.RcSearchAssociateDTO;
 import com.alten.remotesync.application.user.service.UserService;
-import com.alten.remotesync.domain.report.enumeration.ReportStatus;
+import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -32,14 +33,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/user/rc")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class RcController {
-
     private final ProjectService projectService;
     private final AssignedRotationService assignedRotationService;
     private final ReportService reportService;
@@ -47,20 +49,203 @@ public class RcController {
     private final ClientService clientService;
     private final FactoryService factoryService;
     private final SubFactoryService subFactoryService;
-    @GetMapping("/projects/{pageNumber}/{pageSize}")
-    @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getProjects(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                         @PathVariable @Min(0) Integer pageNumber,
-                                         @PathVariable @Min(1) Integer pageSize) {
 
-        PagedGlobalDTO requestDTO = new PagedGlobalDTO(userPrincipal.userId(), pageNumber, pageSize);
+    @GetMapping("/rc/dashboard")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcDashboard(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        RcProjectsCountDTO rcCompletedRcProjectsCountDTO = projectService.getRcCountProjectByStatus(ProjectStatus.COMPLETED);
+        RcProjectsCountDTO rcActiveRcProjectsCountDTO = projectService.getRcCountProjectByStatus(ProjectStatus.ACTIVE);
+        RcFactoriesCountDTO rcFactoriesCountDTO = factoryService.getRcTotalFactoriesCount();
+        RcSubFactoriesCapacityCountDTO rcSubFactoriesCapacityCountDTO = subFactoryService.getRcSubFactoriesTotalCapacity();
+        RcCountCurrentAssociateOnSiteDTO rcCountCurrentAssociateOnSiteDTO = assignedRotationService.getRcCountCurrentAssociateOnSite();
+        ProjectDTO longestDurationProjectDTO = projectService.getRcLongestDurationProject();
+        ProjectDTO largestTeamProjectDTO = projectService.getRcLargestTeamProject();
+        PagedReportDTO pendingReports = reportService.getRcPendingReports();
+        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("completedProjectsCount", rcCompletedRcProjectsCountDTO.projectsCount());
+        data.put("activeProjectsCount", rcActiveRcProjectsCountDTO.projectsCount());
+        data.put("factoriesCount", rcFactoriesCountDTO.factoriesCount());
+        data.put("capacityCount", rcSubFactoriesCapacityCountDTO.subFactoriesCount());
+        data.put("countCurrentAssociateOnSite", rcCountCurrentAssociateOnSiteDTO.countCurrentAssociateOnSite());
+        data.put("longestDurationProject", longestDurationProjectDTO);
+        data.put("largestTeamProject", largestTeamProjectDTO);
+        data.put("pendingReports", pendingReports);
+        data.put("recentAssociateRotations", recentAssociateRotations);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper
+                        .success(data
+                                , HttpStatus.OK));
+    }
+
+    @GetMapping("/rc/reports")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcReports(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedReportSearchDTO pagedReportSearchDTO) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper
+                        .success(reportService.getRcReports(pagedReportSearchDTO)
+                        , HttpStatus.OK));
+    }
+
+    @PutMapping("/rc/reports/update")
+    @PreAuthorize("hasAuthority('RC:WRITE')")
+    public ResponseEntity<?> updateReportStatus(@RequestBody RcUpdateReportDTO rcUpdateReportDTO) {
+        System.out.println(rcUpdateReportDTO.reportId());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(reportService.rcUpdateReportStatus(rcUpdateReportDTO), HttpStatus.OK));
+    }
+
+    @GetMapping("/rc/initial-calendar")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcInitialCalendar(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<ClientDropDownDTO> clientDropDownDTOS = clientService.getRcAllClients();
+        List<FactoryDropDownDTO> factoryDropDownDTOS = factoryService.getRcAllFactories();
+        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("clientDropDown", clientDropDownDTOS);
+        data.put("factoryDropDown", factoryDropDownDTOS);
+        data.put("allRecentAssociateRotations", recentAssociateRotations);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper
+                        .success(data
+                                , HttpStatus.OK));
+    }
+
+    @GetMapping("/rc/rotations")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcUsersActiveRotation(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedRotationsSearchDTO pagedRotationsSearchDTO) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(assignedRotationService.getRcAllRecentAssociateRotations(
+                        pagedRotationsSearchDTO),
+                        HttpStatus.OK));
+    }
+
+    @GetMapping("/rc/projects/{clientId}")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcProjectsByClient(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable("clientId") UUID clientId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
-                        projectService.getProjects(GlobalDTO.fromUserId(userPrincipal.userId()), requestDTO),
+                        projectService.getRcAllProjectsByClient(GlobalDTO.fromClientId(clientId)),
                         HttpStatus.OK
                 ));
     }
+
+    @GetMapping("/rc/sub-factories/{factoryId}")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcSubFactoriesByFactory(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable("factoryId") UUID facotryId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(
+                        subFactoryService.getRcAllSubFactoriesByFactory(GlobalDTO.fromFactoryId(facotryId)),
+                        HttpStatus.OK
+                ));
+    }
+
+    @GetMapping("/rc/projects")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(
+                        projectService.getRcAllProjects(),
+                        HttpStatus.OK
+                ));
+    }
+
+    @GetMapping("/rc/associates")
+    @PreAuthorize("hasAuthority('RC:READ')")
+    public ResponseEntity<?> getRcAssociates(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute RcSearchAssociateDTO rcSearchAssociateDTO) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(userService.getRcAllAssociatesWithoutAssignedRotation(rcSearchAssociateDTO), // RETURN USERS WHO DON'T HAVE ANY ASSIGNED ROTATION
+                        HttpStatus.OK));
+    }
+
+    @PostMapping("/rc/rotations/create")
+    @PreAuthorize("hasAuthority('RC:WRITE')")
+    public ResponseEntity<?> createRcAssignRotation(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody RcAssignRotationUserDTO rcAssignRotationUserDTO) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(assignedRotationService.createRcAssignRotationAssociate(GlobalDTO.fromUserId(userPrincipal.userId()),
+                                rcAssignRotationUserDTO),
+                        HttpStatus.OK));
+    }
+
+    @PutMapping("/rc/rotation/update")
+    @PreAuthorize("hasAuthority('RC:WRITE')")
+    public ResponseEntity<?> updateRcAssignedRotation(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody RcUpdateAssociateRotationDTO rcUpdateAssociateRotationDTO) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper.success(assignedRotationService.updateRcAssignedRotationAssociate(GlobalDTO.fromUserId(userPrincipal.userId()),
+                                rcUpdateAssociateRotationDTO),
+                        HttpStatus.OK));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @GetMapping("/rc/projects")
+//    @PreAuthorize("hasAuthority('RC:READ')")
+//    public ResponseEntity<?> getProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedGlobalDTO pagedGlobalDTO) {
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(ResponseWrapper.success(
+//                        projectService.getProjects(GlobalDTO.fromUserId(userPrincipal.userId()), pagedGlobalDTO),
+//                        HttpStatus.OK
+//                ));
+//    }
 
     @GetMapping("/projects/count")
     @PreAuthorize("hasAuthority('RC:READ')")
@@ -72,16 +257,18 @@ public class RcController {
                         HttpStatus.OK
                 ));
     }
+
     @GetMapping("/projects/largest-team")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getLargestTeamProject(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(
-                        projectService.getLargestTeamProject(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        projectService.getRcLargestTeamProject(),
                         HttpStatus.OK
                 ));
     }
+
     @GetMapping("/projects/canceled/count")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> countCancelledProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -105,15 +292,7 @@ public class RcController {
         );
     }
 
-    @PutMapping("/reports/update")
-    @PreAuthorize("hasAuthority('RC:WRITE')")
-    public ResponseEntity<?> updateReportStatus(@RequestBody RCUpdateReportDTO rcUpdateReportDTO) {
-        System.out.println(rcUpdateReportDTO.reportId());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(reportService.updateReportStatus(rcUpdateReportDTO), HttpStatus.OK));
-    }
-    @GetMapping("/reports")
+    /*@GetMapping("/rc/reports")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRCReports(@ModelAttribute PagedGlobalDTO globalDTO) {
 
@@ -121,8 +300,8 @@ public class RcController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(reportService.getRCReports(globalDTO), HttpStatus.OK));
-    }
-    @GetMapping("/reports/byStatus")
+    }*/
+    @GetMapping("/rc/reports/byStatus")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRCReportsByStatus(@ModelAttribute RCReportByStatusDTO rcReportByStatusDTO) {
 
@@ -131,7 +310,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(reportService.getRCReportsByStatus(rcReportByStatusDTO), HttpStatus.OK));
     }
-    @GetMapping("/reports/byDateRange")
+    @GetMapping("/rc/reports/byDateRange")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRCReportsByDateRange(@ModelAttribute RCReportByDateRangeDTO rcReportByDateRangeDTO) {
 
@@ -139,7 +318,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(reportService.getRCReportsByDateRange(rcReportByDateRangeDTO), HttpStatus.OK));
     }
-    @GetMapping("/reports/byName")
+    @GetMapping("/rc/reports/byName")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRCReportsByName(@ModelAttribute RCReportByUserDTO rcReportByUserDTO) {
 
@@ -147,7 +326,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(reportService.getRCReportsByUser(rcReportByUserDTO), HttpStatus.OK));
     }
-    @GetMapping("/rotations/client/{clientId}/{pageNumber}/{pageSize}")
+    @GetMapping("/rc/rotations/client/{clientId}/{pageNumber}/{pageSize}")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersRotationByClient(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -161,30 +340,30 @@ public class RcController {
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
 
-    @GetMapping("/rotations")
-    @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotation(
-           @ModelAttribute PagedGlobalDTO globalDTO
-            ) {
-
-        PagedRotationsDTO response = assignedRotationService.getUsersActiveRotations(globalDTO);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(response, HttpStatus.OK));
-    }
-    @GetMapping("/projects/byLabel")
-    @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getRcProjectsByLabel(
-            @RequestParam
-            @Size(max = 20, message = "Label must not exceed 20 characters")
-         String label
-    ) {
-        System.out.println(label);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getRcProjectsByLabel(label), HttpStatus.OK));
-    }
-    @GetMapping("/clients/byLabel")
+//    @GetMapping("/rotations")
+//    @PreAuthorize("hasAuthority('RC:READ')")
+//    public ResponseEntity<?> getUsersActiveRotation(
+//           @ModelAttribute PagedGlobalDTO globalDTO
+//            ) {
+//
+//        PagedRotationsDTO response = assignedRotationService.getUsersActiveRotations(globalDTO);
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(ResponseWrapper.success(response, HttpStatus.OK));
+//    }
+//    @GetMapping("/rc/projects/byLabel")
+//    @PreAuthorize("hasAuthority('RC:READ')")
+//    public ResponseEntity<?> getRcProjectsByLabel(
+//            @RequestParam
+//            @Size(max = 20, message = "Label must not exceed 20 characters")
+//         String label
+//    ) {
+//        System.out.println(label);
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(ResponseWrapper.success(projectService.getRcProjectsByLabel(label), HttpStatus.OK));
+//    }
+    @GetMapping("/rc/clients/byLabel")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRcClientsByLabel(
             @RequestParam
@@ -196,7 +375,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(clientService.getClientsListByLabel(label), HttpStatus.OK));
     }
-    @GetMapping("/factories")
+    @GetMapping("/rc/factories")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRcFactories(
             ) {
@@ -205,7 +384,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(factoryService.getRcFactories(), HttpStatus.OK));
     }
-    @GetMapping("/subFactories")
+    @GetMapping("/rc/subFactories")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRcSubFactories(
 
@@ -215,7 +394,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(subFactoryService.getRcSubFactories(), HttpStatus.OK));
     }
-    @GetMapping("/users/byName")
+    @GetMapping("/rc/users/byName")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getRcUsersByName(
             @RequestParam
@@ -227,18 +406,9 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(userService.getRCUsersByName(name), HttpStatus.OK));
     }
-    @PostMapping("/rotations/createRotation")
-    @PreAuthorize("hasAuthority('RC:WRITE')")
-    public ResponseEntity<?> createAssignedRotation(
-            @RequestBody CreateAssignedRotationDTO createAssignedRotationDTO
-            ) {
-        System.out.println(createAssignedRotationDTO);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(assignedRotationService.createAssignedRotation(createAssignedRotationDTO), HttpStatus.OK));
-    }
 
-    @PutMapping("/rotations/updateRotation")
+    /*
+    @PutMapping("/rc/rotations/updateRotation")
     @PreAuthorize("hasAuthority('RC:WRITE')")
     public ResponseEntity<?> updateRotationByDate(
             @RequestBody UpdateRotationDTO updateRotationDTO
@@ -248,9 +418,9 @@ public class RcController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success("Rotation updated successfully", HttpStatus.OK));
-    }
+    }*/
 
-    @GetMapping("/rotations/byName")
+    @GetMapping("/rc/rotations/byName")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersActiveRotationByName(
             @ModelAttribute  UsersRotationsByNameDTO usersRotationsByNameDTO
@@ -261,7 +431,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(assignedRotationService.getUsersActiveRotationsByName(usersRotationsByNameDTO), HttpStatus.OK));
     }
-    @GetMapping("/rotations/byProject")
+    @GetMapping("/rc/rotations/byProject")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersActiveRotationByProject(
   @ModelAttribute UsersRotationsByProjectDTO usersRotationsByProjectDTO
@@ -272,7 +442,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
-    @GetMapping("/rotations/byClient")
+    @GetMapping("/rc/rotations/byClient")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersActiveRotationByClient(
 
@@ -283,7 +453,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
-    @GetMapping("/rotations/byFactory")
+    @GetMapping("/rc/rotations/byFactory")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersActiveRotationByFactory(
 
@@ -294,7 +464,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
-    @GetMapping("/rotations/bySubFactory")
+    @GetMapping("/rc/rotations/bySubFactory")
     @PreAuthorize("hasAuthority('RC:READ')")
     public ResponseEntity<?> getUsersActiveRotationBySubFactory(
 
@@ -305,24 +475,7 @@ public class RcController {
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
-    @GetMapping("/dashboard")
-    @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getRCDashboardData(
 
 
-    ) {
-        RCDashBoardDTO rcDashBoardDTO=new RCDashBoardDTO((long) projectService.countActiveProjects().projectsCount(),
-                (long) projectService.getCompletedProjectsCount().projectsCount(),
-                factoryService.getTotalFactoriesCount(),
-                subFactoryService.getTotalCapacity(),
-                assignedRotationService.currentWeekOnSiteAssociatesCount(),
-                projectService.getLongestDurationProject(),
-                projectService.getRCLargestMembersProject(),
-                reportService.getRCPendingReports(new PagedGlobalDTO(null,0,10)).reports());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(rcDashBoardDTO, HttpStatus.OK));
-    }
 
 }

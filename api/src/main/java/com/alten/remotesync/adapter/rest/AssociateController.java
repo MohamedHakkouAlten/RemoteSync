@@ -1,15 +1,21 @@
 package com.alten.remotesync.adapter.rest;
 
 import com.alten.remotesync.adapter.wrapper.ResponseWrapper;
+import com.alten.remotesync.application.assignedRotation.record.response.OnSiteWeeksDTO;
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
+import com.alten.remotesync.application.client.record.response.ClientDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
-import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
-import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
+import com.alten.remotesync.application.notification.record.request.PagedNotificationSearchDTO;
+import com.alten.remotesync.application.notification.service.NotificationService;
+import com.alten.remotesync.application.project.record.request.PagedProjectSearchDTO;
+import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
+import com.alten.remotesync.application.project.record.response.ProjectDTO;
+import com.alten.remotesync.application.project.record.response.RcProjectsCountDTO;
 import com.alten.remotesync.application.project.service.ProjectService;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
+import com.alten.remotesync.application.report.record.request.PagedReportSearchDTO;
+import com.alten.remotesync.application.report.record.response.PagedReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
-import com.alten.remotesync.application.user.record.request.UpdateUserProfileDTO;
-import com.alten.remotesync.application.user.record.response.UserProfileDTO;
 import com.alten.remotesync.application.user.service.UserService;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.Valid;
@@ -18,11 +24,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -32,165 +39,106 @@ public class AssociateController {
     private final ProjectService projectService;
     private final AssignedRotationService assignedRotationService;
     private final ReportService reportService;
+    private final NotificationService notificationService;
 
-    @GetMapping({"/associate/test", "/admin/test"})
-    public String s(){
-        return "HAPPY";
-    }
+    @GetMapping("/associate/dashboard")
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> getAssociateDashboard(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        RcProjectsCountDTO rcProjectsCountDTO = projectService.getAssociateProjectsCount(GlobalDTO.fromUserId(userPrincipal.userId()));
+        PagedReportDTO pagedReportDTO = reportService.getAssociateReports(new AssociateReportDTO(userPrincipal.userId(), 0, 3));
+        Integer reportsCount = reportService.getAssociateTotalReports(GlobalDTO.fromUserId(userPrincipal.userId()));
+        ProjectDTO projectDTO = projectService.getAssociateCurrentProject(GlobalDTO.fromUserId(userPrincipal.userId()));
+        PagedProjectDTO pagedOldProjectSearchDTO = projectService.getAssociateOldProjects(GlobalDTO.fromUserId(userPrincipal.userId()), new PagedProjectSearchDTO(0, 3, null, null, null));
+        OnSiteWeeksDTO onSiteWeeksDTO = assignedRotationService.getAssociateOnSiteWeeks(GlobalDTO.fromUserId(userPrincipal.userId()));
 
-    @GetMapping("/associate/{userId}")
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> getAssociateProfile(@PathVariable UUID userId) {
-        UserProfileDTO profile = userService.getMyProfile(GlobalDTO.fromUserId(userId));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(profile, HttpStatus.OK));
-    }
-    @PutMapping({"/associate/updateMyProfile", "/rc/updateMyProfile", "/admin/updateMyProfile"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody UpdateUserProfileDTO updateUserProfileDTO) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("projectsCount", rcProjectsCountDTO.projectsCount());
+        data.put("recentReports", pagedReportDTO.reportDTOs());
+        data.put("reportsCount", reportsCount);
+        data.put("currentProject", projectDTO);
+        data.put("oldProjects", pagedOldProjectSearchDTO.projectDTOS());
+        data.put("onSiteWeeks", onSiteWeeksDTO.onSiteDates());
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper
-                        .success(userService.updateMyProfile(new UpdateUserProfileDTO(userPrincipal.userId(),updateUserProfileDTO))
+                        .success(data
                                 , HttpStatus.OK));
     }
 
-    @GetMapping({"/associate/currentProject", "/rc/currentProject", "/admin/currentProject"})
+    @GetMapping("/associate/initial-projects")
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> currentProject(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<?> getAssociateInitialProjects(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<ClientDTO> clientDTOS = assignedRotationService.getAssociateClients(GlobalDTO.fromUserId(userPrincipal.userId()));
+        PagedProjectDTO pagedProjectDTO = projectService.getAssociateOldProjects(GlobalDTO.fromUserId(userPrincipal.userId()), new PagedProjectSearchDTO(0, 10, null, null, null));
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("allClients", clientDTOS);
+        data.put("projects", pagedProjectDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper
-                        .success(projectService.getAssociateCurrentProject(GlobalDTO.fromUserId(userPrincipal.userId()))
-                                , HttpStatus.OK));
-    }
-
-    @GetMapping({"/associate/currentProjectRotation", "/rc/currentProjectRotation", "/admin/currentProjectRotation"}) // ASSOCIATE ROTATION ROTATION WITH PROJECT
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> currentProjectRotation(@AuthenticationPrincipal UserPrincipal userPrincipal, GlobalDTO globalDTO) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper
-                        .success(assignedRotationService.getAssociateCurrentRotationWithProject(GlobalDTO.fromUserIdAndProjectId(userPrincipal.userId(), globalDTO.projectId()))
-                                , HttpStatus.OK));
-    }
-
-    @GetMapping({"/associate/oldProjectRotation", "/rc/oldProjectRotation", "/admin/oldProjectRotation"}) // ASSOCIATE OLD ASSIGNED ROTATION WITH PROJECT
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> oldProjectRotations(@AuthenticationPrincipal UserPrincipal userPrincipal, GlobalDTO globalDTO) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper
-                        .success(assignedRotationService.getAssociateOldRotationsWithProject(GlobalDTO.fromUserIdAndProjectId(userPrincipal.userId(), globalDTO.projectId()))
-                                , HttpStatus.OK));
-    }
-
-
-    @GetMapping({"/associate/currentRotation", "/rc/currentRotation", "/admin/currentRotation"}) // ASSOCIATE ASSIGNED ROTATION WITHOUT PROJECT
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> currentRotationWithoutProject(@AuthenticationPrincipal UserPrincipal userPrincipal, GlobalDTO globalDTO) { // NEED REWORK (PAGEABLE IF POSSIBLE IN THE FUTURE)
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper
-                        .success(assignedRotationService.getAssociateCurrentRotationWithoutProject(GlobalDTO.fromUserId(userPrincipal.userId()))
-                                , HttpStatus.OK));
-    }
-
-    @GetMapping({"/associate/oldRotation", "/rc/oldRotation", "/admin/oldRotation"}) // ASSOCIATE OLD ASSIGNED ROTATION WITHOUT PROJECT
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> oldRotationsWithoutProject(@AuthenticationPrincipal UserPrincipal userPrincipal, GlobalDTO globalDTO) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper
-                        .success(assignedRotationService.getAssociateOldRotationsWithoutProject(GlobalDTO.fromUserIdAndProjectId(userPrincipal.userId(), globalDTO.projectId()))
-                                , HttpStatus.OK));
-    }
-
-    @GetMapping({"/associate/myReports/{pageNumber}/{pageSize}"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> listMyReports(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Integer pageNumber, @PathVariable Integer pageSize) {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ResponseWrapper
-                        .success(reportService.getAssociateReports(new AssociateReportDTO(userPrincipal.userId(), pageNumber, pageSize))
-                                , HttpStatus.OK));
-    }
-
-    @GetMapping({"/associate/projects/count"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateProjectsCount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getAssociateProjectsCount(
-                                GlobalDTO.fromUserId(userPrincipal.userId())),
-                        HttpStatus.OK));
-
-    }
-
-    @GetMapping({"/associate/projects/byClient"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateProjectsByClient(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute AssociateProjectByClientDTO associateProjectByClientDTO) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getAssociateProjectsByClient(
-                                GlobalDTO.fromUserId(userPrincipal.userId()),
-                                associateProjectByClientDTO),
-                        HttpStatus.OK));
-
-    }
-
-    @GetMapping({"/associate/projects/current"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateCurrentProject(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getAssociateCurrentProject(
-                                GlobalDTO.fromUserId(userPrincipal.userId())),
-                        HttpStatus.OK));
+                        .success(data, HttpStatus.OK));
     }
 
     @GetMapping({"/associate/projects/old"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedGlobalDTO pagedGlobalDTO) {
+    public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedProjectSearchDTO pagedProjectSearchDTO) {
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getAssociateOldProjects(
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                    .body(ResponseWrapper.success(projectService.getAssociateOldProjects(
                                 GlobalDTO.fromUserId(userPrincipal.userId()),
-                                pagedGlobalDTO),
-                        HttpStatus.OK));
+                                pagedProjectSearchDTO),
+                            HttpStatus.OK));
     }
 
-    @GetMapping({"/associate/projects/{projectId}"})
+    // WE NEED ANOTHER ONE THAT WILL ALLOW US TO GET THE OLD ROTATIONS OF AN SELECTED PROJECT WITH STATUS (OVER-RIDDEN)
+    @GetMapping("/associate/current-rotations")
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateProjectDetails(@PathVariable("projectId") String projectId) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getProjectDetails(
-                                GlobalDTO.fromProjectId(UUID.fromString(projectId))),
-                        HttpStatus.OK));
+    public ResponseEntity<?> associateRotations(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper
+                        .success(assignedRotationService.getAssociateCurrentRotation(
+                                GlobalDTO.fromUserId(userPrincipal.userId())),
+                                HttpStatus.OK));
     }
 
-    @GetMapping({"/associate/projects/byLabel"})
+    @GetMapping({"/associate/my-reports"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateSearchProject(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute AssociateProjectByLabelDTO associateProjectByLabelDTO) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(projectService.getAssociateOldProjectsByLabel(
+    public ResponseEntity<?> listMyReports(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedReportSearchDTO pagedReportSearchDTO) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ResponseWrapper
+                        .success(reportService.getAssociateOldReports(
                                 GlobalDTO.fromUserId(userPrincipal.userId()),
-                                associateProjectByLabelDTO),
-                        HttpStatus.OK));
-
+                                        pagedReportSearchDTO)
+                                , HttpStatus.OK));
     }
+
     @PostMapping({"/associate/report/rotation-request"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
-    public ResponseEntity<?> associateRotationRequest(@Valid @RequestBody CreateAssociateReportDTO createAssociateReportDTO) {
-
+    public ResponseEntity<?> associateRotationRequest(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody CreateAssociateReportDTO createAssociateReportDTO) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ResponseWrapper.success(reportService.createAssociateReport(createAssociateReportDTO),
+                .body(ResponseWrapper.success(reportService.createAssociateReport(GlobalDTO.fromUserId(userPrincipal.userId()), createAssociateReportDTO),
                         HttpStatus.OK));
-
     }
+
+    @GetMapping({"/associate/my-notifications"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(pagedNotificationSearchDTO.pageNumber(), pagedNotificationSearchDTO.pageSize(), pagedNotificationSearchDTO.title(), pagedNotificationSearchDTO.status(), pagedNotificationSearchDTO.createdAt(), userPrincipal.userId())),
+                        HttpStatus.OK));
+    }
+
+    @GetMapping({"/associate/my-profile"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    public ResponseEntity<?> associateProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(userService.getAssociateProfile(GlobalDTO.fromUserId(userPrincipal.userId())),
+                        HttpStatus.OK));
+    }
+    // WE NEED TO ADD PUT FUNCTION TO UPDATE THE USER INFORMATION
 }
-
-
-

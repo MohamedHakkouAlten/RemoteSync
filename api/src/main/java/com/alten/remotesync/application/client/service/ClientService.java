@@ -9,4 +9,5 @@ import java.util.List;
 @Service
 public interface ClientService {
     List<ClientDropDownDTO> getClientsListByLabel(String label);
+    List<ClientDropDownDTO> getRcAllClients();
 }

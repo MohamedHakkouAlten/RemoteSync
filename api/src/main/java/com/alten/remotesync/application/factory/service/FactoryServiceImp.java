@@ -3,6 +3,7 @@ package com.alten.remotesync.application.factory.service;
 import com.alten.remotesync.adapter.exception.factory.FactoryNotFoundException;
 import com.alten.remotesync.application.factory.mapper.FactoryMapper;
 import com.alten.remotesync.application.factory.record.response.FactoryDropDownDTO;
+import com.alten.remotesync.application.factory.record.response.RcFactoriesCountDTO;
 import com.alten.remotesync.domain.factory.repository.FactoryDomainRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +31,18 @@ public class FactoryServiceImp implements FactoryService {
     }
 
     @Override
+    public List<FactoryDropDownDTO> getRcAllFactories() {
+        return factoryDomainRepository.findAll().stream().map(factoryMapper::toFactoryDropDownDTO).toList();
+    }
+
+    @Override
     public List<FactoryDropDownDTO> getRcFactoriesByLabel(String label) {
         if(label.isBlank()) return factoryDomainRepository.findAllBy().orElseThrow(()->new FactoryNotFoundException("there are no factories")).stream().map(factoryMapper::toFactoryDropDownDTO).toList();
        else return  factoryDomainRepository.findAllByLabelContainingIgnoreCase(label).orElseThrow(()->new FactoryNotFoundException(" no factories were found")).stream().map(factoryMapper::toFactoryDropDownDTO).toList();
+    }
+
+    @Override
+    public RcFactoriesCountDTO getRcTotalFactoriesCount() {
+        return factoryMapper.toRcFactoriesCountDTO(factoryDomainRepository.count());
     }
 }

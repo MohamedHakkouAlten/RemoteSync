@@ -4,8 +4,8 @@
  */
 
 import { HttpStatusCode } from '@angular/common/http';
-import { RCReport } from '../models/report.model';
 import { UserRotation } from '../models/rotation.model';
+import { RCReport } from '../models/report.model';
 
 export interface PagedData {
  

@@ -7,6 +7,7 @@ import com.alten.remotesync.domain.report.model.Report;
 import com.alten.remotesync.domain.role.model.Role;
 import com.alten.remotesync.domain.subFactory.model.SubFactory;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,6 +36,7 @@ public class User implements UserDetails {
         @Column(unique = true, nullable = false)
         private String email;
 
+        @JsonIgnore
         private String password;
         @Column(unique = true,nullable = false)
         private String username;
@@ -71,7 +73,7 @@ public class User implements UserDetails {
         private List<Report> updatedReports;
 
         
-        @OneToMany(mappedBy = "user")
+        @OneToMany(mappedBy = "user") @JsonBackReference
         private List<AssignedRotation> userAssignedRotations;
 
         @ManyToOne

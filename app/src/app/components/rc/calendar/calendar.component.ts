@@ -1,475 +1,823 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
-// src/app/rotation-schedule/rotation-schedule.model.ts
 import { startOfWeek, addWeeks, format, addDays, subWeeks } from 'date-fns';
 import { AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
-import { RotationService } from '../../../services/rotation.service';
-import { Rotation, UserRotation } from '../../../models/rotation.model';
-import { RotationStatus } from '../../../enums/rotation-status.enum';
-import { ClientListItem, ClientService } from '../../../services/client.service';
-import { ProjectListItem, ProjectService } from '../../../services/project.service';
-import { FactoryListItem, FactoryService } from '../../../services/factory.service';
-import { SubFactoryListItem, SubfactoryService } from '../../../services/subfactory.service';
+import { Rotation } from '../../../models/rotation.model';
+// Remove the local RotationStatus import to avoid conflicts
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
-import { UpdateUserRotationDTO } from '../../../dto/rotation/updateUserRotationDTO';
-import { debounceTime, distinctUntilChanged, of, Subject, Subscription, switchMap } from 'rxjs';
-import { PagedData, PagedRotation } from '../../../dto/response-wrapper.dto';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-
-
+import { 
+  RcService, 
+  ClientDropDownDTO, 
+  FactoryDropDownDTO, 
+  PagedRotationsSearchDTO, 
+  RcRecentAssociateRotations,
+  RotationStatus,
+  CustomDate,
+  RcUpdateAssociateRotationDTO
+} from '../../../services/rc.service';
+import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
 
 export interface ViewMode {
   label: string;
   value: 'month' | 'week'; // Add more modes if needed
-}
-export interface ListItem {
-  id: string,
-  name: string
 }
 
 @Component({
   selector: 'app-calendar',
   standalone: false,
   templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.css'
+  styleUrls: ['./calendar.component.css']
 })
-
-
 export class CalendarComponent implements OnInit {
+  // Pending changes to be saved
+  pendingChanges: Map<string, CustomDate> = new Map<string, CustomDate>();
+  hasPendingChanges = signal<boolean>(false);
+  // --- Calendar navigation state ---
+  currentDate = signal<Date>(new Date());
+  daysToShow = signal<number>(7);
+  
+  // View modes
+  viewModes: ViewMode[] = [
+    { label: 'Week View', value: 'week' },
+    { label: 'Month View', value: 'month' }
+  ];
+  selectedViewMode: ViewMode = this.viewModes[0]; // Default to week view
 
+  // Display dates based on current date and view mode
+  displayedDates = computed(() => {
+    const dates: Date[] = [];
+    const startDate = startOfWeek(this.currentDate(), { weekStartsOn: 1 }); // Monday start
+    for (let i = 0; i < this.daysToShow(); i++) {
+      dates.push(addDays(startDate, i));
+    }
+    return dates;
+  });
 
+  // Formatted date range for display
+  currentDateRangeLabel = computed(() => {
+    const firstDate = this.displayedDates()[0];
+    const lastDate = this.displayedDates()[this.displayedDates().length - 1];
+    return `${format(firstDate, 'MMM d')} - ${format(lastDate, 'MMM d, yyyy')}`;
+  });
+
+  // --- Rotation data ---
+  userRotations = signal<RcRecentAssociateRotations[]>([]);
+  totalPages = signal<number>(0);
+  totalElements = signal<number>(0);
+  currentPage = signal<number>(0);
+  pageSize = signal<number>(5);
+  
+  // --- Dropdown data ---
+  clients = signal<ClientDropDownDTO[]>([]);
+  factories = signal<FactoryDropDownDTO[]>([]);
+  projects = signal<any[]>([]);
+  subFactories = signal<any[]>([]);
+  filteredClients = signal<ClientDropDownDTO[]>([]);
+  filteredFactories = signal<FactoryDropDownDTO[]>([]);
+  
+  // --- Filter state ---
+  selectedClient: ClientDropDownDTO | null = null;
+  selectedProject: any | null = null;
+  selectedFactory: FactoryDropDownDTO | null = null;
+  selectedSubFactory: any | null = null;
+  searchValue: string = '';
+  isDialogVisible: boolean = false;
+  showRotationModal: boolean = false; // For the new rotation modal
+  first = 0; // For paginator
+  currentRotationForDialog = signal<any |  null>(null);//signal<RotationData | null>(null);
+  
+  // --- Computed values ---
+  totalRecords = computed(() => this.totalElements());
+  
+  // --- Search and pagination parameters ---
+  currentParams = signal<PagedRotationsSearchDTO>({
+    pageNumber: 0,
+    pageSize: 5
+  });
+  
+  // Search debounce
+  private searchTermsChange$ = new Subject<string>();
+
+  constructor(
+    private rcService: RcService,
+    private messageService: MessageService,
+    private translate: TranslateService
+  ) { }
+
+  ngOnInit(): void {
+    this.setupSearchDebounce();
+    this.loadInitialCalendarData();
+  }
+
+  /**
+   * Load initial calendar data including client dropdown, factory dropdown, and recent rotations
+   */
+  loadInitialCalendarData() {
+    this.rcService.getRcInitialCalendar().subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          console.log('Initial calendar data:', response.data);
+          
+          // Set the clients and factories for dropdowns
+          if (response.data.clientDropDown && Array.isArray(response.data.clientDropDown)) {
+            // Make sure each client has the proper structure for the dropdown
+            const clientList: ClientDropDownDTO[] = response.data.clientDropDown.map(client => ({
+              clientId: client.clientId,
+              label: client.label
+            }));
+            
+            this.clients.set(clientList);
+            this.filteredClients.set(clientList); // Set initial filtered list to all clients
+            console.log('Clients loaded:', this.clients());
+          } else {
+            console.warn('No client data found or invalid format');
+            this.clients.set([]);
+            this.filteredClients.set([]);
+          }
+          
+          if (response.data.factoryDropDown && Array.isArray(response.data.factoryDropDown)) {
+            // Make sure each factory has the proper structure for the dropdown
+            const factoryList: FactoryDropDownDTO[] = response.data.factoryDropDown.map(factory => ({
+              factoryId: factory.factoryId,
+              label: factory.label
+            }));
+            
+            this.factories.set(factoryList);
+            this.filteredFactories.set(factoryList); // Set initial filtered list to all factories
+            console.log('Factories loaded:', this.factories());
+          } else {
+            console.warn('No factory data found or invalid format');
+            this.factories.set([]);
+            this.filteredFactories.set([]);
+          }
+          
+          // Prepare empty project and subfactory lists if they don't exist yet
+          if (!this.projects() || this.projects().length === 0) {
+            this.projects.set([]);
+          }
+          
+          if (!this.subFactories() || this.subFactories().length === 0) {
+            this.subFactories.set([]);
+          }
+          
+          // Set user rotations with initial data
+          if (response.data.allRecentAssociateRotations && Array.isArray(response.data.allRecentAssociateRotations)) {
+            this.userRotations.set(response.data.allRecentAssociateRotations);
+            console.log('User rotations loaded:', this.userRotations());
+          }
+          
+          // For initial load, we set the total elements based on the length of rotations
+          // since the initial calendar response doesn't include pagination data
+          if (response.data.allRecentAssociateRotations) {
+            this.totalElements.set(response.data.allRecentAssociateRotations.length);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error loading initial calendar data:', error);
+        this.messageService.add({
+          severity: 'error', 
+          summary: 'Error', 
+          detail: 'Failed to load calendar data.'
+        });
+      }
+    });
+  }
+
+  /**
+   * Fetch rotations with current parameters
+   */
+  fetchRotations() {
+    this.rcService.getRcRotations(this.currentParams()).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          // Set the rotations and pagination data
+          this.userRotations.set(response.data.rcAllRecentAssociateRotations || []);
+          this.totalPages.set(response.data.totalPages || 0);
+          this.totalElements.set(response.data.totalElements || 0);
+          this.currentPage.set(response.data.currentPage || 0);
+          this.pageSize.set(response.data.pageSize || 0);
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching rotations:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('calendar.fetchError') || 'Error fetching rotations',
+          detail: error.message
+        });
+      }
+    });
+  }
+
+  /**
+   * Clear all filters and reload initial data
+   */
   clearFilters() {
     this.selectedClient = null;
     this.selectedProject = null;
     this.selectedFactory = null;
     this.selectedSubFactory = null;
-    this.searchValue='';
-    this.rotationService.getActiveUsersRotation(0,10).subscribe(rotations=>this.userRotations.set(rotations))
-
-
-  }
-
-  // --- Configuration & State ---
-  userRotations = signal<PagedRotation>({
-    assignedRotations:[],
-    totalElements:0,
-    totalPages:0,
-    pageSize:0,
-    currentPage:0
-
-  });
-  clients = signal<ClientListItem[]>([])
-  projects = signal<ProjectListItem[]>([])
-  factories:FactoryListItem[]=[]
-  subFactories: SubFactoryListItem[]=[]
-  currentFactories = signal<FactoryListItem[]>([])
-  currentSubFactories = signal<SubFactoryListItem[]>([])
-  // clientList=computed(()=>this.clients().map((client)=>client.name))
-  //  projectList=computed(()=>this.projects().map((project)=>project.label))
-  // factoryList=computed(()=>this.factories().map((factories)=>factories.name))
-  //subFactoryList = computed(() => this.subFactories().map((subFactory) => subFactory.name))
-
-  selectedClient: ClientListItem | null = null;
-  selectedProject:ProjectListItem | null = null;
-  selectedFactory: FactoryListItem | null = null;
-  selectedSubFactory: FactoryListItem | null = null;
-
-  searchValue: string = ''
-
-  private searchUserInputChange$ = new Subject<string>();
-  private searchProjectInputChange$ = new Subject<string>();
-  private searchClientInputChange$ = new Subject<string>();
-
-  toggleValue=0
-
-  totalRecords=computed(()=>this.userRotations().totalElements)
- 
-  first=0
-  activeFilter= signal<'user'|'client'|'project'|'factory'|'subFactory'|'none'>('none')
-  isDialogVisible: boolean = false
-  state=computed(()=>
-    {
-      return {
-        userRotations:this.activeFilter(),
-        page:signal(0),
-        row:signal(5)
-      }
-
-  })
-
-    onPageChange(event: PaginatorState): void {
+    this.searchValue = '';
     
-   this.first = event.first  ?? 0;
-   const page = event.page  ?? 0;
-   const rows = event.rows ?? this.state().row();
-
-   this.state().page.set(page)
-   this.state().row.set(rows)
-   if(this.activeFilter()=='user') this.rotationService.getActiveUsersRotationByName(this.state().page(), this.state().row(),this.searchValue).subscribe((pagedData) =>
-      this.userRotations.set(pagedData))
-   else this.fetchRotations()
-   //  this.rotationService.getActiveUsersRotation()
-     
-    }
-  //rotation 
-  showRotationCreatedToast(isCreated: boolean) {
-
-    if (isCreated) {
-
-      this.messageService.add({
-        severity: 'success',
-        summary: this.translate.instant('rotation.created'),
-        life: 5000
-
-      })
-      this.loadRotation()
-    }
+    // Reset filter params
+    this.currentParams.set({
+      pageNumber: 0,
+      pageSize: this.pageSize()
+    });
+    
+    // Reload initial data
+    this.loadInitialCalendarData();
   }
+
+  /**
+   * Handle search input changes
+   */
   onSearchInput(): void {
-
-        this.selectedProject=null;
-    this.selectedClient=null;
-    this.selectedFactory=null;
-    this.selectedSubFactory=null;
-    this.activeFilter.set('user')
-    this.fetchRotations()
+    // Update search parameters
+    this.currentParams.set({
+      ...this.currentParams(),
+      label: this.searchValue,
+      pageNumber: 0 // Reset to first page
+    });
     
+    // Trigger search with debounce
+    this.searchTermsChange$.next(this.searchValue);
   }
-  // Dates representing the start of each week/day shown
 
-  numberOfWeeksToShow: number = 8; // How many weeks to display in 'month' (weekly) view
-  currentStartDate = signal<Date>(startOfWeek(new Date(), { weekStartsOn: 1 })); // Start on Monday
+  /**
+   * Handle pagination events
+   */
+  onPageChange(event: PaginatorState): void {
+    this.first = event.first ?? 0;
+    const page = event.page ?? 0;
+    const rows = event.rows ?? this.pageSize();
 
-  searchText: string = ''
+    // Update current parameters with new pagination values
+    this.currentParams.set({
+      ...this.currentParams(),
+      pageNumber: page,
+      pageSize: rows
+    });
+    
+    // Fetch rotations with updated params
+    this.fetchRotations();
+  }
 
-  viewModes: ViewMode[] = [
-    { label: 'Month', value: 'month' }, // Represents the weekly view shown in the example
-    { label: 'Week', value: 'week' } // Could add a daily view later
-  ];
-  selectedViewMode: ViewMode = this.viewModes[0]; // Default to 'month' (weekly view)
-
-
-
+  /**
+   * Filter client dropdown options based on input
+   */
   searchClient(event: AutoCompleteCompleteEvent): void {
-    const query = event.query
-    if (!query) this.clients.set([...this.clients()])
-    this.searchClientInputChange$.next(event.query)
-
+    // No need to wait - immediately provide the filtered list
+    const query = event.query.toLowerCase();
+    const allClients = this.clients();
+    
+    this.filteredClients.set(allClients);
+    
+    // Filter based on label (client name)
+    const filtered = allClients.filter(client => 
+      client && client.label && client.label.toLowerCase().includes(query)
+    );
+    
+    // If no matches found, still show all clients
+    if (!filtered || filtered.length === 0) {
+      this.filteredClients.set(allClients);
+    } else {
+      this.filteredClients.set(filtered);
+    }
   }
-  searchProject(event: AutoCompleteCompleteEvent): void {
-    const query = event.query
-    if (!query) this.projects.set([...this.projects()])
 
-    this.searchProjectInputChange$.next(event.query)
-  }
-
+  /**
+   * Filter factory dropdown options based on input
+   */
   searchFactory(event: AutoCompleteCompleteEvent): void {
-   const query=event.query 
-     if (!query) this.currentFactories.set([...this.factories]); 
-    else {
-      const lowerCaseQuery = query.toLowerCase();
-      // Filter based on the query
-      this. currentFactories.update(() =>
-        this.factories.filter(factory=>factory.label.toString().toLowerCase().includes(lowerCaseQuery)) 
-      
-      
-      );
-    }
-
-
-  }
-  searchSubFactory(event: AutoCompleteCompleteEvent): void {
-const query=event.query 
-     if (!query) this.currentSubFactories.set([...this.subFactories]); 
-    else {
-      const lowerCaseQuery = query.toLowerCase();
-      this. currentSubFactories.update(()=>
-        this.subFactories.filter(subFactory=>subFactory.label.toString().toLowerCase().includes(lowerCaseQuery)) 
-      
-      
-      );
+    // No need to wait - immediately provide the filtered list
+    const query = event.query.toLowerCase();
+    const allFactories = this.factories();
+    
+    this.filteredFactories.set(allFactories);
+    
+    // Filter based on label (factory name)
+    const filtered = allFactories.filter(factory => 
+      factory && factory.label && factory.label.toLowerCase().includes(query)
+    );
+    
+    // If no matches found, still show all factories
+    if (!filtered || filtered.length === 0) {
+      this.filteredFactories.set(allFactories);
+    } else {
+      this.filteredFactories.set(filtered);
     }
   }
-  fetchUserRotationsByProject($event: AutoCompleteSelectEvent) {
-    this.selectedFactory=null;
-    this.selectedSubFactory=null;
-    this.searchValue=''
-    this.activeFilter.set('project')
-    this.fetchRotations()
-  }
 
-  fetchRotations(){
-    console.log(this.activeFilter()+this.searchValue)
-    switch(this.activeFilter()){
-      case 'project' :   this.rotationService.getActiveUsersRotationByProject(this.state().page(), this.state().row(), this.selectedProject!.projectId).subscribe((pagedData) =>
-      this.userRotations.set(pagedData));break
-      case 'client' :    this.rotationService.getActiveUsersRotationByClient(this.state().page(), this.state().row(),this.selectedClient!.clientId).subscribe((pagedData) =>
-      this.userRotations.set(pagedData));break
-      case 'factory' :    this.rotationService.getActiveUsersRotationByFactory(this.state().page(), this.state().row(),this.selectedFactory!.factoryId).subscribe((pagedData) =>
-      this.userRotations.set(pagedData));break
-      case 'subFactory' :    this.rotationService.getActiveUsersRotationBySubFactory(this.state().page(), this.state().row(),this.selectedSubFactory!.factoryId).subscribe((pagedData) =>
-      this.userRotations.set(pagedData));break
-      case 'user' :this.searchUserInputChange$.next(this.searchValue);break;
-      default :this.rotationService.getActiveUsersRotation(this.state().page(), this.state().row()).subscribe((pagedData) =>
-      this.userRotations.set(pagedData));break
-    }
-  }
-  fetchUserRotationsByClient($event: AutoCompleteSelectEvent) {
-       this.selectedFactory=null;
-    this.selectedSubFactory=null;
-    this.selectedClient=null;
-    this.searchValue=''
-    this.activeFilter.set('client')
-    this.fetchRotations()
-  }
-    fetchUserRotationsByFactory($event: AutoCompleteSelectEvent) {
-    this.selectedProject=null;
-    this.selectedClient=null;
-    this.searchValue=''
-    this.activeFilter.set('factory')
-    this.fetchRotations()
-  }
-    fetchUserRotationsBySubFactory($event: AutoCompleteSelectEvent) {
-    this.selectedProject=null;
-    this.selectedSubFactory=null;
-    this.selectedClient=null;
-    this.searchValue=''
-    this.activeFilter.set('subFactory')
-    this.fetchRotations()
-  }
-
-// Initial state
-
-  constructor(private rotationService: RotationService,
-    private clientService: ClientService,
-    private projectService: ProjectService,
-    private factoryService: FactoryService,
-    private subFactoryService: SubfactoryService,
-    private messageService: MessageService,
-    private translate: TranslateService
-
-
-  ) { }
-  ngOnInit(): void {
-
-    this.loadFilterLists()
-    this.loadRotation()
-    this.setupSearchDebounce()
-
-  }
-  loadRotation() {
-    this.rotationService.getActiveUsersRotation(this.state().page(),this.state().row()).subscribe(
-      (pagedData) => {
-        console.log(pagedData)
-        this.userRotations.set(pagedData)
-      },
-
-    )
-  };
-
-
-
-  showDialog() {
-    this.isDialogVisible = true;
-
-  }
-  loadFilterLists() {
-
-    this.clientService.getClientListByLabel().subscribe((clients) => { this.clients.set(clients); })
-
-    this.projectService.getProjectList().subscribe((projects) => { this.projects.set(projects); })
-
-    this.factoryService.getFactoryList().subscribe((factories) => { this.factories=factories; })
-
-    this.subFactoryService.getSubFactoryList().subscribe((subFactories) => { this.subFactories=subFactories; })
-
-
-  }
-  loadProjects() {
-
-  }
-
-  displayedDates = computed(() => {
-    const currentStart = this.currentStartDate();
-    const numWeeks = this.numberOfWeeksToShow;
-    const mode = this.selectedViewMode.value;
-    const dates: Date[] = [];
-    let currentDate = currentStart;
-    console.log('Calculating displayedDates...'); // See when this runs
-
-    if (mode === 'month') {
-      for (let i = 0; i < numWeeks; i++) {
-        dates.push(currentDate);
-        currentDate = addWeeks(currentDate, 1);
+  /**
+   * Handle client selection and fetch related rotations and projects
+   */
+  fetchUserRotationsByClient(event: any) {
+    // Set client ID in search parameters
+    if (event && event.value) {
+      this.selectedClient = event.value;
+      const clientId = this.selectedClient?.clientId;
+      
+      // Reset project selection when client changes
+      this.selectedProject = null;
+      
+      // Update search parameters
+      this.currentParams.set({
+        ...this.currentParams(),
+        clientId: clientId,
+        projectId: undefined, // Clear project ID when client changes
+        pageNumber: 0 // Reset to first page when changing filters
+      });
+      
+      // Load projects for this client
+      if (clientId) {
+        this.rcService.getRcProjectsByClient(clientId).subscribe({
+          next: (response) => {
+            if (response && response.data) {
+              this.projects.set(response.data);
+              console.log('Projects loaded for client:', response.data);
+            } else {
+              this.projects.set([]);
+            }
+          },
+          error: (error) => {
+            console.error('Error loading projects:', error);
+            this.projects.set([]);
+          }
+        });
       }
-    } // Add other view modes if needed
-    return dates;
-  });
-  currentDateRangeLabel = computed(() => {
-    const dates = this.displayedDates();
-    if (!dates.length) return '';
-    const firstDate = dates[0];
-    const lastWeekStartDate = dates[dates.length - 1];
-    // Note: end date logic might need slight adjustment based on view
-    const endDateForLabel = addDays(lastWeekStartDate, 6); // Assuming week ends 6 days after start
-    console.log('Calculating date range label...');
-    return `${format(firstDate, 'dd MMM')} - ${format(endDateForLabel, 'dd MMM yyyy')}`;
-  });
+      
+      // Fetch rotations with updated parameters
+      this.fetchRotations();
+    } else {
+      // If selection was cleared
+      this.currentParams.set({
+        ...this.currentParams(),
+        clientId: undefined,
+        projectId: undefined, // Also clear project ID
+        pageNumber: 0
+      });
+      this.projects.set([]);
+      this.selectedProject = null;
+      this.fetchRotations();
+    }
+  }
+  
+  /**
+   * Show all clients in dropdown when clicked without filtering
+   */
+  showAllClients() {
+    // Simply return all clients without any filtering
+    return this.clients();
+  }
 
+  /**
+   * Handle factory selection and fetch related rotations and subfactories
+   */
+  fetchUserRotationsByFactory(event: any) {
+    // Update factory ID in search parameters
+    if (event && event.value) {
+      this.selectedFactory = event.value;
+      const factoryId = this.selectedFactory?.factoryId;
+      
+      // Reset subfactory selection when factory changes
+      this.selectedSubFactory = null;
+      
+      // Update search parameters
+      this.currentParams.set({
+        ...this.currentParams(),
+        factoryId: factoryId,
+        subFactoryId: undefined, // Clear subfactory ID when factory changes
+        pageNumber: 0 // Reset to first page when changing filters
+      });
+      
+      // Load subfactories for this factory
+      if (factoryId) {
+        this.rcService.getRcSubFactoriesByFactory(factoryId).subscribe({
+          next: (response) => {
+            if (response && response.data) {
+              this.subFactories.set(response.data);
+              console.log('Subfactories loaded for factory:', response.data);
+            } else {
+              this.subFactories.set([]);
+            }
+          },
+          error: (error) => {
+            console.error('Error loading subfactories:', error);
+            this.subFactories.set([]);
+          }
+        });
+      }
+      
+      // Fetch rotations with updated parameters
+      this.fetchRotations();
+    } else {
+      // If selection was cleared
+      this.currentParams.set({
+        ...this.currentParams(),
+        factoryId: undefined,
+        subFactoryId: undefined, // Also clear subfactory ID
+        pageNumber: 0
+      });
+      this.subFactories.set([]);
+      this.selectedSubFactory = null;
+      this.fetchRotations();
+    }
+  }
+  
+  /**
+   * Show all factories in dropdown when clicked without filtering
+   */
+  showAllFactories() {
+    // Simply return all factories without any filtering
+    return this.factories();
+  }
+
+  /**
+   * Handle project selection 
+   */
+  fetchUserRotationsByProject(event: any) {
+    // Update project ID in search parameters
+    if (event && event.value) {
+      this.selectedProject = event.value;
+      this.currentParams.set({
+        ...this.currentParams(),
+        projectId: this.selectedProject?.projectId,
+        pageNumber: 0 // Reset to first page when changing filters
+      });
+      
+      // Fetch rotations with updated parameters
+      this.fetchRotations();
+    } else {
+      // If selection was cleared
+      this.currentParams.set({
+        ...this.currentParams(),
+        projectId: undefined,
+        pageNumber: 0
+      });
+      this.fetchRotations();
+    }
+  }
+
+  /**
+   * Handle subfactory selection
+   */
+  fetchUserRotationsBySubFactory(event: any) {
+    // Update subfactory ID in search parameters
+    if (event && event.value) {
+      this.selectedSubFactory = event.value;
+      // Handle both property naming conventions (subFactoryId or subFactoryID)
+      const subFactoryIdValue = this.selectedSubFactory?.subFactoryId || this.selectedSubFactory?.subFactoryID;
+      
+      this.currentParams.set({
+        ...this.currentParams(),
+        subFactoryId: subFactoryIdValue,
+        pageNumber: 0 // Reset to first page when changing filters
+      });
+      
+      // Fetch rotations with updated parameters
+      this.fetchRotations();
+    } else {
+      // If selection was cleared
+      this.currentParams.set({
+        ...this.currentParams(),
+        subFactoryId: undefined,
+        pageNumber: 0
+      });
+      this.fetchRotations();
+    }
+  }
+
+  /**
+   * Show dialog for creating new rotations
+   */
+  showDialog() {
+    // Set default data for a new rotation
+    this.currentRotationForDialog.set({
+      mode: 'automatic', // Default mode
+      associates: [],
+      projectId: undefined, // Or a default project ID if applicable
+      startDate: new Date(), // Default to today
+      endDate: addDays(new Date(), 30), // Default to 30 days from today
+      shift: 1, // Default shift (e.g., 1 day on)
+      cycle: 1, // Default cycle (e.g., 1 day off)
+      customDates: [],
+      selectedDates: [], // Initialize as empty for new rotation
+      selectedWeek: null
+    });
+    this.isDialogVisible = true;
+  }
+
+  /**
+   * Navigate to previous period
+   */
   previousPeriod(): void {
     if (this.selectedViewMode.value === 'month') {
-      this.currentStartDate.update((date) => subWeeks(date, this.numberOfWeeksToShow));
-    } // Add logic for 'week' view if needed
-
+      this.daysToShow.set(30);
+    } else {
+      this.daysToShow.set(7);
+    }
+    
+    // Move current date back by number of days shown
+    this.currentDate.update(date => 
+      subWeeks(date, this.selectedViewMode.value === 'month' ? 4 : 1)
+    );
   }
 
+  /**
+   * Navigate to next period
+   */
   nextPeriod(): void {
     if (this.selectedViewMode.value === 'month') {
-      this.currentStartDate.update((date) => addWeeks(date, this.numberOfWeeksToShow));
-    } // Add logic for 'week' view if needed
-
+      this.daysToShow.set(30);
+    } else {
+      this.daysToShow.set(7);
+    }
+    
+    // Move current date forward by number of days shown
+    this.currentDate.update(date => 
+      addWeeks(date, this.selectedViewMode.value === 'month' ? 4 : 1)
+    );
   }
 
+  /**
+   * Handle view mode changes (week/month)
+   */
   onViewModeChange(): void {
-    // Reset start date or adjust logic based on view mode switch if needed
-    // For now, just recalculate based on the current start date
-    // this.calculateDisplayedDates();
+    if (this.selectedViewMode.value === 'month') {
+      this.daysToShow.set(30); // Show entire month
+    } else {
+      this.daysToShow.set(7); // Show week
+    }
   }
 
-
-  clearSearch(): void {
-    this.searchText = '';
-
+  /**
+   * Format date for display in header
+   */
+  formatDateHeader(date: Date): string {
+    return format(date, 'dd-MM');
   }
 
-
-  // --- Helpers (Remain the same) ---
+  /**
+   * Format date as key for rotation lookup
+   */
   formatDateKey(date: Date): string {
     return format(date, 'yyyy-MM-dd');
   }
 
-  formatDateHeader(date: Date): string {
-    return format(date, 'dd-MM');
-  }
-  getRemoteState(rotation: Rotation, date: Date): ToggleState {
+  /**
+   * Determine the remote state for a rotation on a specific date
+   */
+  getRemoteState(rotation: RcRecentAssociateRotations, date: Date): ToggleState {
     const dateKey = this.formatDateKey(date);
-
-    return this.toToggleType(this.rotationService.getDateRotationStatus(rotation, dateKey)) as ToggleState;
-  }
-  toToggleType(status: RotationStatus) {
-    switch (status) {
-      case RotationStatus.Remote: return -1;
-      case RotationStatus.Off: return 0;
-      case RotationStatus.OnSite: return 1;
-      default: return 0;
-    }
-
-  }
-  fromToggleType(state: ToggleState): RotationStatus {
-    switch (state) {
-      case -1: return RotationStatus.Remote;
-      case 0: return RotationStatus.Off;
-      case 1: return RotationStatus.OnSite;
-      default: return RotationStatus.Off; // Should not happen if ToggleState is used correctly
-    }
-  }
-    prevouisToggleType(state: ToggleState): RotationStatus {
-    switch (state) {
-      case -1: return RotationStatus.OnSite;
-      case 0: return RotationStatus.Remote;
-      case 1: return RotationStatus.Off;
-      default: return RotationStatus.Off; // Should not happen if ToggleState is used correctly
-    }
-  }
-  // *** NEW METHOD TO HANDLE THE UPDATE ***
-  updateRemoteState(userRotation: UserRotation, date: Date, newState: ToggleState) {
-    const dateKey = this.formatDateKey(date);
-    const rotation=userRotation.rotation
-    // Convert the new ToggleState number back to the string status
-    const newStatus = this.fromToggleType(newState);
-   
- 
-    this.rotationService.updateRotationStatusForDate(rotation, dateKey, newStatus);
-    const updateRotation: UpdateUserRotationDTO = {
-
-      userId: userRotation.user.userId!,
-      shift: rotation!.shift,
-      cycle: rotation!.cycle,
-      endDate: rotation!.endDate,
-      startDate: rotation!.startDate,
-      customDates: rotation!.customDates,
-      projectId: userRotation.project,
-      updatedDate:dateKey,
-     updatedStatus:newStatus
-    }
-    console.log("yess")
     
-    this.rotationService.updateUsersRotation(updateRotation).subscribe({
-      next : (isUpdated) => {
-      if (isUpdated) this.messageService.add({
-        severity: 'success',
-        summary: this.translate.instant("rotation.updated")
-      })
-    },
-       error :(error) =>{
-        this.rotationService.updateRotationStatusForDate(rotation,dateKey,this.prevouisToggleType(newState))
-        this.messageService.add({
-        severity: 'error',
-        summary: error.message
-      })}
-  
-  })
-    console.log(updateRotation)
-    // Update the schedule data for the specific user and date
-    // this.userRotations().forEach(currRotation => {
-    //   if (currRotation.rotation === rotation) {
-    //     this.rotationService.updateRotationStatusForDate(currRotation.rotation, dateKey, newStatus);
-    //   }
-    // })
-
-
+    // Check if date is in onSiteDates
+    if (rotation.onSiteDates && rotation.onSiteDates.includes(dateKey)) {
+      return 1; // OnSite
+    }
+    
+    // Check if date is in remoteDates
+    if (rotation.remoteDates && rotation.remoteDates.includes(dateKey)) {
+      return -1; // Remote
+    }
+    
+    // If date is not in either array, show as OFF (0)
+    // This is just for display purposes - the toggle component will still cycle between REMOTE and ONSITE
+    return 0; // OFF - for dates outside the rotation range
   }
+
+  /**
+   * Add a pending change for rotation state on a specific date
+   * Changes will be saved when the user confirms them
+   */
+  updateRemoteState(rotation: RcRecentAssociateRotations, date: Date, newState: ToggleState) {
+    const dateKey = this.formatDateKey(date);
+    
+    // Convert ToggleState to RotationStatus
+    let rotationStatus: RotationStatus;
+    if (newState === 1) { // OnSite
+      rotationStatus = RotationStatus.ONSITE;
+    } else { // Remote (newState === -1)
+      rotationStatus = RotationStatus.REMOTE;
+    }
+    
+    // Create a unique key for this change (userId + date)
+    const changeKey = `${rotation.userId}_${dateKey}`;
+    
+    // Create the custom date object
+    const customDate: CustomDate = {
+      date: dateKey,
+      rotationStatus: rotationStatus
+    };
+    
+    // Add to pending changes
+    this.pendingChanges.set(changeKey, customDate);
+    this.hasPendingChanges.set(true);
+    
+    // Update the UI immediately (but don't save to backend yet)
+    this.updateLocalRotationData(rotation, dateKey, rotationStatus);
+    
+    // Show notification about pending changes
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Change Pending',
+      detail: 'Click Save Changes button to apply your updates',
+      life: 3000
+    });
+  }
+
+  /**
+   * Update local rotation data after successful API update
+   * @param rotation - The rotation to update
+   * @param dateKey - The date key in format YYYY-MM-DD
+   * @param status - The new rotation status
+   */
+  /**
+   * Save all pending rotation changes to the backend
+   */
+  saveChanges(): void {
+    if (this.pendingChanges.size === 0) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'No Changes',
+        detail: 'No changes to save'
+      });
+      return;
+    }
+    
+    // Group changes by user ID
+    const changesByUser = new Map<string, CustomDate[]>();
+    
+    this.pendingChanges.forEach((customDate, key) => {
+      const userId = key.split('_')[0];
+      if (!changesByUser.has(userId)) {
+        changesByUser.set(userId, []);
+      }
+      changesByUser.get(userId)?.push(customDate);
+    });
+    
+    // Track number of successful updates
+    let successCount = 0;
+    let totalUpdates = changesByUser.size;
+    let errorOccurred = false;
+    
+    // Process each user's changes
+    changesByUser.forEach((customDates, userId) => {
+      const updateData: RcUpdateAssociateRotationDTO = {
+        userId: userId,
+        customDates: customDates
+      };
+      
+      this.rcService.updateRcAssignedRotation(updateData).subscribe({
+        next: (response: ResponseWrapperDto<any>) => {
+          if (response && response.status === 'success') {
+            successCount++;
+            
+            // If all updates are complete, show success message
+            if (successCount === totalUpdates && !errorOccurred) {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Changes Saved',
+                detail: `Successfully updated rotation schedules for ${totalUpdates} user(s)`
+              });
+              
+              // Clear pending changes
+              this.pendingChanges.clear();
+              this.hasPendingChanges.set(false);
+              
+              // Refresh the data to ensure we have the latest from the server
+              this.fetchRotations();
+            }
+          } else {
+            errorOccurred = true;
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Update Failed',
+              detail: response.message || 'Failed to update rotation status'
+            });
+          }
+        },
+        error: (error) => {
+          errorOccurred = true;
+          console.error('Error updating rotation:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Update Failed',
+            detail: 'An error occurred while updating rotation status'
+          });
+        }
+      });
+    });
+  }
+  
+  /**
+   * Cancel all pending changes
+   */
+  cancelChanges(): void {
+    if (this.pendingChanges.size === 0) {
+      return;
+    }
+    
+    // Clear pending changes
+    this.pendingChanges.clear();
+    this.hasPendingChanges.set(false);
+    
+    // Refresh the data to revert local changes
+    this.fetchRotations();
+    
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Changes Cancelled',
+      detail: 'All pending changes have been discarded'
+    });
+  }
+
+  private updateLocalRotationData(rotation: RcRecentAssociateRotations, dateKey: string, status: RotationStatus): void {
+    // Create a copy of the rotations array
+    const updatedRotations = [...this.userRotations()];
+    
+    // Find the index of the rotation to update
+    const rotationIndex = updatedRotations.findIndex(r => r.userId === rotation.userId);
+    
+    if (rotationIndex !== -1) {
+      const updatedRotation = { ...updatedRotations[rotationIndex] };
+      
+      // Remove the date from both arrays first
+      updatedRotation.onSiteDates = updatedRotation.onSiteDates?.filter(d => d !== dateKey) || [];
+      updatedRotation.remoteDates = updatedRotation.remoteDates?.filter(d => d !== dateKey) || [];
+      
+      // Add the date to the appropriate array based on status
+      if (status === RotationStatus.ONSITE) {
+        updatedRotation.onSiteDates = [...updatedRotation.onSiteDates, dateKey];
+      } else if (status === RotationStatus.REMOTE) {
+        updatedRotation.remoteDates = [...updatedRotation.remoteDates, dateKey];
+      }
+      
+      // Update the rotation in the array
+      updatedRotations[rotationIndex] = updatedRotation;
+      
+      // Update the signal with the new array
+      this.userRotations.set(updatedRotations);
+    }
+  }
+
+  /**
+   * Set up search debounce to prevent too many API calls
+   */
   private setupSearchDebounce(): void {
-    this.searchClientInputChange$.pipe(
-      debounceTime(1000),
+    this.searchTermsChange$.pipe(
+      debounceTime(500),
       distinctUntilChanged(),
       switchMap(searchTerm => {
-
-        return this.clientService.getClientListByLabel(searchTerm);
+        // Return the API call with search term
+        return this.rcService.getRcRotations({
+          ...this.currentParams(),
+          label: searchTerm
+        });
       })
-    ).subscribe(results => {
-
-      this.clients.set(results);
-
-    });
-
-    this.searchProjectInputChange$.pipe(
-      debounceTime(1000),
-      distinctUntilChanged(),
-      switchMap(searchTerm => {
-        return this.projectService.getProjectList(searchTerm);
-      })
-    ).subscribe(results => {
-
-      console.log(results)
-      this.projects.set(results); // Assuming PagedData has 'content'
-
-    });
-
-    this.searchUserInputChange$.pipe(
-      debounceTime(1000),
-      distinctUntilChanged(),
-      switchMap(searchTerm => {
-       console.log("called"+searchTerm)
-        return this.rotationService.getActiveUsersRotationByName(this.state().page(), this.state().row(), searchTerm);
-      })
-    ).subscribe(results => {
-      if (results && (results as PagedRotation).assignedRotations) {
-        console.log(results)
-        this.userRotations.set(results); // Assuming PagedData has 'content'
+    ).subscribe({
+      next: (response) => {
+        if (response && response.data) {
+          // Update rotations and pagination data
+          this.userRotations.set(response.data.rcAllRecentAssociateRotations || []);
+          this.totalPages.set(response.data.totalPages || 0);
+          this.totalElements.set(response.data.totalElements || 0);
+          this.currentPage.set(response.data.currentPage || 0);
+          this.pageSize.set(response.data.pageSize || 0);
+        }
+      },
+      error: (error) => {
+        console.error('Error searching rotations:', error);
       }
     });
   }
 
+
+  handleDialogClosed(): void {
+    this.isDialogVisible = false;
+    this.currentRotationForDialog.set(null); // Clear the data when dialog is closed without applying
+    console.log('Rotation dialog closed by user.');
+  }
+
+  /**
+   * Open the rotation creation modal
+   */
+  openRotationModal(): void {
+    this.showRotationModal = true;
+    console.log('Opening rotation creation modal');
+  }
+
+  /**
+   * Handle rotation modal closed event
+   */
+  onRotationModalClosed(): void {
+    this.showRotationModal = false;
+    console.log('Rotation creation modal closed');
+    // Optionally refresh the rotations data after a new rotation is created
+    this.fetchRotations();
+  }
 }

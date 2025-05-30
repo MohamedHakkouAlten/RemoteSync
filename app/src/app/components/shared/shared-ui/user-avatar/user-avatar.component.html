@@ -1,8 +1,11 @@
 <p-avatar
-
   [label]="userInitials"
-     
-   [styleClass]="avatarStyle"
-   [style]="avatarInlineStyle"
+  [style]="{
+    'color': textColor,
+    'background-color': bgColor,
+    'width': size + 'px',
+    'height': size + 'px',
+    'font-size': textSize + 'px'
+  }"
   shape="circle">
 </p-avatar>

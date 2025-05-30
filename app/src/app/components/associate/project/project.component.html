@@ -1,97 +1,151 @@
-<div class="dashboard-layout">
-  <!-- Header -->
+<app-default-layout>
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading || loadingError" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+      <p-progressSpinner *ngIf="isLoading && !loadingError" strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
+      <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">Loading projects...</span>
+      <div *ngIf="loadingError" class="text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+        <p class="text-red-500 font-semibold">Loading Error</p>
+        <p class="text-gray-600 text-sm mt-1 mb-4">Unable to load the projects data. Please try again.</p>
+        <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadProjects()">Retry</button>
+      </div>
+    </div>
+  </div>
 
+  <div class="dashboard-layout">
+    <!-- Dashboard Header with welcome message -->
+    <div class="dashboard-welcome">
+      <h1>My Projects</h1>
+      <p class="welcome-text">Manage and view all your assigned projects</p>
+    </div>
+    
+    <div style="margin: 0 auto; padding: 0 20px;">
+      <!-- Header with filters -->
+      <div class="projects-header bg-white rounded-lg shadow-sm p-4 mb-5">
+        
+        <div class="filter-bar flex flex-wrap items-center gap-4">
+          <span class="p-input-icon-left search-input" style="flex-grow: 1; min-width: 200px; width: 100%; max-width: 480px;">
+            <i class="pi pi-search"></i>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearchTermChange()"
+              class="hover:!border-orange-500 w-full"
+              placeholder="Search by title or label..." />
+          </span>
 
-  <div class="projects-page">
-      <!-- Header and Filters -->
-      <header class="projects-header">
-          <h1>Projects</h1>
-          <div class="filter-bar">
-              <!-- Search Input (Remains the same) -->
-              <span class="p-input-icon-left search-input">
-                  <i class="pi pi-search"></i>
-                  <input type="text" pInputText placeholder="Search by title or label..."
-                         [(ngModel)]="searchTerm" (ngModelChange)="filterProjects()" />
-              </span>
+          <p-dropdown 
+            [options]="statusOptions" 
+            [(ngModel)]="selectedStatus" 
+            (onChange)="onFilterChange()" 
+            placeholder="All Status" 
+            [showClear]="true"
+            styleClass="filter-dropdown"
+            [style]="{'min-width': '150px', 'width': 'auto'}"
+            optionLabel="label"
+            optionValue="value">
+          </p-dropdown>
 
-              <!-- Status Dropdown - Using p-dropdown -->
-              <p-dropdown 
-                  [options]="statusOptions" 
-                  [(ngModel)]="selectedStatus" 
-                  (onChange)="filterProjects()" 
-                  placeholder="All Status" 
-                  [showClear]="false"
-                  styleClass="filter-dropdown">
-              </p-dropdown>
+          <p-dropdown 
+            [options]="clientOptions" 
+            [(ngModel)]="selectedClient" 
+            (onChange)="onClientFilterChange()" 
+            placeholder="All Clients" 
+            [showClear]="true"
+            optionLabel="name" 
+            optionValue="id"
+            styleClass="filter-dropdown"
+            [style]="{'min-width': '150px', 'width': 'auto'}">
+          </p-dropdown>
+        </div>
+      </div>
 
-              <!-- Client Dropdown - Using p-dropdown -->
-              <p-dropdown 
-                  [options]="clientOptions" 
-                  [(ngModel)]="selectedClient" 
-                  (onChange)="filterProjects()" 
-                  placeholder="All Clients" 
-                  [showClear]="false"
-                  styleClass="filter-dropdown">
-              </p-dropdown>
-
-          </div>
-      </header>
-
-      <!-- Projects Grid (Remains the same) -->
-      <main class="projects-grid">
-          <!-- Loop through filtered projects -->
-          <div class="project-card" *ngFor="let project of filteredProjects">
-
-              <!-- Card Top: Title and Status Badge -->
-              <div class="card-top">
-                  <h3 class="project-title">{{ project.title }}</h3>
-                  <p-badge [value]="project.status" [severity]="project.statusSeverity" styleClass="status-badge"></p-badge>
-              </div>
-
-              <!-- Category -->
-              <p class="project-category">{{ project.category }}</p>
-
-              <!-- Details: Client & Date -->
-              <div class="project-info">
-                  <div class="info-item">
-                      <i class="pi pi-building info-icon"></i>
-                      <span>{{ project.client }}</span>
-                  </div>
-                  <div class="info-item">
-                      <i class="pi pi-clock info-icon"></i>
-                      <span>{{ project.dueDate }}</span>
-                  </div>
-              </div>
-
-              <!-- Progress -->
-              <div class="project-progress">
-                  <div class="progress-header">
-                      <span class="progress-label">Progress</span>
-                      <span class="progress-value">{{ project.progress }}%</span>
-                  </div>
-                  <p-progressBar [value]="project.progress" [showValue]="false" styleClass="project-progress-bar"></p-progressBar>
-              </div>
-
-              <!-- Assignees -->
-              <div class="project-assignees">
-                  <p-avatarGroup styleClass="assignee-group">
-                      <p-avatar *ngFor="let assignee of project.assignees | slice:0:3"
-                                [image]="assignee.image" [label]="assignee.label"
-                                shape="circle" size="normal"></p-avatar>
-                      <p-avatar *ngIf="project.remainingAssignees && project.remainingAssignees > 0"
-                                [label]="'+' + project.remainingAssignees"
-                                shape="circle" size="normal"
-                                styleClass="remaining-assignees-badge"></p-avatar>
-                  </p-avatarGroup>
-              </div>
-
-          </div> <!-- End project-card -->
-
-          <!-- No Projects Message (Remains the same) -->
-          <div *ngIf="!filteredProjects || filteredProjects.length === 0" class="no-projects-message">
-              No projects found matching your criteria.
+      <!-- Projects grid -->
+      <div class="projects-grid" [style]="{'display': 'grid', 'grid-template-columns': 'repeat(3, 1fr)', 'gap': '20px', 'margin-bottom': '40px', 'width': '100%'}" *ngIf="!isLoading; else loadingTemplate">
+        <div class="project-card" *ngFor="let project of pagedProjects?.projectDTOS" [ngClass]="'status-' + (project.status ? project.status.toLowerCase() : 'none')" [style]="{'height': '100%'}">
+          <!-- Card Status Indicator -->
+          <div class="card-status-indicator"></div>
+          
+          <!-- Card Header -->
+          <div class="card-top">
+            <h3 class="project-title">{{ project.label }}</h3>
+            <p-badge [value]="project.status" [severity]="getProjectStatusSeverity(project.status)" styleClass="status-badge"></p-badge>
           </div>
 
-      </main> <!-- End projects-grid -->
-  </div> <!-- End projects-page -->
-</div> <!-- End dashboard-layout -->
+          <!-- Client Details -->
+          <div class="client-section">
+            <div class="client-avatar" [ngClass]="getSectorClass(project.owner.sector)">
+              <span>{{ getClientInitials(project) }}</span>
+            </div>
+            <div class="client-details">
+              <span class="client-name">{{ project.owner.name || 'N/A' }}</span>
+              <span class="client-sector">{{ project.owner.sector || 'General' }}</span>
+            </div>
+          </div>
+          
+          <!-- Project Timeline -->
+          <div class="project-info">
+            <div class="info-item">
+              <i class="pi pi-calendar info-icon"></i>
+              <div class="info-content">
+                <span class="info-label">Start Date</span>
+                <span class="info-value">{{ project.startDate ? (project.startDate | date: 'MMM d, yyyy') : 'N/A' }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-flag info-icon"></i>
+              <div class="info-content">
+                <span class="info-label">Deadline</span>
+                <span class="info-value">{{ project.deadLine ? (project.deadLine | date: 'MMM d , yyyy') : 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Progress Section -->
+          <div class="project-progress">
+            <div class="progress-header">
+              <span class="progress-label">Progress</span>
+              <span class="progress-value" [ngClass]="{'complete': getProjectProgress(project) === 100}">{{ getProjectProgress(project) }}%</span>
+            </div>
+            <!-- Direct style attribute used for progress bar to ensure color works -->
+            <div class="custom-progress-container">
+              <div class="custom-progress-bar" [style.width.%]="getProjectProgress(project)" [style.background-color]="getProgressBarColor(project)"></div>
+            </div>
+          </div>
+          
+          <!-- Card Actions -->
+          <div class="card-actions">
+            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-outlined view-details-btn" pTooltip="View Details" (click)="viewProjectDetails(project)"></button>
+          </div>
+        </div>
+
+        <div *ngIf="(!pagedProjects || !pagedProjects.projectDTOS || pagedProjects.projectDTOS.length === 0) && !isLoading" class="no-projects-message">
+          No projects found matching your criteria.
+        </div>
+      </div>
+
+      <!-- Always show paginator, but only enable when we have multiple pages -->
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <p-paginator 
+          [rows]="pageSize" 
+          [totalRecords]="pagedProjects?.totalElements || 0" 
+          (onPageChange)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 30, 50]"
+          [alwaysShow]="true">
+        </p-paginator>
+      </div>
+    </div>
+
+    <!-- Empty state for grid -->
+    <ng-template #loadingTemplate>
+      <div class="loading-spinner flex items-center justify-center h-60 w-full">
+        <div class="text-center">
+          <i class="pi pi-search" style="font-size: 2.5rem; color: #d1d5db;"></i>
+          <p class="mt-4 text-gray-500">Loading projects or no results found</p>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</app-default-layout>

@@ -7,38 +7,25 @@ import { RotationStatus } from '../../../enums/rotation-status.enum';
 import { Router } from '@angular/router';
 import { UserUtils } from '../../../utilities/UserUtils';
 import { Rotation, UserRotation } from '../../../models/rotation.model';
-import { RotationService } from '../../../services/rotation.service';
-import { DashBoardService } from '../../../services/dash-board.service';
 import { DashBoardDataDTO } from '../../../dto/rc/dashboardDataDTO';
 import { TranslateService } from '@ngx-translate/core';
-
-
-
-
-
+import { RcService, RcDashboardResponse, ReportDTO } from '../../../services/rc.service';
+import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
 
 @Component({
   selector: 'app-dashboard',
   standalone: false,
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 
 export class DashboardComponent implements OnInit {
 
+  navigateToCalendar() {
+    this.router.navigate([this.translate.currentLang + '/remotesync/rc/calendar'])
+  }
 
-navigateToCalendar() {
-this.router.navigate([this.translate.currentLang+'/remotesync/rc/calendar'])
-}
-
-
-
-
-
-
-
-
-userUtils=UserUtils;
+  userUtils = UserUtils;
 
   //left panel stats 
   activeProjects: number = 0;
@@ -59,117 +46,203 @@ userUtils=UserUtils;
   // Replace with your actual avatar paths
 
   // Calculate how many are hidden
-  overflowAvatarsCount: number =0;
+  overflowAvatarsCount: number = 0;
 
-  isPendingReports:boolean=false
+  isPendingReports: boolean = false
 
-  
-//calendar 
+  //calendar 
 
-tableData: UserRotation[] = []; // Use the simpler interface for now
-totalRecords: number = 150; // Total number of entries for pagination
-welcomeName: string=""
-// Fixed date columns based on the image
-dateColumns:  string[] =this.loadWeeksDates()
+  tableData: UserRotation[] = []; // Use the simpler interface for now
+  totalRecords: number = 150; // Total number of entries for pagination
+  welcomeName: string = ""
+  // Fixed date columns based on the image
+  dateColumns: string[] = this.loadWeeksDates()
 
+  displayedProjectMembers: string[] = [];
 
-displayedProjectMembers: string[] = [];
+  //recent reports 
 
+  pendingRequests: ReportDTO[] = [];
 
-//recent reports 
+  constructor(private translate: TranslateService,
+    private authService: AuthFacadeService,
+    private router: Router,
+    private rcService: RcService,
+    private cd: ChangeDetectorRef) {
 
-pendingRequests: RCReport[] = [];
-
-constructor(private translate:TranslateService,
-  private authService :AuthFacadeService,
-  private dashBoardService : DashBoardService,
-  private rotationService:RotationService,
-  private router:Router,
-  private cd :ChangeDetectorRef){
-
-}
+  }
 
   ngOnInit(): void {
-    
 
-    this.dashBoardService.getDashBoardData().subscribe((res:DashBoardDataDTO)=>{
-      this.activeProjects=res.activeProjectCount
-      this.completedProjects=res.completedProjectCount
-      this.totalCapacity=res.totalCapacity
-      this.totalSites=res.totalSites
-      this.onsiteWorkersPercent=Math.round(((res.totalOnSiteAssociates / this.totalCapacity) * 100) * 10) / 10
-      this.remoteWorkersPercent=100-this.onsiteWorkersPercent
-      this.highestDurationProject=res.longestDurationProject.titre!
-      const totalDifference = differenceInDays(res.longestDurationProject.deadLine!,res.longestDurationProject.startDate!);
-      const progressDifference = differenceInDays(new Date(), res.longestDurationProject.startDate!);
-      this.highestDurationValue=(progressDifference / totalDifference) * 100;
-      this.largestTeamProject=res.largestMembersProject.titre!
-      this.largestTeamMembersCount=res.largestMembersProject.usersCount
-      this.displayedProjectMembers=res.largestMembersProject.usersList!
-      this.overflowAvatarsCount=this.largestTeamMembersCount-this.displayedProjectMembers.length
-      this.pendingRequests=res.pendingReports
-      if(this.pendingRequests.length>0)this.isPendingReports=true
-      
+    // Fetch RC dashboard data from the new endpoint
+    this.rcService.getRcDashboard().subscribe({
+      next: (res: ResponseWrapperDto<RcDashboardResponse>) => {
+        // Make sure we have valid data
+        if (!res || !res.data) {
+          console.error('Invalid response data from dashboard service');
+          return;
+        }
 
-  
-    })
-  
-    this.welcomeName = this.authService.getFirstName()+" "+this.authService.getLastName();
+        try {
+          // Update dashboard with data from the response
+          this.completedProjects = res.data.completedProjectsCount || 0;
+          this.activeProjects = res.data.activeProjectsCount || 0;
+          this.totalSites = res.data.factoriesCount || 0;
+          this.totalCapacity = res.data.capacityCount || 0;
 
-    this.rotationService.getActiveUsersRotation(0,10).subscribe((pagedData)=>{this.totalRecords=pagedData.totalElements;this.tableData=pagedData.assignedRotations;console.log(this.tableData)})
-  
-  // ];
+          // Calculate percentages for on-site and remote workers
+          const totalAssociates = this.totalCapacity;
+          if (totalAssociates > 0) {
+            this.onsiteWorkersPercent = Math.round(((res.data.countCurrentAssociateOnSite / totalAssociates) * 100) * 10) / 10 || 0;
+            this.remoteWorkersPercent = Math.max(0, Math.min(100, 100 - this.onsiteWorkersPercent));
+          } else {
+            this.onsiteWorkersPercent = 0;
+            this.remoteWorkersPercent = 0;
+          }
 
-    // In a real app, you'd fetch this data from a service, possibly using the PaginatorState event
-    // For now, we just simulate having the first 10 records for display.
-    // totalRecords is set above to simulate the full dataset size for the paginator.
-   
+          // Set project data if available
+          if (res.data.longestDurationProject) {
+            this.highestDurationProject = res.data.longestDurationProject.label || 'N/A';
+            
+            // Only calculate if we have valid dates
+            if (res.data.longestDurationProject.deadLine && res.data.longestDurationProject.startDate) {
+              const deadlineDate = new Date(res.data.longestDurationProject.deadLine);
+              const startDate = new Date(res.data.longestDurationProject.startDate);
+              
+              // Validate dates before calculation
+              if (!isNaN(deadlineDate.getTime()) && !isNaN(startDate.getTime())) {
+                const totalDifference = differenceInDays(deadlineDate, startDate);
+                const progressDifference = differenceInDays(new Date(), startDate);
+                
+                // Ensure we don't divide by zero
+                if (totalDifference > 0) {
+                  this.highestDurationValue = Math.max(0, Math.min(100, (progressDifference / totalDifference) * 100));
+                } else {
+                  this.highestDurationValue = 0;
+                }
+              } else {
+                this.highestDurationValue = 0;
+              }
+            } else {
+              this.highestDurationValue = 0;
+            }
+          } else {
+            this.highestDurationProject = 'N/A';
+            this.highestDurationValue = 0;
+          }
+
+          // Set largest team project data if available
+          if (res.data.largestTeamProject) {
+            this.largestTeamProject = res.data.largestTeamProject.label || 'N/A';
+            this.largestTeamMembersCount = 5; // Placeholder value since we don't have this in the API response
+          } else {
+            this.largestTeamProject = 'N/A';
+            this.largestTeamMembersCount = 0;
+          }
+
+          // Set pending reports if available
+          if (res.data.pendingReports && res.data.pendingReports.reportDTOs) {
+            this.pendingRequests = res.data.pendingReports.reportDTOs || [];
+            this.isPendingReports = this.pendingRequests.length > 0;
+          } else {
+            this.pendingRequests = [];
+            this.isPendingReports = false;
+          }
+
+          // Transform the recentAssociateRotations data for the table if available
+          if (res.data.recentAssociateRotations && Array.isArray(res.data.recentAssociateRotations) && res.data.recentAssociateRotations.length > 0) {
+            // Create a simple mapping of rotation data for the table
+            this.tableData = res.data.recentAssociateRotations.map(rotation => {
+              if (!rotation) return null;
+              
+              const fullName = rotation.fullName || '';
+              const nameParts = fullName.split(' ');
+              
+              return {
+                user: {
+                  userId: rotation.userId || '',
+                  firstName: nameParts[0] || '',
+                  lastName: nameParts[1] || '',
+                },
+                rotation: {
+                  rotationId: rotation.rotationId || '',
+                  startDate: new Date().toISOString().split('T')[0],
+                  endDate: new Date().toISOString().split('T')[0],
+                  shift: 0, // Default shift value
+                  onSiteDates: Array.isArray(rotation.onSiteDates) ? rotation.onSiteDates : [],
+                  remoteDates: Array.isArray(rotation.remoteDates) ? rotation.remoteDates : []
+                }
+              } as UserRotation;
+            }).filter(item => item !== null);
+            
+            this.totalRecords = this.tableData.length;
+          } else {
+            this.tableData = [];
+            this.totalRecords = 0;
+          }
+        } catch (error) {
+          console.error('Error processing dashboard data:', error);
+        }
+
+        // Trigger change detection
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching dashboard data:', error);
+      }
+    });
+
+    this.welcomeName = this.authService.getFirstName() + " " + this.authService.getLastName();
+
+    // No need to call the rotation service API anymore since we get the data from the dashboard API
+    // this.rotationService.getActiveUsersRotation(0, 10).subscribe((pagedData) => { ... })
   }
 
-   // Placeholder for lazy loading data in a real app
-   loadData(event: any) {
-       console.log('Lazy load event:', event);
-       // In a real app:
-       const page = event.first / event.rows;
-       const rows = event.rows;
-       this.rotationService.getActiveUsersRotation(page,rows).subscribe((pagedData)=>{this.tableData=pagedData.assignedRotations;console.log(this.tableData)})
-       // Call your service to fetch data based on these parameters
-       // this.myService.getData(page, rows, sortField, sortOrder).subscribe(data => {
-       //      this.tableData = data.items;
-       //      this.totalRecords = data.totalCount;
-       // });
-   }
-
-   // Helper function to get the status based on index (since dates can be duplicated)
-   getStatus(rowData:Rotation, date :string): RotationStatus {
-
-return this.rotationService.getDateRotationStatus(rowData,date);
+  // Placeholder for lazy loading data in a real app
+  loadData(event: any) {
+    console.log('Lazy load event:', event);
+    // We're using the data from the dashboard response directly
+    // No need to make additional API calls for pagination
+    // The pagination is handled on the client side
   }
-  loadWeeksDates():string[]{
+
+  // Helper function to get the status based on date
+  getStatus(rowData: Rotation, date: string): RotationStatus {
+    if ((rowData as any).onSiteDates && (rowData as any).onSiteDates.includes(date)) {
+      return RotationStatus.OnSite;
+    }
+    // Check if date is in remoteDates array
+    else if ((rowData as any).remoteDates && (rowData as any).remoteDates.includes(date)) {
+      return RotationStatus.Remote;
+    }
+    // Default to Off if not found in either array
+    return RotationStatus.Off;
+  }
+  loadWeeksDates(): string[] {
 
 
     const dateFormat = 'yyyy-MM-dd';
 
-// --- End Configuration ---
+    // --- End Configuration ---
 
 
-// Find the start of the current week
-const startOfCurrentWeek = startOfWeek(new Date(),{weekStartsOn:1});
+    // Find the start of the current week
+    const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
 
-const dateColumns: string[] = [];
+    const dateColumns: string[] = [];
 
-// Generate the dates for the current week and the next (numberOfWeeks - 1) weeks
-for (let i = 0; i < 5; i++) {
-  // Calculate the start date for the target week (0=current, 1=next, etc.)
-  const weekStartDate = addWeeks(startOfCurrentWeek, i);
+    // Generate the dates for the current week and the next (numberOfWeeks - 1) weeks
+    for (let i = 0; i < 5; i++) {
+      // Calculate the start date for the target week (0=current, 1=next, etc.)
+      const weekStartDate = addWeeks(startOfCurrentWeek, i);
 
-  // Format the date as required
-  const formattedDate = format(weekStartDate, dateFormat);
+      // Format the date as required
+      const formattedDate = format(weekStartDate, dateFormat);
 
-  // Add the formatted date string to the array
-  dateColumns.push(formattedDate);
-}
-return dateColumns;
+      // Add the formatted date string to the array
+      dateColumns.push(formattedDate);
+    }
+    return dateColumns;
 
   }
 

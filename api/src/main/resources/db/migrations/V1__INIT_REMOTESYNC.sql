@@ -37,7 +37,7 @@ CREATE TABLE factory
 
 CREATE TABLE log
 (
-    id             BINARY(16)   NOT NULL,
+    id_log         BINARY(16)   NOT NULL,
     entity_id      BINARY(16)   NULL,
     timestamp      date NULL,
     ip_address     VARCHAR(255) NULL,
@@ -47,18 +47,18 @@ CREATE TABLE log
     entity_type    VARCHAR(255) NULL,
     action_details VARCHAR(255) NULL,
     user_user_id   BINARY(16)   NULL,
-    CONSTRAINT pk_log PRIMARY KEY (id)
+    CONSTRAINT pk_log PRIMARY KEY (id_log)
 );
 
 CREATE TABLE notification
 (
-    id               BINARY(16)   NOT NULL,
+    notification_id  BINARY(16)   NOT NULL,
     title            VARCHAR(255) NULL,
     `description`    VARCHAR(255) NULL,
     status           VARCHAR(255) NULL,
     created_at       date NULL,
     receiver_user_id BINARY(16)   NULL,
-    CONSTRAINT pk_notification PRIMARY KEY (id)
+    CONSTRAINT pk_notification PRIMARY KEY (notification_id)
 );
 
 CREATE TABLE privilege
@@ -128,13 +128,13 @@ CREATE TABLE rotation_custom_dates
 
 CREATE TABLE sub_factory
 (
-    sub_factoryid      BINARY(16)   NOT NULL,
+    sub_factory_id      BINARY(16)   NOT NULL,
     capacity           INT    NOT NULL,
     label              VARCHAR(255) NULL,
     title              VARCHAR(255) NULL,
     is_deleted         BIT(1) NOT NULL,
     factory_factory_id BINARY(16)   NULL,
-    CONSTRAINT pk_subfactory PRIMARY KEY (sub_factoryid)
+    CONSTRAINT pk_subfactory PRIMARY KEY (sub_factory_id)
 );
 
 CREATE TABLE user
@@ -150,7 +150,7 @@ CREATE TABLE user
     is_deleted                BIT(1)       NOT NULL,
     created_at                date NULL,
     updated_at                date NULL,
-    sub_factory_sub_factoryid BINARY(16)   NULL,
+    sub_factory_sub_factory_id BINARY(16)   NULL,
     CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
 
@@ -203,7 +203,7 @@ ALTER TABLE sub_factory
     ADD CONSTRAINT FK_SUBFACTORY_ON_FACTORY_FACTORYID FOREIGN KEY (factory_factory_id) REFERENCES factory (factory_id);
 
 ALTER TABLE user
-    ADD CONSTRAINT FK_USER_ON_SUBFACTORY_SUBFACTORYID FOREIGN KEY (sub_factory_sub_factoryid) REFERENCES sub_factory (sub_factoryid);
+    ADD CONSTRAINT FK_USER_ON_SUBFACTORY_SUBFACTORYID FOREIGN KEY (sub_factory_sub_factory_id) REFERENCES sub_factory (sub_factory_id);
 
 ALTER TABLE role_privileges
     ADD CONSTRAINT fk_rolpri_on_privilege FOREIGN KEY (privileges_privilege_id) REFERENCES privilege (privilege_id);

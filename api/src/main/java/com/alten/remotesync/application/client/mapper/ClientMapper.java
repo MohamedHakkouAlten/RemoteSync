@@ -10,5 +10,6 @@ import org.mapstruct.Mapper;
 public interface ClientMapper {
     ClientDTO toClientDTO(Client client);
     ClientDropDownDTO toClientDropDownDTO(ClientListProjection clientListProjection);
+    ClientDropDownDTO toClientDropDownDTO(Client client);
 
 }

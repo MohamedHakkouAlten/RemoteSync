@@ -25,4 +25,9 @@ public class ClientServiceImp implements ClientService {
       return  clientDomainRepository.findTop10ByLabelContainsIgnoreCase(label).orElseThrow(()->new ClientNotFoundException("client not found")).stream().map(clientMapper::toClientDropDownDTO).toList();
 
     }
+
+    @Override
+    public List<ClientDropDownDTO> getRcAllClients() {
+        return clientDomainRepository.findAll().stream().map(clientMapper::toClientDropDownDTO).toList();
+    }
 }

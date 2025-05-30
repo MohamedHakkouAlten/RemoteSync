@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Log {
     @Id
     @UuidGenerator
-    private UUID id;
+    private UUID idLog;
 
     private UUID entityId;
 

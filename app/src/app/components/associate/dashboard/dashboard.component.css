@@ -3,102 +3,466 @@
    ========================================================================== */
    :host { display: block; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; color: #333; box-sizing: border-box; }
    *, *:before, *:after { box-sizing: inherit; }
-   .dashboard-layout { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa; }   
+   .dashboard-layout { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa; padding: 0 0 2rem 0; }
+   
+   /* Dashboard Welcome Section */
+   .dashboard-welcome {
+     padding: 1.5rem 2rem 0.75rem;
+     margin-bottom: 0.5rem;
+   }
+   
+   .dashboard-welcome h1 {
+     font-size: 1.75rem;
+     font-weight: 600;
+     color: #343a40;
+     margin: 0 0 0.5rem 0;
+   }
+   
+   .welcome-text {
+     font-size: 1rem;
+     color: #6c757d;
+     margin: 0;
+   }
+   
    /* ==========================================================================
-      Main Content Layout (Keep As Is)
+      Main Content Layout
       ========================================================================== */
-   .dashboard-main { display: flex; flex-grow: 1; padding: 1.5rem 2rem; gap: 1.5rem; }
-   .main-content { flex: 1 1 70%; display: flex; flex-direction: column; gap: 1.5rem; }
-   .sidebar { flex: 1 1 30%; display: flex; flex-direction: column; gap: 1.5rem; max-width: 380px; }
+   .dashboard-main { 
+     display: flex; 
+     flex-grow: 1; 
+     padding: 0 2rem; 
+     gap: 1.5rem; 
+   }
+   
+   .main-content { 
+     flex: 1 1 70%; 
+     display: flex; 
+     flex-direction: column; 
+     gap: 1.5rem; 
+   }
+   
+   .sidebar { 
+     flex: 1 1 30%; 
+     display: flex; 
+     flex-direction: column; 
+     gap: 1.5rem; 
+     max-width: 380px; 
+   }
    
    /* ==========================================================================
-      Card Base Styles (Keep As Is)
+      Card Base Styles 
       ========================================================================== */
-   .card { background-color: #ffffff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); border: none; }
-   .card h2 { font-size: 1.1rem; font-weight: 600; color: #343a40; margin: 0 0 1rem 0; }
-   .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-   .card-header h2 { margin-bottom: 0; }
-   .view-all-link { font-size: 0.85rem; font-weight: 500; color: #FF8C00; text-decoration: none; cursor: pointer; }
-   .view-all-link:hover { text-decoration: underline; }
+   .card { 
+     background-color: #ffffff; 
+     border-radius: 12px; 
+     padding: 1.5rem; 
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); 
+     border: none; 
+     transition: box-shadow 0.2s ease;
+   }
+   
+   .card:hover {
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+   }
+   
+   .card h2 { 
+     font-size: 1.1rem; 
+     font-weight: 600; 
+     color: #343a40; 
+     margin: 0 0 1rem 0; 
+   }
+   
+   .card-header { 
+     display: flex; 
+     justify-content: space-between; 
+     align-items: center; 
+     margin-bottom: 1.25rem; 
+     padding-bottom: 0.75rem;
+     border-bottom: 1px solid rgba(0,0,0,0.05);
+   }
+   
+   .card-header h2 { 
+     margin-bottom: 0; 
+     text-transform: none;
+     letter-spacing: 0.01em;
+   }
+   
+   .view-all-link { 
+     display: flex;
+     align-items: center;
+     gap: 0.4rem;
+     font-size: 0.85rem; 
+     font-weight: 500; 
+     color: #FF8C00; 
+     text-decoration: none; 
+     cursor: pointer; 
+     transition: color 0.2s ease;
+   }
+   
+   .view-all-link:hover { 
+     color: #FF6B00;
+   }
+   
+   .view-all-link i {
+     font-size: 0.8rem;
+     transition: transform 0.2s ease;
+   }
+   
+   .view-all-link:hover i {
+     transform: translateX(3px);
+   }
    
    /* ==========================================================================
-      Specific Section Styles - Check Alignment & Colors
+      Summary Stats Section
       ========================================================================== */
+   .summary-stats { 
+     display: grid; 
+     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+     gap: 1.5rem; 
+   }
    
-   /* Summary Stats */
-   .summary-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
-   .stat-card { display: flex; align-items: center; background-color: #ffffff; border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); border: none; border-left: 3px solid transparent; gap: 1rem; transition: all 0.3s ease; cursor: pointer; }
-   .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); border-left: 3px solid #FF8C00; }
-   .card-icon { font-size: 1.75rem; padding: 0.75rem; border-radius: 12px; }
-   .orange-icon { color: #FF8C00; background-color: rgba(255, 140, 0, 0.1); }
-   .blue-icon { color: #0066CC; background-color: rgba(0, 102, 204, 0.1); }
-   .purple-icon { color: #6F42C1; background-color: rgba(111, 66, 193, 0.1); }
-   .card-content { display: flex; flex-direction: column; align-items: flex-start; } /* Align text left */
-   .card-title { font-size: 0.85rem; color: #6c757d; margin-bottom: 0.3rem; }
-   .card-value { font-size: 1.75rem; font-weight: 600; color: #343a40; line-height: 1.1; }
+   .stat-card { 
+     display: flex; 
+     align-items: center; 
+     background-color: #ffffff; 
+     border-radius: 12px; 
+     padding: 1.25rem; 
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); 
+     border: none; 
+     border-left: 3px solid #f0f0f0; 
+     gap: 1rem; 
+     transition: all 0.3s ease; 
+     cursor: pointer; 
+   }
    
-   /* Current Project Card */
-   .current-project-card { padding: 1.5rem; }
-   .current-project-card h2 { margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600; }
-   .progress-bar-container { margin-bottom: 1.5rem; margin-top: 0.5rem; }
-   :host ::ng-deep .current-project-card .p-progressbar { height: 6px; background-color: #e9ecef; border-radius: 3px;}
-   :host ::ng-deep .current-project-card .p-progressbar .p-progressbar-value { background: linear-gradient(to right, #FFA500, #FF8C00); border-radius: 3px; }
-   .project-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem 1.5rem; }
-   .detail-item { display: flex; align-items: flex-start; gap: 0.65rem; }
-   .detail-icon { font-size: 0.9rem; color: #adb5bd; margin-top: 0.15rem; }
-   .detail-item > div { display: flex; flex-direction: column; }
-   .detail-label { font-size: 0.8rem; color: #6c757d; margin-bottom: 0.2rem; }
-   .detail-value { font-size: 0.9rem; font-weight: 500; color: #343a40; }
+   .stat-card:hover { 
+     transform: translateY(-5px); 
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); 
+     border-left: 3px solid #FF8C00; 
+   }
    
-   /* Custom Status Badge Styling */
-   .status-badge { font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.6rem; border-radius: 12px; display: inline-block; line-height: 1; }
-   .status-on-track { background-color: #DFF0D8; color: #3C763D; } /* Lighter Green for "On track" */
-   .status-completed { background-color: #E9ECEF; color: #495057; }
+   .stat-icon-container {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
    
-   /* Previous Projects Table */
-   .projects-table { display: flex; flex-direction: column; }
-   .table-row { display: flex; padding: 0.8rem 0; border-bottom: 1px solid #f1f3f5; font-size: 0.85rem; align-items: center; }
-   .table-row:last-child { border-bottom: none; }
-   .table-header { font-weight: 500; color: #adb5bd; font-size: 0.75rem; text-transform: uppercase; padding-bottom: 0.5rem; letter-spacing: 0.03em;}
-   .table-cell { padding: 0 0.5rem; color: #495057;}
-   .table-cell.project-name { flex: 3; font-weight: 500; color: #343a40; }
-   .table-cell.client-name { flex: 3; }
-   .table-cell.duration { flex: 2; text-align: center; }
-   .table-cell.status { flex: 2; text-align: right; }
+   .card-icon { 
+     font-size: 1.5rem; 
+     padding: 0.75rem; 
+     border-radius: 12px; 
+     transition: transform 0.3s ease;
+   }
+   
+   .stat-card:hover .card-icon {
+     transform: scale(1.1);
+   }
+   
+   .orange-icon { 
+     color: #FF8C00; 
+     background-color: rgba(255, 140, 0, 0.1); 
+   }
+   
+   .blue-icon { 
+     color: #0066CC; 
+     background-color: rgba(0, 102, 204, 0.1); 
+   }
+   
+   .purple-icon { 
+     color: #6F42C1; 
+     background-color: rgba(111, 66, 193, 0.1); 
+   }
+   
+   .card-content { 
+     display: flex; 
+     flex-direction: column; 
+     align-items: flex-start; 
+   }
+   
+   .card-title { 
+     font-size: 0.85rem; 
+     color: #6c757d; 
+     margin-bottom: 0.3rem; 
+   }
+   
+   .card-value { 
+     font-size: 1.75rem; 
+     font-weight: 600; 
+     color: #343a40; 
+     line-height: 1.1; 
+   }
    
    /* ==========================================================================
-      Custom Calendar Card Styles
+      Current Project Card
+      ========================================================================== */
+   .current-project-card { 
+     padding: 1.5rem; 
+   }
+   
+   .project-title {
+     font-size: 1.3rem;
+     font-weight: 600;
+     color: #343a40;
+     margin: 0.5rem 0 1.25rem 0;
+   }
+   
+   .project-status-pill {
+     font-size: 0.7rem;
+     font-weight: 600;
+     padding: 0.25rem 0.75rem;
+     border-radius: 20px;
+     text-transform: uppercase;
+     letter-spacing: 0.05em;
+   }
+   
+   .project-status-active {
+     background-color: #d1e7dd;
+     color: #0f5132;
+   }
+   
+   .project-status-completed {
+     background-color: #e2e3e5;
+     color: #41464b;
+   }
+   
+   .project-status-cancelled {
+     background-color: #f8d7da;
+     color: #842029;
+   }
+   
+   .progress-section {
+     margin-bottom: 1.5rem;
+   }
+   
+   .progress-info {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 0.5rem;
+   }
+   
+   .progress-label {
+     font-size: 0.85rem;
+     font-weight: 500;
+     color: #6c757d;
+   }
+   
+   .progress-value {
+     font-size: 0.85rem;
+     font-weight: 600;
+     color: #FF8C00;
+   }
+   
+   .progress-bar-container { 
+     margin-bottom: 1.5rem; 
+     margin-top: 0.5rem; 
+   }
+   
+   :host ::ng-deep .current-project-card .p-progressbar { 
+     height: 8px; 
+     background-color: #e9ecef; 
+     border-radius: 4px;
+   }
+   
+   :host ::ng-deep .current-project-card .p-progressbar .p-progressbar-value { 
+     background: linear-gradient(to right, #FFA500, #FF8C00); 
+     border-radius: 4px; 
+     transition: width 0.8s ease;
+   }
+   
+   .project-details { 
+     display: grid; 
+     grid-template-columns: repeat(2, 1fr); 
+     gap: 1.25rem 1.5rem; 
+     padding-top: 0.5rem;
+     border-top: 1px solid rgba(0,0,0,0.05);
+   }
+   
+   .detail-item { 
+     display: flex; 
+     align-items: flex-start; 
+     gap: 0.65rem; 
+   }
+   
+   .detail-icon { 
+     font-size: 0.9rem; 
+     color: #FF8C00; 
+     margin-top: 0.15rem; 
+   }
+   
+   .detail-item > div { 
+     display: flex; 
+     flex-direction: column; 
+   }
+   
+   .detail-label { 
+     font-size: 0.8rem; 
+     color: #6c757d; 
+     margin-bottom: 0.2rem; 
+   }
+   
+   .detail-value { 
+     font-size: 0.9rem; 
+     font-weight: 500; 
+     color: #343a40; 
+   }
+   
+   /* Status Badge Styling */
+   .status-badge { 
+     font-size: 0.7rem; 
+     font-weight: 600; 
+     padding: 0.25rem 0.6rem; 
+     border-radius: 12px; 
+     display: inline-block; 
+     line-height: 1; 
+     text-transform: uppercase;
+     letter-spacing: 0.03em;
+   }
+   
+   .status-active { 
+     background-color: #d1e7dd; 
+     color: #0f5132; 
+   }
+   
+   .status-on-track { 
+     background-color: #DFF0D8; 
+     color: #3C763D;
+   }
+   
+   .status-completed { 
+     background-color: #E2E3E5; 
+     color: #41464b; 
+   }
+   
+   .status-cancelled { 
+     background-color: #f8d7da; 
+     color: #842029;
+   }
+   
+   /* Previous Projects Table Styling */
+   .previous-projects-card {
+     margin-top: 0.5rem;
+   }
+   
+   .projects-table { 
+     display: flex; 
+     flex-direction: column;
+     margin-top: 0.25rem;
+   }
+   
+   .table-row { 
+     display: flex; 
+     padding: 1rem 0.5rem; 
+     border-bottom: 1px solid #f1f3f5; 
+     font-size: 0.85rem; 
+     align-items: center; 
+     transition: background-color 0.2s ease;
+   }
+   
+   .table-row:hover {
+     background-color: rgba(248, 249, 250, 0.7);
+   }
+   
+   .table-row:last-child { 
+     border-bottom: none; 
+   }
+   
+   .table-header { 
+     font-weight: 600; 
+     color: #6c757d; 
+     font-size: 0.75rem; 
+     text-transform: uppercase; 
+     padding: 0.75rem 0.5rem 0.5rem; 
+     letter-spacing: 0.05em;
+     border-bottom: 2px solid #f1f3f5;
+   }
+   
+   .table-cell { 
+     padding: 0 0.5rem; 
+     color: #495057;
+   }
+   
+   .table-cell.project-name { 
+     flex: 3; 
+     font-weight: 500; 
+     color: #343a40; 
+   }
+   
+   .table-cell.client-name { 
+     flex: 3; 
+   }
+   
+   .table-cell.duration { 
+     flex: 2; 
+     text-align: center; 
+   }
+   
+   .table-cell.status { 
+     flex: 2; 
+     text-align: right; 
+   }
+   
+   /* ==========================================================================
+      Calendar Card Styles
       ========================================================================== */
    .calendar-card {
-     padding: 0; /* Remove card padding */
-     overflow: hidden; /* Important to contain calendar */
-     display: flex; flex-direction: column; /* Ensure vertical layout */
-     height: 380px !important; /* Fixed height as requested */
+     padding: 0;
+     overflow: hidden;
    }
    
-   /* Calendar Header */
-   .custom-calendar-header {
-     display: flex; justify-content: space-between; align-items: center;
-     padding: 1rem 1.25rem; border-bottom: 1px solid #e9ecef;
+   .calendar-card .card-header {
+     margin-bottom: 0 !important;
+     padding: 1.25rem 1.5rem 1rem;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
    }
-   .custom-calendar-header .month-year { font-size: 0.9rem; font-weight: 600; color: #343a40; }
-   .custom-calendar-header .calendar-nav-button { 
-     background: none; border: none; 
-     color: #6c757d; padding: 0.25rem; 
-     cursor: pointer; border-radius: 4px;
-   }
-   .custom-calendar-header .calendar-nav-button:hover { background-color: #f8f9fa; }
    
-   /* Custom Calendar Container */
+   .calendar-card .card-header h2 {
+     text-align: center;
+     margin: 0 auto 0 0.5rem;
+     font-size: 1.15rem;
+   }
+   
+   .calendar-navigation {
+     display: flex;
+     align-items: center;
+     gap: 0.75rem;
+     margin-left: auto;
+   }
+   
+   .month-year { 
+     font-size: 1rem; 
+     font-weight: 600; 
+     color: #343a40; 
+   }
+   
+   .calendar-nav-button { 
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     width: 28px;
+     height: 28px;
+     background: none; 
+     border: none; 
+     color: #6c757d; 
+     border-radius: 50%;
+     cursor: pointer; 
+     transition: all 0.2s ease;
+   }
+   
+   .calendar-nav-button:hover { 
+     color: #FF8C00; 
+     background-color: rgba(255, 140, 0, 0.1);
+   }
+   
+   /* Custom Calendar Styles */
    .custom-calendar {
      display: flex;
      flex-direction: column;
-     flex-grow: 1;
-     padding: 0.75rem 1.25rem;
-     overflow-y: auto; /* Add scrolling if needed */
+     padding: 1rem 1rem 0.5rem;
    }
    
-   /* Weekday Headers */
    .calendar-weekdays {
      display: grid;
      grid-template-columns: repeat(7, 1fr);
@@ -107,95 +471,438 @@
    
    .weekday {
      text-align: center;
-     font-size: 0.8rem;
-     font-weight: 500;
-     color: #adb5bd;
-     padding: 0.5rem 0;
+     padding: 0.6rem 0 0.4rem;
+     font-size: 0.7rem;
+     font-weight: 600;
+     color: #6c757d;
+     text-transform: uppercase;
+     letter-spacing: 0.03em;
    }
    
-   /* Calendar Days Grid */
    .calendar-days {
      display: grid;
      grid-template-columns: repeat(7, 1fr);
-     grid-auto-rows: minmax(30px, auto);
-     flex-grow: 1;
+     gap: 4px;
+     margin-bottom: 0.5rem;
    }
    
    .calendar-day {
-     height: 30px;
+     aspect-ratio: 1;
      display: flex;
+     flex-direction: column;
      align-items: center;
      justify-content: center;
+     text-align: center;
      font-size: 0.85rem;
      color: #495057;
+     border-radius: 8px;
      cursor: pointer;
      position: relative;
+     padding: 5px 0;
+     transition: all 0.2s ease;
    }
    
    .calendar-day.empty {
+     color: #ced4da;
      cursor: default;
    }
    
    .calendar-day:not(.empty):hover {
-     background-color: #f8f9fa;
+     background-color: rgba(248, 249, 250, 0.8);
+     transform: scale(1.05);
    }
    
    .calendar-day.today {
      font-weight: 600;
-     background-color: #f8f9fa;
-     border-radius: 6px;
+     background-color: rgba(255, 140, 0, 0.1);
+     color: #FF8C00;
+     box-shadow: 0 2px 4px rgba(255, 140, 0, 0.1);
+   }
+   
+   .calendar-day.highlight-date {
+     background-color: rgba(255, 140, 0, 0.05);
+     color: #FF8C00;
    }
    
    .calendar-day.selected {
      background-color: #FF8C00;
      color: white;
-     border-radius: 6px;
    }
    
-   .calendar-day.highlight-date {
-     background-color: #FFF3E0;
-     color: #FF8C00;
-     border-radius: 6px;
-   }
-   
-   .calendar-day.selected.highlight-date {
+   .today-indicator {
+     width: 5px;
+     height: 5px;
      background-color: #FF8C00;
-     color: white;
+     border-radius: 50%;
+     position: absolute;
+     bottom: 15%;
+   }
+   
+   .font-bold {
+     font-weight: 600;
    }
    
    /* Calendar legend styling */
-   .calendar-legend { padding: 0.75rem 1.25rem; border-top: 1px solid #e9ecef; background-color: #fff; margin-top: auto; /* Pushes legend to bottom */ }
-   .legend-item { display: flex; align-items: center; gap: 0.5rem; }
-   .legend-color { width: 10px; height: 10px; border-radius: 3px; background-color: #FFF3E0; border: 1px solid #FFE0B2; } /* Match highlight color */
-   .legend-item span { font-size: 0.75rem; color: #6c757d; }
+   .calendar-legend { 
+     padding: 0.75rem 1.25rem; 
+     border-top: 1px solid rgba(0,0,0,0.05); 
+     background-color: #fcfcfc; 
+     display: flex;
+     justify-content: flex-end;
+   }
+   
+   .legend-item { 
+     display: flex; 
+     align-items: center; 
+     gap: 0.5rem; 
+   }
+   
+   .legend-color { 
+     width: 10px; 
+     height: 10px; 
+     border-radius: 50%; 
+     background-color: #FF9F40;
+   }
+   
+   .legend-item span { 
+     font-size: 0.75rem; 
+     color: #6c757d; 
+     font-weight: 500;
+   }
    
    /* ==========================================================================
-      Recent Reports Card - UPDATED COLORS
+      Recent Reports Card - Enhanced Modern Styling
       ========================================================================== */
-   .recent-reports-card { /* Keep card styles */ }
-   .reports-list { display: flex; flex-direction: column; gap: 0.75rem; }
-   .report-item { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid transparent; }
-   .report-info { display: flex; flex-direction: column; }
-   .report-title { font-size: 0.9rem; font-weight: 500; color: #343a40; margin-bottom: 0.1rem; }
-   .report-status { font-size: 0.8rem; font-weight: 500; }
-   .report-meta { display: flex; align-items: center; gap: 0.75rem; }
-   .report-date { font-size: 0.8rem; color: #6c757d; }
-   .status-icon { font-size: 1.1rem; }
-   /* Report status colors - UPDATED */
-   .report-success { background-color: #E7F4E8; border-color: #d1e7dd; }
-   .report-success .report-status { color: #1E7E34; }
-   .report-success .status-icon.success-icon { color: #28A745; }
-   .report-danger { background-color: #FBEAEB; border-color: #f8d7da; }
-   .report-danger .report-status { color: #B02A37; }
-   .report-danger .status-icon.danger-icon { color: #DC3545; }
-   .report-warning { background-color: #FFF8E1; border-color: #fff3cd; }
-   .report-warning .report-status { color: #997404; }
-   .report-warning .status-icon.warning-icon { color: #FFC107; }
+   .recent-reports-card {
+     padding-bottom: 1rem;
+   }
+   
+   .reports-list { 
+     display: flex; 
+     flex-direction: column; 
+     gap: 1rem; 
+     padding: 0.5rem 0;
+   }
+   
+   /* Report Item Container */
+   .report-item { 
+     border-radius: 12px;
+     border: 1px solid #f0f0f0;
+     background-color: #ffffff;
+     overflow: hidden;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+     transition: all 0.25s ease;
+   }
+   
+   .report-item:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+     border-color: rgba(255, 140, 0, 0.15);
+   }
+   
+   /* Report Content Layout */
+   .report-content {
+     padding: 1.25rem;
+     width: 100%;
+   }
+   
+   /* Report Header with Title and Status */
+   .report-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     margin-bottom: 0.75rem;
+   }
+   
+   .report-title-container {
+     display: flex;
+     flex-direction: column;
+     gap: 0.3rem;
+     max-width: 75%;
+   }
+   
+   .report-title {
+     font-size: 1rem;
+     font-weight: 600;
+     color: #343a40;
+     margin: 0;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+   }
+   
+   .report-reason {
+     font-size: 0.8rem;
+     color: #6c757d;
+   }
+   
+   /* Report Badge Styling */
+   .report-badge {
+     font-size: 0.7rem;
+     font-weight: 600;
+     padding: 0.25rem 0.75rem;
+     border-radius: 20px;
+     text-transform: uppercase;
+     letter-spacing: 0.05em;
+     white-space: nowrap;
+   }
+   
+   .status-success {
+     background-color: #d1e7dd;
+     color: #0f5132;
+   }
+   
+   .status-danger {
+     background-color: #f8d7da;
+     color: #842029;
+   }
+   
+   .status-warn {
+     background-color: #fff3cd;
+     color: #664d03;
+   }
+   
+   .status-info {
+     background-color: #cfe2ff;
+     color: #084298;
+   }
+   
+   /* Report Description */
+   .report-description {
+     font-size: 0.85rem;
+     color: #495057;
+     margin: 0.5rem 0 0.75rem;
+     line-height: 1.5;
+     max-height: 3em;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     display: -webkit-box;
+     -webkit-line-clamp: 2;
+     line-clamp: 2;
+     -webkit-box-orient: vertical;
+   }
+   
+   /* Report Footer with Meta Information */
+   .report-footer {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding-top: 0.75rem;
+     border-top: 1px solid rgba(0,0,0,0.05);
+     font-size: 0.75rem;
+     color: #6c757d;
+   }
+   
+   .report-meta, .report-type {
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+   }
+   
+   .report-type i, .report-meta i {
+     color: #FF8C00;
+     font-size: 0.9rem;
+   }
+   
+   /* Empty States */
+   .empty-state {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     padding: 2.5rem 1.5rem;
+     text-align: center;
+   }
+   
+   .empty-state-icon {
+     font-size: 2.5rem;
+     color: #ced4da;
+     margin-bottom: 1rem;
+   }
+   
+   .empty-state-text {
+     font-size: 0.95rem;
+     font-weight: 500;
+     color: #6c757d;
+     margin-bottom: 0.5rem;
+   }
+   
+   .empty-state-subtext {
+     font-size: 0.85rem;
+     color: #adb5bd;
+     margin-bottom: 1.5rem;
+   }
+   
+   .empty-state-button {
+     background-color: #FF8C00;
+     color: white;
+     border: none;
+     border-radius: 6px;
+     padding: 0.5rem 1rem;
+     font-size: 0.85rem;
+     font-weight: 500;
+     cursor: pointer;
+     transition: background-color 0.2s ease;
+   }
+   
+   .empty-state-button:hover {
+     background-color: #FF6B00;
+   }
    
    
    /* ==========================================================================
-      Responsive Styles (Keep As Is or Refine Further)
+      Responsive Styles
       ========================================================================== */
-   @media (max-width: 1200px) { .main-content { flex-basis: 65%; } .sidebar { flex-basis: 35%; max-width: none; } .project-details { grid-template-columns: 1fr; } }
-   @media (max-width: 992px) { .dashboard-main { flex-direction: column; } .main-content, .sidebar { flex-basis: auto; max-width: none;} .summary-stats { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } }
-   @media (max-width: 768px) { .dashboard-header { padding: 0.5rem 1rem; height: auto; flex-wrap: wrap; } .main-nav { order: 3; width: 100%; justify-content: center; gap: 1rem; margin-top: 0.5rem; margin-right: 0;} .user-info { margin-left: auto; order: 2; } .dashboard-header .logo-container { order: 1; margin-right: 0; } .dashboard-main { padding: 1rem; gap: 1rem; } .card { padding: 1rem; } .summary-stats { gap: 1rem; } .projects-table .table-cell.client-name, .projects-table .table-cell.duration { display: none; } .projects-table .table-cell.project-name { flex: 2; } .projects-table .table-cell.status { flex: 1; } }
+   @media (max-width: 1200px) { 
+     .main-content { flex-basis: 65%; } 
+     .sidebar { flex-basis: 35%; max-width: none; } 
+     .project-details { grid-template-columns: 1fr; } 
+   }
+   
+   @media (max-width: 992px) { 
+     .dashboard-main { 
+       flex-direction: column; 
+     } 
+     
+     .main-content, .sidebar { 
+       flex-basis: auto; 
+       max-width: none;
+     } 
+     
+     .sidebar {
+       order: 2;
+     }
+     
+     .summary-stats { 
+       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+     } 
+     
+     .stat-card {
+       padding: 1rem;
+     }
+     
+     .card-value {
+       font-size: 1.5rem;
+     }
+   }
+   
+   @media (max-width: 768px) { 
+     .dashboard-welcome {
+       padding: 1.25rem 1.5rem 0.5rem;
+     }
+     
+     .dashboard-welcome h1 {
+       font-size: 1.5rem;
+     }
+     
+     .dashboard-main { 
+       padding: 0 1.5rem 1.5rem; 
+       gap: 1rem; 
+     } 
+     
+     .card { 
+       padding: 1.25rem; 
+     } 
+     
+     .summary-stats { 
+       gap: 0.75rem; 
+       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+     } 
+     
+     .card-icon {
+       font-size: 1.25rem;
+       padding: 0.6rem;
+     }
+     
+     .projects-table .table-header {
+       display: none;
+     }
+     
+     .table-row {
+       flex-direction: column;
+       padding: 0.75rem 0.5rem;
+       gap: 0.5rem;
+       position: relative;
+     }
+     
+     .table-cell {
+       padding: 0.2rem 0;
+       width: 100%;
+     }
+     
+     .table-cell.status {
+       position: absolute;
+       top: 0.75rem;
+       right: 0.5rem;
+       width: auto;
+     }
+     
+     .table-cell.project-name {
+       font-size: 0.95rem;
+       padding-right: 80px;
+     }
+     
+     .table-cell.client-name::before {
+       content: 'Client: ';
+       font-weight: 500;
+     }
+     
+     .table-cell.duration::before {
+       content: 'Duration: ';
+       font-weight: 500;
+     }
+   }
+   
+   @media (max-width: 576px) {
+     .dashboard-welcome {
+       padding: 1rem 1rem 0.5rem;
+     }
+     
+     .dashboard-main {
+       padding: 0 1rem 1rem;
+     }
+     
+     .card {
+       padding: 1rem;
+     }
+     
+     .card-header {
+       margin-bottom: 1rem;
+       padding-bottom: 0.5rem;
+     }
+     
+     .summary-stats {
+       grid-template-columns: 1fr 1fr;
+     }
+     
+     .stat-card {
+       padding: 0.75rem;
+     }
+     
+     .calendar-grid {
+       padding: 0.75rem 0.5rem 0.25rem;
+       gap: 2px;
+     }
+     
+     .calendar-weekday {
+       font-size: 0.65rem;
+       padding: 0.5rem 0 0.5rem;
+     }
+     
+     .calendar-day {
+       font-size: 0.75rem;
+     }
+     
+     .report-content {
+       padding: 1rem;
+     }
+     
+     .report-title {
+       font-size: 0.95rem;
+     }
+     
+     .report-badge {
+       font-size: 0.65rem;
+       padding: 0.2rem 0.5rem;
+     }
+   }

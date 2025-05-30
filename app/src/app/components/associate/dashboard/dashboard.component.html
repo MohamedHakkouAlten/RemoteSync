@@ -1,73 +1,158 @@
-<div class="dashboard-layout">
+<app-default-layout>
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading || loadingError" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+      <p-progressSpinner *ngIf="isLoading && !loadingError" strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
+      <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">Loading dashboard...</span>
+      <div *ngIf="loadingError" class="text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+        <p class="text-red-500 font-semibold">Loading Error</p>
+        <p class="text-gray-600 text-sm mt-1 mb-4">Unable to load the dashboard data. Please try again.</p>
+        <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadDashboardData()">Retry</button>
+      </div>
+    </div>
+  </div>
 
-    <!-- Header -->
+  <div class="dashboard-layout">
+    <!-- Dashboard Header with welcome message -->
+    <div class="dashboard-welcome">
+      <h1>Associate Dashboard</h1>
+      <p class="welcome-text">Welcome back, <span class="user-name">{{ firstName }} {{ lastName }}</span>! Here's your latest activity overview.</p>
+    </div>
 
-  
-    <!-- Main Content Area -->
     <main class="dashboard-main">
-  
-      <!-- Left Content Column -->
+      <!-- Summary Stats Section with improved cards -->
       <div class="main-content">
-        <!-- Summary Stats Row -->
         <section class="summary-stats">
           <div class="stat-card">
-            <i class="pi pi-briefcase card-icon orange-icon"></i>
-            <div class="card-content"> <span class="card-title">Total Projects</span> <span class="card-value">{{ totalProjects }}</span> </div>
+            <div class="stat-icon-container">
+              <i class="pi pi-briefcase card-icon orange-icon"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-title">Total Projects</span>
+              <span class="card-value">{{ dashboardStats.totalProjects }}</span>
+            </div>
           </div>
           <div class="stat-card">
-            <i class="pi pi-calendar card-icon orange-icon"></i>
-            <div class="card-content"> <span class="card-title">On-site weeks</span> <span class="card-value">{{ onSiteWeeks }}</span> </div>
+            <div class="stat-icon-container">
+              <i class="pi pi-calendar card-icon orange-icon"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-title">On-site weeks</span>
+              <span class="card-value">{{ dashboardStats.onSiteWeeks }}</span>
+            </div>
           </div>
           <div class="stat-card">
-            <i class="pi pi-file card-icon orange-icon"></i>
-            <div class="card-content"> <span class="card-title">Reports</span> <span class="card-value">{{ reportsCount }}</span> </div>
+            <div class="stat-icon-container">
+              <i class="pi pi-file card-icon orange-icon"></i>
+            </div>
+            <div class="card-content">
+              <span class="card-title">Reports</span>
+              <span class="card-value">{{ dashboardStats.reportsCount }}</span>
+            </div>
           </div>
         </section>
-        <!-- Current Project -->
-        <section class="card current-project-card">
-          <h2>{{ currentProject.title }}</h2>
-          <div class="progress-bar-container"> <p-progressBar [value]="currentProject.progressValue" [showValue]="false"></p-progressBar> </div>
-          <div class="project-details">
-            <div class="detail-item"> <i class="pi pi-building detail-icon"></i> <div> <span class="detail-label">Client</span> <span class="detail-value">{{ currentProject.client }}</span> </div> </div>
-            <div class="detail-item"> <i class="pi pi-clock detail-icon"></i> <div> <span class="detail-label">Timeline</span> <span class="detail-value">{{ currentProject.timeline }}</span> </div> </div>
-            <div class="detail-item"> <i class="pi pi-users detail-icon"></i> <div> <span class="detail-label">Team Size</span> <span class="detail-value">{{ currentProject.teamSize }}</span> </div> </div>
-            <div class="detail-item"> <i class="pi pi-chart-line detail-icon"></i> <div> <span class="detail-label">Status</span> <span class="status-badge status-on-track">{{ currentProject.status }}</span> </div> </div>
-          </div>
-        </section>
-        <!-- Previous Projects -->
-        <section class="card previous-projects-card">
-          <div class="card-header"> <h2>Previous Projects</h2> <a (click)="viewAllProjects()" class="view-all-link">View All</a> </div>
-          <div class="projects-table">
-            <div class="table-header table-row"> <div class="table-cell project-name">Project Name</div> <div class="table-cell client-name">Client</div> <div class="table-cell duration">Duration</div> <div class="table-cell status">Status</div> </div>
-            <div *ngFor="let project of previousProjects" class="table-row"> <div class="table-cell project-name">{{ project.name }}</div> <div class="table-cell client-name">{{ project.client }}</div> <div class="table-cell duration">{{ project.duration }}</div> <div class="table-cell status"> <span class="status-badge" [ngClass]="{'status-completed': project.status === 'Completed'}">{{ project.status }}</span> </div> </div>
-          </div>
-        </section>
-      </div> <!-- End Left Content Column -->
-  
-      <!-- Right Sidebar -->
-      <aside class="sidebar">
-        <!-- Custom Calendar Card -->
-        <section class="card calendar-card">
-          <!-- Custom Calendar Header -->
-          <div class="custom-calendar-header">
-            <button type="button" class="calendar-nav-button" (click)="prevMonth()"><i class="pi pi-angle-left"></i></button>
-            <span class="month-year">{{ currentMonthName }} {{ currentYear }}</span>
-            <button type="button" class="calendar-nav-button" (click)="nextMonth()"><i class="pi pi-angle-right"></i></button>
+        
+        <!-- Current Project Section with improved styling -->
+        <section *ngIf="currentProject" class="card current-project-card">
+          <div class="card-header">
+            <h2>Current Project</h2>
+            <div class="project-status-pill" [ngClass]="'project-status-' + currentProject.status.toLowerCase()">
+              {{ currentProject.status }}
+            </div>
           </div>
           
-          <!-- Custom Calendar Body -->
+          <h3 class="project-title">{{ currentProject.label }}</h3>
+          
+          <div class="progress-section">
+            <div class="progress-info">
+              <span class="progress-label">Progress</span>
+              <span class="progress-value">{{ currentProject.progressValue }}%</span>
+            </div>
+            <div class="progress-bar-container">
+              <p-progressBar [value]="currentProject.progressValue" [showValue]="false"></p-progressBar>
+            </div>
+          </div>
+          
+          <div class="project-details">
+            <div class="detail-item">
+              <i class="pi pi-building detail-icon"></i>
+              <div>
+                <span class="detail-label">Client</span>
+                <span class="detail-value">{{ currentProject.client }}</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <i class="pi pi-clock detail-icon"></i>
+              <div>
+                <span class="detail-label">Timeline</span>
+                <span class="detail-value">{{ currentProject.timeline }}</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <i class="pi pi-users detail-icon"></i>
+              <div>
+                <span class="detail-label">Team Size</span>
+                <span class="detail-value">{{ currentProject.teamSize }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Previous Projects Section with improved table -->
+        <section class="card previous-projects-card">
+          <div class="card-header">
+            <h2>Previous Projects</h2>
+            <a (click)="viewAllProjects()" class="view-all-link">
+              <span>View All</span>
+              <i class="pi pi-arrow-right"></i>
+            </a>
+          </div>
+          
+          <div class="projects-table">
+            <div class="table-header table-row">
+              <div class="table-cell project-name">Project Name</div>
+              <div class="table-cell client-name">Client</div>
+              <div class="table-cell duration">Duration</div>
+              <div class="table-cell status">Status</div>
+            </div>
+            
+            <div *ngFor="let project of previousProjects" class="table-row">
+              <div class="table-cell project-name">{{ project.label }}</div>
+              <div class="table-cell client-name">{{ project.client }}</div>
+              <div class="table-cell duration">{{ project.duration }}</div>
+              <div class="table-cell status">
+                <span class="status-badge" [ngClass]="'status-' + project.status.toLowerCase()">{{ project.status }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+  
+      <aside class="sidebar">
+        <!-- Calendar Section with improved styling -->
+        <section class="card calendar-card">
+          <div class="card-header">
+            <h2>Work Schedule</h2>
+            <div class="calendar-navigation">
+              <button type="button" class="calendar-nav-button" (click)="prevMonth()">
+                <i class="pi pi-angle-left"></i>
+              </button>
+              <span class="month-year">{{ currentMonthName }} {{ currentYear }}</span>
+              <button type="button" class="calendar-nav-button" (click)="nextMonth()">
+                <i class="pi pi-angle-right"></i>
+              </button>
+            </div>
+          </div>
+          
           <div class="custom-calendar">
-            <!-- Weekday Headers -->
             <div class="calendar-weekdays">
               <div class="weekday" *ngFor="let day of weekdays">{{ day }}</div>
             </div>
             
-            <!-- Calendar Days Grid -->
             <div class="calendar-days">
-              <!-- Empty cells for days before start of month -->
               <div class="calendar-day empty" *ngFor="let _ of daysBeforeMonth"></div>
               
-              <!-- Actual days of the month -->
               <div 
                 *ngFor="let day of daysInMonth" 
                 class="calendar-day" 
@@ -77,33 +162,64 @@
                   'highlight-date': isHighlighted(day)
                 }"
                 (click)="selectDate(day)">
-                {{ day.getDate() }}
+                <span [ngClass]="{'font-bold': isToday(day)}">{{ day.getDate() }}</span>
+                <div *ngIf="isToday(day)" class="today-indicator"></div>
               </div>
               
-              <!-- Empty cells for days after end of month -->
               <div class="calendar-day empty" *ngFor="let _ of daysAfterMonth"></div>
             </div>
           </div>
           
-          <!-- Calendar Legend -->
           <div class="calendar-legend">
             <div class="legend-item">
-              <div class="legend-color"></div>
-              <span>{{ onSiteWorkDaysLabel }}</span>
+              <div class="legend-color" style="background-color: #FF9F40;"></div>
+              <span>{{ onSiteWorkDaysLabel }} ({{ dashboardStats.onSiteWeeks }})</span>
             </div>
           </div>
         </section>
   
-        <!-- Recent Reports -->
+        <!-- Recent Reports Section with improved styling -->
         <section class="card recent-reports-card">
-          <div class="card-header"> <h2>Recent reports</h2> <a (click)="viewAllReports()" class="view-all-link">View All</a> </div>
+          <div class="card-header">
+            <h2>Recent Reports</h2>
+            <a (click)="viewAllReports()" class="view-all-link">
+              <span>View All</span>
+              <i class="pi pi-arrow-right"></i>
+            </a> 
+          </div>
+          
           <div class="reports-list">
             <div *ngFor="let report of recentReports" class="report-item" [ngClass]="'report-' + report.statusSeverity">
-              <div class="report-info"> <span class="report-title">{{ report.title }}</span> <span class="report-status">{{ report.status }}</span> </div>
-              <div class="report-meta"> <span class="report-date">{{ report.date }}</span> <i class="pi status-icon" [ngClass]="{ 'pi-check-circle success-icon': report.statusSeverity === 'success', 'pi-times-circle danger-icon': report.statusSeverity === 'danger', 'pi-exclamation-circle warning-icon': report.statusSeverity === 'warn' }"></i> </div>
+              <div class="report-content">
+                <div class="report-header">
+                  <div class="report-title-container">
+                    <h3 class="report-title">{{ report.title }}</h3>
+                    <span class="report-reason">{{ report.reason }}</span>
+                  </div>
+                  <span class="report-badge" [ngClass]="'status-' + report.statusSeverity">{{ report.status }}</span>
+                </div>
+                <p class="report-description">{{ report.description | slice:0:100 }}{{ report.description.length > 100 ? '...' : '' }}</p>
+                <div class="report-footer">
+                  <div class="report-meta">  
+                    <i class="pi pi-calendar" style="font-size: 0.8rem;"></i>
+                    <span class="report-date">{{ report.date }}</span>
+                  </div>
+                  <div class="report-type">
+                    <i class="pi pi-tag" style="font-size: 0.8rem;"></i>
+                    <span>{{ report.type }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Empty state if no reports are available -->
+            <div *ngIf="recentReports.length === 0" class="empty-reports-state">
+              <i class="pi pi-inbox"></i>
+              <p>No recent reports available</p>
             </div>
           </div>
         </section>
-      </aside> <!-- End Right Sidebar -->
-    </main> <!-- End Main Content Area -->
-  </div> <!-- End Dashboard Layout -->
+      </aside> 
+    </main> 
+  </div>
+</app-default-layout>

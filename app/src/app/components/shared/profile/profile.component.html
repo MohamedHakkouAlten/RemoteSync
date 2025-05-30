@@ -1,141 +1,188 @@
 
  
-<app-navigation></app-navigation>
-<div class="flex w-full pb-5  overflow-y-auto bg-secondary h-screen items-center justify-center  flex-col ">
+<app-default-layout>
+<p-toast></p-toast>
+<div class="flex w-full pb-5 overflow-y-auto bg-gray-50 min-h-screen items-center justify-center flex-col py-10">
 
-  
+  <div *ngIf="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+      <p-progressSpinner strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
+      <span class="mt-4 text-gray-600 font-medium">Loading your profile...</span>
+    </div>
+  </div>
 
-  <!-- user-profile-form.component.html -->
-<div class="bg-white w-[80%] !py-7 sm:p-8 rounded-lg shadow-md  ">
-
-    <div class="  flex flex-col justify-center  gap-y-4 items-start ">
+  <!-- Profile Container -->
+  <div class="bg-white w-[85%] max-w-5xl rounded-xl shadow-lg overflow-hidden">
+    
     <!-- Header Section -->
-    <div class="flex items-center  ">
-      <p-avatar
-        [image]="profileImageUrl"
-        size="xlarge"
-        shape="circle"
-        styleClass="mr-4 border-2 !border-primary"
-        aria-label="User profile picture"
-      />
-      <div>
-        <h2 class="text-xl font-semibold text-gray-800">{{ userName }}</h2>
-        <p class="text-sm text-gray-500">{{ userEmail }}</p>
+    <div class="relative p-8 border-b border-gray-200">
+      <div class="flex items-center">
+        <p-avatar
+          [image]="profileImageUrl"
+          size="xlarge"
+          shape="circle"
+          styleClass="mr-4 border-2 !border-gray-200 shadow-sm h-20 w-20"
+          aria-label="User profile picture"
+        />
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800">{{ userName }}</h2>
+          <p class="text-sm text-gray-500">{{ userEmail }}</p>
+        </div>
       </div>
     </div>
-    <h1 class="text-[11px]  bg-amber-700/5 text-amber-700 px-4 rounded-l-[8px] rounded-r-2 border-l-5 border-primary py-3.5">
-        Your profile information may be shared with ALTEN RemoteSync services and partner systems according to your privacy settings
-    </h1>
-</div>
-    <!-- Form Section -->
-    <form (ngSubmit)="onSave()">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 py-6 gap-y-5">
-  
-        <!-- First Name -->
-        <div>
-          <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-          <input
-            id="firstName"
-            type="text"
-            pInputText
-            [(ngModel)]="firstName"
-            name="firstName"
-            placeholder="Enter your first name"
-            class="w-full !bg-gray-50 !border-0" />
-            <!-- Using Tailwind !bg-gray-50 !border-0 for F9FAFB -->
-        </div>
-  
-        <!-- Last Name -->
-        <div>
-          <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-          <input
-            id="lastName"
-            type="text"
-            pInputText
-            [(ngModel)]="lastName"
-            name="lastName"
-            placeholder="Enter your last name"
-            class="w-full !bg-gray-50 !border-0" />
-        </div>
-  
-        <!-- Address -->
-        <div>
-          <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-          <input
-            id="address"
-            type="text"
-            pInputText
-            [(ngModel)]="address"
-            name="address"
-            placeholder="Enter your address"
-            class="w-full !bg-gray-50 !border-0" />
-        </div>
-  
-        <!-- Email -->
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          <input
-            id="email"
-            type="email"
-            pInputText
-            [(ngModel)]="email"
-            name="email"
-            placeholder="Enter your email address"
-            class="w-full !bg-gray-50 !border-0" />
-            <!-- Consider making this read-only or adding validation/confirmation -->
-        </div>
-  
-        <!-- Language -->
-        <div>
-          <label for="language" class="block text-sm font-medium text-gray-700 mb-2">Language</label>
-          <input
-            id="language"
-            type="text"
-            pInputText
-            [(ngModel)]="language"
-            name="language"
-            placeholder="Select your language"
-            class="w-full !bg-gray-50 !border-0" />
-            <!-- This might be better as a p-dropdown -->
-        </div>
-  
-        <!-- Phone Number -->
-        <div>
-          <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-          <input
-            id="phoneNumber"
-            type="tel"
-            pInputText
-            [(ngModel)]="phoneNumber"
-            name="phoneNumber"
-            placeholder="Enter your phone number"
-            class="w-full !bg-gray-50 !border-0" />
-        </div>
-  
+    
+    <!-- Content Area -->
+    <div class="px-8 py-6">
+      <!-- Info Banner -->
+      <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-md mb-8 mt-4 flex items-center">
+        <i class="pi pi-info-circle text-amber-500 mr-3 text-xl"></i>
+        <p class="text-sm text-amber-700">
+          Your profile information may be shared with ALTEN RemoteSync services and partner systems according to your privacy settings
+        </p>
       </div>
-  
-      <!-- Action Buttons -->
-      <div class="flex justify-end  mt-8 pt-6 border-t border-gray-200">
+      <!-- Form Section with Card Layout -->
+      <form (ngSubmit)="onSave()" class="mt-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+          
+          <!-- Personal Information Card -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-300">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="pi pi-user text-amber-500 mr-2"></i> Personal Information
+            </h3>
+            
+            <!-- First Name -->
+            <div class="mb-4">
+              <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+              <div class="relative">
+                <i class="pi pi-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input
+                  id="firstName"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="firstName"
+                  name="firstName"
+                  placeholder="Enter your first name"
+                  class="w-full !bg-gray-50 !border-0 hover:!border-orange-500 !pl-10 rounded-lg" />
+              </div>
+            </div>
+            
+            <!-- Last Name -->
+            <div class="mb-4">
+              <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+              <div class="relative">
+                <i class="pi pi-id-card absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input
+                  id="lastName"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="lastName"
+                  name="lastName"
+                  placeholder="Enter your last name"
+                  class="w-full !bg-gray-50 !border-0 hover:!border-orange-500 !pl-10 rounded-lg" />
+              </div>
+            </div>
+            
+            <!-- Username -->
+            <div>
+              <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+              <div class="relative">
+                <i class="pi pi-user-edit absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input
+                  id="username"
+                  type="text"
+                  pInputText
+                  [(ngModel)]="username"
+                  name="username"
+                  placeholder="Username"
+                  readonly
+                  class="w-full !bg-gray-100 !border-0 !text-gray-600 !pl-10 rounded-lg !cursor-not-allowed" />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Information Card -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-300">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="pi pi-envelope text-amber-500 mr-2"></i> Contact & Preferences
+            </h3>
+            
+            <!-- Email -->
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <div class="relative">
+                <i class="pi pi-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input
+                  id="email"
+                  type="email"
+                  pInputText
+                  [(ngModel)]="email"
+                  name="email"
+                  placeholder="Email address"
+                  readonly
+                  class="w-full !bg-gray-100 !border-0 !text-gray-600 !pl-10 rounded-lg !cursor-not-allowed" />
+              </div>
+            </div>
+            
+            <!-- Language -->
+            <div class="mb-4">
+              <label for="language" class="block text-sm font-medium text-gray-700 mb-2">Language</label>
+              <div class="relative">
+                <i class="pi pi-globe absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
+                <p-dropdown
+                  id="language"
+                  [options]="languageOptions"
+                  [(ngModel)]="language"
+                  name="language"
+                  optionLabel="name"
+                  optionValue="code"
+                  (onChange)="onLanguageChange()"
+                  [showClear]="false"
+                  placeholder="Select your language"
+                  styleClass="w-full !pl-8 rounded-lg hover:!border-orange-500"
+                  panelStyleClass="!z-50">
+                </p-dropdown>
+              </div>
+            </div>
+            
+            <!-- Phone Number -->
+            <div>
+              <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <div class="relative">
+                <i class="pi pi-phone absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input
+                  id="phoneNumber"
+                  type="tel"
+                  pInputText
+                  [(ngModel)]="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Enter your phone number"
+                  class="w-full !bg-gray-50 !border-0 hover:!border-orange-500 !pl-10 rounded-lg" />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-end mt-8 pt-6 border-t border-gray-200">
           <button
-              pButton
-              type="button"
-              label="Cancel"
-              (click)="onCancel()"
-              class="!bg-secondary text-sm h-10 !text-gray-700 !border-0 !px-8 !font-light mr-3"
-              >
-              <!-- Using PrimeNG styles for secondary/outlined cancel -->
+            pButton
+            type="button"
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="onCancel()"
+            class="!bg-white border !border-gray-300 text-sm !h-11 !text-gray-700 !px-8 mr-3 hover:!bg-gray-50 !font-medium shadow-sm rounded-lg">
           </button>
-        <button
-          pButton
-          type="submit"
-          label="Save changes"
-          class="!bg-primary h-10 text-sm hover:!bg-amber-600 !border-0 !font-thin text-white"
-          >
-          <!-- Using Tailwind for specific orange color FFA500 -->
-        </button>
-      </div>
-    </form>
-  
+          <button
+            pButton
+            type="submit"
+            label="Save changes"
+            icon="pi pi-check"
+            class="!bg-orange-500 text-sm !h-11 hover:!bg-orange-600 !border-0 !font-medium text-white rounded-lg shadow-sm">
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-  </div>
+</div>
+</app-default-layout>
 

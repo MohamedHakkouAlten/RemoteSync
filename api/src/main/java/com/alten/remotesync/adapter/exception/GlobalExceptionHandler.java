@@ -47,9 +47,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProjectNotFoundException.class)
     public ResponseEntity<?> projectNotFoundException(ProjectNotFoundException e) {
-        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        Map<String, Object> response = ResponseWrapper.error(e.getMessage(), HttpStatus.NO_CONTENT);
         // ADDING LOGS HERE FOR THE DATABASE !
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(AssignedRotationNotFoundException.class)

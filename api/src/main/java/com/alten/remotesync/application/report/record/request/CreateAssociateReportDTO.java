@@ -14,6 +14,9 @@ public record CreateAssociateReportDTO(
         @Size(min = 1, max = 500, message = "Reason must be between 1 and 500 characters")
         String reason,
 
+        @NotBlank(message = "Description cannot be blank")
+        String description,
+
         @NotNull(message = "Report type cannot be null")
         ReportType type
 ) {

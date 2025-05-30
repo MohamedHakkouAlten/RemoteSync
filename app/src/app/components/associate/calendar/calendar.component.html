@@ -1,5 +1,20 @@
 <!-- Header -->
+<!-- Assuming app-navigation is standalone or correctly imported -->
+<app-navigation></app-navigation>
 
+<!-- Loading Overlay -->
+<div *ngIf="isLoading || loadingError" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
+  <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+    <p-progressSpinner *ngIf="isLoading && !loadingError" strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
+    <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">Loading calendar...</span>
+    <div *ngIf="loadingError" class="text-center">
+      <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+      <p class="text-red-500 font-semibold">Loading Error</p>
+      <p class="text-gray-600 text-sm mt-1 mb-4">Unable to load the calendar data. Please try again.</p>
+      <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadCurrentRotations()">Retry</button>
+    </div>
+  </div>
+</div>
 
 <div class="calendar-page p-4 sm:p-6 bg-gray-50 min-h-screen">
 
@@ -170,17 +185,17 @@
                  <!-- In Site Stat -->
                  <div class="flex justify-between items-center">
                     <span class="text-gray-600">{{ inSiteLabel }}</span>
-                    <span class="font-medium text-blue-600">{{ month.inSitePercent }}%</span>
+                    <span class="font-medium text-orange-600">{{ month.inSitePercent }}%</span>
                  </div>
                  <!-- Remote Stat -->
                  <div class="flex justify-between items-center">
                     <span class="text-gray-600">{{ remoteLabel }}</span>
-                    <span class="font-medium text-orange-600">{{ month.remotePercent }}%</span>
+                    <span class="font-medium text-blue-600">{{ month.remotePercent }}%</span>
                  </div>
                  <!-- Progress Bar Representation -->
                  <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden flex"> <!-- Use flex instead of float -->
-                     <div class="bg-blue-500 h-1.5" [style.width.%]="month.inSitePercent"></div>
-                     <div class="bg-orange-500 h-1.5" [style.width.%]="month.remotePercent"></div>
+                     <div class="bg-orange-500 h-1.5" [style.width.%]="month.inSitePercent"></div>
+                     <div class="bg-blue-500 h-1.5" [style.width.%]="month.remotePercent"></div>
                  </div>
               </div>
            </div>
@@ -194,21 +209,21 @@
    <!-- Legend (Month/Week View) -->
    <footer class="calendar-footer mt-4 flex flex-wrap items-center justify-start gap-x-4 gap-y-2" *ngIf="currentView === 'month' || currentView === 'week'">
       <div class="flex items-center gap-1.5 text-xs text-gray-600">
-         <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+         <span class="w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
          <span>{{ inSiteLabel }}</span>
       </div>
       <div class="flex items-center gap-1.5 text-xs text-gray-600">
-         <span class="w-2.5 h-2.5 bg-orange-500 rounded-full"></span>
+         <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
          <span>{{ remoteLabel }}</span>
       </div>
       <!-- Month view specific legends (Optional - kept from original) -->
       <ng-container *ngIf="currentView === 'month'">
          <div class="flex items-center gap-1.5 text-xs text-gray-600">
-            <span class="w-1 h-3 bg-blue-400 rounded-sm"></span>
+            <span class="w-1 h-3 bg-orange-400 rounded-sm"></span>
             <span class="whitespace-nowrap">Week: Mostly {{ inSiteLabel }}</span>
          </div>
          <div class="flex items-center gap-1.5 text-xs text-gray-600">
-            <span class="w-1 h-3 bg-orange-400 rounded-sm"></span>
+            <span class="w-1 h-3 bg-blue-400 rounded-sm"></span>
             <span class="whitespace-nowrap">Week: Mostly {{ remoteLabel }}</span>
          </div>
       </ng-container>

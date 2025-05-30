@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 
-export type ToggleState = -1 | 0 | 1; // -1: Left, 0: Middle, 1: Right
+export type ToggleState = -1 | 0 | 1; // -1: Left (REMOTE), 0: Middle (OFF - display only), 1: Right (ONSITE)
 
 @Component({
   selector: 'app-three-state-toggle',
@@ -26,13 +26,13 @@ export class ThreeStateToggleComponent {
   }
   @HostBinding('attr.aria-valuetext') get ariaValueText() {
       switch (this.value) {
-          case -1: return 'Left';
-          case 0: return 'Middle';
-          case 1: return 'Right';
-          default: return 'Middle';
+          case -1: return 'Remote';
+          case 0: return 'Off';
+          case 1: return 'On-site';
+          default: return 'On-site';
       }
   }
-  @HostBinding('attr.aria-label') ariaLabel = 'Three state toggle switch'; // Consider making this an @Input
+  @HostBinding('attr.aria-label') ariaLabel = 'Two state toggle switch'; // Consider making this an @Input
 
   // --- Event Handlers ---
 
@@ -74,10 +74,10 @@ export class ThreeStateToggleComponent {
   private cycleState() {
     let nextState: ToggleState;
     switch (this.value) {
-      case -1: nextState = 0; break; // Left -> Middle
-      case 0: nextState = 1; break;  // Middle -> Right
-      case 1: nextState = -1; break; // Right -> Left
-      default: nextState = 0; // Default fallack
+      case -1: nextState = 1; break; // Left (REMOTE) -> Right (ONSITE)
+      case 0: nextState = 1; break;  // Middle (OFF) -> Right (ONSITE) - Default to ONSITE when clicked
+      case 1: nextState = -1; break; // Right (ONSITE) -> Left (REMOTE)
+      default: nextState = 1; // Default to ONSITE
     }
     this.valueChange.emit(nextState);
   }
@@ -89,7 +89,7 @@ export class ThreeStateToggleComponent {
       case -1: return 'state-left';
       case 0: return 'state-middle';
       case 1: return 'state-right';
-      default: return 'state-middle';
+      default: return 'state-right';
     }
   }
 }

@@ -5,6 +5,7 @@ import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.domain.user.projection.UserProjection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserDomainRepository extends JpaRepository<User, UUID> {
+public interface UserDomainRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
 
     User findByUsername(String username);
     User findByEmail(String email);

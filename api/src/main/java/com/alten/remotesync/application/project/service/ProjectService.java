@@ -5,8 +5,10 @@ import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
 import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
+import com.alten.remotesync.application.project.record.request.PagedProjectSearchDTO;
 import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
 import com.alten.remotesync.application.project.record.response.*;
+import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,38 +17,46 @@ import java.util.List;
 public interface ProjectService {
     ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO);
+    PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedProjectSearchDTO pagedProjectSearchDTO);
 
-    ProjectDTO getProjectDetails(GlobalDTO globalDTO);
+//    ProjectDTO getProjectDetails(GlobalDTO globalDTO);
+//
+//    PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO);
 
-    PagedProjectDTO getAssociateOldProjectsByLabel(GlobalDTO globalDTO,AssociateProjectByLabelDTO associateProjectByLabelDTO);
+    RcProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO);
 
-    ProjectsCountDTO getAssociateProjectsCount(GlobalDTO globalDTO);
+//    PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO);
+//
+//    ProjectDashBoardDTO getLongestDurationProject();
+//
+//    RcProjectsCountDTO getCompletedProjectsCount();
+//
+//    ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
+//
+//    ProjectDTO deleteProject(GlobalDTO globalDTO);
+//
+//    RcProjectsCountDTO getRcCountInactiveProjects();
+//
+//    List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO);
 
-    PagedProjectDTO getAssociateProjectsByClient(GlobalDTO globalDTO,AssociateProjectByClientDTO associateProjectByClientDTO);
+//    List<ProjectDropDownDTO> getRcProjectsByLabel(String label);
 
-    ProjectDashBoardDTO getLongestDurationProject();
-    ProjectLargestMembersDTO getRCLargestMembersProject();
+    PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalIdDTO);
 
-    ProjectsCountDTO getCompletedProjectsCount();
+    RcProjectsCountDTO countActiveProjects();
 
-    ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
+    //ProjectDTO getLargestTeamProject();
 
-    ProjectDTO deleteProject(GlobalDTO globalDTO);
+    RcProjectsCountDTO countCancelledProjects();
 
-    ProjectsCountDTO getRcCountInactiveProjects();
+    RcProjectsCountDTO getRcCountProjectByStatus(ProjectStatus projectStatus);
 
-    List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO);
+    //RcCompletedProjectsCountDTO getRcCompletedProjectsCount();
 
-    List<ProjectDropDownDTO> getRcProjectsByLabel(String label);
+    ProjectDTO getRcLongestDurationProject();
 
-    PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalDTO);
+    ProjectDTO getRcLargestTeamProject();
+    List<ProjectDropDownDTO> getRcAllProjectsByClient(GlobalDTO globalDTO);
 
-    ProjectsCountDTO countActiveProjects();
-
-    ProjectDTO getLargestTeamProject(GlobalDTO globalDTO);
-
-    ProjectsCountDTO countCancelledProjects();
-
-    PagedProjectDTO searchProjectsByLabel(String label);
+    List<ProjectDropDownDTO> getRcAllProjects();
 }

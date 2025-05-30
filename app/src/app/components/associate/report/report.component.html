@@ -1,19 +1,36 @@
-
-<div class="report-layout">
- 
+<app-default-layout>
+  <p-toast></p-toast>
+  
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading || loadingError" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+      <p-progressSpinner *ngIf="isLoading && !loadingError" strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
+      <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">Loading reports...</span>
+      <div *ngIf="loadingError" class="text-center">
+        <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+        <p class="text-red-500 font-semibold">Loading Error</p>
+        <p class="text-gray-600 text-sm mt-1 mb-4">Unable to load the reports data. Please try again.</p>
+        <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadReports()">Retry</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="report-layout">
+  
     <main class="report-container">
       <header class="report-header">
-        <h1>Reports</h1>
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">Reports</h1>
       </header>
   
-      <div class="filter-bar">
-        <p-iconField iconPosition="left" class="search-input p-fluid">
+      <div class="filter-bar bg-white rounded-lg shadow-sm p-4 mb-5 flex flex-wrap items-center gap-4">
+        <p-iconField iconPosition="left" class="search-input p-fluid flex-grow md:flex-grow-0 md:w-72">
           <p-inputIcon styleClass="pi pi-search" />
           <input
             type="text"
             pInputText
             [(ngModel)]="searchTerm"
-            (ngModelChange)="onFilterChange()"
+            (ngModelChange)="onSearchChange()"
+            class="hover:!border-orange-500 w-full"
             placeholder="Search by title..." />
         </p-iconField>
   
@@ -24,37 +41,30 @@
           placeholder="All Status"
           optionLabel="label"
           optionValue="value"
-          styleClass="filter-dropdown" />
+          styleClass="filter-dropdown md:w-44" />
   
-        <p-dropdown
-          [options]="typeOptions"
-          [(ngModel)]="selectedType"
-          (onChange)="onFilterChange()"
-          placeholder="All Types"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="filter-dropdown" />
-  
-        <p-button
-          label="Create Report"
-          icon="pi pi-plus"
-          (click)="showCreateReportDialog()"
-          styleClass="p-button-warning create-button" />
+        <div class="flex-grow flex justify-end">
+          <p-button
+            label="Create Rotation Request"
+            icon="pi pi-plus"
+            (click)="showCreateReportDialog()"
+            styleClass="p-button-warning create-button" />
+        </div>
       </div>
   
-      <div class="report-grid" *ngIf="displayedReports.length > 0; else noReports">
-        <div class="report-card" *ngFor="let report of displayedReports">
-          <div class="card-content">
-            <h3 class="report-title">{{ report.title }}</h3>
-            <div class="report-type">
-              <i [class]="report.typeIcon || 'pi pi-file'"></i>
+      <div class="report-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" *ngIf="displayedReports.length > 0; else noReports">
+        <div class="report-card bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md" *ngFor="let report of displayedReports">
+          <div class="card-content p-5">
+            <h3 class="report-title text-lg font-semibold text-gray-800 mb-2">{{ report.title }}</h3>
+            <div class="report-type flex items-center text-gray-600 mb-3">
+              <i [class]="report.typeIcon || 'pi pi-file'" class="mr-2"></i>
               <span>{{ report.type }}</span>
             </div>
-            <p class="report-description">{{ report.description }}</p>
+            <p class="report-description text-gray-600 line-clamp-3 mb-4">{{ report.description }}</p>
           </div>
-          <div class="card-footer">
-            <div class="report-date">
-              <i class="pi pi-calendar"></i>
+          <div class="card-footer flex justify-between items-center p-4 bg-gray-50 border-t border-gray-100">
+            <div class="report-date flex items-center text-sm text-gray-500">
+              <i class="pi pi-calendar mr-2"></i>
               <span>{{ report.date }}</span>
             </div>
             <p-tag [value]="report.status" [severity]="getStatusSeverity(report.status)" rounded="true"></p-tag>
@@ -63,45 +73,87 @@
       </div>
   
       <ng-template #noReports>
-        <div class="no-reports-message">
-          No reports found matching your criteria.
+        <div class="no-reports-message flex flex-col items-center justify-center py-16 px-4 bg-white rounded-lg shadow-sm">
+          <i class="pi pi-file-excel text-5xl text-gray-300 mb-4"></i>
+          <p class="text-xl text-gray-600 mb-2">No reports found</p>
+          <p class="text-gray-500">No reports matching your criteria were found.</p>
         </div>
       </ng-template>
   
-      <div class="pagination-container" *ngIf="totalRecords > rows">
+      <div class="pagination-container mt-6 flex justify-center bg-white p-4 rounded-lg shadow-sm" *ngIf="totalRecords > 0">
         <p-paginator
           (onPageChange)="onPageChange($event)"
           [first]="first"
           [rows]="rows"
           [totalRecords]="totalRecords"
-          [rowsPerPageOptions]="[9, 18, 27]"> 
+          [rowsPerPageOptions]="[9, 18, 27]"
+          styleClass="p-paginator-sm"> 
         </p-paginator>
       </div>
   
     </main> 
     <p-dialog
-      header="Create New Report"
+      header="Create Rotation Request"
       [(visible)]="displayCreateDialog"
       [modal]="true"
       [style]="{ width: '40vw', 'min-width': '450px' }"
       [draggable]="false"
       [resizable]="false"
+      styleClass="report-dialog"
       (onHide)="hideCreateDialog()"> 
   
-      <div class="p-fluid p-dialog-content-padding"> 
+      <form [formGroup]="reportForm" class="p-fluid p-dialog-content-padding">
         <div class="field">
-          <label for="reportTitle">Title</label>
-          <input id="reportTitle" type="text" pInputText [(ngModel)]="newReportTitle" required autofocus />
+          <label for="reportTitle">Title*</label>
+          <input 
+            id="reportTitle" 
+            type="text" 
+            pInputText 
+            formControlName="title" 
+            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('title')}" 
+            class="hover:!border-orange-500"
+            autofocus />
+          <small class="p-error" *ngIf="isFieldInvalid('title')">{{ getFieldErrorMessage('title') }}</small>
         </div>
+
         <div class="field">
-          <label for="reportReason">Reason</label>
-          <input id="reportReason" type="text" pInputText [(ngModel)]="newReportReason" />
+          <label for="reportType">Report Type*</label>
+          <p-dropdown 
+            id="reportType"
+            [options]="reportTypeOptions" 
+            formControlName="type"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select a report type"
+            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('type')}"
+            styleClass="w-full">
+          </p-dropdown>
+          <small class="p-error" *ngIf="isFieldInvalid('type')">{{ getFieldErrorMessage('type') }}</small>
         </div>
-      <div class="field">
-        <label for="reportDescription">Description</label>
-        <textarea class="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2" id="reportDescription" pInputTextarea [(ngModel)]="newReportDescription" rows="5"></textarea>
-      </div>
-      </div>
+        
+        <div class="field">
+          <label for="reportReason">Reason*</label>
+          <input 
+            id="reportReason" 
+            type="text" 
+            pInputText 
+            formControlName="reason" 
+            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('reason')}" 
+            class="hover:!border-orange-500" />
+          <small class="p-error" *ngIf="isFieldInvalid('reason')">{{ getFieldErrorMessage('reason') }}</small>
+        </div>
+
+        <div class="field">
+          <label for="reportDescription">Description</label>
+          <textarea 
+            id="reportDescription" 
+            pInputTextarea 
+            formControlName="description" 
+            rows="5"
+            class="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-200 hover:!border-orange-500">
+          </textarea>
+        </div>
+      </form>
   
       <ng-template pTemplate="footer">
         <p-button
@@ -114,10 +166,11 @@
           icon="pi pi-check"
           styleClass="p-button-warning"
           (click)="saveNewReport()"
-          [disabled]="!newReportTitle"></p-button> 
+          [disabled]="reportForm.pristine"></p-button> 
       </ng-template>
   
     </p-dialog>
    
   
   </div>
+</app-default-layout>

@@ -7,6 +7,7 @@
     display: block;
     background-color: #f8f9fa; /* Light background for the whole page */
     min-height: calc(100vh - 60px); /* Full height minus header height */
+    font-family: 'Inter', sans-serif;
   }
   
   .report-layout {
@@ -49,6 +50,38 @@
   /* Ensure PrimeNG input fills the container */
   :host ::ng-deep .search-input .p-inputtext {
     width: 100%;
+  }
+  
+  /* Orange-themed hover states for all inputs */
+  :host ::ng-deep .p-inputtext:enabled:hover,
+  :host ::ng-deep .p-dropdown:hover .p-dropdown-trigger,
+  :host ::ng-deep .p-dropdown:hover .p-dropdown-label {
+    border-color: #f97316 !important;
+  }
+  
+  /* Error state styling */
+  :host ::ng-deep .ng-invalid.ng-dirty,
+  :host ::ng-deep .ng-invalid.ng-touched {
+    border-color: #ef4444 !important;
+  }
+  
+  /* Display validation message styling */
+  :host ::ng-deep .p-error {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+  
+  /* Fix line clamp for webkit browsers */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em;
   }
   
   :host ::ng-deep .filter-dropdown .p-dropdown {
@@ -107,12 +140,14 @@
     color: #343a40;
     margin-bottom: 0.6rem;
     line-height: 1.3;
-    /* Optional: Limit title lines */
-    /* display: -webkit-box;
+    /* Enable title line clamping */
+    display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis; */
+    text-overflow: ellipsis;
+    max-height: 2.7em;
   }
   
   .report-type {
@@ -135,7 +170,8 @@
     margin-bottom: 0; /* Remove default p margin if any */
     /* Limit description lines */
      display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-line-clamp: 2;
+    line-clamp: 2; /* Limit to 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -283,12 +319,12 @@
   
   /* Dialog Header */
   :host ::ng-deep .p-dialog .p-dialog-header {
-    background-color: #ffffff; /* Keep header white */
-    color: #343a40;
+    background-color: #f97316; /* Orange header */
+    color: #ffffff;
     padding: 1.25rem 1.5rem; /* Adjust padding */
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    border-bottom: 1px solid #e9ecef; /* Subtle separator line */
+    border-bottom: none;
   }
   
   :host ::ng-deep .p-dialog .p-dialog-title {
@@ -298,14 +334,14 @@
   
   /* Dialog Header Icons (e.g., Close Button) */
   :host ::ng-deep .p-dialog .p-dialog-header-icon {
-    color: #6c757d; /* Grey icon */
+    color: #ffffff; /* White icon */
     transition: background-color 0.2s, color 0.2s;
     border-radius: 4px;
   }
   :host ::ng-deep .p-dialog .p-dialog-header-icon:hover,
   :host ::ng-deep .p-dialog .p-dialog-header-icon:focus {
-    color: #343a40; /* Darker on hover */
-    background-color: #f8f9fa; /* Slight background */
+    color: #ffffff; /* Keep white on hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Slight white background */
     border-color: transparent;
     box-shadow: none;
   }
@@ -360,11 +396,16 @@
   min-height: 120px; /* Adjust as needed for the textarea's size */
 }
 
-/* Focus styles */
+/* Focus and hover styles */
 :host ::ng-deep .p-dialog .field .p-inputtext:enabled:focus,
 :host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:focus {
-  border-color: #FF8C00; /* Orange focus border */
-  box-shadow: 0 0 0 1px rgba(255, 140, 0, 0.5);
+  border-color: #f97316; /* Orange focus border */
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.5);
+}
+
+:host ::ng-deep .p-dialog .field .p-inputtext:enabled:hover,
+:host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:hover {
+  border-color: #f97316; /* Orange hover border */
 }
 
   
@@ -389,16 +430,16 @@
   }
   
   :host ::ng-deep .p-dialog-footer .p-button-warning {
-    /* Reuse styles from create button if they match */
-    background-color: #FF8C00;
-    border-color: #FF8C00;
+    /* Orange theme */
+    background-color: #f97316;
+    border-color: #f97316;
     color: #ffffff;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
   }
   :host ::ng-deep .p-dialog-footer .p-button-warning:enabled:hover,
   :host ::ng-deep .p-dialog-footer .p-button-warning:enabled:focus {
-    background-color: #e07b00;
-    border-color: #e07b00;
-    box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.5);
+    background-color: #ea580c;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.5);
   }
-  
- 

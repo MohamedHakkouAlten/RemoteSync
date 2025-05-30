@@ -7,8 +7,12 @@ import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { NavigationComponent } from "../navigation/navigation.component";
-
+import { ToastModule } from 'primeng/toast';
+import { DropdownModule } from 'primeng/dropdown';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
+import { MessageService } from 'primeng/api';
+import { RippleModule } from 'primeng/ripple';
 
 @NgModule({
   declarations: [
@@ -19,10 +23,16 @@ import { NavigationComponent } from "../navigation/navigation.component";
     ProfileRoutingModule,
     AvatarModule,
     FormsModule, // Import FormsModule for ngModel
-    AvatarModule,
     InputTextModule,
     ButtonModule,
-    NavigationComponent
-]
+    ToastModule,
+    DropdownModule,
+    ProgressSpinnerModule,
+    RippleModule,
+    DefaultLayoutComponent
+  ],
+  providers: [
+    MessageService
+  ]
 })
 export class ProfileModule { }

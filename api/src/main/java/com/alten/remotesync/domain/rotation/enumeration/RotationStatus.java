@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RotationStatus {
     ONSITE("on-site"),
-    REMOTE("remote"),
-    OFF("off");
+    REMOTE("remote");
     public final String value;
 
     @JsonValue

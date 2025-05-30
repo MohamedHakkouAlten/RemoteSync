@@ -1,141 +1,368 @@
-import { Component, OnInit } from '@angular/core';
-// import { MenuItem } from 'primeng/api'; // Uncomment if using p-menu
+// dashboard.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
-interface Project { name: string; client: string; duration: string; status: 'Completed' | 'In Progress' | 'Pending'; }
-interface Report { title: string; status: 'Accepted' | 'Rejected' | 'Pending'; statusSeverity: 'success' | 'danger' | 'warn'; date: string; }
+// Import enums and DTOs
+import { ReportStatus } from '../../../dto/report-status.enum';
+import { ProjectStatus } from '../../../dto/project-status.enum';
+import { ProjectDTO } from '../../../dto/project.dto';
+import { ReportDTO } from '../../../dto/report.dto';
+
+// Import services
+import { AssociateService } from '../../../services/associate.service';
+import { AuthFacadeService } from '../../../services/auth-facade.service';
+
+// Import shared models and helpers
+import { CalendarDay, CalendarEvent, DashboardStats, DashboardProjectDTO, DashboardReportDTO } from '../models/dashboard.model';
+import { CalendarHelpers } from '../utils/calendar-helpers';
+import { AssociateUIHelpers } from '../utils/ui-helpers';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: false,
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'] // Use dedicated CSS
+  styleUrls: ['./dashboard.component.css'],
+  standalone: false
 })
-export class DashboardComponent implements OnInit {
-
+export class DashboardComponent implements OnInit, OnDestroy {
+  // Expose enums to template
+  public ProjectStatus = ProjectStatus;
+  public ReportStatus = ReportStatus;
+  
+  // Loading state properties
+  isLoading: boolean = false;
+  loadingError: boolean = false;
+  
+  // User info properties
+  firstName: string = '';
+  lastName: string = '';
+  
+  // Dashboard statistics
+  dashboardStats: DashboardStats = {
+    totalProjects: 0,
+    onSiteWeeks: 0,
+    reportsCount: 0
+  };
+  
+  // Project and report data
+  currentProject: DashboardProjectDTO | null = null;
+  previousProjects: DashboardProjectDTO[] = [];
+  recentReports: DashboardReportDTO[] = [];
+  onSiteWorkDaysLabel: string = "On-site Work Days";
+  
   // Calendar properties
+  calendarValue: Date | null = null;
+  highlightedDates: Date[] = [];
+  calendarEvents: CalendarEvent[] = [];
   currentDate: Date = new Date();
   currentYear: number = this.currentDate.getFullYear();
-  currentMonthName: string = '';
-  weekdays: string[] = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  currentMonth: number = this.currentDate.getMonth();
+  currentMonthName: string = CalendarHelpers.getMonthName(this.currentMonth);
+  weekdays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   daysInMonth: Date[] = [];
   daysBeforeMonth: number[] = [];
   daysAfterMonth: number[] = [];
+  
+  // Private properties
+  private loadingTimeout: any = null;
+  private subscriptions: Subscription[] = [];
 
-  // --- Data Properties ---
-  userName: string = "John Anderson";
-  totalProjects: number = 24;
-  onSiteWeeks: number = 8;
-  reportsCount: number = 16;
+  constructor(
+    private authFacadeService: AuthFacadeService,
+    private associateService: AssociateService,
+    private router: Router,
+    private datePipe: DatePipe
+  ) {}
 
-  currentProject = {
-    title: "Digital Transformation Strategy",
-    client: "Tech Solutions Inc.",
-    teamSize: "5 members",
-    timeline: "Mar 2024 - Aug 2024",
-    status: "On track",
-    progressValue: 65
-  };
-
-  previousProjects: Project[] = [
-    { name: 'Cloud Migration', client: 'Global Corp', duration: '6 months', status: 'Completed' },
-    { name: 'IT Infrastructure', client: 'StartUp Inc', duration: '3 months', status: 'Completed' },
-    { name: 'Data Analytics', client: 'Tech Giant', duration: '4 months', status: 'Completed' },
-  ];
-
-  recentReports: Report[] = [
-    { title: 'Monthly Revenue Analysis', status: 'Accepted', statusSeverity: 'success', date: '15-03-2024' },
-    { title: 'Monthly Revenue Analysis', status: 'Rejected', statusSeverity: 'danger', date: '15-03-2024' },
-    { title: 'Monthly Revenue Analysis', status: 'Pending', statusSeverity: 'warn', date: '15-03-2024' },
-  ];
-
-  calendarValue: Date | null = null;
-  // Highlight dates based on the SECOND image provided (April 2025, yellow bg)
-  // Note: Month is 0-indexed, so April is 3.
-  highlightedDates: Date[] = [
-    new Date(2025, 3, 3), // April 3rd
-    new Date(2025, 3, 4), // April 4th
-    new Date(2025, 3, 5), // April 5th
-    new Date(2025, 3, 11), // April 11th - THIS IS THE SELECTED ONE IN IMAGE
-    new Date(2025, 3, 17), // April 17th
-    new Date(2025, 3, 18), // April 18th
-    new Date(2025, 3, 19)  // April 19th
-  ];
-  onSiteWorkDaysLabel: string = "On-site Work Days";
-
-  constructor() { }
-
+  /**
+   * Initialize the component
+   */
   ngOnInit(): void {
-    // Set calendar to show April 2025 initially to match image
-    this.currentDate = new Date(2025, 3, 11); // April 11th, 2025
-    this.calendarValue = this.currentDate;
-    
     // Initialize calendar
-    this.updateCalendar();
+    this.setupCalendar();
+    
+    // Load dashboard data
+    this.loadDashboardData();
   }
 
-  // Function to generate example highlights (kept for reference, but might not be needed now)
-  // generateHighlightedDates(): void { /* ... implementation ... */ }
-
-  // --- Custom Calendar Methods ---
-  updateCalendar(): void {
-    // Update month name and year
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    this.currentMonthName = monthNames[this.currentDate.getMonth()];
-    this.currentYear = this.currentDate.getFullYear();
-    
-    // Calculate days in current month
-    const year = this.currentDate.getFullYear();
-    const month = this.currentDate.getMonth();
-    
-    // First day of month
-    const firstDay = new Date(year, month, 1);
-    // Last day of month
-    const lastDay = new Date(year, month + 1, 0);
-    
-    // Calculate days before first day of month (empty cells)
-    const firstDayOfWeek = firstDay.getDay();
-    this.daysBeforeMonth = Array(firstDayOfWeek).fill(0);
-    
-    // Generate all days in month
-    this.daysInMonth = [];
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      this.daysInMonth.push(new Date(year, month, i));
+  /**
+   * Clean up resources when component is destroyed
+   */
+  ngOnDestroy(): void {
+    // Clear any pending timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+      this.loadingTimeout = null;
     }
     
-    // Calculate days after last day of month (empty cells)
-    const lastDayOfWeek = lastDay.getDay();
-    const daysAfterCount = 6 - lastDayOfWeek;
-    this.daysAfterMonth = Array(daysAfterCount).fill(0);
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  /**
+   * Load dashboard data from the backend
+   */
+  loadDashboardData(): void {
+    this.isLoading = true;
+    this.loadingError = false;
+    
+    // Clear any existing timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
+    
+    // Set a timeout to show error if loading takes too long
+    this.loadingTimeout = setTimeout(() => {
+      if (this.isLoading) {
+        this.loadingError = true;
+      }
+    }, 15000); // 15 seconds timeout
+    
+    // Subscribe to dashboard data
+    const dashboardSubscription = this.associateService.getDashboard().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.data) {
+          // Set user info
+          this.firstName = this.authFacadeService.getFirstName() || 'Associate';
+          this.lastName = this.authFacadeService.getLastName() || '';
+          
+          // Set current project
+          if (res.data.currentProject) {
+            this.currentProject = this.mapToUiProject(res.data.currentProject);
+          } else {
+            this.currentProject = null;
+          }
+          
+          // Set previous projects
+          this.previousProjects = Array.isArray(res.data.oldProjects) 
+            ? res.data.oldProjects.map(project => this.mapToUiProject(project))
+            : [];
+          
+          // Set recent reports
+          this.recentReports = Array.isArray(res.data.recentReports)
+            ? res.data.recentReports.map(report => this.mapToUiReport(report))
+            : [];
+          
+          // Update dashboard stats
+          this.dashboardStats = {
+            totalProjects: res.data.projectsCount || 0,
+            reportsCount: res.data.reportsCount || 0,
+            onSiteWeeks: Array.isArray(res.data.onSiteWeeks) ? res.data.onSiteWeeks.length : 0
+          };
+          
+          // Process calendar data
+          if (res.data.onSiteWeeks && Array.isArray(res.data.onSiteWeeks)) {
+            // Convert string dates to Date objects for calendar highlighting
+            this.highlightedDates = res.data.onSiteWeeks.map((dateStr: string) => new Date(dateStr));
+            
+            // Create calendar events from on-site dates
+            this.calendarEvents = res.data.onSiteWeeks.map((dateStr: string) => ({
+              date: new Date(dateStr),
+              type: 'on-site',
+              title: 'On-site work day'
+            }));
+          }
+          
+          // Clear the timeout as we got a response
+          if (this.loadingTimeout) {
+            clearTimeout(this.loadingTimeout);
+            this.loadingTimeout = null;
+          }
+          
+          this.isLoading = false;
+        } else {
+          this.handleError();
+        }
+      },
+      error: () => {
+        this.handleError();
+      }
+    });
+    
+    // Add subscription to the array for cleanup
+    this.subscriptions.push(dashboardSubscription);
   }
   
-  prevMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+  /**
+   * Handle error in data loading
+   */
+  private handleError(): void {
+    this.isLoading = false;
+    this.loadingError = true;
+    
+    // Clear the timeout
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+      this.loadingTimeout = null;
+    }
+  }
+  
+  /**
+   * Calculate project progress as a percentage
+   */
+  getProjectProgress(project: ProjectDTO): number {
+    if (!project || !project.startDate || !project.deadLine) return 0;
+    const start = new Date(project.startDate).getTime();
+    const end = new Date(project.deadLine).getTime();
+    const now = Date.now();
+    if (isNaN(start) || isNaN(end) || start >= end) return 0;
+    const progress = ((now - start) / (end - start)) * 100;
+    return Math.max(0, Math.min(100, Math.round(progress)));
+  }
+  
+  /**
+   * Setup calendar with initial data
+   */
+  setupCalendar(): void {
+    // Initialize calendar with current month
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.currentMonthName = CalendarHelpers.getMonthName(this.currentMonth);
+    
+    // Update calendar display
     this.updateCalendar();
   }
   
-  nextMonth(): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
-    this.updateCalendar();
+  /**
+   * Update calendar display based on selected month and year
+   */
+  updateCalendar(): void {
+    // Get current month and year from calendar value or current date
+    const calendarMonth = this.calendarValue ? this.calendarValue.getMonth() : this.currentMonth;
+    const calendarYear = this.calendarValue ? this.calendarValue.getFullYear() : this.currentYear;
+    
+    // Get calendar days using helper functions
+    this.daysInMonth = CalendarHelpers.getDaysInMonth(calendarYear, calendarMonth);
+    this.daysBeforeMonth = CalendarHelpers.getDaysBeforeMonth(calendarYear, calendarMonth);
+    this.daysAfterMonth = CalendarHelpers.getDaysAfterMonth(calendarYear, calendarMonth);
+    
+    // Update month name
+    this.currentMonthName = CalendarHelpers.getMonthName(calendarMonth);
   }
   
-  selectDate(date: Date): void {
-    this.calendarValue = date;
+  /**
+   * Navigate to projects page
+   */
+  viewAllProjects(): void {
+    this.router.navigate(['/associate/projects']);
+  }
+
+  /**
+   * Navigate to reports page
+   */
+  viewAllReports(): void {
+    this.router.navigate(['/associate/reports']);
   }
   
-  isToday(date: Date): boolean {
-    const today = new Date();
-    return date.getDate() === today.getDate() && 
-           date.getMonth() === today.getMonth() && 
-           date.getFullYear() === today.getFullYear();
+  /**
+   * Maps a backend ProjectDTO to the enhanced UI DashboardProjectDTO
+   * @param project The backend project DTO
+   * @returns Enhanced project DTO with additional UI properties
+   */
+  private mapToUiProject(project: ProjectDTO): DashboardProjectDTO {
+    if (!project) return null as any;
+    
+    // Calculate progress value between 0-100 based on start and deadline dates
+    const startDate = project.startDate ? new Date(project.startDate) : new Date();
+    const deadlineDate = project.deadLine ? new Date(project.deadLine) : new Date();
+    const now = new Date();
+    
+    // Calculate percentage complete (0-100)
+    let progressValue = 0;
+    try {
+      const totalDuration = deadlineDate.getTime() - startDate.getTime();
+      if (totalDuration > 0) {
+        const elapsed = now.getTime() - startDate.getTime();
+        progressValue = Math.min(100, Math.max(0, Math.round((elapsed / totalDuration) * 100)));
+      }
+    } catch (error) {
+      console.error('Error calculating progress value:', error);
+    }
+    
+    // Format client name from the owner information
+    let client = 'N/A';
+    if (project.owner) {
+      client = project.owner.name || 'Unknown Client';
+    }
+    
+    // Format timeline string
+    const startDateStr = this.datePipe.transform(project.startDate, 'MMM dd, yyyy') || 'N/A';
+    const endDateStr = this.datePipe.transform(project.deadLine, 'MMM dd, yyyy') || 'N/A';
+    const timeline = `${startDateStr} - ${endDateStr}`;
+    
+    // Calculate duration in weeks
+    let duration = 'N/A';
+    try {
+      if (project.startDate && project.deadLine) {
+        const start = new Date(project.startDate);
+        const end = new Date(project.deadLine);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        duration = `${Math.ceil(diffDays / 7)} weeks`;
+      }
+    } catch (error) {
+      console.error('Error calculating duration:', error);
+    }
+    
+    // Default team size
+    const teamSize = 5; // This would normally come from the backend
+    
+    return {
+      ...project,
+      progressValue,
+      client,
+      timeline,
+      teamSize,
+      duration
+    };
   }
   
-  isSelected(date: Date): boolean {
-    if (!this.calendarValue) return false;
-    return date.getDate() === this.calendarValue.getDate() && 
-           date.getMonth() === this.calendarValue.getMonth() && 
-           date.getFullYear() === this.calendarValue.getFullYear();
+  /**
+   * Maps a backend ReportDTO to the enhanced UI DashboardReportDTO
+   * @param report The backend report DTO
+   * @returns Enhanced report DTO with additional UI properties
+   */
+  private mapToUiReport(report: ReportDTO): DashboardReportDTO {
+    if (!report) return null as any;
+    
+    // Format date string
+    const date = this.datePipe.transform(report.createdAt, 'MMM dd, yyyy') || 'N/A';
+    
+    // Determine status severity for UI
+    let statusSeverity = 'info';
+    if (report.status) {
+      switch (report.status) {
+        case ReportStatus.ACCEPTED:
+          statusSeverity = 'success';
+          break;
+        case ReportStatus.REJECTED:
+          statusSeverity = 'danger';
+          break;
+        case ReportStatus.PENDING:
+          statusSeverity = 'warn';
+          break;
+        default:
+          statusSeverity = 'info';
+      }
+    }
+    
+    // Default values for missing properties
+    const reason = report.reason || 'No reason provided';
+    const description = report.description || 'No description available';
+    
+    return {
+      ...report,
+      statusSeverity,
+      date,
+      reason,
+      description
+    };
   }
   
+  /**
+   * Check if a date has any events
+   */
   isHighlighted(date: Date): boolean {
     return this.highlightedDates.some(d =>
       d.getDate() === date.getDate() && 
@@ -143,9 +370,51 @@ export class DashboardComponent implements OnInit {
       d.getFullYear() === date.getFullYear()
     );
   }
-
-  // --- Placeholder Methods ---
-  viewAllProjects(): void { console.log("Navigate to all projects"); }
-  viewAllReports(): void { console.log("Navigate to all reports"); }
-  onNotificationClick(): void { console.log("Show notifications"); }
+  
+  /**
+   * Check if a date is today
+   */
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() && 
+           date.getMonth() === today.getMonth() && 
+           date.getFullYear() === today.getFullYear();
+  }
+  
+  /**
+   * Check if a date is selected
+   */
+  isSelected(date: Date): boolean {
+    if (!this.calendarValue) return false;
+    return date.getDate() === this.calendarValue.getDate() && 
+           date.getMonth() === this.calendarValue.getMonth() && 
+           date.getFullYear() === this.calendarValue.getFullYear();
+  }
+  
+  /**
+   * Navigate to previous month
+   */
+  prevMonth(): void {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.updateCalendar();
+  }
+  
+  /**
+   * Navigate to next month
+   */
+  nextMonth(): void {
+    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+    this.currentMonth = this.currentDate.getMonth();
+    this.currentYear = this.currentDate.getFullYear();
+    this.updateCalendar();
+  }
+  
+  /**
+   * Select a date in the calendar
+   */
+  selectDate(date: Date): void {
+    this.calendarValue = date;
+  }
 }
