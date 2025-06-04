@@ -148,6 +148,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
             // Process all dates in the range
             LocalDate currentDate = startDate;
+
             while (!currentDate.isAfter(endDate)) {
                 // Skip weekends
                 if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
@@ -180,8 +181,8 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         }
 
         return new AssociateCurrentRotationDTO(
-                assignedRotation.getProject().getProjectId(),
-                assignedRotation.getProject().getLabel(),
+                (assignedRotation.getProject()!=null)?assignedRotation.getProject().getProjectId():null,
+                (assignedRotation.getProject()!=null)?assignedRotation.getProject().getLabel():null,
                 onSiteDates,
                 remoteDates
         );
@@ -191,10 +192,8 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     private void addDateBasedOnPattern(LocalDate date, LocalDate startDate, int cycleLengthWeeks,
                                        int remoteWeeksPerCycle, List<LocalDate> onSiteDates, List<LocalDate> remoteDates) {
         // Find which week this date belongs to
-        LocalDate firstMondayAfterStart = startDate;
-        while (firstMondayAfterStart.getDayOfWeek() != DayOfWeek.MONDAY) {
-            firstMondayAfterStart = firstMondayAfterStart.plusDays(1);
-        }
+        LocalDate firstMondayAfterStart =startDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
 
         long daysSinceFirstMonday = ChronoUnit.DAYS.between(firstMondayAfterStart, date);
         long weeksSinceStart = daysSinceFirstMonday / 7;
@@ -204,7 +203,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
         // In each cycle, the first (cycleLengthWeeks - remoteWeeksPerCycle) weeks are onsite
         // and the remaining remoteWeeksPerCycle weeks are remote
-        boolean isRemoteWeek = weekInCycle >= (cycleLengthWeeks - remoteWeeksPerCycle);
+        boolean isRemoteWeek = weekInCycle <  remoteWeeksPerCycle;
 
         if (isRemoteWeek) {
             remoteDates.add(date);
@@ -706,7 +705,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
             LocalDate startDate = rotation.getStartDate();
             LocalDate endDate = rotation.getEndDate();
-
+            LocalDate startOfWeekDate=startDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
             int cycleLengthWeeks = rotation.getCycleLengthWeeks();
             int remoteWeeksPerCycle = rotation.getRemoteWeeksPerCycle();
 
@@ -729,7 +728,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 } else if (overrideOnsiteDates.contains(current)) {
                     onSiteDates.add(current);
                 } else {
-                    long daysSinceStart = ChronoUnit.DAYS.between(startDate, current);
+                    long daysSinceStart = ChronoUnit.DAYS.between(startOfWeekDate, current);
                     int weeksSinceStart = (int) (daysSinceStart / 7);
                     int weekInCycle = weeksSinceStart % cycleLengthWeeks;
 
