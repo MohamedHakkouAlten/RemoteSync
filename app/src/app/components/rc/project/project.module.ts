@@ -24,7 +24,16 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+
+import { RcService } from '../../../services/rc.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { AddProjectComponent } from './add-project/add-project.component';
+import { EditProjectComponent } from './edit-project/edit-project.component';
+import { ViewProjectComponent } from './view-project/view-project.component';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
+import { LanguageService } from '../../../services/language/language.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 // InputTextarea might be needed if you add a description field later
 // import { InputTextareaModule } from 'primeng/inputtextarea';
 // ---------------------------------------
@@ -58,7 +67,17 @@ import { DefaultLayoutComponent } from "../../shared/layout/default-layout.compo
     // InputTextareaModule // Add if needed
     // ---------------------------------------
     ,
+    TranslateModule,
+    ToastModule,
+    AddProjectComponent,
+    EditProjectComponent,
+    ViewProjectComponent,
     DefaultLayoutComponent
+],
+providers:[RcService,
+    MessageService,
+    LanguageService,
+    TranslateService
 ]
 })
 export class ProjectModule { }

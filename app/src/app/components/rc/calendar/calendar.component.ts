@@ -1,12 +1,12 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
-import { startOfWeek, addWeeks, format, addDays, subWeeks } from 'date-fns';
+import { startOfWeek, addWeeks, format, addDays, subWeeks, weeksToDays } from 'date-fns';
 import { AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
 import { Rotation } from '../../../models/rotation.model';
 // Remove the local RotationStatus import to avoid conflicts
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription, switchMap } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { 
   RcService, 
@@ -19,6 +19,8 @@ import {
   RcUpdateAssociateRotationDTO
 } from '../../../services/rc.service';
 import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
+import { daysInWeek } from 'date-fns/constants';
+import { WebSocketService } from '../../../services/web-socket.service';
 
 export interface ViewMode {
   label: string;
@@ -32,27 +34,58 @@ export interface ViewMode {
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit {
+createRotation(event:boolean) {
+
+  
+ if(event==true){
+  this.showRotationModal=false
+  this.messageService.add({
+    severity:'success',
+    summary:"rotation created successfuly",
+    life:5000
+  })
+  
+  this.fetchRotations();}
+  else {
+      this.messageService.add({
+    severity:'success',
+    summary:"Failed to create rotation. Please try again.",
+    life:5000
+  })
+  
+    
+  }
+}
   // Pending changes to be saved
-  pendingChanges: Map<string, CustomDate> = new Map<string, CustomDate>();
+  pendingChanges: Map<string, CustomDate[]> = new Map<string, CustomDate[]>();
   hasPendingChanges = signal<boolean>(false);
   // --- Calendar navigation state ---
   currentDate = signal<Date>(new Date());
-  daysToShow = signal<number>(7);
+  daysToShow = 7;
   
   // View modes
   viewModes: ViewMode[] = [
-    { label: 'Week View', value: 'week' },
-    { label: 'Month View', value: 'month' }
+    { label: 'Week ', value: 'week' },
+    { label: 'Month ', value: 'month' }
   ];
-  selectedViewMode: ViewMode = this.viewModes[0]; // Default to week view
+  selectedViewMode=signal<ViewMode> (this.viewModes[0]); // Default to week view
 
   // Display dates based on current date and view mode
   displayedDates = computed(() => {
     const dates: Date[] = [];
-    const startDate = startOfWeek(this.currentDate(), { weekStartsOn: 1 }); // Monday start
-    for (let i = 0; i < this.daysToShow(); i++) {
+    const startDate = startOfWeek(this.currentDate(), { weekStartsOn: 0 });
+    if(this.selectedViewMode().value=='week'){
+     // Monday start
+    for (let i = 0; i < this.daysToShow; i++) {
       dates.push(addDays(startDate, i));
     }
+  }
+    else{
+ for (let i = 0; i < this.daysToShow; i++) {
+      dates.push(addWeeks(startDate, i));
+    }
+    }  
+      console.log(dates)
     return dates;
   });
 
@@ -97,19 +130,36 @@ export class CalendarComponent implements OnInit {
     pageNumber: 0,
     pageSize: 5
   });
-  
+   private rotationSubscription: Subscription | undefined;
   // Search debounce
   private searchTermsChange$ = new Subject<string>();
 
   constructor(
     private rcService: RcService,
     private messageService: MessageService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private webSocketService :WebSocketService
   ) { }
 
   ngOnInit(): void {
+     this.rotationSubscription = this.webSocketService.watchRotationTopic().subscribe({
+      next: (rotationData) => {
+        console.log("Received rotation data:", rotationData);
+   this.fetchRotations()
+      },
+      error: (err) => {
+        console.error("Error receiving rotation data:", err);
+
+      },
+      complete: () => {
+        console.log("Rotation topic subscription completed.");
+     
+      }
+    });
+  
     this.setupSearchDebounce();
     this.loadInitialCalendarData();
+   
   }
 
   /**
@@ -516,15 +566,10 @@ export class CalendarComponent implements OnInit {
    * Navigate to previous period
    */
   previousPeriod(): void {
-    if (this.selectedViewMode.value === 'month') {
-      this.daysToShow.set(30);
-    } else {
-      this.daysToShow.set(7);
-    }
-    
+
     // Move current date back by number of days shown
     this.currentDate.update(date => 
-      subWeeks(date, this.selectedViewMode.value === 'month' ? 4 : 1)
+      subWeeks(date, this.selectedViewMode().value === 'month' ? 4 : 1)
     );
   }
 
@@ -532,15 +577,11 @@ export class CalendarComponent implements OnInit {
    * Navigate to next period
    */
   nextPeriod(): void {
-    if (this.selectedViewMode.value === 'month') {
-      this.daysToShow.set(30);
-    } else {
-      this.daysToShow.set(7);
-    }
+
     
     // Move current date forward by number of days shown
     this.currentDate.update(date => 
-      addWeeks(date, this.selectedViewMode.value === 'month' ? 4 : 1)
+      addWeeks(date, this.selectedViewMode().value === 'month' ? 4 : 1)
     );
   }
 
@@ -548,11 +589,7 @@ export class CalendarComponent implements OnInit {
    * Handle view mode changes (week/month)
    */
   onViewModeChange(): void {
-    if (this.selectedViewMode.value === 'month') {
-      this.daysToShow.set(30); // Show entire month
-    } else {
-      this.daysToShow.set(7); // Show week
-    }
+
   }
 
   /**
@@ -572,23 +609,47 @@ export class CalendarComponent implements OnInit {
   /**
    * Determine the remote state for a rotation on a specific date
    */
-  getRemoteState(rotation: RcRecentAssociateRotations, date: Date): ToggleState {
+getRemoteState(rotation: RcRecentAssociateRotations, date: Date): ToggleState {
+    
     const dateKey = this.formatDateKey(date);
-    
-    // Check if date is in onSiteDates
-    if (rotation.onSiteDates && rotation.onSiteDates.includes(dateKey)) {
-      return 1; // OnSite
+
+
+    const onSiteDatesSet = new Set(rotation.onSiteDates || []);
+    const remoteDatesSet = new Set(rotation.remoteDates || []);
+
+    // --- Logic for 'week' view mode ---
+    if (this.selectedViewMode().value === 'week') {
+
+      if (onSiteDatesSet.has(dateKey)) {
+        return 1;
+      }
+      if (remoteDatesSet.has(dateKey)) {
+        return -1;
+      }
+      // If not found in either for 'week' view, it's OFF
+      return 0;
     }
-    
-    // Check if date is in remoteDates
-    if (rotation.remoteDates && rotation.remoteDates.includes(dateKey)) {
-      return -1; // Remote
+
+    if (!onSiteDatesSet.has(dateKey) && !remoteDatesSet.has(dateKey)) {
+         return 0; 
     }
-    
-    // If date is not in either array, show as OFF (0)
-    // This is just for display purposes - the toggle component will still cycle between REMOTE and ONSITE
-    return 0; // OFF - for dates outside the rotation range
-  }
+
+
+    let onSiteCount = 0;
+    let remoteCount = 0;
+
+    for (let i = 0; i < 7; i++) {
+      const day = this.formatDateKey(addDays(date, i)); 
+      if (onSiteDatesSet.has(day)) {
+        onSiteCount++;
+      } else if (remoteDatesSet.has(day)) {
+        remoteCount++;
+      }
+    }
+
+    return onSiteCount > remoteCount ? 1 : -1;
+  
+}
 
   /**
    * Add a pending change for rotation state on a specific date
@@ -607,19 +668,34 @@ export class CalendarComponent implements OnInit {
     
     // Create a unique key for this change (userId + date)
     const changeKey = `${rotation.userId}_${dateKey}`;
-    
+    let customDates:CustomDate[]=[]
     // Create the custom date object
+    if(this.selectedViewMode().value=='week'){
     const customDate: CustomDate = {
       date: dateKey,
       rotationStatus: rotationStatus
     };
+   customDates.push(customDate)
+   this.updateLocalRotationData(rotation, dateKey, rotationStatus);
+  }
+    else {
+      for (let i = 0; i < 7; i++) {
+        const day=this.formatDateKey(addDays(date, i));
+     customDates.push({
+      date: day,
+      rotationStatus: rotationStatus
+     })
+
+    this.updateLocalRotationData(rotation, day, rotationStatus);
+  }
+    }
     
     // Add to pending changes
-    this.pendingChanges.set(changeKey, customDate);
+    this.pendingChanges.set(changeKey, customDates);
     this.hasPendingChanges.set(true);
     
     // Update the UI immediately (but don't save to backend yet)
-    this.updateLocalRotationData(rotation, dateKey, rotationStatus);
+    
     
     // Show notification about pending changes
     this.messageService.add({
@@ -652,12 +728,13 @@ export class CalendarComponent implements OnInit {
     // Group changes by user ID
     const changesByUser = new Map<string, CustomDate[]>();
     
-    this.pendingChanges.forEach((customDate, key) => {
+    this.pendingChanges.forEach((customDates, key) => {
       const userId = key.split('_')[0];
       if (!changesByUser.has(userId)) {
         changesByUser.set(userId, []);
       }
-      changesByUser.get(userId)?.push(customDate);
+      customDates.forEach((customDate)=>changesByUser.get(userId)?.push(customDate))
+      
     });
     
     // Track number of successful updates
@@ -818,6 +895,6 @@ export class CalendarComponent implements OnInit {
     this.showRotationModal = false;
     console.log('Rotation creation modal closed');
     // Optionally refresh the rotations data after a new rotation is created
-    this.fetchRotations();
+  
   }
 }

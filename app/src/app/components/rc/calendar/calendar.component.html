@@ -10,7 +10,7 @@
       </div>
     
       <!-- Main Content Card -->
-      <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+      <div class="bg-white  p-4 sm:p-6 rounded-lg shadow-md">
         <!-- Top Controls Row -->
         <div class="flex flex-col  justify-between  ">
     
@@ -35,7 +35,7 @@
                     <i class="pi pi-user text-gray-500 !text-base"></i>
     
                     <p-dropdown [(ngModel)]="selectedClient" (onChange)="fetchUserRotationsByClient($event)" [options]="clients()" 
-                      optionLabel="label" placeholder="Client" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      optionLabel="label" placeholder="Client" [showClear]="true" styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" 
                       [filter]="true" filterBy="label" [autoDisplayFirst]="false">
                     </p-dropdown>
     
@@ -44,7 +44,7 @@
                     <i class="pi pi-briefcase text-gray-500 !text-base"></i>
     
                     <p-dropdown [(ngModel)]="selectedProject" (onChange)="fetchUserRotationsByProject($event)" [options]="projects()" 
-                      optionLabel="label" placeholder="Project" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      optionLabel="label" placeholder="Project" [showClear]="true" styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" 
                       [filter]="true" filterBy="label" [autoDisplayFirst]="false">
                     </p-dropdown>
     
@@ -53,7 +53,7 @@
                     <i class="pi pi-map-marker text-gray-500 !text-base"></i>
     
                     <p-dropdown [(ngModel)]="selectedFactory" (onChange)="fetchUserRotationsByFactory($event)" [options]="factories()" 
-                      optionLabel="label" placeholder="Factory" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      optionLabel="label" placeholder="Factory" [showClear]="true" styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" 
                       [filter]="true" filterBy="label" [autoDisplayFirst]="false">
                     </p-dropdown>
     
@@ -62,7 +62,7 @@
                     <i class="pi pi-building text-gray-500 !text-base"></i>
     
                     <p-dropdown [(ngModel)]="selectedSubFactory" (onChange)="fetchUserRotationsBySubFactory($event)" [options]="subFactories()" 
-                      optionLabel="label" placeholder="SubFactory" [showClear]="true" styleClass="border-0 !bg-secondary !text-sm w-full" 
+                      optionLabel="label" placeholder="SubFactory" [showClear]="true" styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" 
                       [filter]="true" filterBy="label" [autoDisplayFirst]="false">
                     </p-dropdown>
     
@@ -88,12 +88,12 @@
                 class="!border-2 !text-sm !bg-white !text-primary !border-primary" (click)="openRotationModal()"></button>
               <!-- Style pDropdown via CSS, maybe add a styleClass for targeting -->
               <p-dropdown [options]="viewModes" [(ngModel)]="selectedViewMode" optionLabel="label"
-                (onChange)="onViewModeChange()" styleClass="!bg-primary  !border-0" placeholder="Select View">
+                (onChange)="onViewModeChange()" class="viewButton"  placeholder="Select View">
                 <!-- Added view-mode-dropdown class -->
                 <ng-template pTemplate="selectedItem">
                   <div class="flex items-center  gap-1">
                     <i class="pi pi-calendar mr-1"></i>
-                    <div>{{selectedViewMode.label}}</div>
+                    <div>{{selectedViewMode().label}}</div>
                   </div>
                 </ng-template>
                 <ng-template let-option pTemplate="item">
@@ -216,6 +216,6 @@
     
         </div> <!-- End Content Card -->
       </div>
-      <app-rotation [showModal]="showRotationModal" (modalClosed)="onRotationModalClosed()"></app-rotation>
+      <app-rotation [showModal]="showRotationModal" (rotationCreated)="createRotation($event)" (modalClosed)="onRotationModalClosed()"></app-rotation>
   </div>
  </app-default-layout>

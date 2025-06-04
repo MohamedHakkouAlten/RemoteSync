@@ -1,8 +1,8 @@
 export enum ProjectStatus {
-     ACTIVE,
-    INACTIVE,
-    PENDING,
-    COMPLETED,
-    CANCELLED
+     ACTIVE="ACTIVE",
+    INACTIVE="INACTIVE",
+    PENDING="PENDING",
+    COMPLETED="COMPLETED",
+    CANCELLED="CANCELLED"
 
 }

@@ -94,7 +94,7 @@ public class ReportServiceImp implements ReportService {
     }
 
     @Override
-    public String rcUpdateReportStatus(RcUpdateReportDTO rcUpdateReportDTO) {
+    public String updateReportStatus(RcUpdateReportDTO rcUpdateReportDTO) {
 
         Report report = reportDomainRepository.findById(rcUpdateReportDTO.reportId())
                 .orElseThrow(() -> new ReportNotFoundException("Report with ID " + rcUpdateReportDTO.reportId() + " not found"));
@@ -102,6 +102,7 @@ public class ReportServiceImp implements ReportService {
         reportDomainRepository.save(report);
         return "successful report update";
     }
+
 
     @Override
     public RcPagedReportDTO getRCPendingReports(PagedGlobalDTO pagedGlobalDTO) {
@@ -179,53 +180,25 @@ public class ReportServiceImp implements ReportService {
     }
 
     @Override
-    public RcPagedReportDTO getRCReportsByStatus(RCReportByStatusDTO rcReportByStatusDTO) {
-        Page<Report> pagedReports = reportDomainRepository.findAllByStatus(
-                        PageRequest.of(rcReportByStatusDTO.pageNumber(), (rcReportByStatusDTO.pageSize() != null) ? rcReportByStatusDTO.pageSize() : 10),
-                        rcReportByStatusDTO.status()
-                        )
-                .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
-
-
+    public RcPagedReportDTO getRCFilteredReports(ReportFilterDTO reportFilterDTO) {
+        Page<Report> pagedReports;
+        PageRequest pageRequest = PageRequest.of(reportFilterDTO.pageNumber(), (reportFilterDTO.pageSize() != null) ? reportFilterDTO.pageSize() : 10);
+        if (!reportFilterDTO.name().isBlank())
+            pagedReports = reportDomainRepository.findAllByName(pageRequest, reportFilterDTO.name()).orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
+        else if (reportFilterDTO.startDate() != null && reportFilterDTO.endDate() != null)
+            pagedReports = reportDomainRepository.findAllByCreatedAtBetween(
+                            pageRequest, LocalDateTime.of(reportFilterDTO.startDate(), LocalTime.MIDNIGHT), LocalDateTime.of(reportFilterDTO.endDate(), LocalTime.MIDNIGHT)
+                    )
+                    .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
+        else if (reportFilterDTO.status() != null)
+            pagedReports = reportDomainRepository.findAllByStatus(pageRequest, reportFilterDTO.status()).orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
+        else pagedReports = reportDomainRepository.findAllBy(pageRequest)
+                    .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
         return new RcPagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
                 pagedReports.getTotalPages(),
                 pagedReports.getTotalElements(),
-                rcReportByStatusDTO.pageNumber() + 1,
-                rcReportByStatusDTO.pageSize()
-        );
-    }
-
-    @Override
-    public RcPagedReportDTO getRCReportsByDateRange(RCReportByDateRangeDTO rcReportByDateRangeDTO) {
-        Page<Report> pagedReports = reportDomainRepository.findAllByCreatedAtBetween(
-                        LocalDateTime.of(rcReportByDateRangeDTO.startDate(), LocalTime.MIDNIGHT) , LocalDateTime.of(rcReportByDateRangeDTO.endDate(), LocalTime.MIDNIGHT),
-                        PageRequest.of(rcReportByDateRangeDTO.pageNumber(), (rcReportByDateRangeDTO.pageSize() != null) ? rcReportByDateRangeDTO.pageSize() : 10)
-                        )
-                .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
-
-
-        return new RcPagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
-                pagedReports.getTotalPages(),
-                pagedReports.getTotalElements(),
-                rcReportByDateRangeDTO.pageNumber() + 1,
-                rcReportByDateRangeDTO.pageSize()
-        );
-    }
-
-    @Override
-    public RcPagedReportDTO getRCReportsByUser(RCReportByUserDTO rcReportByUserDTO) {
-        Page<Report> pagedReports = reportDomainRepository.findAllByName(
-                        PageRequest.of(rcReportByUserDTO.pageNumber(), (rcReportByUserDTO.pageSize() != null) ? rcReportByUserDTO.pageSize() : 10),
-                        rcReportByUserDTO.name()
-                )
-                .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
-
-
-        return new RcPagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
-                pagedReports.getTotalPages(),
-                pagedReports.getTotalElements(),
-                rcReportByUserDTO.pageNumber() + 1,
-                rcReportByUserDTO.pageSize()
+                reportFilterDTO.pageNumber() + 1,
+                reportFilterDTO.pageSize()
         );
     }
 }

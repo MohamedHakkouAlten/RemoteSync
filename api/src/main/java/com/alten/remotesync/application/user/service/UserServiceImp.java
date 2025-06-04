@@ -12,12 +12,15 @@ import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignme
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.role.repository.RoleDomainRepository;
 import com.alten.remotesync.domain.user.model.User;
+import com.alten.remotesync.domain.user.projection.UserProjection;
 import com.alten.remotesync.domain.user.repository.UserDomainRepository;
 import com.alten.remotesync.kernel.security.jwt.JwtService;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -84,8 +87,31 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<UserDropDownDTO> getRCUsersByName(String name) {
-        return userDomainRepository.findTop10ByFullNameContainingIgnoreCase(name, PageRequest.of(0,10)).orElseThrow(()->new UserNotFoundException("this user doesn t exist")).stream().map(user->new UserDropDownDTO(user.getUserId(), user.getFirstName()+" "+user.getLastName())).toList();
+    public List<UserDTO> getRCUsersByName(String name) {
+        Specification<User> spec= (root, query, cb) -> {
+            if (name == null || name.trim().isEmpty()) {
+                return cb.conjunction(); // No filtering if name is empty
+            }
+
+            Expression<String> fullName = cb.concat(root.get("firstName"), " ");
+            fullName = cb.concat(fullName, root.get("lastName"));
+
+
+            Expression<String> lowerFullName = cb.lower(fullName);
+
+
+            String searchPattern = "%" + name.trim().toLowerCase() + "%";
+
+            return cb.like(lowerFullName, searchPattern);
+        };
+        Pageable pageable = PageRequest.of(0, 10);
+
+
+        Page<User> userPage = userDomainRepository.findAll(spec, pageable);
+
+
+
+        return userPage.getContent().stream().map(userMapper::toUserDTO).toList();
     }
 
     @Override
@@ -95,46 +121,5 @@ public class UserServiceImp implements UserService {
         return new LoginResponseDTO(jwtService.generateAccessToken(user), jwtService.generateRefreshToken(user), user.getFirstName(), user.getLastName(), user.getRoles().stream().map(r -> String.valueOf(r.getAuthority())).toList());
     }
 
-    @Override
-    public List<UserDTO> getRcAllAssociatesWithoutAssignedRotation(RcSearchAssociateDTO rcSearchAssociateDTO) {
-        Specification<User> spec = (root, query, criteriaBuilder) -> {
-            query.distinct(true);
 
-            Subquery<UUID> subquery = query.subquery(UUID.class);
-            Root<AssignedRotation> subRoot = subquery.from(AssignedRotation.class);
-            subquery.select(subRoot.get("user").get("userId"));
-            subquery.where(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(subRoot.get("user").get("userId"), root.get("userId")),
-                            subRoot.get("rotationAssignmentStatus").in(
-                                    RotationAssignmentStatus.ACTIVE,
-                                    RotationAssignmentStatus.PENDING
-                            )
-                    )
-            );
-
-            Predicate noActiveOrPending = criteriaBuilder.not(criteriaBuilder.exists(subquery));
-
-            Predicate namePredicate = criteriaBuilder.conjunction(); // default true
-            if (rcSearchAssociateDTO.fullName() != null && !rcSearchAssociateDTO.fullName().isBlank()) {
-                String likePattern = "%" + rcSearchAssociateDTO.fullName().toLowerCase() + "%";
-
-                Expression<String> fullNameExpr = criteriaBuilder.lower(
-                        criteriaBuilder.concat(
-                                criteriaBuilder.concat(root.get("firstName"), " "),
-                                root.get("lastName")
-                        )
-                );
-                namePredicate = criteriaBuilder.like(fullNameExpr, likePattern);
-            }
-
-            return criteriaBuilder.and(noActiveOrPending, namePredicate);
-        };
-
-        List<User> users = userDomainRepository.findAll(spec);
-
-        return users.stream()
-                .map(userMapper::toUserDTO)
-                .toList();
-    }
 }

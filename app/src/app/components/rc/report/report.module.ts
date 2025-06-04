@@ -18,21 +18,23 @@ import { ToastModule } from 'primeng/toast';
 
 // --- Shared Components ---
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
-import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
-import { UpdateReportComponent } from "../../shared/rc-ui/update-report/update-report.component";
+
+
+
+import { RcService } from '../../../services/rc.service';
+import { UserAvatarComponent } from '../../shared/shared-ui/user-avatar/user-avatar.component';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
+import { UpdateReportComponent } from '../../shared/rc-ui/update-report/update-report.component';
 
 @NgModule({
   declarations: [
     ReportComponent
   ],
-  imports: [
-    // Angular Modules
+   imports: [
     CommonModule,
-    FormsModule,
+    FormsModule, // <-- Add FormsModule
     ReportRoutingModule,
-    
-    // PrimeNG Modules
+    // --- Add PrimeNG Modules ---
     InputTextModule,
     CalendarModule,
     DropdownModule,
@@ -40,19 +42,17 @@ import { DefaultLayoutComponent } from "../../shared/layout/default-layout.compo
     ButtonModule,
     AvatarModule,
     TagModule,
-    ToastModule,
-    
-    // Standalone Components
     NavigationComponent,
     UserAvatarComponent,
     UpdateReportComponent,
+    ToastModule,
     DefaultLayoutComponent
-  ],
-  providers: [
-    MessageService,
-    DatePipe,
-    TitleCasePipe
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+],
+providers :[
+ 
+  MessageService,
+     RcService
+]
+  // No providers needed here unless DatePipe isn't provided elsewhere
 })
 export class ReportModule { }

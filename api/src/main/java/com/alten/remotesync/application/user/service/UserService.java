@@ -18,7 +18,7 @@ public interface UserService {
     UserProfileDTO updateMyProfile(UpdateUserProfileDTO updateUserProfileDTO);
     LoginResponseDTO login(LoginRequestDTO loginRequestDTO);
     Integer getRcCountTotalAssociates(String role);
-    List<UserDropDownDTO> getRCUsersByName(String name);
+    List<UserDTO> getRCUsersByName(String name);
     LoginResponseDTO refreshToken(UserPrincipal userPrincipal);
-    List<UserDTO> getRcAllAssociatesWithoutAssignedRotation(RcSearchAssociateDTO rcSearchAssociateDTO);
+    //List<UserDTO> getRcAllAssociatesWithoutAssignedRotation(RcSearchAssociateDTO rcSearchAssociateDTO);
 }

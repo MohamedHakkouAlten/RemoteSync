@@ -15,10 +15,9 @@ public interface ReportService {
     Integer getAssociateTotalReports(GlobalDTO globalDTO);
     PagedReportDTO getAssociateOldReports(GlobalDTO globalDTO, PagedReportSearchDTO pagedReportSearchDTO);
     RcPagedReportDTO getRCReports(PagedGlobalDTO pagedGlobalDTO);
-    RcPagedReportDTO getRCReportsByStatus(RCReportByStatusDTO rcReportByStatusDTO);
-    RcPagedReportDTO getRCReportsByDateRange(RCReportByDateRangeDTO rcReportByDateRangeDTO);
-    RcPagedReportDTO getRCReportsByUser(RCReportByUserDTO rcReportByUserDTO);
-    String rcUpdateReportStatus(RcUpdateReportDTO rcUpdateReportDTO);
+    RcPagedReportDTO getRCFilteredReports(ReportFilterDTO reportFilterDTO);
+
+    String updateReportStatus(RcUpdateReportDTO rcUpdateReportDTO);
     RcPagedReportDTO getRCPendingReports(PagedGlobalDTO pagedGlobalDTO);
 
     PagedReportDTO getRcPendingReports();

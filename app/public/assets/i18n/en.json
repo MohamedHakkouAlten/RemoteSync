@@ -74,5 +74,81 @@
     "english": "English",
     "french": "French",
     "spanish": "Spanish"
+  },
+  "dashboardPage": {
+    "activeProjects": "Active Projects",
+    "completedProjects": "Completed Projects",
+    "siteStatisticsTitle": "Site Statistics",
+    "totalFactories": "Total Factories",
+    "totalCapacity": "Total Capacity",
+    "remoteWorkers": "Remote Workers",
+    "onsiteWorkers": "On-site Workers",
+    "highestDurationTitle": "Highest Duration",
+    "detailsLink": "Details",
+    "notAvailable": "N/A",
+    "largestTeamTitle": "Largest Team",
+    "membersSuffix": "members",
+    "rcDashboardTitle": "RC Dashboard",
+    "welcomeMessage": "Welcome, {{name}}",
+    "viewCalendarButton": "View Calendar",
+    "legend": {
+      "onsite": "On-site",
+      "remote": "Remote",
+      "off": "Off"
+    },
+    "table": {
+      "headerName": "Name",
+      "paginationReport": "Showing {first}-{last} of {totalRecords} entries",
+      "emptyMessage": "No records found."
+    },
+    "pendingRequests": {
+      "title": "Pending Requests",
+      "viewAllLink": "View All",
+      "noRequests": "No pending requests."
+    }
+  },
+ "projectPage": {
+    "title": "Projects",
+    "subtitle": "Overview of all active, upcoming, and completed projects",
+    "summaryStats": {
+      "totalProjects": "Total Projects:",
+      "completed": "Completed:",
+      "active": "Active:",
+      "inactive": "InActive:",
+      "cancelled": "Cancelled:"
+    },
+    "toolbar": {
+      "searchProjectsPlaceholder": "Search projects...",
+      "searchClientPlaceholder": "Search Client...",
+      "newProjectButton": "New Project",
+      "clearSearchTooltip": "Clear search" 
+    },
+    "table": {
+      "header": {
+        "label": "Label",
+        "projectName": "Project Name",
+        "client": "Client",
+        "duration": "Duration",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actionsTooltip": {
+        "edit": "Edit",
+        "view": "View",
+        "delete": "Delete"
+      },
+      "paginationReport": "Showing {first} to {last} of {totalRecords} entries",
+      "emptyMessage": "No projects found matching your search criteria.",
+      "loadingMessage": "Loading projects data..."
+    },
+    "statusTypes": { 
+      "active": "Active",
+      "completed": "Completed",
+      "inactive": "Inactive",
+      "cancelled": "Cancelled",
+      "upcoming": "Upcoming" 
+
+    
   }
+}
 }

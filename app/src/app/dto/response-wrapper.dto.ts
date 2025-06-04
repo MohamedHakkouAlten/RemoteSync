@@ -6,6 +6,7 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { UserRotation } from '../models/rotation.model';
 import { RCReport } from '../models/report.model';
+import { Project } from '../models/project.model';
 
 export interface PagedData {
  
@@ -26,6 +27,12 @@ export interface PagedRotation extends PagedData {
 export interface PagedReports extends PagedData{
  
   reports :RCReport[]
+
+
+}
+export interface PagedProject extends PagedData{
+ 
+  projectDTOS :Project[]
 
 
 }

@@ -66,8 +66,9 @@
   }
 
   /* --- Report Card Styles (Keep as before) --- */
-  .report-card .p-button-outlined.p-button-danger { color: #dc2626; border-color: #fca5a5; }
-  .report-card .p-button-outlined.p-button-danger:hover { background-color: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+    :host ::ng-deep.report-card .p-button-outlined.p-button-danger .p-button-label { font-family: inter !important;font-weight: 400!important;}
+  .report-card .p-button-outlined.p-button-danger { color: var(--color-primary); border-color: var(--color-primary); font-family: inter !important;font-weight: 300;  color: var(--color-primary);}
+  .report-card .p-button-outlined.p-button-danger:hover { background-color: var(--color-primary); border-color: var(--color-primary); color: white !important; }
   .status-badge { line-height: 1; }
 
   /* --- Paginator Customization (Keep as before) --- */

@@ -1,0 +1,91 @@
+   <p-dialog
+        header="Create New Project"
+        [(visible)]="displayCreateProjectDialog"
+        [modal]="true"
+        [style]="{ width: '40vw', 'min-width': '400px' }"
+        styleClass="create-project-dialog"
+        [draggable]="false"
+        [resizable]="false"
+        (onHide)="onHideDialog()">
+
+        <div class="flex flex-col gap-4">
+            <!-- Title -->
+            <div class="flex flex-col">
+                <label for="projectTitle">Title</label>
+                <input id="projectTitle" type="text" pInputText [(ngModel)]="newProjectTitle" required autofocus />
+            </div>
+                      <div class="flex flex-col">
+                <label for="editProjectTitle">Label</label>
+                <input id="editProjectTitle" type="text" pInputText [(ngModel)]="newProjectLabel" required
+                    autofocus />
+            </div>
+          
+            <div class="flex flex-col">
+                <label for="projectStatus">Status</label>
+               
+                <p-dropdown
+                    id="projectStatus"
+                    [options]="projectStatusOptions"
+                    [(ngModel)]="newProjectStatus"
+                    placeholder="Select a Status"
+                    optionLabel="label"
+                    optionValue="value"
+                    required
+                    appendTo="body">
+                </p-dropdown>
+            </div>
+          
+            <!-- Members -->
+       
+            <!-- Dates -->
+            <div class="flex gap-2">
+                <div class="field col">
+                    <label for="projectStartDate">Start Date</label>
+                    <p-calendar
+                        id="projectStartDate"
+                        [(ngModel)]="newProjectStartDate"
+                        dateFormat="yy-mm-dd"
+                        
+                        dataType="string"
+                        [showIcon]="true"
+                        appendTo="body">
+                    </p-calendar>
+                </div>
+                <div class="field col">
+                    <label for="projectDeadline">End Date </label>
+                    <p-calendar
+                        id="projectDeadline"
+                        [(ngModel)]="newProjectDeadline"
+                        dateFormat="yy-mm-dd"
+                        dataType="string"
+                        [showIcon]="true"
+                        appendTo="body">
+                    </p-calendar>
+                </div>
+            </div>
+            <!-- Client -->
+                   <div class="flex w-full flex-col">
+                <label for="editProjectClient">Client</label>
+                <p-autocomplete [(ngModel)]="selectedClient" appendTo="body" [dropdown]="true" placeholder="Client"
+                    class="!border-0 !w-full !text-sm" [suggestions]="clients"
+                    (completeMethod)="searchClient($event)" />
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button
+                label="Cancel"
+                icon="pi pi-times"
+                styleClass="p-button-text"
+                (click)="onHideDialog()">
+            </p-button>
+            <p-button
+                label="Save"
+                icon="pi pi-check"
+                styleClass="p-button-warning"
+                (click)="saveNewProject()"
+                [disabled]="!newProjectTitle || !newProjectStatus || !newProjectLabel || !newProjectDeadline || !newProjectStartDate || !selectedClient">
+            </p-button>
+        </ng-template>
+
+    </p-dialog>

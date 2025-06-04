@@ -21,10 +21,12 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectDomainRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
-    Optional<List<Project>> findAllByOwner_ClientId(UUID clientId);
+    Optional<List<Project>> findAllByOwner_ClientIdAndIsDeleted(UUID clientId,Boolean isDeleted);
 
     Optional<List<Project>> findTop10ByLabelContainsIgnoreCase(String label);
-    Optional<List<Project>> findAllBy(Pageable pageable);
+    Optional<List<Project>> findAllByIsDeleted(Boolean isDeleted);
+    Optional<Page<Project>> findAllByLabelContainingIgnoreCase(String label,Pageable pageable);
+    Optional<Page<Project>> findAllByOwner_LabelContainingIgnoreCase(String label,Pageable pageable);
 
     @Query("""
 SELECT DISTINCT p FROM AssignedRotation ar
@@ -100,43 +102,8 @@ SELECT DISTINCT p FROM AssignedRotation ar
             "GROUP BY ar.project.projectId")
     Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
 
-    @Query("SELECT DISTINCT p FROM AssignedRotation ar " +
-            "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
-            "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
-            "WHERE ar.user.userId = :userId " +
-            "GROUP BY p.projectId " +
-            "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
-    Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
 
 
-    @Query(value = """ 
-                  SELECT
-                   p.projectId AS projectId,
-                    p.label AS label,
-                    p.status AS status,
-                    p.deadLine AS deadLine,
-                    p.startDate AS startDate,
-                    COUNT(DISTINCT ur.userId) AS usersCount
-                    FROM AssignedRotation ar
-                  INNER JOIN ar.project p
-                  INNER JOIN  ar.user ur 
-                  GROUP BY   p
-                  ORDER BY  usersCount DESC Limit 1
-            """)
-    Optional<ProjectLargestMembersProjection> fetchRCProjectWithLargestTeam();
-    @Query(value = """
-        SELECT
-           CONCAT(SUBSTRING(ur.firstName, 1, 1), SUBSTRING(ur.lastName, 1, 1)) AS initials
-           
-        FROM
-            AssignedRotation ar
-        INNER JOIN
-            ar.user ur
-        WHERE
-            ar.project.projectId = :projectId
-        GROUP BY   ur.userId
-         ORDER By ur.userId DESC Limit 5
-     
-        """)
-    Optional<List<ProjectMembersProjection>> findFirst5UsersByProject(@Param("projectId") UUID projectId);
+
+
 }

@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/user/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/user/rc/**").hasAnyRole("RC", "ADMIN")
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/v1/user/associate/**").hasAnyRole("ASSOCIATE", "RC", "ADMIN")
                         .anyRequest().denyAll())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

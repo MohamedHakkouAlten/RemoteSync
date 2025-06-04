@@ -31,6 +31,32 @@
 :host ::ng-deep .p-paginator .p-select .p-select-label{
     color:#6a7282 !important
 }
+
+    :host ::ng-deep .filterDropDown.p-select{
+border: none !important;
+
+background-color: var(--color-secondary);
+font-family: Inter;
+font-size: 12px;
+width: 180px;
+border-radius: 4px !important;
+
+
+  }
+    :host ::ng-deep .p-select.p-select-label {
+
+color: #6a7282 !important;
+
+
+
+  }
+ :host ::ng-deep .p-select .p-select-label.p-placeholder {
+
+color: #6a7282 !important;
+
+
+
+  }
   /* Base styles for the switch slider */
 :host ::ng-deep .p-toggleswitch .p-toggleswitch-slider {
     transition: background-color 0.2s ease-in-out;
@@ -165,16 +191,26 @@ color: #6a7282 !important;
     height: 12px;
   }
 
-  :host ::ng-deep .p-select .p-select-label {
+  :host ::ng-deep .viewButton.p-select  {
     color: white !important;
+    background-color: var(--color-primary);
+    border: 0 !important;
+  }
+  :host ::ng-deep .viewButton.p-select .p-select-label {
+    color: white !important;
+    font-size: 14px;
+    padding: 7 5px;
+ 
   }
 
-  :host ::ng-deep .p-select .p-select-dropdown  {
+  :host ::ng-deep .viewButton.p-select .p-select-dropdown  {
     color: white !important;
+    font-size: 12px;
   }
   :host ::ng-deep .p-select   {
     box-shadow: none !important;
   }
+ 
 
   :host ::ng-deep .p-autocomplete .p-autocomplete-option {
 

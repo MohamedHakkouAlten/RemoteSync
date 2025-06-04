@@ -3,15 +3,13 @@ package com.alten.remotesync.application.project.service;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 
 import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
-import com.alten.remotesync.application.project.record.request.AssociateProjectByClientDTO;
-import com.alten.remotesync.application.project.record.request.AssociateProjectByLabelDTO;
-import com.alten.remotesync.application.project.record.request.PagedProjectSearchDTO;
-import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
+import com.alten.remotesync.application.project.record.request.*;
 import com.alten.remotesync.application.project.record.response.*;
 import com.alten.remotesync.domain.project.enumeration.ProjectStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public interface ProjectService {
@@ -40,22 +38,31 @@ public interface ProjectService {
 //    List<ProjectDropDownDTO> getRcProjectsByClient(GlobalDTO globalDTO);
 
 //    List<ProjectDropDownDTO> getRcProjectsByLabel(String label);
+    ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO);
+    ProjectDTO addProject(AddProjectDTO addProjectDTO);
 
+    ProjectDTO deleteProject(UUID projectId);
+    PagedProjectDTO getRCFilteredProjects(ProjectFilterDTO projectFilterDTO);
     PagedProjectDTO getProjects(GlobalDTO globalDTO, PagedGlobalDTO pagedGlobalIdDTO);
 
     RcProjectsCountDTO countActiveProjects();
+    List<ProjectDTO> getInitialRCProjects( );
 
+    RcProjectsCountDTO countTotalProjects();
     //ProjectDTO getLargestTeamProject();
+    RcProjectsCountDTO getCompletedProjectsCount();
 
+    RcProjectsCountDTO getRcCountInactiveProjects();
     RcProjectsCountDTO countCancelledProjects();
 
+    PagedProjectDTO getRCProjects( PagedGlobalDTO pagedGlobalDTO);
     RcProjectsCountDTO getRcCountProjectByStatus(ProjectStatus projectStatus);
 
     //RcCompletedProjectsCountDTO getRcCompletedProjectsCount();
 
     ProjectDTO getRcLongestDurationProject();
 
-    ProjectDTO getRcLargestTeamProject();
+    ProjectLargestMembersDTO getRcLargestTeamProject();
     List<ProjectDropDownDTO> getRcAllProjectsByClient(GlobalDTO globalDTO);
 
     List<ProjectDropDownDTO> getRcAllProjects();

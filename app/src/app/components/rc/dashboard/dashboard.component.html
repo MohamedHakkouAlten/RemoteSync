@@ -1,55 +1,53 @@
-<app-default-layout>
 <!-- body -->
+ <app-default-layout>
 <div class="flex w-full z-10  overflow-y-auto ">
 
   <!-- left panel -->
-  
-    <aside class=" bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen"
-        [ngClass]="{
+  <aside class=" bg-white p-6  space-y-[30px]  border-r border-gray-200 min-h-screen"
+      [ngClass]="{
         'flex-1/5':isPendingReports,
         'flex-1/7':!isPendingReports
       }">
-      <!-- Section: Active Projects -->
-       <div class="space-x-5">
-  <app-project-stats-card [projectStats]="activeProjects"  icon="pi pi-chart-bar" title="Active Projects"/>
+    <!-- Section: Active Projects -->
+    <div class="space-x-5">
+      <app-project-stats-card [projectStats]="activeProjects"  icon="pi pi-chart-bar" [title]="'dashboardPage.activeProjects' | translate"/>
     
       <!-- Section: Completed Projects -->
-      <app-project-stats-card [projectStats]="completedProjects" icon="pi  pi-check-circle" title="Completed Projects"/>
+      <app-project-stats-card [projectStats]="completedProjects" icon="pi  pi-check-circle" [title]="'dashboardPage.completedProjects' | translate"/>
     </div>
     <!-- stats section -->
-     <div class="flex  flex-col gap-5">
+    <div class="flex  flex-col gap-5">
   
-      <h3 class="text-base font-bold text-[#111827]">Site Statistics</h3>
+      <h3 class="text-base font-bold text-[#111827]">{{ 'dashboardPage.siteStatisticsTitle' | translate }}</h3>
       <!-- Section: Site Statistics -->
       <div class="space-y-3 ">
-     
-        <app-site-stats-card [siteValue1]="{key :'Total Factories',value:totalSites}" [siteValue2]="{key:'Total Capacity',value:totalCapacity}"/>
+        <app-site-stats-card 
+            [siteValue1]="{key: ('dashboardPage.totalFactories' | translate), value:totalSites}" 
+            [siteValue2]="{key: ('dashboardPage.totalCapacity' | translate), value:totalCapacity}"/>
       </div>
     
-       <!-- Section: Worker Statistics -->
-       
-       <div class="space-y-2">
-        <app-site-stats-card [siteValue1]="{key :'Remote Workers',value:(remoteWorkersPercent+'%'),color:'text-[#2563EB]'}" 
-        [siteValue2]="{key:'On-site Workers',value:(onsiteWorkersPercent+'%'),color:'text-[#22C55E]'}"/>
-        
+      <!-- Section: Worker Statistics -->
+      <div class="space-y-2">
+        <app-site-stats-card 
+            [siteValue1]="{key: ('dashboardPage.remoteWorkers' | translate), value:(remoteWorkersPercent+'%'),color:'text-[#2563EB]'}" 
+            [siteValue2]="{key: ('dashboardPage.onsiteWorkers' | translate), value:(onsiteWorkersPercent+'%'),color:'text-[#22C55E]'}"/>
       </div>
     </div>
       <!-- Section: Highest Duration -->
       <div class="space-y-4 ">
         <div class="flex justify-between items-center">
-          <h3 class="text-base font-semibold text-gray-800">Highest Duration</h3>
-          <a href="#" class="text-sm text-primary hover:text-orange-600 ">Details</a>
+          <h3 class="text-base font-semibold text-gray-800">{{ 'dashboardPage.highestDurationTitle' | translate }}</h3>
+          <a href="#" class="text-sm text-primary hover:text-orange-600 ">{{ 'dashboardPage.detailsLink' | translate }}</a>
         </div>
         <div class="flex flex-col gap-y-2">
-        <p class="text-[12px] text-gray-500">{{ highestDurationProject }}</p>
-        <!-- PrimeNG Progress Bar -->
+        <!-- If highestDurationProject is 'N/A', you might want to translate 'N/A' -->
+        <p class="text-[12px] text-gray-500">{{ highestDurationProject === 'N/A' ? ('dashboardPage.notAvailable' | translate) : highestDurationProject }}</p>
         <p-progressBar
           [value]="highestDurationValue"
           [showValue]="false"
           color="var(--color-primary)"
           styleClass="!h-2 custom-progress-bar "
           >
-          <!-- styleClass used for custom styling -->
         </p-progressBar>
       </div>
       </div>
@@ -57,80 +55,57 @@
       <!-- Section: Largest Team -->
       <div class="space-y-5">
         <div class="flex justify-between items-center">
-          <h3 class="text-base font-semibold text-gray-800">Largest Team</h3>
-          <a href="#" class="text-sm text-primary hover:text-orange-600 ">Details</a>
+          <h3 class="text-base font-semibold text-gray-800">{{ 'dashboardPage.largestTeamTitle' | translate }}</h3>
+          <a href="#" class="text-sm text-primary hover:text-orange-600 ">{{ 'dashboardPage.detailsLink' | translate }}</a>
         </div>
         <div class="flex flex-col gap-y-2">
-        <p class="text-sm text-gray-500">{{ largestTeamProject }}</p>
-        <p class="text-xs text-gray-500">{{ largestTeamMembersCount }} members</p>
-        <!-- PrimeNG Avatar Group -->
+        <p class="text-sm text-gray-500">{{ largestTeamProject === 'N/A' ? ('dashboardPage.notAvailable' | translate) : largestTeamProject }}</p>
+        <p class="text-xs text-gray-500">{{ largestTeamMembersCount }} {{ 'dashboardPage.membersSuffix' | translate }}</p>
         <p-avatarGroup styleClass=" ml-2 ">
             <app-user-avatar *ngFor="let user of displayedProjectMembers" [userInitials]="user.toUpperCase()"/>
-          
             <app-user-avatar 
             *ngIf="overflowAvatarsCount > 0"
               [userInitials]="'+' + overflowAvatarsCount"/>
-            <!-- Overflow indicator -->
-    
         </p-avatarGroup>
       </div>
       </div>
-    
-    </aside>
-  
+  </aside>
+
     <!-- Calendar-->
-  
-    <div     [ngClass]="{
-        'flex-3/5':isPendingReports,
-        'flex-5/7':!isPendingReports
-      }"
-       class="p-6 md:p-8   space-y-6"> <!-- Add padding and vertical spacing -->
-  
+  <div [ngClass]="{ 'flex-3/5':isPendingReports, 'flex-5/7':!isPendingReports }" class="p-6 md:p-8   space-y-6">
       <!-- Header Section -->
       <div class="flex flex-col  md:flex-row justify-between  md:items-center space-y-4 md:space-y-0">
         <div class="space-y-1">
-          <h1 class="text-2xl  font-bold text-gray-900">RC Dashboard</h1>
-          <p class="text-sm text-gray-500">Welcome, {{ welcomeName }}</p>
+          <h1 class="text-2xl  font-bold text-gray-900">{{ 'dashboardPage.rcDashboardTitle' | translate }}</h1>
+          <p class="text-sm text-gray-500">{{ 'dashboardPage.welcomeMessage' | translate:{name: welcomeName} }}</p>
         </div>
         <div class="flex space-x-4">
           <p-button
-            label="View Calendar"
+            [label]="'dashboardPage.viewCalendarButton' | translate"
             icon="pi pi-calendar "
             (click)="navigateToCalendar()"
-            
             styleClass=" !h-9  gray-btn !bg-[#F3F4F6] !border-0 !text-sm !px-5 "
             [style]="{'color': '#374151','text-color':'red !important'}">
-            <!-- Using inline style for specific gray button look if needed -->
           </p-button>
-  
         </div>
       </div>
     
       <!-- Table Section -->
-       <div class="space-y-2">
-       <div class="flex flex-row gap-x-7 justify-end">
+      <div class="space-y-2">
+      <div class="flex flex-row gap-x-7 justify-end">
         <span class="flex  justify-center items-center">
-          <span class="h-2 w-2 bg-[#F97316] rounded-full mr-4"
-               >
-          </span>
-          <span class="text-sm text-gray-700">On-site</span>
-    
+          <span class="h-2 w-2 bg-[#F97316] rounded-full mr-4"></span>
+          <span class="text-sm text-gray-700">{{ 'dashboardPage.legend.onsite' | translate }}</span>
         </span>
         <span class="flex  justify-center items-center">
-          <span class="h-2 w-2 bg-[#3B82F6] rounded-full mr-4"
-               >
-          </span>
-          <span class="text-sm text-gray-700">Remote </span>
-    
+          <span class="h-2 w-2 bg-[#3B82F6] rounded-full mr-4"></span>
+          <span class="text-sm text-gray-700">{{ 'dashboardPage.legend.remote' | translate }}</span>
         </span>
         <span class="flex  justify-center items-center">
-          <span class="h-2 w-2 bg-gray-400 rounded-full mr-4"
-               >
-          </span>
-          <span class="text-sm text-gray-700">Off</span>
-    
+          <span class="h-2 w-2 bg-gray-400 rounded-full mr-4"></span>
+          <span class="text-sm text-gray-700">{{ 'dashboardPage.legend.off' | translate }}</span>
         </span>
-       </div>
+      </div>
       <div class="bg-white border-1 border-gray-200 rounded-lg overflow-hidden">
         <p-table
           [value]="tableData"
@@ -138,105 +113,74 @@
           [rows]="10"
           [totalRecords]="totalRecords"
           [showCurrentPageReport]="true"
-          currentPageReportTemplate="Showing {first}-{last} of {totalRecords} entries"
+          [currentPageReportTemplate]="'dashboardPage.table.paginationReport' | translate"
           [rowsPerPageOptions]="[10, 25, 50]"
           styleClass="p-datatable-sm custom-table"
           responsiveLayout="scroll"
           (onPage)="loadData($event)" [lazy]="true">
-           <!-- Using lazy loading approach -->
     
           <ng-template pTemplate="header">
             <tr >
-              <th class="text-left text-xs font-semibold text-gray-500  tracking-wider py-3 px-4 border-b border-gray-200 ">Name</th>
-            
-              <!-- Dynamic Date Columns -->
+              <th class="text-left text-xs font-semibold text-gray-500  tracking-wider py-3 px-4 border-b border-gray-200 ">{{ 'dashboardPage.table.headerName' | translate }}</th>
               <th *ngFor="let date of dateColumns" class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider py-3 px-4 border-b border-gray-200 bg-gray-50">
                 {{ date }}
               </th>
             </tr>
           </ng-template>
-    <!--testing new branch -->
           <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
             <tr class="border-b border-gray-200">
               <td class="py-3 px-4 text-sm text-gray-800 font-medium whitespace-nowrap">
-                <!-- Special styling for Hassan Benjelloun -->
                 <span >{{rowData.user.firstName}} {{rowData.user.lastName}}</span>
               </td>
-         
-              <!-- Dynamic Status Columns -->
               <td *ngFor="let date of dateColumns;" class="py-3 px-4 text-sm whitespace-nowrap">
-                 <ng-container *ngIf="getStatus(rowData.rotation , date) as status">
-                     <span class="flex justify-center items-center">
-                       <span class="h-2 w-6 bg-gray-400 rounded-full mr-4"
-                             [ngClass]="{
-                               'bg-[#3B82F6]': status === 'remote',
-                               'bg-[#F97316]': status === 'on-site',
-                               'bg-gray-400': status === 'off'
-                             }">
-                       </span>
-                 
-                     </span>
-                 </ng-container>
+                <ng-container *ngIf="getStatus(rowData.rotation , date) as status">
+                    <span class="flex justify-center items-center">
+                      <span class="h-2 w-6 bg-gray-400 rounded-full mr-4"
+                            [ngClass]="{
+                              'bg-[#3B82F6]': status === 'remote',
+                              'bg-[#F97316]': status === 'on-site',
+                              'bg-gray-400': status === 'off'
+                            }">
+                      </span>
+                    </span>
+                </ng-container>
               </td>
             </tr>
           </ng-template>
     
-           <ng-template pTemplate="emptymessage">
-               <tr>
-                   <td [attr.colspan]="2 + dateColumns.length" class="text-center py-4 text-gray-500">
-                       No records found.
-                   </td>
-               </tr>
-           </ng-template>
-    
-           <ng-template pTemplate="paginatorleft">
-               <!-- Custom element to show current page info if needed -->
-               <!-- The built-in currentPageReportTemplate is usually sufficient -->
-           </ng-template>
-    
-           <ng-template pTemplate="paginatorright">
-               <!-- Custom elements on the right side of the paginator if needed -->
-           </ng-template>
-    
+          <ng-template pTemplate="emptymessage">
+              <tr>
+                  <td [attr.colspan]="2 + dateColumns.length" class="text-center py-4 text-gray-500">
+                      {{ 'dashboardPage.table.emptyMessage' | translate }}
+                  </td>
+              </tr>
+          </ng-template>
         </p-table>
       </div>
     </div>
-    
-    
-  
-   
-    </div>
-     <!-- Recent reports section-->
-     <aside *ngIf="isPendingReports" class=" bg-white p-6 space-y-6 border-l border-gray-200 min-h-screen"
+  </div>
+    <!-- Recent reports section-->
+    <aside *ngIf="isPendingReports" class=" bg-white p-6 space-y-6 border-l border-gray-200 min-h-screen"
       [ngClass]="{
         'flex-1/5':isPendingReports,
         'flex-1/7':!isPendingReports
-      }"
-      >
-      <!-- Section Header -->
+      }">
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold text-gray-900">Pending Requests</h2>
-        <a routerLink="/RemoteSync/RC/Report" href="#" class="text-sm text-primary hover:text-orange-600 ">View All</a>
+        <h2 class="text-lg font-semibold text-gray-900">{{ 'dashboardPage.pendingRequests.title' | translate }}</h2>
+        <a routerLink="/RemoteSync/RC/Report" href="#" class="text-sm text-primary hover:text-orange-600 ">{{ 'dashboardPage.pendingRequests.viewAllLink' | translate }}</a>
       </div>
     
-      <!-- Requests List -->
       <div class="space-y-4">
         <div *ngFor="let request of pendingRequests; "
-             class="bg-white border border-gray-200 rounded-lg p-4 ">
-    
-          <!-- Card Header: Name and Badge -->
+            class="bg-white border border-gray-200 rounded-lg p-4 ">
           <div class="flex justify-between items-start mb-2">
             <h3 class="text-base font-semibold text-gray-800">{{ request.createdBy.firstName+" "+request.createdBy.lastName }}</h3>
-            <span class="inline-block px-3 py-1 rounded-full bg-orange-100 text-orange-700/80 text-xs font-medium"
-                >
-             {{request.status}}
+            <span class="inline-block px-3 py-1 rounded-full bg-orange-100 text-orange-700/80 text-xs font-medium">
+            {{request.status}} <!-- Assuming status is dynamic and might already be translated or an enum key -->
             </span>
           </div>
-    
-          <!-- Card Body: Date and Reason -->
           <div class="space-y-1">
             <div class="flex items-center text-sm text-gray-500">
-              <!-- Clock Icon (SVG Example) -->
               <svg class="h-4 w-4 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
               </svg>
@@ -245,17 +189,12 @@
             <p class="text-sm text-gray-600">{{ request.title }}</p>
             <p class="text-sm text-gray-500">{{ request.reason }}</p>
           </div>
-    
         </div>
       </div>
     
-      <!-- Placeholder if no requests -->
       <div *ngIf="!pendingRequests || pendingRequests.length === 0" class="text-center text-gray-500 text-sm mt-6">
-        No pending requests.
+        {{ 'dashboardPage.pendingRequests.noRequests' | translate }}
       </div>
-    
     </aside>
-  </div>
-  
-  
+</div>
 </app-default-layout>

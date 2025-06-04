@@ -38,6 +38,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -45,6 +46,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +66,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     private final SubFactoryDomainRepository subFactoryDomainRepository;
     private final AssignedRotationMapper assignedRotationMapper;
     private final ClientMapper clientMapper;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public List<ClientDTO> getAssociateClients(GlobalDTO globalDTO) {
@@ -513,7 +516,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 // Log the error and continue with other associates
             }
         }
-
+        simpMessagingTemplate.convertAndSend("/topic/rotation","changed");
         return rcAssignRotationUserDTO;
     }
     @Override
@@ -592,6 +595,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
             LocalDate startDate = rotation.getStartDate();
             LocalDate endDate = rotation.getEndDate();
 
+            LocalDate startOfWeekDate=startDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
             int cycleLengthWeeks = rotation.getCycleLengthWeeks();
             int remoteWeeksPerCycle = rotation.getRemoteWeeksPerCycle();
 
@@ -615,7 +619,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 } else if (overrideOnsiteDates.contains(current)) {
                     onSiteDates.add(current);
                 } else {
-                    long daysSinceStart = ChronoUnit.DAYS.between(startDate, current);
+                    long daysSinceStart = ChronoUnit.DAYS.between(startOfWeekDate, current);
                     int weeksSinceStart = (int) (daysSinceStart / 7);
                     int weekInCycle = weeksSinceStart % cycleLengthWeeks;
 
@@ -659,7 +663,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
             // Join with user
             Join<AssignedRotation, User> userJoin = root.join("user");
             Join<AssignedRotation, Rotation> rotationJoin = root.join("rotation");
-            Join<AssignedRotation, Project> projectJoin = root.join("project");
+            Join<AssignedRotation, Project> projectJoin = root.join("project",JoinType.LEFT);
 
             if (pagedRotationsSearchDTO.label() != null && !pagedRotationsSearchDTO.label().isBlank()) {
                 Expression<String> firstName = cb.lower(userJoin.get("firstName"));
@@ -760,6 +764,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     @Override
     public Boolean updateRcAssignedRotationAssociate(GlobalDTO globalDTO, RcUpdateAssociateRotationDTO rcUpdateAssociateRotationDTO) {
         // Validate authenticated user
+
         User authenticatedRc = userDomainRepository.findById(globalDTO.userId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -849,7 +854,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 .createdAt(LocalDateTime.now())
                 .createdBy(authenticatedRc)
                 .build());
-
+        simpMessagingTemplate.convertAndSend("/topic/rotation",Map.of("code","ROTATION_UPDATED"));
         return true;
     }
 

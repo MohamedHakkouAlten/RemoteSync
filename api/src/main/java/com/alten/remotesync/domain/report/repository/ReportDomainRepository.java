@@ -21,7 +21,7 @@ public interface ReportDomainRepository extends JpaRepository<Report, UUID>, Jpa
     Optional<Page<Report>> findAllBy(Pageable pageable);
     Integer countAllByCreatedBy_UserId(UUID userId);
     Optional<Page<Report>> findAllByStatus(Pageable pageable,ReportStatus status);
-    Optional<Page<Report>> findAllByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Optional<Page<Report>> findAllByCreatedAtBetween( Pageable pageable,LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("""
             SELECT r

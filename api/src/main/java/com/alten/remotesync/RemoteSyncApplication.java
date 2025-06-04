@@ -55,7 +55,7 @@ public class RemoteSyncApplication {
         SpringApplication.run(RemoteSyncApplication.class, args);
     }
 
-    @Bean
+    //@Bean
     public CommandLineRunner init(
             AssignedRotationDomainRepository assignedRotationRepository,
             ClientDomainRepository clientRepository,
@@ -350,7 +350,7 @@ public class RemoteSyncApplication {
 
             Project project3 = Project.builder()
                     .label("Online Patient Management Portal")
-                    .status(ProjectStatus.PENDING)
+                    .status(ProjectStatus.ACTIVE)
                     .startDate(LocalDate.now())
                     .deadLine(LocalDate.now().plusDays(60)) // 60 days from now
                     .isDeleted(false)
@@ -395,7 +395,7 @@ public class RemoteSyncApplication {
                     
             Project project8 = Project.builder()
                     .label("Manufacturing Supply Chain Management System")
-                    .status(ProjectStatus.PENDING)
+                    .status(ProjectStatus.INACTIVE)
                     .startDate(LocalDate.now())
                     .deadLine(LocalDate.now().plusDays(150)) // 150 days from now
                     .isDeleted(false)
@@ -830,13 +830,13 @@ public class RemoteSyncApplication {
             project1.setStatus(ProjectStatus.ACTIVE); // Only this one will be active
             project2.setStatus(ProjectStatus.ACTIVE);
             project3.setStatus(ProjectStatus.ACTIVE);
-            project4.setStatus(ProjectStatus.PENDING);
+            project4.setStatus(ProjectStatus.INACTIVE);
             project5.setStatus(ProjectStatus.ACTIVE);
             project6.setStatus(ProjectStatus.INACTIVE);
-            project7.setStatus(ProjectStatus.PENDING);
+            project7.setStatus(ProjectStatus.CANCELLED);
             project8.setStatus(ProjectStatus.ACTIVE);
             project9.setStatus(ProjectStatus.ACTIVE);
-            project10.setStatus(ProjectStatus.PENDING);
+            project10.setStatus(ProjectStatus.CANCELLED);
             
             // Save updated project statuses
             projectRepository.saveAll(List.of(project1, project2, project4, project3, project5, project6, project7, project8, project9, project10));

@@ -1,78 +1,153 @@
 {
   "navigation": {
-    "dashboard": "Panel de control",
+    "dashboard": "Panel",
     "project": "Proyecto",
     "report": "Informe",
     "calendar": "Calendario",
     "notification": "Notificación",
     "notifications": "Notificaciones",
     "settings": "Configuración",
-    "signOut": "Cerrar sesión",
+    "signOut": "Cerrar Sesión",
     "profile": "Perfil"
   },
   "login": {
     "welcomeBack": "Bienvenido de nuevo",
-    "signInToContinue": "Inicie sesión para continuar en RemoteSync",
+    "signInToContinue": "Inicia sesión para continuar en RemoteSync",
     "usernameOrEmail": "Nombre de usuario o Email",
-    "enterUsernameOrEmail": "Ingrese su nombre de usuario o email",
+    "enterUsernameOrEmail": "Ingresa tu nombre de usuario o email",
     "password": "Contraseña",
-    "enterPassword": "Ingrese su contraseña",
-    "signIn": "Iniciar sesión",
-    "forgotPassword": "¿Olvidó su contraseña?",
-    "loginSuccessful": "Inicio de sesión exitoso",
+    "enterPassword": "Ingresa tu contraseña",
+    "signIn": "Iniciar Sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "loginSuccessful": "Inicio de Sesión Exitoso",
     "welcomeBackUser": "¡Bienvenido de nuevo, {{name}}!",
-    "loginFailed": "Error de inicio de sesión",
-    "invalidCredentials": "Credenciales inválidas. Por favor, inténtelo de nuevo.",
-    "enterValidCredentials": "Por favor, ingrese un nombre de usuario o email y contraseña válidos."
+    "loginFailed": "Error de Inicio de Sesión",
+    "invalidCredentials": "Credenciales inválidas. Por favor, inténtalo de nuevo.",
+    "enterValidCredentials": "Por favor, ingrese un nombre de usuario o correo electrónico y una contraseña válidos."
   },
   "forgotPassword": {
-    "title": "¿Olvidó su contraseña?",
-    "subtitle": "Ingrese su dirección de correo electrónico y le enviaremos instrucciones para restablecer su contraseña",
+    "title": "¿Olvidaste tu Contraseña?",
+    "subtitle": "Ingresa tu dirección de correo electrónico y te enviaremos instrucciones para restablecer tu contraseña",
     "emailAddress": "Dirección de correo electrónico",
-    "enterEmail": "Ingrese su correo electrónico",
-    "sendResetLink": "Enviar enlace de restablecimiento",
+    "enterEmail": "Ingresa tu correo electrónico",
+    "sendResetLink": "Enviar Enlace de Restablecimiento",
     "sending": "Enviando...",
-    "backToLogin": "Volver al inicio de sesión",
-    "resetLinkSent": "Enlace de restablecimiento enviado",
-    "checkYourEmail": "Por favor, revise su correo electrónico para obtener instrucciones para restablecer su contraseña.",
-    "resetLinkFailed": "Error al enviar el enlace",
-    "emailNotFound": "Correo electrónico no encontrado. Por favor, inténtelo de nuevo.",
+    "backToLogin": "Volver al Inicio de Sesión",
+    "resetLinkSent": "Enlace de Restablecimiento Enviado",
+    "checkYourEmail": "Por favor, revisa tu correo electrónico para ver las instrucciones para restablecer tu contraseña.",
+    "resetLinkFailed": "Error al Enviar el Enlace de Restablecimiento",
+    "emailNotFound": "Correo electrónico no encontrado. Por favor, inténtalo de nuevo.",
     "enterValidEmail": "Por favor, ingrese una dirección de correo electrónico válida."
   },
   "resetPassword": {
-    "title": "Establezca su nueva contraseña",
-    "subtitle": "Por favor, ingrese su nueva contraseña a continuación y confírmela.",
-    "newPassword": "Nueva contraseña",
-    "enterNewPassword": "Ingrese nueva contraseña",
-    "confirmPassword": "Confirmar nueva contraseña",
-    "confirmNewPassword": "Confirme nueva contraseña",
+    "title": "Establece Tu Nueva Contraseña",
+    "subtitle": "Por favor, ingresa tu nueva contraseña a continuación y confírmala.",
+    "newPassword": "Nueva Contraseña",
+    "enterNewPassword": "Ingresa la nueva contraseña",
+    "confirmPassword": "Confirmar Nueva Contraseña",
+    "confirmNewPassword": "Confirma la nueva contraseña",
     "passwordRequirements": "La contraseña debe tener al menos 8 caracteres e incluir letras mayúsculas, minúsculas y números.",
     "passwordsMismatch": "Las contraseñas no coinciden.",
-    "updatePassword": "Actualizar contraseña",
+    "updatePassword": "Actualizar Contraseña",
     "updating": "Actualizando...",
-    "passwordUpdated": "Contraseña actualizada",
-    "passwordUpdateSuccess": "¡Su contraseña ha sido actualizada con éxito!",
-    "passwordUpdateFailed": "Error al restablecer la contraseña",
-    "invalidToken": "Token de restablecimiento inválido. Por favor, solicite un nuevo enlace de restablecimiento de contraseña.",
-    "invalidLink": "Enlace inválido",
+    "passwordUpdated": "Contraseña Actualizada",
+    "passwordUpdateSuccess": "¡Tu contraseña ha sido actualizada exitosamente!",
+    "passwordUpdateFailed": "Error al Restablecer la Contraseña",
+    "invalidToken": "Token de restablecimiento inválido. Por favor, solicita un nuevo enlace de restablecimiento de contraseña.",
+    "invalidLink": "Enlace Inválido",
     "linkExpired": "El enlace de restablecimiento de contraseña es inválido o ha expirado.",
-    "errorUpdatingPassword": "Error al actualizar la contraseña",
-    "correctErrors": "Por favor, corrija los errores a continuación.",
-    "fillPasswordFields": "Por favor, complete correctamente ambos campos de contraseña."
+    "errorUpdatingPassword": "Error al Actualizar la Contraseña",
+    "correctErrors": "Por favor, corrige los errores a continuación.",
+    "fillPasswordFields": "Por favor, complete ambos campos de contraseña correctamente."
   },
   "branding": {
-    "trackPresence": "Rastree la presencia de su equipo",
-    "onSiteOrRemote": "¿En sitio o remoto?",
-    "realTimeVisibility": "Visibilidad en tiempo real de las rotaciones de consultores",
+    "trackPresence": "Rastrea la Presencia de tu Equipo",
+    "onSiteOrRemote": "¿En el sitio o Remoto?",
+    "realTimeVisibility": "Visibilidad en tiempo real de las rotaciones de los consultores",
     "stats": {
       "clients": "500+ Clientes",
       "consultants": "10,000+ Consultores",
-      "planning": "98% Planificación mejorada"
+      "planning": "98% Mejora en la Planificación"
     }
   },
   "languages": {
     "english": "Inglés",
     "french": "Francés",
     "spanish": "Español"
+  },
+  "dashboardPage": {
+    "activeProjects": "Proyectos Activos",
+    "completedProjects": "Proyectos Completados",
+    "siteStatisticsTitle": "Estadísticas del Sitio",
+    "totalFactories": "Fábricas Totales",
+    "totalCapacity": "Capacidad Total",
+    "remoteWorkers": "Trabajadores Remotos",
+    "onsiteWorkers": "Trabajadores en Sitio",
+    "highestDurationTitle": "Mayor Duración",
+    "detailsLink": "Detalles",
+    "notAvailable": "N/D",
+    "largestTeamTitle": "Equipo Más Grande",
+    "membersSuffix": "miembros",
+    "rcDashboardTitle": "Panel de RC",
+    "welcomeMessage": "Bienvenido, {{name}}",
+    "viewCalendarButton": "Ver Calendario",
+    "legend": {
+      "onsite": "En sitio",
+      "remote": "Remoto",
+      "off": "Ausente"
+    },
+    "table": {
+      "headerName": "Nombre",
+      "paginationReport": "Mostrando {first}-{last} de {totalRecords} entradas",
+      "emptyMessage": "No se encontraron registros."
+    },
+    "pendingRequests": {
+      "title": "Solicitudes Pendientes",
+      "viewAllLink": "Ver Todo",
+      "noRequests": "No hay solicitudes pendientes."
+    }
+  },
+   "projectPage": {
+    "title": "Proyectos",
+    "subtitle": "Resumen de todos los proyectos activos, próximos y completados",
+    "summaryStats": {
+      "totalProjects": "Proyectos Totales:",
+      "completed": "Completados:",
+      "active": "Activos:",
+      "inactive": "Inactivos:",
+      "cancelled": "Cancelados:"
+    },
+    "toolbar": {
+      "searchProjectsPlaceholder": "Buscar proyectos...",
+      "searchClientPlaceholder": "Buscar Cliente...",
+      "newProjectButton": "Nuevo Proyecto",
+      "clearSearchTooltip": "Limpiar búsqueda"
+    },
+    "table": {
+      "header": {
+        "label": "Etiqueta",
+        "projectName": "Nombre del Proyecto",
+        "client": "Cliente",
+        "duration": "Duración",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "actionsTooltip": {
+        "edit": "Editar",
+        "view": "Ver",
+        "delete": "Eliminar"
+      },
+      "paginationReport": "Mostrando {first} a {last} de {totalRecords} entradas",
+      "emptyMessage": "No se encontraron proyectos que coincidan con sus criterios de búsqueda.",
+      "loadingMessage": "Cargando datos de proyectos..."
+    },
+    "statusTypes": {
+      "active": "Activo",
+      "completed": "Completado",
+      "inactive": "Inactivo",
+      "cancelled": "Cancelado",
+      "upcoming": "Próximo"
+    }
   }
+
 }

@@ -11,4 +11,12 @@ export interface DashBoardDataDTO {
         largestMembersProject :LargestProject
         pendingReports:RCReport[]
 }
+export interface RCProjectCountsDTO {
+        activeProjects: 3,
+        totalProjects: 6,
+        completedProjects: 1,
+        cancelledProjects: 1,
+        inActiveProjects : 1,
+        projects :Project[]
+}
 

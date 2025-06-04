@@ -8,15 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record ProjectLargestMembersDTO(
-        UUID projectId,
-
-        String label,
-        String titre,
-
-        ProjectStatus status,
-
-        LocalDate deadLine,
-        LocalDate startDate,
+        ProjectDTO projectDTO,
         List<String> usersList,
         Long usersCount
 ) {

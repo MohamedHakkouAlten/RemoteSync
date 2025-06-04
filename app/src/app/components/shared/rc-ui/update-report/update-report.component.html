@@ -8,15 +8,20 @@
 
 
         <!-- Dialog Content Area -->
-        <div class="pt-0 pb-5 px-5 space-y-6"> <!-- Adjusted padding -->
+        <div class="pt-0 pb-5 px-5 space-y-5"> <!-- Adjusted padding -->
             <!-- Report Header inside content -->
             <div class="flex items-center gap-4">
-                <app-user-avatar [size]="50" [textSize]="17" [userInitials]="userUtils.getUserInitials(report.createdBy)" />
+                <app-user-avatar  [userInitials]="userUtils.getUserInitials(report.createdBy)" />
                 <div>
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-0 leading-tight">{{ report!.title }}</h2>
-                    <p class="text-sm text-gray-500"></p>
+                    
+                <h1 >{{report.createdBy.firstName+" "+report.createdBy.lastName}}</h1>
                 </div>
             </div>
+                <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">TITLE</label>
+                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-0 leading-tight">{{ report!.title }}</h2>
+            </div>
+           
 
             <!-- Date Section -->
             <div>

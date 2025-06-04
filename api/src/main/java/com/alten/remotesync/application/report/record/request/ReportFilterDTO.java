@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
+public record ReportFilterDTO(
 
-public record RCReportByDateRangeDTO(
-        @NotNull(message = "Start date cannot be null")
+        String name,
+        ReportStatus status,
+
         LocalDate startDate,
 
-        @NotNull(message = "End date cannot be null")
+
         LocalDate endDate,
 
         @NotNull(message = "Page number cannot be null")

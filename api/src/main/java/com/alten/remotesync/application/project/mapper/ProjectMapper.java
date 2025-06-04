@@ -1,5 +1,6 @@
 package com.alten.remotesync.application.project.mapper;
 
+import com.alten.remotesync.application.project.record.request.AddProjectDTO;
 import com.alten.remotesync.application.project.record.request.UpdateProjectDTO;
 import com.alten.remotesync.application.project.record.response.*;
 import com.alten.remotesync.domain.project.model.Project;
@@ -13,7 +14,7 @@ public interface ProjectMapper {
     RcProjectsCountDTO toProjectsCount(Long projectsCount);
     RcCompletedProjectsCountDTO toRcCompletedProjectsCountDTO(Long completedProjectsCount);
     RcActiveProjectsCountDTO toRcActiveProjectsCountDto(Long activeProjectsCount);
-
+    Project toProject(AddProjectDTO projectDTO);
     Project toProject(UpdateProjectDTO updateProjectDTO);
     ProjectDropDownDTO toProjectDropDownDTO(ProjectProjection projectProjection);
     ProjectDropDownDTO toProjectDropDownDTO(Project project);

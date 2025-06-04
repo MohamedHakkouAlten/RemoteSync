@@ -11,6 +11,7 @@ import { DashBoardDataDTO } from '../../../dto/rc/dashboardDataDTO';
 import { TranslateService } from '@ngx-translate/core';
 import { RcService, RcDashboardResponse, ReportDTO } from '../../../services/rc.service';
 import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +27,7 @@ export class DashboardComponent implements OnInit {
   }
 
   userUtils = UserUtils;
-
+currentLanguage: SupportedLanguage = 'en';
   //left panel stats 
   activeProjects: number = 0;
   completedProjects: number = 0;
@@ -66,6 +67,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private translate: TranslateService,
     private authService: AuthFacadeService,
+    private languageService:LanguageService,
     private router: Router,
     private rcService: RcService,
     private cd: ChangeDetectorRef) {
@@ -73,7 +75,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+  this.languageService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
+    });
     // Fetch RC dashboard data from the new endpoint
     this.rcService.getRcDashboard().subscribe({
       next: (res: ResponseWrapperDto<RcDashboardResponse>) => {
@@ -133,8 +137,11 @@ export class DashboardComponent implements OnInit {
 
           // Set largest team project data if available
           if (res.data.largestTeamProject) {
-            this.largestTeamProject = res.data.largestTeamProject.label || 'N/A';
-            this.largestTeamMembersCount = 5; // Placeholder value since we don't have this in the API response
+            this.largestTeamProject = res.data.largestTeamProject.projectDTO.label || 'N/A';
+            this.displayedProjectMembers=res.data.largestTeamProject.usersList
+            this.largestTeamMembersCount = res.data.largestTeamProject.usersCount;
+            this.overflowAvatarsCount=this.largestTeamMembersCount-5
+            // Placeholder value since we don't have this in the API response
           } else {
             this.largestTeamProject = 'N/A';
             this.largestTeamMembersCount = 0;

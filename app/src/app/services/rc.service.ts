@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
-import { map } from 'rxjs/operators';
+import { PagedProject, PagedReports, ResponseWrapperDto } from '../dto/response-wrapper.dto';
+import { catchError, map } from 'rxjs/operators';
 import { ReportStatus } from '../enums/report-status.enum';
+import { ReportFilter } from '../components/rc/report/report.component';
+import { projectFilter } from '../components/rc/project/project.component';
+import { RCProjectCountsDTO } from '../dto/rc/dashboardDataDTO';
+import { Project } from '../models/project.model';
+
 
 /**
  * Generic ListItem interface for dropdowns and selections
@@ -51,7 +56,11 @@ export interface ProjectDTO {
     ice: string;
   };
 }
-
+export interface LargestTeamProjectDTO{
+  projectDTO:ProjectDTO,
+  usersList:string[],
+  usersCount:number
+}
 export interface ReportDTO {
   reportId: string;
   title: string;
@@ -148,6 +157,10 @@ export interface RcRotationsResponse {
   currentPage: number;
   pageSize: number;
 }
+export interface ClientListItem{
+  clientId:string,
+  label:string
+}
 
 /**
  * Report response with pagination
@@ -221,7 +234,7 @@ export interface CustomDate {
 export interface RcAssignRotationUser {
   associates: string[]; // List of associate UUIDs
   customDates?: CustomDate[]; // Optional list of custom dates with status
-  projectId: string;
+  projectId?: string;
   startDate: string; // ISO format date string YYYY-MM-DD
   endDate: string; // ISO format date string YYYY-MM-DD
   remoteWeeksPerCycle: number; // For automatic rotation pattern
@@ -235,7 +248,7 @@ export interface RcDashboardResponse {
   capacityCount: number;
   countCurrentAssociateOnSite: number;
   longestDurationProject: ProjectDTO;
-  largestTeamProject: ProjectDTO;
+  largestTeamProject: LargestTeamProjectDTO;
   pendingReports: PagedReportDTO;
   recentAssociateRotations: RcRecentAssociateRotations[];
 }
@@ -245,7 +258,9 @@ export interface RcDashboardResponse {
 })
 export class RcService {
   private apiUrl = `${environment.apiUrl}/user/rc`;
-
+  private readonly reportApiUrl =  this.apiUrl + '/reports'
+  private readonly projectApiUrl = this.apiUrl + '/projects'
+  private readonly clientApiUrl =  this.apiUrl + '/clients'
   constructor(private http: HttpClient) { }
 
   /**
@@ -364,8 +379,37 @@ export class RcService {
   /**
    * Update report status
    */
-  updateReport(reportId: string, status: ReportStatus): Observable<any> {
-    return this.http.put(`${this.apiUrl}/reports/${reportId}/status`, { status });
+ getFilteredReports(filter:ReportFilter): Observable<PagedReports> {
+    const url = this.reportApiUrl + "/filter"
+    const params = new HttpParams()
+      .set("pageNumber",filter.pageNumber)
+      .set("pageSize", filter.pageSize)
+      .set("name",filter.name)
+      .set("startDate",filter.startDate)
+      .set("endDate",filter.endDate)
+      .set("status",filter.status)
+    return this.http.get<ResponseWrapperDto<PagedReports>>(url, { params }).pipe(
+      map((response) => response.data as PagedReports)
+    )
+  }
+  
+  updateReport(reportId:string,status:ReportStatus):Observable<boolean>{
+     const url = this.reportApiUrl+'/update';
+    const requestBody = {
+      reportId: reportId,
+      status: status
+    };
+    return this.http.put<ResponseWrapperDto<string>>(url,requestBody).pipe(
+      map((response)=>response.status=='success'?true:false),
+      catchError((err)=>{
+        console.log(err)
+        if(err instanceof HttpErrorResponse){
+      return  throwError(()=>new Error(err.error.message))
+      }
+      return throwError(()=>new Error(err))
+      })
+    )
+  
   }
   
   /**
@@ -373,7 +417,7 @@ export class RcService {
    * @returns Observable with list of all available projects
    */
   getRcProjects(): Observable<ResponseWrapperDto<ProjectDropDownDTO[]>> {
-    return this.http.get<ResponseWrapperDto<ProjectDropDownDTO[]>>(`${this.apiUrl}/projects`)
+    return this.http.get<ResponseWrapperDto<ProjectDropDownDTO[]>>(`${this.apiUrl}/projects/dropDown`)
       .pipe(
         map(response => {
           // Handle any data transformation if needed
@@ -387,25 +431,94 @@ export class RcService {
    * @param searchCriteria - Optional search criteria including fullName filter
    * @returns Observable with list of associates
    */
-  getRcAssociates(searchCriteria?: RcSearchAssociateDTO): Observable<ResponseWrapperDto<RcAssociateDTO[]>> {
+  getRcAssociates(fullName:string=''): Observable<ResponseWrapperDto<RcAssociateDTO[]>> {
     // Create empty HttpParams object
-    let params = new HttpParams();
+    let params = new HttpParams()
+    .set('name',fullName)
     
-    // Only add parameters that have actual values (not undefined, null, or empty string)
-    if (searchCriteria) {
-      // Filter out undefined, null, and empty values
-      const cleanedParams = Object.fromEntries(
-        Object.entries(searchCriteria)
-          .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-      );
-      
-      // Add filtered parameters to the HttpParams object
-      Object.entries(cleanedParams).forEach(([key, value]) => {
-        params = params.append(key, String(value));
-      });
-    }
+   
+    
     
     // Make the HTTP request with the filtered parameters
-    return this.http.get<ResponseWrapperDto<RcAssociateDTO[]>>(`${this.apiUrl}/associates`, { params });
+    return this.http.get<ResponseWrapperDto<RcAssociateDTO[]>>(`${this.apiUrl}/users/byName`, { params });
+  }
+
+
+  //Projects 
+   getInitialProject(): Observable<RCProjectCountsDTO> {
+    const url = this.projectApiUrl + "/initialize"
+    return this.http.get<ResponseWrapperDto<RCProjectCountsDTO>>(url).pipe(
+      map((response) => response.data as RCProjectCountsDTO)
+    )
+  }
+
+  getFilteredProjects(filter:projectFilter): Observable<PagedProject> {
+    const url = this.projectApiUrl + "/filter"
+    const params = new HttpParams()
+      .set("pageNumber",filter.pageNumber)
+      .set("pageSize", filter.pageSize)
+      .set("sort",filter.sort)
+      .set("sortType",filter.sortType)
+      .set("value",filter.value!)
+      .set("filter",filter.filter!)
+    return this.http.get<ResponseWrapperDto<PagedProject>>(url, { params }).pipe(
+      map((response) => response.data as PagedProject)
+    )
+  }
+    getClientListByLabel(label: string = ''): Observable<ClientListItem[]> {
+    const url = this.clientApiUrl + '/byLabel'
+    const params = new HttpParams().
+      set('label', label);
+
+    return this.http.get<ResponseWrapperDto<ClientListItem[]>>(url, { params }).pipe(
+      map((response) => {
+        return response.data as ClientListItem[]
+
+      })
+    )
+
+
+  }
+    updateProject(project:Project): Observable<Project> {
+    const url = this.projectApiUrl + '/update'
+   
+
+    return this.http.put<ResponseWrapperDto<Project>>(url,  project).pipe(
+      map((response) => {
+        return response.data as Project
+
+      })
+    )
+
+
+  }
+      createProject(project:Project): Observable<Project> {
+    const url = this.projectApiUrl + '/create'
+   
+
+    return this.http.post<ResponseWrapperDto<Project>>(url,  project).pipe(
+      map((response) => {
+        return response.data as Project
+
+      })
+    )
+
+
+  }
+        deleteProject(projectId:string): Observable<Project> {
+    const url = this.projectApiUrl + '/delete'
+   
+    const params =new HttpParams()
+    .set("projectId",projectId)
+ 
+
+    return this.http.delete<ResponseWrapperDto<Project>>(url,{params} ).pipe(
+      map((response) => {
+        return response.data as Project
+
+      })
+    )
+
+
   }
 }

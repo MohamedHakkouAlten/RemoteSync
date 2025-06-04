@@ -1,78 +1,153 @@
 {
   "navigation": {
-    "dashboard": "Tableau de bord",
+    "dashboard": "Tableau de Bord",
     "project": "Projet",
     "report": "Rapport",
     "calendar": "Calendrier",
     "notification": "Notification",
     "notifications": "Notifications",
     "settings": "Paramètres",
-    "signOut": "Déconnexion",
+    "signOut": "Se Déconnecter",
     "profile": "Profil"
   },
   "login": {
-    "welcomeBack": "Bienvenue",
-    "signInToContinue": "Connectez-vous pour continuer sur RemoteSync",
+    "welcomeBack": "Content de vous revoir",
+    "signInToContinue": "Connectez-vous pour continuer vers RemoteSync",
     "usernameOrEmail": "Nom d'utilisateur ou Email",
     "enterUsernameOrEmail": "Entrez votre nom d'utilisateur ou email",
     "password": "Mot de passe",
     "enterPassword": "Entrez votre mot de passe",
-    "signIn": "Se connecter",
-    "forgotPassword": "Mot de passe oublié?",
-    "loginSuccessful": "Connexion réussie",
-    "welcomeBackUser": "Bienvenue, {{name}}!",
-    "loginFailed": "Échec de connexion",
+    "signIn": "Se Connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "loginSuccessful": "Connexion Réussie",
+    "welcomeBackUser": "Content de vous revoir, {{name}} !",
+    "loginFailed": "Échec de la Connexion",
     "invalidCredentials": "Identifiants invalides. Veuillez réessayer.",
-    "enterValidCredentials": "Veuillez entrer un nom d'utilisateur ou email et mot de passe valides."
+    "enterValidCredentials": "Veuillez entrer un nom d'utilisateur ou un e-mail et un mot de passe valides."
   },
   "forgotPassword": {
-    "title": "Mot de passe oublié?",
-    "subtitle": "Entrez votre adresse email et nous vous enverrons des instructions pour réinitialiser votre mot de passe",
-    "emailAddress": "Adresse email",
-    "enterEmail": "Entrez votre email",
-    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "title": "Mot de Passe Oublié ?",
+    "subtitle": "Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe",
+    "emailAddress": "Adresse e-mail",
+    "enterEmail": "Entrez votre e-mail",
+    "sendResetLink": "Envoyer le Lien de Réinitialisation",
     "sending": "Envoi en cours...",
-    "backToLogin": "Retour à la connexion",
-    "resetLinkSent": "Lien de réinitialisation envoyé",
-    "checkYourEmail": "Veuillez vérifier votre email pour les instructions de réinitialisation de votre mot de passe.",
-    "resetLinkFailed": "Échec de l'envoi du lien",
-    "emailNotFound": "Email non trouvé. Veuillez réessayer.",
-    "enterValidEmail": "Veuillez entrer une adresse email valide."
+    "backToLogin": "Retour à la Connexion",
+    "resetLinkSent": "Lien de Réinitialisation Envoyé",
+    "checkYourEmail": "Veuillez vérifier votre e-mail pour les instructions de réinitialisation de votre mot de passe.",
+    "resetLinkFailed": "Échec de l'Envoi du Lien de Réinitialisation",
+    "emailNotFound": "E-mail non trouvé. Veuillez réessayer.",
+    "enterValidEmail": "Veuillez entrer une adresse e-mail valide."
   },
   "resetPassword": {
-    "title": "Définir votre nouveau mot de passe",
+    "title": "Définissez Votre Nouveau Mot de Passe",
     "subtitle": "Veuillez entrer votre nouveau mot de passe ci-dessous et le confirmer.",
-    "newPassword": "Nouveau mot de passe",
+    "newPassword": "Nouveau Mot de Passe",
     "enterNewPassword": "Entrez le nouveau mot de passe",
-    "confirmPassword": "Confirmer le nouveau mot de passe",
+    "confirmPassword": "Confirmez le Nouveau Mot de Passe",
     "confirmNewPassword": "Confirmez le nouveau mot de passe",
-    "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères et inclure des lettres majuscules, minuscules et des chiffres.",
+    "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères et inclure des majuscules, des minuscules et des chiffres.",
     "passwordsMismatch": "Les mots de passe ne correspondent pas.",
-    "updatePassword": "Mettre à jour le mot de passe",
+    "updatePassword": "Mettre à Jour le Mot de Passe",
     "updating": "Mise à jour...",
-    "passwordUpdated": "Mot de passe mis à jour",
+    "passwordUpdated": "Mot de Passe Mis à Jour",
     "passwordUpdateSuccess": "Votre mot de passe a été mis à jour avec succès !",
-    "passwordUpdateFailed": "Échec de la réinitialisation du mot de passe",
+    "passwordUpdateFailed": "Échec de la Réinitialisation du Mot de Passe",
     "invalidToken": "Jeton de réinitialisation invalide. Veuillez demander un nouveau lien de réinitialisation de mot de passe.",
-    "invalidLink": "Lien invalide",
+    "invalidLink": "Lien Invalide",
     "linkExpired": "Le lien de réinitialisation du mot de passe est invalide ou a expiré.",
-    "errorUpdatingPassword": "Erreur lors de la mise à jour du mot de passe",
+    "errorUpdatingPassword": "Erreur lors de la Mise à Jour du Mot de Passe",
     "correctErrors": "Veuillez corriger les erreurs ci-dessous.",
     "fillPasswordFields": "Veuillez remplir correctement les deux champs de mot de passe."
   },
   "branding": {
-    "trackPresence": "Suivez la présence de votre équipe",
-    "onSiteOrRemote": "Sur site ou à distance?",
+    "trackPresence": "Suivez la Présence de Votre Équipe",
+    "onSiteOrRemote": "Sur site ou à distance ?",
     "realTimeVisibility": "Visibilité en temps réel des rotations des consultants",
     "stats": {
       "clients": "500+ Clients",
       "consultants": "10 000+ Consultants",
-      "planning": "98% Planification améliorée"
+      "planning": "98% Amélioration de la Planification"
     }
   },
   "languages": {
     "english": "Anglais",
     "french": "Français",
     "spanish": "Espagnol"
+  },
+  "dashboardPage": {
+    "activeProjects": "Projets Actifs",
+    "completedProjects": "Projets Terminés",
+    "siteStatisticsTitle": "Statistiques du Site",
+    "totalFactories": "Usines Totales",
+    "totalCapacity": "Capacité Totale",
+    "remoteWorkers": "Travailleurs à Distance",
+    "onsiteWorkers": "Travailleurs sur Site",
+    "highestDurationTitle": "Durée la Plus Longue",
+    "detailsLink": "Détails",
+    "notAvailable": "N/D",
+    "largestTeamTitle": "Plus Grande Équipe",
+    "membersSuffix": "membres",
+    "rcDashboardTitle": "Tableau de Bord RC",
+    "welcomeMessage": "Bienvenue, {{name}}",
+    "viewCalendarButton": "Voir le Calendrier",
+    "legend": {
+      "onsite": "Sur site",
+      "remote": "À distance",
+      "off": "Absent"
+    },
+    "table": {
+      "headerName": "Nom",
+      "paginationReport": "Affichage de {first}-{last} sur {totalRecords} entrées",
+      "emptyMessage": "Aucun enregistrement trouvé."
+    },
+    "pendingRequests": {
+      "title": "Demandes en Attente",
+      "viewAllLink": "Voir Tout",
+      "noRequests": "Aucune demande en attente."
+    }
+  },
+  "projectPage": {
+    "title": "Projets",
+    "subtitle": "Aperçu de tous les projets actifs, à venir et terminés",
+    "summaryStats": {
+      "totalProjects": "Projets Totaux :",
+      "completed": "Terminés :",
+      "active": "Actifs :",
+      "inactive": "Inactifs :",
+      "cancelled": "Annulés :"
+    },
+    "toolbar": {
+      "searchProjectsPlaceholder": "Rechercher des projets...",
+      "searchClientPlaceholder": "Rechercher un client...",
+      "newProjectButton": "Nouveau Projet",
+      "clearSearchTooltip": "Effacer la recherche"
+    },
+    "table": {
+      "header": {
+        "label": "Étiquette",
+        "projectName": "Nom du Projet",
+        "client": "Client",
+        "duration": "Durée",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "actionsTooltip": {
+        "edit": "Modifier",
+        "view": "Voir",
+        "delete": "Supprimer"
+      },
+      "paginationReport": "Affichage de {first} à {last} sur {totalRecords} entrées",
+      "emptyMessage": "Aucun projet trouvé correspondant à vos critères de recherche.",
+      "loadingMessage": "Chargement des données des projets..."
+    },
+    "statusTypes": {
+      "active": "Actif",
+      "completed": "Terminé",
+      "inactive": "Inactif",
+      "cancelled": "Annulé",
+      "upcoming": "À venir"
+    }
   }
+
 }

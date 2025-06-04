@@ -20,7 +20,7 @@ public interface AssignedRotationService {
     PagedRotationsDTO getUsersActiveRotationsByFactory(UsersRotationsByFactoryDTO usersRotationsByFactoryDTO);
     PagedRotationsDTO getUsersActiveRotationsBySubFactory(UsersRotationsBySubFactoryDTO usersRotationsBySubFactoryDTO);
     PagedAssignedRotationDTO getUsersRotationBySubFactory(UUID subFactoryId, int page, int size);
-    //void updateRotationByDate(UpdateRotationDTO updateRotationDTO);
+
     PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size);
     RcAssignRotationUserDTO createRcAssignRotationAssociate(GlobalDTO globalDTO, RcAssignRotationUserDTO rcAssignRotationUserDTO);
     RcCountCurrentAssociateOnSiteDTO getRcCountCurrentAssociateOnSite();

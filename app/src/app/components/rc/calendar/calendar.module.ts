@@ -21,6 +21,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PaginatorModule } from 'primeng/paginator';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
+import { WebSocketService } from '../../../services/web-socket.service';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { DefaultLayoutComponent } from "../../shared/layout/default-layout.compo
 ],
 providers :[
     MessageService,
-    TranslateService
+    TranslateService,
+    WebSocketService
 ]
 })
 export class CalendarModule { }

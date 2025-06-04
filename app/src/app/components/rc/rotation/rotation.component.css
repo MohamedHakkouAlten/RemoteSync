@@ -1,595 +1,160 @@
-/* Add this new style */
-.weekday-placeholder {
-  width: 30px; /* Must match .week-number width */
-  /* border-right: 1px solid #e5e7eb; /* Optional: if you want a separator like .week-number */
-  /* If .week-number has padding or specific alignment, match it here if needed */
-}
-
-/* Modify .weekdays if it doesn't already align with .calendar-week grid structure */
-.weekdays {
-  display: grid;
-  /* This structure now includes the placeholder column */
-  grid-template-columns: 30px repeat(7, 1fr); /* 30px for placeholder, then 7 cols for days */
-  text-align: center;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  /* padding: 8px 0; /* Original padding, adjust if placeholder causes issues */
-  background-color: #f9fafb;
-}
-
-.weekday {
-  padding: 8px 0; /* Keep or adjust as needed */
-  display: flex; /* Added for centering if needed */
-  align-items: center; /* Added for centering if needed */
-  justify-content: center; /* Added for centering if needed */
-}
-
-/* Ensure .calendar-week aligns with this new .weekdays structure */
-.calendar-week {
-  display: grid;
-  grid-template-columns: 30px repeat(7, 1fr); /* This should already be like this */
-  border-bottom: 1px solid #e5e7eb;
-}
-.calendar-week:last-child {
-  border-bottom: none;
-}
-
-.month-header {
-  display: flex;
-  justify-content: space-between; /* This helps distribute items */
-  align-items: center;
-  padding: 14px;
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  color: #111827;
-}
-
-.month-header > span {
-  flex-grow: 1;
-  text-align: center;
-}
-
-.month-header > button, .month-header > div {
-  flex-basis: 28px; /* Width of buttons */
-  flex-shrink: 0;
-}
-
-
-/* Other styles remain the same */
-.modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(3px);
-}
-
-.modal-container.hidden {
-  display: none;
-}
-
-.modal-dialog {
-  width: 100%;
-  max-width: 580px; /* Adjusted for potentially wider calendars if needed, or keep as 580px */
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  animation: modal-appear 0.3s ease-out;
-}
-
-@keyframes modal-appear {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+/* Add custom styles here if Tailwind isn't sufficient */
+/* For example, to ensure the calendar popup is above the dialog */
+:host ::ng-deep .p-datepicker {
+    z-index: 50!important; /* Ensure datepicker is above dialog (default mask z-index is 1100) */
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  /* Adjust multiselect chip appearance if needed */
+
+  /* Ensure full width for calendar input */
+  :host ::ng-deep .p-calendar .p-inputtext {
+      width: 100%;
   }
-}
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-}
-
-.modal-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-  font-family: 'Comfortaa', sans-serif;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #6b7280;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.close-button:hover {
-  background-color: #f3f4f6;
-  color: #111827;
-}
-
-.modal-body {
-  padding: 24px;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
-  font-family: 'Inter', sans-serif;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 14px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  color: #111827;
-  background-color: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  font-family: 'Inter', sans-serif;
-  box-sizing: border-box;
-}
-
-.form-control:focus {
-  border-color: #ff9800;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
-}
-
-.select-wrapper {
-  position: relative;
-}
-
-.dropdown-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  pointer-events: none;
-}
-
-.date-row {
-  display: flex;
-  gap: 20px;
-}
-
-.date-group {
-  flex: 1;
-  position: relative;
-}
-
-.calendar-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  pointer-events: none;
-}
-input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0; /* Hide default icon */
-    cursor: pointer;
-    position: absolute;
-    right: 0;
-    width: 100%; /* Make clickable area cover the input */
-}
+  :host ::ng-deep .p-togglebutton-content{
+    font-size: 15px !important;
+    padding: 2px 10px !important;
+    border-radius: 4px;
+font-weight: 400;
 
 
-.collaborator-list {
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  max-height: 150px;
-  overflow-y: auto;
-  margin-top: 4px;
-  position: absolute;
-  background-color: white;
-  width: calc(100% - 2px); /* Adjust width considering border */
-  z-index: 10;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    font-family: inter;
+  }
+  :host ::ng-deep .p-selectbutton {
+    padding: 10px;
 
-.collaborator-item {
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.collaborator-item:hover {
-  background-color: #f3f4f6;
-}
-
-.selected-collaborators {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.collaborator-chip {
-  display: inline-flex;
-  align-items: center;
-  background-color: #f3f4f6;
-  border-radius: 16px;
-  padding: 4px 10px;
-  font-size: 12px;
-  color: #374151;
-}
-
-.remove-collaborator {
-  margin-left: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #6b7280;
-}
-
-.rotation-type-selector {
-  display: flex;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
-}
-
-.rotation-type-btn {
-  flex: 1;
-  padding: 12px;
-  text-align: center;
-  background-color: #f9fafb;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  transition: all 0.2s;
-  font-family: 'Inter', sans-serif;
-  position: relative;
-  overflow: hidden;
-}
-
-.rotation-type-btn::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 3px;
-  background-color: #ff9800;
-  transition: all 0.2s;
-  transform: translateX(-50%);
-}
-
-.rotation-type-btn:hover::after {
-  width: 40%;
-}
-
-.rotation-type-btn.active {
-  background-color: #fff;
-  color: #111827;
-  font-weight: 600;
-}
-
-.rotation-type-btn.active::after {
-  width: 80%;
-}
-
-.rotation-pattern {
-  margin-top: 16px;
-}
-
-.pattern-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.pattern-input-group {
-  display: flex;
-  align-items: center;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.pattern-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f3f4f6;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: #374151;
-}
-.pattern-btn:hover {
-    background-color: #e5e7eb;
-}
-
-.pattern-input {
-  width: 40px;
-  height: 30px; /* Match button height */
-  text-align: center;
-  border: none;
-  border-left: 1px solid #d1d5db;
-  border-right: 1px solid #d1d5db;
-  font-size: 14px;
-  padding: 0;
-  box-sizing: border-box;
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
-}
+  }
+   :host ::ng-deep .p-togglebutton{
+        background: var(--color-gray-100);
+        border: 0;
+    padding: 4px 5px !important;
+  }
 
 
-.pattern-swap {
-  display: flex;
-  align-items: center;
-}
-
-.swap-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #374151;
-}
-.swap-btn:hover {
-    background-color: #e5e7eb;
-}
-.swap-icon {
-    font-size: 16px;
-}
-
-.pattern-description {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  padding: 20px 24px;
-  border-top: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-}
-
-.btn-cancel {
-  padding: 10px 20px;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Inter', sans-serif;
-}
-
-.btn-cancel:hover {
-  background-color: #e5e7eb;
-}
-
-.btn-create {
-  padding: 10px 20px;
-  background-color: #ff9800;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+:host ::ng-deep .p-togglebutton-checked .p-togglebutton-content{
+  background: var(--color-primary) !important;
   color: white;
+}
+
+  body .p-datepicker-panel .p-datepicker-group .p-datepicker-calendar td .p-datepicker-day {
+    width: 1.5rem !important; /* Adjust size */
+    height: 1.5rem !important;
+    font-size: 0.75rem !important; /* Adjust size */
+    line-height: 1.5rem !important; /* Helps vertical centering */
+    padding: 0 !important;
+    /* Add flex centering if needed */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: red !important;
+}
+
+  /* Common candidates: .p-multiselect-label, .p-multiselect-token-container */
+:host ::ng-deep .p-multiselect.p-multiselect-chip .p-multiselect-label {
+    /* 1. Allow chips to wrap onto the next line */
+    white-space: normal !important; /* Override potential 'nowrap' */
+    /* If the container uses flexbox, ensure wrapping is enabled */
+    /* flex-wrap: wrap !important; /* Often default for block-like elements */
+
+    /* 2. CRITICAL: Set a maximum height for the chip area */
+    /* Adjust this value based on how many lines you want before scrolling */
+    max-height: 70px !important; /* Example: Approx 2-3 lines of chips */
+
+    /* 3. Enable vertical scrolling ONLY when content exceeds max-height */
+    overflow-y: auto !important;
+
+    /* 4. Prevent horizontal scrolling */
+    overflow-x: hidden !important;
+
+    /* 5. Ensure it takes up space even when empty for consistent height */
+    /* display: block !important; /* Or flex, depending on internal structure */
+    /* min-height: 36px; */ /* Match typical input height if needed */
+
+     /* Adjust padding if necessary, especially top/bottom */
+     padding-top: 0.25rem !important;
+     padding-bottom: 0.25rem !important;
+}
+
+
+
+
+:host ::ng-deep .p-dialog .p-dialog-header { /* Target headers inside any p-dialog */
+    border-bottom: 0.5px solid #E5E7EB !important; /* Reduced thickness for example */
+    /* padding-bottom: 10px; */ /* Maybe adjust padding instead of border? */
+    padding-right: 50px !important;
+  }
+  
+
+
+:host ::ng-deep .p-autocomplete .p-chip .p-chip-remove-icon { 
+
+    color: #364153 !important;
+    font-size: 14px ;
+}
+:host ::ng-deep .p-icon {
+    width: 13px;
+    height: 13px;
+}
+
+
+  :host  ::ng-deep  .p-chip {
+    border-radius: 16px !important; 
+ 
+    font-family: inter;
+    font-size: 12px;
+    /* Add other styles if desired */
+  }
+ :host ::ng-deep .p-select .p-select-label {
+    color: #364153 !important;
+    font-size: 15px !important;
+    font-family: inter;
+}
+:host ::ng-deep .p-select .p-select-dropdown {
+    color: #364153 !important;
+}
+/* Add to your component's CSS file or a global stylesheet */
+
+/* Style for the week number cell itself to indicate clickability */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber {
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(255, 152, 0, 0.2);
-  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s ease-in-out; /* Smooth transition */
+  border-radius: 4px; /* Optional: Rounded corners */
+  text-align: center; /* Ensure text is centered */
 }
 
-.btn-create:hover {
-  background-color: #f57c00;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(255, 152, 0, 0.3);
+/* Style for when the week number cell is hovered (optional) */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:hover {
+  background-color: #e9ecef; /* Light background on hover */
 }
 
-.btn-create:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(255, 152, 0, 0.2);
+/* Style for the SELECTED week number cell */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber.selected-week {
+  background-color: #007bff; /* Example: Bootstrap primary blue */
+  color: white; /* White text for contrast */
+  font-weight: bold;
 }
 
-.custom-dates-calendar {
-  margin-top: 16px;
-}
-
-.calendar-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #374151;
-  font-family: 'Inter', sans-serif;
-  text-align: center;
-}
-
-.calendar-container {
-  display: flex;
-  gap: 16px; /* Reduced gap slightly */
-  flex-wrap: wrap;
-  justify-content: center; /* Center calendars if they wrap */
-}
-
-.month-calendar {
-  flex: 1;
-  min-width: 250px; /* Adjusted min-width */
-  max-width: 260px; /* Added max-width for better control on larger screens */
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  background-color: #fff; /* Added background for calendar itself */
+/* Style for focus outline (accessibility) */
+:host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
 }
 
 
-.month-nav-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: #4b5563;
-  transition: background-color 0.2s, color 0.2s;
+:host ::ng-deep .customDates .p-datepicker .p-datepicker-panel {
+  position: static !important;
+  
+ 
 }
-
-.month-nav-btn:hover {
-  background-color: #e5e7eb;
-  color: #111827;
+:host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day {
+  width: 22px !important;
+  height:22px !important;
+  font-size: 12px;
+  color: white;
+  background: #007bff;
 }
-
-
-.weekday:first-child, 
-.calendar-week .calendar-day:first-child:not(.other-month):not(.out-of-range),
-.weekday:last-child,
-.calendar-week .calendar-day:last-child:not(.other-month):not(.out-of-range) {
-  /* color: #9ca3af; /* Slightly dimmer color for weekend headers/days if desired */
-}
-
-
-.calendar-grid {
-  display: flex;
-  flex-direction: column;
-  padding: 0 4px 4px 4px; /* Padding around the grid of days */
-}
-
-
-.week-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px; /* Slightly smaller week number */
-  color: #6b7280;
-  background-color: #f9fafb;
-  cursor: pointer;
-  border-right: 1px solid #e5e7eb;
-  /* width: 30px; /* Width is set by grid-template-columns */
-  padding: 4px 0; /* Add some padding */
-  box-sizing: border-box;
-}
-
-.week-number:hover {
-  background-color: #e5e7eb;
-}
-
-.calendar-day {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* aspect-ratio: 1; /* Can make cells square, but fixed height/width is also fine */
-  font-size: 13px; /* Slightly smaller day number */
-  cursor: pointer;
-  border-radius: 50%;
-  margin: 2px; /* Reduced margin */
-  transition: all 0.2s;
-  height: 28px; /* Reduced height */
-  width: 28px; /* Reduced width */
-  box-sizing: border-box;
-}
-
-.calendar-day:hover:not(.other-month):not(.out-of-range):not([class*="weekend"]) { /* Avoid hover on disabled weekend cells */
-  background-color: #f0f0f0; /* Lighter hover */
-  /* transform: scale(1.05); */ /* Optional hover scale */
-}
-
-
-.calendar-day.other-month {
-  color: #d1d5db;
-  cursor: default;
-  background-color: transparent !important; /* Ensure no background on other month days */
-  box-shadow: none !important;
-}
-
-.calendar-day.out-of-range {
-  color: #d1d5db !important; /* Ensure text color indicates disabled */
-  background-color: #f8f8f8 !important; /* Different background for out-of-range */
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.calendar-day.weekend:not(.other-month):not(.out-of-range) { /* Style for current month weekend days that are selectable but visually distinct */
-  color: #a0a0a0; /* Dimmer color for weekend text */
-  /* background-color: #f9f9f9; /* Optional subtle background for weekends */
-}
-.calendar-day.weekend.out-of-range,
-.calendar-day.weekend.other-month {
-    /* Ensure weekends that are also other-month or out-of-range inherit those primary disabled styles */
-}
-
-
-.calendar-day.onsite {
-  background-color: #ff9800 !important; /* Use important if overrides are needed */
-  color: white !important;
-  box-shadow: 0 1px 2px rgba(255, 152, 0, 0.3);
-  /* transform: scale(1.05); */
-}
-
-.calendar-day.remote {
-  background-color: #2196f3 !important; /* Use important if overrides are needed */
-  color: white !important;
-  box-shadow: 0 1px 2px rgba(33, 150, 243, 0.3);
-  /* transform: scale(1.05); */
+:host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day.p-disabled , .p-component:disabled {
+   
+  color: black;
+  background: transparent !important;
 }

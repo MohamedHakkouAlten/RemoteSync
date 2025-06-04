@@ -1,0 +1,86 @@
+
+<p-dialog [(visible)]="displayViewProjectDialog" [showHeader]="true" [modal]="true"
+    [style]="{ width: '40vw', 'min-width': '450px', height: 'flex-y' }" class="overflow-y-auto"
+    styleClass="view-project-dialog" [draggable]="false" [resizable]="false" (onHide)="onHideDialog()">
+
+
+
+    <ng-container *ngIf="projectToView" class="overflow-y-auto">
+
+        <div class="ml-4 mr-4 mb-4 bg-white flex flex-col gap-5 shadow-sm rounded-sm p-4 overflow-y-auto">
+
+
+            <div class="flex justify-between ">
+                <h2 class="font-bold text-[20px]">{{ projectToView.titre}}</h2>
+                <span class="view-card-status">
+                    <p-tag [value]="projectToView.status!.substring(0,1)+projectToView.status!.substring(1,projectToView.status!.length).toLowerCase()"
+                        [severity]="getStatusSeverity(projectToView.status!)"></p-tag>
+                </span>
+            </div>
+
+
+            <div class="flex flex-col gap-1 border-b-1 border-gray-200 pb-4">
+                <div class="flex text-gray-400 text-sm gap-2 items-center">
+                    <i class="pi pi-tag !text-[13px]  !text-primary"></i>
+                    <span>Label</span>
+                </div>
+
+                <span class="ml-10">{{ projectToView.label}}</span>
+
+            </div>
+            <div class="flex flex-col gap-1 border-b-1 border-gray-200 pb-4">
+                <div class="flex text-gray-400 text-sm gap-2 items-center">
+                    <i class="pi pi-user !text-[13px] !text-primary"></i>
+                    <span>Client</span>
+                </div>
+                <div class="grid grid-cols-2 ml-10">
+
+
+                    <span class="!text-[14px] flex items-center gap-1">
+                        <h1 class=" !text-[13px]  text-gray-400">name :</h1> {{ projectToView.owner?.name}}
+                    </span>
+                    <span class="!text-[14px] flex items-center gap-1">
+                        <h1 class=" !text-[13px]  text-gray-400">ICE :</h1> {{ projectToView.owner?.ice}}
+                    </span>
+
+
+                    <span class="!text-[14px] flex items-center gap-1">
+                        <h1 class=" !text-[13px]  text-gray-400">label :</h1> {{ projectToView.owner?.label}}
+                    </span>
+                    <span class="!text-[14px] flex items-center gap-1">
+                        <h1 class=" !text-[13px]  text-gray-400">email :</h1> {{ projectToView.owner?.email}}
+                    </span>
+                </div>
+
+            </div>
+            <div class="flex flex-col gap-1 border-b-1 border-gray-200 pb-4">
+                <div class="flex text-gray-400 gap-2 text-sm items-center">
+                    <i class="pi pi-clock !text-[13px] !text-primary"></i>
+                    <span>Duration</span>
+                </div>
+
+                <span class="ml-10">{{ projectToView.startDate +" : "+projectToView.deadLine }}</span>
+
+            </div>
+            <div class="flex flex-col gap-4">
+                <div class="flex text-gray-400 gap-2 text-sm items-center">
+                    <i class="pi pi-clock !text-[13px] !text-primary"></i>
+                    <span>Progress</span>
+                </div>
+
+                <p-progressBar [value]="getProgressValue()" [showValue]="false" color="var(--color-primary)"
+                    styleClass="!h-2 custom-progress-bar ">
+                    <!-- styleClass used for custom styling -->
+                </p-progressBar>
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+    </ng-container>
+</p-dialog>

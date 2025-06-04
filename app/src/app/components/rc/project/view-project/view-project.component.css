@@ -1,0 +1,8 @@
+:host ::ng-deep  .p-dialog .p-dialog-header {
+height: 30px !important;
+background:  #f8f9fa !important;
+padding: 20px 4px;
+}
+:host ::ng-deep  .p-dialog  {
+border-radius: 5px !important;
+}

@@ -24,9 +24,10 @@ import { SiteStatsCardComponent } from "../../shared/rc-ui/site-stats-card/site-
 import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
 
 // Import services
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthFacadeService } from '../../../services/auth-facade.service';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
+import { LanguageService } from '../../../services/language/language.service';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { DefaultLayoutComponent } from "../../shared/layout/default-layout.compo
     TagModule,
     CardModule,
     // Standalone components
+    TranslateModule,
     NavigationComponent,
     ProjectStatsCardComponent,
     SiteStatsCardComponent,
@@ -55,7 +57,8 @@ import { DefaultLayoutComponent } from "../../shared/layout/default-layout.compo
 ],
   providers: [
     AuthFacadeService,
-    TranslateService
+    TranslateService,
+    LanguageService
   ]
 })
 export class DashboardModule { }
