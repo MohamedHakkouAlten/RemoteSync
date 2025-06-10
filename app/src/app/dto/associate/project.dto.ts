@@ -1,5 +1,5 @@
 import { ProjectStatus } from '../project-status.enum';
-import { Client } from '../client.dto';
+import { Client } from '../aio/client.dto';
 
 /**
  * Associate-specific project DTO

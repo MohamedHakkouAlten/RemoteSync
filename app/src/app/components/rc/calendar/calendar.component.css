@@ -7,6 +7,16 @@
  * Color values (rgb/hex) are based on default Tailwind colors - adjust if your theme differs.
  */
 
+:root {
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition-standard: all 0.3s ease;
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
 
   /* Ensure dropdown panel items also look okay (optional styling) */
   /* You might need to style .p-dropdown-panel .p-dropdown-item etc. if needed */
@@ -32,16 +42,19 @@
     color:#6a7282 !important
 }
 
-    :host ::ng-deep .filterDropDown.p-select{
-border: none !important;
-
-background-color: var(--color-secondary);
-font-family: Inter;
-font-size: 12px;
-width: 180px;
-border-radius: 4px !important;
-
-
+    :host ::ng-deep .filterDropDown.p-select {
+    border: none !important;
+    background-color: var(--color-secondary);
+    font-family: Inter;
+    font-size: 14px;
+    width: 180px;
+    border-radius: var(--border-radius-sm) !important;
+    transition: var(--transition-standard);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  :host ::ng-deep .filterDropDown.p-select:hover {
+    box-shadow: var(--shadow-md);
   }
     :host ::ng-deep .p-select.p-select-label {
 
@@ -78,62 +91,84 @@ color: #6a7282 !important;
   
   /* Style for 'On-site' status (Orange background) */
   :host ::ng-deep .p-toggleswitch.status-on-site .p-toggleswitch-slider {
-    background-color: #FFEDD5; /* Equivalent to bg-orange-500 */
-    height: 18px;
-    width:  40px;
+    background-color: #FEF2F2; /* Lighter shade */
+    height: 20px;
+    width: 44px;
     position: relative;
-   
-    
-  }
-  /* Ensure handle icon is visible on orange */
-  :host ::ng-deep .p-toggleswitch.status-on-site .p-toggleswitch-handle  {
-    
-     background-color:#F97316 !important;
-     height: 19px;
-     width:  19px;
-     right: 0;
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-standard);
+    box-shadow: var(--shadow-sm);
   }
   
+  /* Ensure handle icon is visible on orange */
+  :host ::ng-deep .p-toggleswitch.status-on-site .p-toggleswitch-handle {
+    background-color: #FF9500 !important; /* Primary orange color */
+    height: 20px;
+    width: 20px;
+    right: 0;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  :host ::ng-deep .p-toggleswitch.status-on-site:hover .p-toggleswitch-slider {
+    box-shadow: var(--shadow-md);
+  }
   
   /* Style for 'Remote' status (Blue background) */
   :host ::ng-deep .p-toggleswitch.status-remote .p-toggleswitch-slider {
-    background-color: #DBEAFE; /* Equivalent to bg-blue-500 */
-    height: 18px;
-    width:  40px;
+    background-color: #EFF6FF; /* Lighter blue */
+    height: 20px;
+    width: 44px;
     position: relative;
-   
- 
-  }
-  /* Ensure handle icon is visible on blue */
-  :host ::ng-deep .p-toggleswitch.status-remote .p-toggleswitch-handle {
-    background-color:#3B82F6 !important;
-    height: 19px;
-    width:  19px;
-    left: 0;
-
-   
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-standard);
+    box-shadow: var(--shadow-sm);
   }
   
+  /* Ensure handle icon is visible on blue */
+  :host ::ng-deep .p-toggleswitch.status-remote .p-toggleswitch-handle {
+    background-color: #3B82F6 !important;
+    height: 20px;
+    width: 20px;
+    left: 0;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  :host ::ng-deep .p-toggleswitch.status-remote:hover .p-toggleswitch-slider {
+    box-shadow: var(--shadow-md);
+  }
   
   /* Style for 'Off' status (Gray background) */
   :host ::ng-deep .p-toggleswitch.status-off .p-toggleswitch-slider {
-    border-color: rgb(220, 222, 224);
-    background-color: white;
+    border-color: #E5E7EB;
+    background-color: #F9FAFB;
     border-width: 1px;
-    
-     /* Equivalent to bg-gray-300 */
-    height: 18px;
-    width:  40px;
+    height: 20px;
+    width: 44px;
     position: relative;
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition-standard);
+    box-shadow: var(--shadow-sm);
   }
+  
   /* Ensure handle icon is visible on gray */
   :host ::ng-deep .p-toggleswitch.status-off .p-toggleswitch-handle {
-
-     background-color:rgb(211, 215, 219) ;
-     height: 16.1px;
-     width:  16.1px;
-     left: 28%;
-     top: 61.12%;
+    background-color: #9CA3AF;
+    height: 18px;
+    width: 18px;
+    left: 30%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(156, 163, 175, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  :host ::ng-deep .p-toggleswitch.status-off:hover .p-toggleswitch-slider {
+    box-shadow: var(--shadow-md);
   }
   
   
@@ -168,10 +203,21 @@ border-radius: 4px !important;
     border: none !important;
     background-color: var(--color-secondary);
     font-family: Inter;
-    box-shadow: none !important;
-    border-radius: 4px;
-    
-      }
+    font-size: 14px;
+    box-shadow: var(--shadow-sm) !important;
+    border-radius: var(--border-radius-sm);
+    padding: 0.75rem 1rem;
+    transition: var(--transition-standard);
+  }
+  
+  :host ::ng-deep .p-iconfield .p-inputtext:hover {
+    box-shadow: var(--shadow-md) !important;
+  }
+  
+  :host ::ng-deep .p-iconfield .p-inputtext:focus {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(249, 115, 22, 0.25) !important;
+    border-color: var(--color-primary);
+  }
   :host ::ng-deep .p-autocomplete .p-inputtext:enabled:focus{
     border: none !important;
     background-color: var(--color-secondary) !important;

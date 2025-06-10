@@ -1,5 +1,6 @@
 package com.alten.remotesync.application.assignedRotation.service;
 
+import com.alten.remotesync.adapter.exception.assignedRotation.AssignedRotationNotFoundException;
 import com.alten.remotesync.adapter.exception.assignedRotation.CapacityExceededException;
 import com.alten.remotesync.adapter.exception.client.ClientNotFoundException;
 import com.alten.remotesync.adapter.exception.factory.FactoryNotFoundException;
@@ -29,6 +30,8 @@ import com.alten.remotesync.domain.rotation.repository.RotationDomainRepository;
 import com.alten.remotesync.domain.subFactory.repository.SubFactoryDomainRepository;
 import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.domain.user.repository.UserDomainRepository;
+import com.alten.remotesync.infrastructure.mail.MailUtility;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +70,8 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     private final AssignedRotationMapper assignedRotationMapper;
     private final ClientMapper clientMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
+
+    private final MailUtility mailUtility;
 
     @Override
     public List<ClientDTO> getAssociateClients(GlobalDTO globalDTO) {
@@ -118,9 +123,16 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
     @Override
     public AssociateCurrentRotationDTO getAssociateCurrentRotation(GlobalDTO globalDTO) {
-        AssignedRotation assignedRotation = assignedRotationDomainRepository
-                .findByUser_UserIdAndRotationAssignmentStatus(globalDTO.userId(), RotationAssignmentStatus.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("No active rotation found for this user"));
+        AssignedRotation assignedRotation = null;
+        try{
+            assignedRotation = assignedRotationDomainRepository
+                    .findByUser_UserIdAndRotationAssignmentStatus(globalDTO.userId(), RotationAssignmentStatus.ACTIVE)
+                    .orElseThrow(() -> new AssignedRotationNotFoundException("No active rotation found for this user"));
+
+        }
+        catch (IncorrectResultSizeDataAccessException e){
+            throw new AssignedRotationNotFoundException("Multiple active rotations found for this user");
+        }
 
         Rotation rotation = assignedRotation.getRotation();
         LocalDate startDate = rotation.getStartDate();
@@ -506,10 +518,16 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                             .createdAt(LocalDateTime.now())
                             .createdBy(authenticatedRc)
                             .build());
-
+                    // SENDING EMAIL
+                    String subject = "New Rotation Assignment from " + this.mailUtility.applicationName;
+                    // UPDATED CALL:
+                    String htmlContent = buildRotationAssignmentEmail(associate.getFirstName(), dbRotation, RotationEmailType.NEW_ASSIGNMENT);
+                    this.mailUtility.sendEmail(associate.getEmail(), subject, htmlContent, true);
                 } catch (IncorrectResultSizeDataAccessException e) {
                     // Log the error with more details
                     throw new RuntimeException("Error processing rotation for associate: " + e.getMessage(), e);
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
                 }
             } catch (UserNotFoundException e) {
                 // Log the error and continue with other associates
@@ -518,6 +536,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         simpMessagingTemplate.convertAndSend("/topic/rotation","changed");
         return rcAssignRotationUserDTO;
     }
+
     @Override
     public RcCountCurrentAssociateOnSiteDTO getRcCountCurrentAssociateOnSite() {
         LocalDate monday = LocalDate.now().with(DayOfWeek.MONDAY); // start of current week
@@ -853,10 +872,155 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 .createdAt(LocalDateTime.now())
                 .createdBy(authenticatedRc)
                 .build());
+
+        try {
+            String subject = "Update to your " + this.mailUtility.applicationName + " Rotation";
+            // Call the refactored helper with the UPDATED type
+            String htmlContent = buildRotationAssignmentEmail(associate.getFirstName(), newRotation, RotationEmailType.UPDATED_ASSIGNMENT);
+            this.mailUtility.sendEmail(associate.getEmail(), subject, htmlContent, true);
+        } catch (Exception e) {
+        }
         simpMessagingTemplate.convertAndSend("/topic/rotation",Map.of("code","ROTATION_UPDATED"));
         return true;
     }
 
+    private enum RotationEmailType {
+        NEW_ASSIGNMENT,
+        UPDATED_ASSIGNMENT
+    }
+
+    private String buildRotationAssignmentEmail(String associateName, Rotation rotation, RotationEmailType emailType) {
+        String emailTitle;
+        String introParagraph;
+
+        switch (emailType) {
+            case UPDATED_ASSIGNMENT:
+                emailTitle = "Your Rotation Has Been Updated";
+                introParagraph = "Your work rotation has been updated. Here is a preview of the <strong>upcoming week</strong>. For more details, please visit the application.";
+                break;
+            case NEW_ASSIGNMENT:
+            default:
+                emailTitle = "You Have a New Rotation Assignment";
+                introParagraph = "A new work rotation has been assigned to you. Here is a preview of your <strong>first week</strong>. For more details, please visit the application.";
+                break;
+        }
+
+        LocalDate startDate = rotation.getStartDate();
+        LocalDate weekToShowStart = (emailType == RotationEmailType.UPDATED_ASSIGNMENT && LocalDate.now().isAfter(startDate)) ?
+                LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)) :
+                startDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+        Map<LocalDate, RotationStatus> customDateMap = new HashMap<>();
+        if (rotation.getCustomDates() != null) {
+            for (CustomDate customDate : rotation.getCustomDates()) {
+                customDateMap.put(customDate.getDate(), customDate.getRotationStatus());
+            }
+        }
+
+        StringBuilder weekViewHtml = new StringBuilder("<table class='week-view' role='presentation'><tr>");
+        for (int i = 0; i < 7; i++) {
+            LocalDate currentDate = weekToShowStart.plusDays(i);
+            String dayClass = "";
+            String statusText = "";
+
+            if (currentDate.isBefore(rotation.getStartDate()) || currentDate.isAfter(rotation.getEndDate())) {
+                dayClass = "day-inactive";
+                statusText = "N/A";
+            } else if (currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                dayClass = "day-weekend";
+                statusText = "Weekend";
+            } else if (customDateMap.containsKey(currentDate)) {
+                RotationStatus status = customDateMap.get(currentDate);
+                dayClass = (status == RotationStatus.ONSITE) ? "day-onsite" : "day-remote";
+                statusText = (status == RotationStatus.ONSITE) ? "On-Site" : "Remote";
+            } else {
+                LocalDate startOfWeekDate = rotation.getStartDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+                long daysSinceStart = ChronoUnit.DAYS.between(startOfWeekDate, currentDate);
+                int weeksSinceStart = (int) (daysSinceStart / 7);
+                int weekInCycle = weeksSinceStart % rotation.getCycleLengthWeeks();
+                boolean isRemote = weekInCycle < rotation.getRemoteWeeksPerCycle();
+
+                dayClass = isRemote ? "day-remote" : "day-onsite";
+                statusText = isRemote ? "Remote" : "On-Site";
+            }
+
+            weekViewHtml.append(String.format("""
+        <td class="%s">
+            <div class="day-name">%s</div>
+            <div class="day-date">%d</div>
+            <div class="day-status">%s</div>
+        </td>""",
+                    dayClass,
+                    currentDate.getDayOfWeek().getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH),
+                    currentDate.getDayOfMonth(),
+                    statusText
+            ));
+        }
+        weekViewHtml.append("</tr></table>");
+
+        // --- 4. Return the final formatted HTML string ---
+        return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>%s</title>
+        <style>
+            body { margin: 0; padding: 0; width: 100%%; background-color: #F3F4F6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+            .week-view { width: 100%%; border-collapse: separate; border-spacing: 4px; }
+            .week-view td { width: 14%%; border-radius: 6px; padding: 8px; text-align: center; vertical-align: top; }
+            .day-name { font-size: 11px; font-weight: 600; color: #6B7280; text-transform: uppercase; margin-bottom: 4px; }
+            .day-date { font-size: 18px; font-weight: 700; line-height: 1; }
+            .day-status { font-size: 10px; margin-top: 4px; }
+            .day-onsite { background-color: #FFF7ED; color: #9A3412; } .day-onsite .day-status { color: #C2410C; }
+            .day-remote { background-color: #EEF2FF; color: #3730A3; } .day-remote .day-status { color: #4338CA; }
+            .day-weekend { background-color: #F9FAFB; color: #9CA3AF; }
+            .day-inactive { background-color: #F9FAFB; color: #D1D5DB; } .day-inactive .day-status { color: #D1D5DB; }
+        </style>
+    </head>
+    <body>
+        <center style="width: 100%%; background-color: #F3F4F6;">
+            <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); padding: 40px;">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%%">
+                    <tr><td style="text-align: center; padding-bottom: 24px;"><a href="%s" target="_blank"><img src="%s" alt="%s Logo" width="150" style="border:0;"></a></td></tr>
+                    <tr><td>
+                        <h1 style="font-size: 24px; font-weight: 600; color: #1F2937; margin: 0 0 16px;">%s</h1>
+                        <p style="font-size: 16px; color: #374151; line-height: 1.6; margin: 0 0 16px;">Hello %s,</p>
+                        <p style="font-size: 16px; color: #374151; line-height: 1.6; margin: 0 0 24px;">%s</p>
+                        
+                        <!-- Dynamic Week View HTML is Injected Here -->
+                        %s
+
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 32px auto 24px;">
+                            <tr><td align="center" bgcolor="#FF6600" style="border-radius: 6px;"><a href="%s" target="_blank" style="font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; display: inline-block;">View Full Calendar in App</a></td></tr>
+                        </table>
+                        <p style="font-size: 16px; color: #374151; line-height: 1.6; margin: 0;">Thank you,<br>The %s Team</p>
+                    </td></tr>
+                    <tr><td style="padding-top: 32px;">
+                        <hr style="border: 0; border-top: 1px solid #E5E7EB;">
+                        <p style="font-size: 12px; color: #6B7280; text-align: center; line-height: 1.5;">© %d %s. All rights reserved.</p>
+                    </td></tr>
+                </table>
+            </div>
+        </center>
+    </body>
+    </html>
+    """.formatted(
+                emailTitle,
+                this.mailUtility.applicationDomainUrl,
+                this.mailUtility.applicationLogoUrl,
+                this.mailUtility.applicationName,
+                emailTitle,
+                associateName,
+                introParagraph,
+                weekViewHtml.toString(),
+                this.mailUtility.applicationDomainUrl,
+                this.mailUtility.applicationName,
+                java.time.Year.now().getValue(),
+                this.mailUtility.applicationName
+        );
+    }
 
 //    @Override
 //    public PagedAssignedRotationDTO getUsersActiveRotationsByName(UsersRotationsByNameDTO usersRotationsByNameDTO) {

@@ -10,7 +10,7 @@ const supportedLanguages: SupportedLanguage[] = ['en', 'fr', 'es'];
 const routes: Routes = [
   // ROUTES FOR ERRORS
   { path: 'remotesync/error/404', loadChildren: () => import('./components/visitor/notfound/notfound.module').then(m => m.NotfoundModule) },
-  
+
   // Language-prefixed routes for errors
   ...supportedLanguages.map(lang => ({
     path: `${lang}/remotesync/Error/404`,
@@ -22,7 +22,7 @@ const routes: Routes = [
   { path: 'remotesync/login', loadChildren: () => import('./components/visitor/login/login.module').then(m => m.LoginModule) },
   { path: 'remotesync/forgot-password', loadChildren: () => import('./components/visitor/forgot-password/forgot-password.module').then(m => m.ForgotPasswordModule) },
   { path: 'remotesync/reset-password', loadChildren: () => import('./components/visitor/reset-password/reset-password.module').then(m => m.ResetPasswordModule) },
-  
+
   // Language-prefixed routes for visitor
   ...supportedLanguages.map(lang => ({
     path: `${lang}/remotesync/login`,
@@ -54,7 +54,7 @@ const routes: Routes = [
   { path: 'remotesync/associate/report', loadChildren: () => import('./components/associate/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
   { path: 'remotesync/associate/notification', loadChildren: () => import('./components/associate/notifications/notifications.module').then(m => m.NotificationsModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
   { path: 'remotesync/associate/profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] } },
-  
+
   // Language-prefixed routes for associate
   ...supportedLanguages.map(lang => ({
     path: `${lang}/remotesync/associate/dashboard`,
@@ -112,7 +112,7 @@ const routes: Routes = [
   { path: 'remotesync/rc/report', loadChildren: () => import('./components/rc/report/report.module').then(m => m.ReportModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'remotesync/rc/profile', loadChildren: () => import('./components/shared/profile/profile.module').then(m => m.ProfileModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
   { path: 'remotesync/rc/calendar', loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule), canActivate: [RoleGuard], data: { roles: ['RC', 'ADMIN'] } },
-  
+
   // Language-prefixed routes for RC
   ...supportedLanguages.map(lang => ({
     path: `${lang}/remotesync/rc/dashboard`,
@@ -149,7 +149,7 @@ const routes: Routes = [
 
 
 
-
+  { path: 'rc/chat', loadChildren: () => import('./components/rc/chat/chat.module').then(m => m.ChatModule) },
 
 
 
@@ -172,8 +172,8 @@ const routes: Routes = [
 
 
   // WRONG PATH URL
-  { path: '', redirectTo: 'en/remotesync/Login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'en/remotesync/Error/404' }
+  { path: '', redirectTo: 'en/remotesync/login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'en/remotesync/error/404' }
   // END WRONG PATH URL
 ];
 

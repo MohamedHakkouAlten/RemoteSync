@@ -1,18 +1,69 @@
 /* ======================================================================== */
-/* --- NEW/UPDATED Styles for the Report Detail Dialog (v2) --- */
+/* --- Enhanced Modern Report Detail Dialog Styles --- */
 /* ======================================================================== */
 
-/* Target the new styleClass for specificity */
-:host ::ng-deep .report-detail-dialog-new .p-dialog-header {
-    padding: 2px; /* py-3 px-5 */
-    margin-bottom: 10px;
-    border-bottom: 1px solid #e5e7eb; /* gray-200 */
-    background-color: #fff; /* Ensure header bg */
-
+/* Target the update-report dialog for complete styling control */
+:host ::ng-deep .update-report-dialog .p-dialog-header,
+:host ::ng-deep .update-report-dialog .p-dialog-header-icons {
+    display: none !important; /* Our custom header replaces this */
 }
 
-:host ::ng-deep .report-detail-dialog-new .p-dialog-header .p-dialog-title {
-    display: none; /* Hide default title */
+/* Ensure rounded corners and no white edges */
+:host ::ng-deep .p-dialog-mask {
+    padding: 0 !important;
+}
+
+:host ::ng-deep .p-component-overlay {
+    background: rgba(0, 0, 0, 0.4) !important; /* Consistent dark overlay */
+}
+
+/* Main dialog container styling */
+:host ::ng-deep .update-report-dialog,
+:host ::ng-deep .update-report-dialog .p-dialog,
+:host ::ng-deep .update-report-dialog > div {
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+    border: none !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Content area styling */
+:host ::ng-deep .update-report-dialog .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 0.75rem !important;
+    background-color: transparent !important;
+    border: none !important;
+    /* Prevent duplicate scrollbars */
+    overflow: hidden !important;
+}
+
+/* Ensure footer has no white corners */
+:host ::ng-deep .update-report-dialog .p-dialog-footer {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 0 0.75rem 0.75rem !important;
+    overflow: hidden !important;
+}
+
+/* Dialog Container Styling */
+:host ::ng-deep .report-detail-dialog-new {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Content area styling */
+:host ::ng-deep .report-detail-dialog-new .p-dialog-content {
+  padding: 0; /* Remove default content padding, handled by inner div */
+  background-color: transparent;
+  overflow: hidden; /* Prevent double scrollbars */
+  border-radius: 0.75rem;
+}
+
+/* Footer styling */
+:host ::ng-deep .report-detail-dialog-new .p-dialog-footer {
+  padding: 0;
+  border-top: none;
+  background-color: transparent;
 }
 
 /* Ensure custom close button in header is styled correctly */
@@ -23,18 +74,6 @@
     background-color: #f3f4f6; /* gray-100 */
 }
 
-
-:host ::ng-deep .report-detail-dialog-new .p-dialog-content {
-    padding: 0; /* Remove default content padding, handled by inner div */
-    background-color: #ffffff;
-    overflow-y: auto; /* Add scroll if content overflows */
-}
-
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer {
-    padding: 0.75rem 1.25rem; /* py-3 px-5 */
-    border-top: 1px solid #e5e7eb; /* gray-200 */
-    background-color: #f9fafb; /* gray-50 */
-}
 :host ::ng-deep  .p-dialog {
    
     border-top: 1px solid #e5e7eb; /* gray-200 */
@@ -44,40 +83,87 @@
 }
 
 
-/* Style action buttons in dialog footer */
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button {
-    font-size: 0.875rem; /* text-sm */
-    font-weight: 500; /* medium */
-   
-    display: inline-flex; /* Align icon and text */
+/* New Action Cards Styling */
+.action-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Remove PrimeNG button styling in action cards */
+:host ::ng-deep .action-card .p-button {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: inherit;
+}
+
+:host ::ng-deep .action-card .p-button:enabled:hover {
+    background-color: transparent;
+    border: none;
+}
+
+:host ::ng-deep .action-card .p-button:enabled:active {
+    background-color: transparent;
+    border: none;
+}
+
+:host ::ng-deep .action-card .p-button:enabled:focus {
+    box-shadow: none;
+    border: none;
+}
+
+/* Custom scrollbar styling for the orange theme */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f9f9fb;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f59e0b; /* Amber-500 color for the scrollbar thumb */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d97706; /* Amber-600 color for hover state */
+}
+
+/* Status tags styling */
+.status-tag {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.375rem;
+    font-weight: 500;
 }
 
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-outlined.p-button-danger {
-    color: #ef4444; /* red-500 */
-    border-color: #ef4444;
-}
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-outlined.p-button-danger:hover {
-    background-color: #fee2e2; /* red-50 */
+.status-tag.status-accepted {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-outlined.p-button-info {
-    color: #3b82f6; /* blue-500 */
-    border-color: #3b82f6;
-}
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-outlined.p-button-info:hover {
-    background-color: #eff6ff; /* blue-50 */
+.status-tag.status-pending {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde68a;
 }
 
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-success {
-   background-color: #10b981; /* emerald-500 */
-   border-color: #10b981;
-   color: #fff;
+.status-tag.status-opened {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
 }
-:host ::ng-deep .report-detail-dialog-new .p-dialog-footer .p-button-success:hover {
-   background-color: #059669; /* emerald-600 */
-   border-color: #059669;
+
+.status-tag.status-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
 }
 
 /* Status badge styling refinement inside dialog */

@@ -1,0 +1,150 @@
+/* 
+ * Shared styles for RemoteSync application
+ * This file contains common styling patterns to reduce duplication across components
+ */
+
+/* Color variables */
+:root {
+  --primary-color: #3B82F6;
+  --primary-light: #93C5FD;
+  --primary-dark: #1D4ED8;
+  --secondary-color: #10B981;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+  --text-color: #1F2937;
+  --text-light: #6B7280;
+  --background-light: #F9FAFB;
+  --background-dark: #1F2937;
+  --border-color: #E5E7EB;
+}
+
+/* Common mixins */
+
+/* Card styling */
+@mixin card-container {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Form styling */
+@mixin form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+}
+
+/* Table styling */
+@mixin data-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--background-light);
+    font-weight: 500;
+  }
+
+  tr {
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  tr:hover {
+    background-color: var(--background-light);
+  }
+}
+
+/* Flex layouts */
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Common button styles */
+@mixin action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  
+  button {
+    min-width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* Responsive utilities */
+@mixin mobile {
+  @media (max-width: 768px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 769px) and (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 1025px) {
+    @content;
+  }
+}
+
+/* Calendar specific styles */
+@mixin calendar-container {
+  .calendar-header {
+    @include space-between;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* Project & report common styles */
+@mixin item-card {
+  @include card-container;
+  
+  .card-header {
+    @include space-between;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+  }
+  
+  .card-body {
+    margin-top: 1rem;
+  }
+}

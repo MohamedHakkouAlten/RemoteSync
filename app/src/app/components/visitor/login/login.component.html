@@ -10,12 +10,12 @@
   <div class="login-form-column">
     <div class="logo-container">
       <app-visitor-logo-block
-      [logoSrc]="'assets/alten-logo.png'"
-      [logoAlt]="'ALTEN Logo'"
-      [mainText]="'ALTEN'"
-      [subText]="'RemoteSync'"
-      [containerClass]="'standalone-logo'"
-    ></app-visitor-logo-block>
+        [logoSrc]="'assets/alten-logo.png'"
+        [logoAlt]="'ALTEN Logo'"
+        [mainText]="'ALTEN'"
+        [subText]="'RemoteSync'"
+        [containerClass]="'standalone-logo'"
+      ></app-visitor-logo-block>
     </div>
     <div class="form-content-wrapper">
       <app-visitor-form-card
@@ -25,7 +25,9 @@
         <form (ngSubmit)="signIn()" #loginForm="ngForm" novalidate>
           <!-- Username/Email Input Group -->
           <div class="form-group">
-            <label for="email" class="form-label">{{ 'login.usernameOrEmail' | translate }}</label>
+            <label for="email" class="form-label">{{
+              "login.usernameOrEmail" | translate
+            }}</label>
             <span class="p-input-icon-left w-full">
               <i class="pi pi-user"></i>
               <input
@@ -44,24 +46,26 @@
 
           <!-- Password Input Group -->
           <div class="form-group">
-            <label for="password" class="form-label">{{ 'login.password' | translate }}</label>
-             <span class="p-input-icon-left w-full">
-               <i class="pi pi-lock"></i>
-               <!-- p-password gets the validation classes -->
-               <p-password
-                 id="password"
-                 name="password"
-                 [(ngModel)]="password"
-                 #passwordField="ngModel"
-                 placeholder="{{ 'login.enterPassword' | translate }}"
-                 [feedback]="false"
-                 styleClass="w-full"
-                 inputStyleClass="w-full hover:!border-orange-500 !outline-orange-500"
-                 [toggleMask]="true"
-                 required
-                >
-               </p-password>
-             </span>
+            <label for="password" class="form-label">{{
+              "login.password" | translate
+            }}</label>
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-lock"></i>
+              <!-- p-password gets the validation classes -->
+              <p-password
+                id="password"
+                name="password"
+                [(ngModel)]="password"
+                #passwordField="ngModel"
+                placeholder="{{ 'login.enterPassword' | translate }}"
+                [feedback]="false"
+                styleClass="w-full"
+                inputStyleClass="w-full hover:!border-orange-500 !outline-orange-500"
+                [toggleMask]="true"
+                required
+              >
+              </p-password>
+            </span>
           </div>
 
           <app-visitor-action-button
@@ -74,7 +78,12 @@
           ></app-visitor-action-button>
 
           <!-- Forgot Password Link -->
-          <a href="#" class="forgot-password-link" routerLink="/{{ currentLanguage }}/remotesync/forgot-password">{{ 'login.forgotPassword' | translate }}</a>
+          <a
+            href="#"
+            class="forgot-password-link"
+            routerLink="/{{ currentLanguage }}/remotesync/forgot-password"
+            >{{ "login.forgotPassword" | translate }}</a
+          >
         </form>
       </app-visitor-form-card>
     </div>
@@ -83,15 +92,14 @@
   <!-- Right Column: Branding -->
   <div class="branding-column">
     <div class="branding-content">
-        <h2>{{ 'branding.trackPresence' | translate }}</h2>
-        <h3>{{ 'branding.onSiteOrRemote' | translate }}</h3>
-        <p>{{ 'branding.realTimeVisibility' | translate }}</p>
-        <div class="stats">
-            <p>{{ 'branding.stats.clients' | translate }}</p>
-            <p>{{ 'branding.stats.consultants' | translate }}</p>
-            <p>{{ 'branding.stats.planning' | translate }}</p>
-        </div>
+      <h2>{{ "branding.trackPresence" | translate }}</h2>
+      <h3>{{ "branding.onSiteOrRemote" | translate }}</h3>
+      <p>{{ "branding.realTimeVisibility" | translate }}</p>
+      <div class="stats">
+        <p>{{ "branding.stats.clients" | translate }}</p>
+        <p>{{ "branding.stats.consultants" | translate }}</p>
+        <p>{{ "branding.stats.planning" | translate }}</p>
+      </div>
     </div>
   </div>
-
 </div>

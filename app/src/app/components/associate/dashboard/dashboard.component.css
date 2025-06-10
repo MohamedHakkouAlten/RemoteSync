@@ -117,7 +117,7 @@
       ========================================================================== */
    .summary-stats { 
      display: grid; 
-     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
      gap: 1.5rem; 
    }
    
@@ -873,6 +873,12 @@
      
      .summary-stats {
        grid-template-columns: 1fr 1fr;
+     }
+
+     @media (max-width: 480px) {
+      .summary-stats {
+        grid-template-columns: 1fr;
+      }
      }
      
      .stat-card {

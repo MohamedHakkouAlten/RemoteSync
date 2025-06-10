@@ -1,82 +1,170 @@
-<p-dialog [(visible)]="visible" [modal]="true"
-          [style]="{width: '90vw', maxWidth: '550px'}"  
-          [draggable]="false" [resizable]="false" [dismissableMask]="false"
-          (onHide)="closeReportModal()" styleClass="report-detail-dialog-new"
-        >
+<p-dialog [(visible)]="visible" 
+         [style]="{width: '85vw', maxWidth: '750px', borderRadius: '0.75rem', overflow: 'hidden'}" 
+         [breakpoints]="{'960px': '85vw', '640px': '95vw'}"
+         [modal]="true" 
+         [draggable]="false" 
+         [resizable]="false"
+         styleClass="update-report-dialog rounded-xl overflow-hidden shadow-lg"
+         [showHeader]="false"
+         (visibleChange)="visibleChange.emit($event)">
+    <!-- Custom header with no white corners -->
+    <div class="w-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-t-xl flex justify-between items-center p-4">
+        <h2 class="font-semibold text-xl text-white">{{ 'report_rc.viewDialog.title' | translate }}: {{ report?.title }}</h2>
+        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-text p-button-text-white" (click)="closeReportModal()"></button>
+    </div>
     <!-- Only render content when a report is selected -->
     <ng-container *ngIf="report!">
-
-
-        <!-- Dialog Content Area -->
-        <div class="pt-0 pb-5 px-5 space-y-5"> <!-- Adjusted padding -->
-            <!-- Report Header inside content -->
-            <div class="flex items-center gap-4">
-                <app-user-avatar  [userInitials]="userUtils.getUserInitials(report.createdBy)" />
-                <div>
-                    
-                <h1 >{{report.createdBy.firstName+" "+report.createdBy.lastName}}</h1>
+        <!-- Dialog Content Area with single scrollbar -->
+        <div class="p-6 bg-gradient-to-br from-white to-slate-50 flex flex-col gap-6 overflow-y-scroll rounded-b-xl" style="max-height: 65vh;">
+            <!-- Title and Status Header -->
+            <div class="flex justify-between items-center flex-wrap gap-3 pb-4 border-b border-slate-200">
+                <div class="flex flex-col gap-1">
+                    <h2 class="font-bold text-2xl text-slate-800">{{ report!.title }}</h2>
+                    <span class="text-sm text-slate-500">{{ report!.createdAt | date:'EEEE, MMM d, yyyy' }}</span>
                 </div>
-            </div>
-                <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">TITLE</label>
-                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-0 leading-tight">{{ report!.title }}</h2>
-            </div>
-           
-
-            <!-- Date Section -->
-            <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Date</label>
-                <p class="text-sm text-gray-800">{{ report!.createdAt| date:'MMM d, yyyy' }}</p>
-            </div>
-
-            <!-- Status Section -->
-            <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Status</label>
-                <span class="status-badge px-3 py-1 rounded-full text-xs font-semibold inline-block capitalize"
+                <span class="status-tag px-4 py-2 rounded-full text-sm font-medium inline-flex items-center gap-1"
                       [ngClass]="getStatusClass(report!.status!)">
-                   {{report!.status?.toString()?.toLocaleLowerCase() }} <!-- Use TitleCasePipe -->
+                    <i class="pi" [ngClass]="{
+                        'pi-check-circle': report!.status === reportStatus.ACCEPTED,
+                        'pi-clock': report!.status === reportStatus.OPENED,
+                        'pi-hourglass': report!.status === reportStatus.PENDING,
+                        'pi-times-circle': report!.status === reportStatus.REJECTED
+                    }"></i>
+                    {{ getTranslatedStatus(report!.status!) }}
                 </span>
+            </div>
+            
+            <!-- Two Column Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Author Card -->
+                <div class="flex flex-col gap-3 p-4 rounded-xl bg-orange-50 border border-orange-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 border-b border-orange-100 pb-2">
+                        <div class="bg-orange-100 p-2 rounded-lg">
+                            <i class="pi pi-user text-orange-500"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-orange-700">{{ 'report_rc.reportCard.createdBy' | translate }}</h3>
+                    </div>
+                    <div class="flex items-center gap-4 mt-1">
+                        <app-user-avatar 
+                            [userInitials]="userUtils.getUserInitials(report.createdBy)" 
+                            [bgColor]="'#3B82F6'" 
+                            [textColor]="'white'"
+                            [size]="'large'"
+                        />
+                        <div class="flex flex-col">
+                            <span class="font-medium text-slate-700">{{report.createdBy.firstName}} {{report.createdBy.lastName}}</span>
+                            <span class="text-sm text-blue-500">{{report.createdBy.firstName?.toLowerCase() || 'user'}}</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Date & Status Card -->
+                <div class="flex flex-col gap-3 p-4 rounded-xl bg-orange-50 border border-orange-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-2 border-b border-orange-100 pb-2">
+                        <div class="bg-orange-100 p-2 rounded-lg">
+                            <i class="pi pi-calendar text-orange-500"></i>
+                        </div>
+                        <h3 class="text-base font-semibold text-orange-700">{{ 'report_rc.viewDialog.date' | translate }}</h3>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-orange-400">{{ 'report_rc.viewDialog.status' | translate }}</span>
+                            <span class="font-medium text-slate-700 mt-1">
+                                <span class="status-tag px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1"
+                                      [ngClass]="getStatusClass(report!.status!)">
+                                    <i class="pi" 
+                                       [ngClass]="{
+                                           'pi-check-circle': report!.status === reportStatus.ACCEPTED,
+                                           'pi-clock': report!.status === reportStatus.OPENED,
+                                           'pi-hourglass': report!.status === reportStatus.PENDING,
+                                           'pi-times-circle': report!.status === reportStatus.REJECTED
+                                       }"></i>
+                                    {{ getTranslatedStatus(report!.status!) }}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="flex flex-col text-right">
+                            <span class="text-sm text-orange-400">{{ 'report_rc.viewDialog.date' | translate }}</span>
+                            <span class="font-medium text-slate-700 mt-1">{{ report!.createdAt | date:'EEEE, MMM d, yyyy' }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Description Section -->
-            <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Description</label>
-                <div class="text-sm text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-200 whitespace-pre-wrap min-h-[80px]">
-                    {{ report!.description || 'No description available.' }}
+            <div class="flex flex-col gap-3 p-4 rounded-xl bg-orange-50 border border-orange-100 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-2 border-b border-orange-100 pb-2">
+                    <div class="bg-orange-100 p-2 rounded-lg">
+                        <i class="pi pi-align-left text-orange-500"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-orange-700">{{ 'report_rc.viewDialog.description' | translate }}</h3>
+                </div>
+                <div class="text-slate-700 bg-white/60 p-5 rounded-lg border border-orange-100 whitespace-pre-wrap min-h-[120px] leading-relaxed">
+                    {{ report!.description || ('report_rc.viewDialog.noDescription' | translate) }}
                 </div>
             </div>
         </div>
 
         <!-- Dialog Footer with Action Buttons -->
     </ng-container> <!-- End *ngIf="report!" -->
-    <ng-template  pTemplate="footer">
-        <div *ngIf="report?.status==reportStatus.PENDING || report?.status==reportStatus.OPENED" class="flex justify-between items-center w-full gap-3">
-            <!-- Reject Button -->
-            <button pButton type="button"
-                    class="p-button-outlined cursor-pointer p-button-danger flex-1 !py-2.5 !px-4 !text-sm"
-                    (click)="updateReportStatus(reportStatus.REJECTED)"
-                    pTooltip="Mark as Pending/Rejected" tooltipPosition="top">
-                <i class="pi pi-times mr-2"></i>
-                <span>Reject</span>
-            </button>
-
-            <!-- In Progress Button -->
-            <button pButton type="button"
-                    class="p-button-outlined cursor-pointer p-button-info flex-1 !py-2.5 !px-4 !text-sm"
-                    (click)="updateReportStatus(reportStatus.OPENED)"
-                    pTooltip="Mark as In Progress" tooltipPosition="top">
-                <i class="pi pi-clock mr-2"></i>
-                <span>In Progress</span>
-            </button>
-
-            <!-- Accept Button -->
-            <button pButton type="button"
-                    class="p-button-success cursor-pointer flex-1 !py-2.5 !px-4 !text-sm"
-                    (click)="updateReportStatus(reportStatus.ACCEPTED)"
-                    pTooltip="Mark as Completed/Accepted" tooltipPosition="top">
-                <i class="pi pi-check mr-2"></i>
-                <span>Accept</span>
-            </button>
+    <ng-template pTemplate="footer">
+        <div *ngIf="report?.status==reportStatus.PENDING || report?.status==reportStatus.OPENED" 
+             class="flex flex-col sm:flex-row justify-between items-center w-full gap-4 p-5 bg-gradient-to-br from-white to-slate-50 border-t border-slate-200">
+            <!-- Action Button Cards - Modern Design Layout -->
+            
+            <!-- Reject Button Card -->
+            <div class="action-card bg-white rounded-xl border border-red-200 shadow-sm hover:shadow-md transition-all w-full sm:w-1/3 h-[120px] overflow-hidden">
+                <button pButton type="button"
+                        class="w-full h-full text-left border-0 p-0 flex items-center justify-center bg-transparent hover:bg-red-50 transition-colors"
+                        (click)="updateReportStatus(reportStatus.REJECTED)"
+                        pTooltip="{{ 'report_rc.viewDialog.rejectTooltip' | translate }}" tooltipPosition="top">
+                    <div class="p-4 flex gap-4 items-center w-full">
+                        <div class="bg-red-100 p-3 rounded-full flex-shrink-0">
+                            <i class="pi pi-times text-red-600 text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-medium text-slate-900 mb-1">{{ 'report_rc.viewDialog.reject' | translate }}</h3>
+                            <p class="text-xs text-slate-500">{{ 'report_rc.viewDialog.rejectTooltip' | translate }}</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- In Progress Button Card -->
+            <div class="action-card bg-white rounded-xl border border-orange-200 shadow-sm hover:shadow-md transition-all w-full sm:w-1/3 h-[120px] overflow-hidden">
+                <button pButton type="button"
+                        class="w-full h-full text-left border-0 p-0 flex items-center justify-center bg-transparent hover:bg-orange-50 transition-colors"
+                        (click)="updateReportStatus(reportStatus.OPENED)"
+                        pTooltip="{{ 'report_rc.viewDialog.inProgressTooltip' | translate }}" tooltipPosition="top">
+                    <div class="p-4 flex gap-4 items-center w-full">
+                        <div class="bg-orange-100 p-3 rounded-full flex-shrink-0">
+                            <i class="pi pi-clock text-orange-600 text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-medium text-slate-900 mb-1">{{ 'report_rc.viewDialog.inProgress' | translate }}</h3>
+                            <p class="text-xs text-slate-500">{{ 'report_rc.viewDialog.inProgressTooltip' | translate }}</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- Accept Button Card -->
+            <div class="action-card bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-all w-full sm:w-1/3 h-[120px] overflow-hidden">
+                <button pButton type="button"
+                        class="w-full h-full text-left border-0 p-0 flex items-center justify-center bg-transparent hover:bg-green-50 transition-colors"
+                        (click)="updateReportStatus(reportStatus.ACCEPTED)"
+                        pTooltip="{{ 'report_rc.viewDialog.acceptTooltip' | translate }}" tooltipPosition="top">
+                    <div class="p-4 flex gap-4 items-center w-full">
+                        <div class="bg-green-100 p-3 rounded-full flex-shrink-0">
+                            <i class="pi pi-check text-green-600 text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-medium text-slate-900 mb-1">{{ 'report_rc.viewDialog.accept' | translate }}</h3>
+                            <p class="text-xs text-slate-500">{{ 'report_rc.viewDialog.acceptTooltip' | translate }}</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
         </div>
     </ng-template>
 </p-dialog>

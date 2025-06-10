@@ -16,6 +16,7 @@ import com.alten.remotesync.application.report.record.request.AssociateReportDTO
 import com.alten.remotesync.application.report.record.request.PagedReportSearchDTO;
 import com.alten.remotesync.application.report.record.response.PagedReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
+import com.alten.remotesync.application.user.record.request.AssociateUpdateProfileDTO;
 import com.alten.remotesync.application.user.service.UserService;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.Valid;
@@ -133,12 +134,20 @@ public class AssociateController {
                         HttpStatus.OK));
     }
 
-    @GetMapping({"/associate/my-profile"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    @GetMapping({"/associate/my-profile", "/rc/my-profile"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ', 'RC:READ')")
     public ResponseEntity<?> associateProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success(userService.getAssociateProfile(GlobalDTO.fromUserId(userPrincipal.userId())),
                         HttpStatus.OK));
     }
     // WE NEED TO ADD PUT FUNCTION TO UPDATE THE USER INFORMATION
+
+    @PutMapping({"/associate/my-profile/update", "/rc/my-profile/update"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ', 'RC:READ')")
+    public ResponseEntity<?> associateUpdateProfile(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @RequestBody AssociateUpdateProfileDTO associateUpdateProfileDTO) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(userService.associateUpdateProfile(GlobalDTO.fromUserId(userPrincipal.userId()), associateUpdateProfileDTO),
+                        HttpStatus.OK));
+    }
 }

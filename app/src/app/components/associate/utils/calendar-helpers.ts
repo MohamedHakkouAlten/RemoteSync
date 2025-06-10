@@ -1,4 +1,4 @@
-import { CalendarDay, CalendarEvent } from '../models/dashboard.model';
+import { CalendarDay, CalendarEvent } from '../../../dto/associate/dashboard.model';
 
 /**
  * Helper class for calendar operations in the associate dashboard

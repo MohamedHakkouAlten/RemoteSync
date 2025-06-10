@@ -1,5 +1,5 @@
 import { ProjectStatus } from '../../../dto/project-status.enum';
-import { ProjectDTO } from '../../../dto/project.dto';
+import { ProjectDTO } from '../../../dto/aio/project.dto';
 
 /**
  * UI helper functions for associate components
@@ -11,7 +11,7 @@ export class AssociateUIHelpers {
    */
   static getProgressBarColor(status?: ProjectStatus): string {
     if (!status) return '#6c757d'; // gray default
-    
+
     // Check for status values
     switch (status) {
       case ProjectStatus.COMPLETED:
@@ -21,8 +21,6 @@ export class AssociateUIHelpers {
         return '#6c757d'; // gray
       case ProjectStatus.ACTIVE:
         return '#FF8C00'; // orange
-      case ProjectStatus.PENDING:
-        return '#dc3545'; // red
       default:
         return '#FF8C00'; // default fallback for unknown status
     }
@@ -33,14 +31,12 @@ export class AssociateUIHelpers {
    */
   static getStatusSeverity(status?: ProjectStatus): string {
     if (!status) return 'info';
-    
+
     switch (status) {
       case ProjectStatus.COMPLETED:
         return 'success';
       case ProjectStatus.ACTIVE:
         return 'info';
-      case ProjectStatus.PENDING:
-        return 'warning';
       case ProjectStatus.CANCELLED:
         return 'danger';
       case ProjectStatus.INACTIVE:
@@ -49,18 +45,18 @@ export class AssociateUIHelpers {
         return 'info';
     }
   }
-  
+
   /**
    * Returns a CSS class based on the business sector
    */
   static getSectorClass(sector?: string): string {
     if (!sector) return 'retail'; // default
-    
+
     const lowerSector = sector.toLowerCase();
     if (lowerSector.includes('retail')) return 'retail';
     if (lowerSector.includes('tour') || lowerSector.includes('hotel') || lowerSector.includes('travel')) return 'tourism';
     if (lowerSector.includes('manufact') || lowerSector.includes('industr')) return 'manufacturing';
-    
+
     return 'retail'; // default fallback
   }
 
@@ -69,23 +65,23 @@ export class AssociateUIHelpers {
    */
   static formatDateRange(startDate?: string, endDate?: string): string {
     if (!startDate) return 'No date';
-    
+
     const start = new Date(startDate);
-    const formattedStart = start.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    const formattedStart = start.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
-    
+
     if (!endDate) return `From ${formattedStart}`;
-    
+
     const end = new Date(endDate);
-    const formattedEnd = end.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    const formattedEnd = end.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
-    
+
     return `${formattedStart} - ${formattedEnd}`;
   }
 }

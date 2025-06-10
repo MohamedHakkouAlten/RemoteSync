@@ -13,6 +13,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 import { MessageService } from 'primeng/api';
 import { RippleModule } from 'primeng/ripple';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { RippleModule } from 'primeng/ripple';
     DropdownModule,
     ProgressSpinnerModule,
     RippleModule,
-    DefaultLayoutComponent
+    DefaultLayoutComponent,
+    TranslateModule
   ],
   providers: [
     MessageService

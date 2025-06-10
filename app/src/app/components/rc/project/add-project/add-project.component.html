@@ -1,35 +1,43 @@
    <p-dialog
-        header="Create New Project"
+        [header]="'project_rc.toolbar.newProjectButton' | translate"
         [(visible)]="displayCreateProjectDialog"
         [modal]="true"
-        [style]="{ width: '40vw', 'min-width': '400px' }"
-        styleClass="create-project-dialog"
+        [style]="{ width: '90vw' }"
+        [breakpoints]="{'960px': '80vw', '1280px': '50vw'}"
+        styleClass="create-project-dialog rounded-xl shadow-lg overflow-hidden"
         [draggable]="false"
         [resizable]="false"
         (onHide)="onHideDialog()">
 
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-6 p-4 bg-gradient-to-br from-white to-orange-50">
             <!-- Title -->
             <div class="flex flex-col">
-                <label for="projectTitle">Title</label>
-                <input id="projectTitle" type="text" pInputText [(ngModel)]="newProjectTitle" required autofocus />
+                <label for="projectTitle" class="mb-2 font-medium text-gray-700">{{ 'project_rc.form.title' | translate }}</label>
+                <div class="p-input-filled">
+                    <input id="projectTitle" type="text" pInputText [(ngModel)]="newProjectTitle" required autofocus
+                        placeholder="{{ 'project_rc.form.titlePlaceholder' | translate }}" class="p-2 rounded-lg w-full shadow-sm border-gray-300 focus:border-orange-500 focus:ring focus:ring-orange-200 transition-all" />
+                </div>
             </div>
-                      <div class="flex flex-col">
-                <label for="editProjectTitle">Label</label>
-                <input id="editProjectTitle" type="text" pInputText [(ngModel)]="newProjectLabel" required
-                    autofocus />
+            <div class="flex flex-col">
+                <label for="projectLabel" class="mb-2 font-medium text-gray-700">{{ 'project_rc.form.label' | translate }}</label>
+                <div class="p-input-filled">
+                    <input id="projectLabel" type="text" pInputText [(ngModel)]="newProjectLabel" required
+                        placeholder="{{ 'project_rc.form.labelPlaceholder' | translate }}" class="p-2 rounded-lg w-full shadow-sm border-gray-300 focus:border-orange-500 focus:ring focus:ring-orange-200 transition-all" />
+                </div>
             </div>
           
             <div class="flex flex-col">
-                <label for="projectStatus">Status</label>
+                <label for="projectStatus" class="mb-2 font-medium text-gray-700">{{ 'project_rc.table.header.status' | translate }}</label>
                
                 <p-dropdown
                     id="projectStatus"
                     [options]="projectStatusOptions"
                     [(ngModel)]="newProjectStatus"
-                    placeholder="Select a Status"
+                    [placeholder]="'project_rc.form.selectStatus' | translate"
                     optionLabel="label"
                     optionValue="value"
+                    styleClass="w-full rounded-lg shadow-sm"
+                    panelStyleClass="rounded-md shadow-md"
                     required
                     appendTo="body">
                 </p-dropdown>
@@ -38,54 +46,62 @@
             <!-- Members -->
        
             <!-- Dates -->
-            <div class="flex gap-2">
-                <div class="field col">
-                    <label for="projectStartDate">Start Date</label>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="field w-full sm:w-1/2">
+                    <label for="projectStartDate" class="mb-2 font-medium text-gray-700">{{ 'project_rc.form.startDate' | translate }}</label>
                     <p-calendar
                         id="projectStartDate"
                         [(ngModel)]="newProjectStartDate"
                         dateFormat="yy-mm-dd"
-                        
                         dataType="string"
                         [showIcon]="true"
+                        styleClass="w-full rounded-lg shadow-sm"
+                        panelStyleClass="rounded-md shadow-md"
                         appendTo="body">
                     </p-calendar>
                 </div>
-                <div class="field col">
-                    <label for="projectDeadline">End Date </label>
+                <div class="field w-full sm:w-1/2">
+                    <label for="projectDeadline" class="mb-2 font-medium text-gray-700">{{ 'project_rc.form.endDate' | translate }}</label>
                     <p-calendar
                         id="projectDeadline"
                         [(ngModel)]="newProjectDeadline"
                         dateFormat="yy-mm-dd"
                         dataType="string"
                         [showIcon]="true"
+                        styleClass="w-full rounded-lg shadow-sm"
+                        panelStyleClass="rounded-md shadow-md"
                         appendTo="body">
                     </p-calendar>
                 </div>
             </div>
             <!-- Client -->
-                   <div class="flex w-full flex-col">
-                <label for="editProjectClient">Client</label>
-                <p-autocomplete [(ngModel)]="selectedClient" appendTo="body" [dropdown]="true" placeholder="Client"
-                    class="!border-0 !w-full !text-sm" [suggestions]="clients"
+            <div class="flex w-full flex-col">
+                <label for="projectClient" class="mb-2 font-medium text-gray-700">{{ 'project_rc.table.header.client' | translate }}</label>
+                <p-autocomplete [(ngModel)]="selectedClient" appendTo="body" [dropdown]="true" 
+                    [placeholder]="'project_rc.form.clientPlaceholder' | translate"
+                    styleClass="w-full rounded-lg shadow-sm" 
+                    panelStyleClass="rounded-md shadow-md"
+                    [suggestions]="clients"
                     (completeMethod)="searchClient($event)" />
             </div>
         </div>
 
         <ng-template pTemplate="footer">
-            <p-button
-                label="Cancel"
-                icon="pi pi-times"
-                styleClass="p-button-text"
-                (click)="onHideDialog()">
-            </p-button>
-            <p-button
-                label="Save"
-                icon="pi pi-check"
-                styleClass="p-button-warning"
-                (click)="saveNewProject()"
-                [disabled]="!newProjectTitle || !newProjectStatus || !newProjectLabel || !newProjectDeadline || !newProjectStartDate || !selectedClient">
-            </p-button>
+            <div class="flex justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50">
+                <p-button
+                    [label]="'project_rc.form.cancel' | translate"
+                    icon="pi pi-times"
+                    styleClass="p-button-text p-button-secondary"
+                    (click)="onHideDialog()">
+                </p-button>
+                <p-button
+                    [label]="'project_rc.form.save' | translate"
+                    icon="pi pi-check"
+                    styleClass="p-button-warning shadow-sm hover:shadow-md transition-shadow"
+                    (click)="saveNewProject()"
+                    [disabled]="!newProjectTitle || !newProjectStatus || !newProjectLabel || !newProjectDeadline || !newProjectStartDate || !selectedClient">
+                </p-button>
+            </div>
         </ng-template>
 
     </p-dialog>

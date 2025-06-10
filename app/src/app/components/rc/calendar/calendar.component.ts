@@ -2,22 +2,18 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { startOfWeek, addWeeks, format, addDays, subWeeks, weeksToDays } from 'date-fns';
 import { AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
-import { Rotation } from '../../../models/rotation.model';
-// Remove the local RotationStatus import to avoid conflicts
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, Subject, Subscription, switchMap } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-import { 
-  RcService, 
-  ClientDropDownDTO, 
-  FactoryDropDownDTO, 
-  PagedRotationsSearchDTO, 
-  RcRecentAssociateRotations,
-  RotationStatus,
-  CustomDate,
-  RcUpdateAssociateRotationDTO
-} from '../../../services/rc.service';
+import { RcService } from '../../../services/rc.service';
+import { ClientDropDownDTO } from '../../../dto/rc/client-dropdown.dto';
+import { FactoryDropDownDTO } from '../../../dto/rc/factory-dropdown.dto';
+import { PagedRotationsSearchDTO } from '../../../dto/rc/paged-rotations-search.dto';
+import { RcRecentAssociateRotations } from '../../../dto/rc/rc-recent-associate-rotations.dto';
+import { RotationStatus } from '../../../dto/rc/rotation-status.enum';
+import { CustomDate } from '../../../dto/rc/custom-date.dto';
+import { RcUpdateAssociateRotationDTO } from '../../../dto/rc/rc-update-associate-rotation.dto';
 import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
 import { daysInWeek } from 'date-fns/constants';
 import { WebSocketService } from '../../../services/web-socket.service';
@@ -174,7 +170,7 @@ createRotation(event:boolean) {
           // Set the clients and factories for dropdowns
           if (response.data.clientDropDown && Array.isArray(response.data.clientDropDown)) {
             // Make sure each client has the proper structure for the dropdown
-            const clientList: ClientDropDownDTO[] = response.data.clientDropDown.map(client => ({
+            const clientList: ClientDropDownDTO[] = response.data.clientDropDown.map((client: ClientDropDownDTO) => ({
               clientId: client.clientId,
               label: client.label
             }));
@@ -190,7 +186,7 @@ createRotation(event:boolean) {
           
           if (response.data.factoryDropDown && Array.isArray(response.data.factoryDropDown)) {
             // Make sure each factory has the proper structure for the dropdown
-            const factoryList: FactoryDropDownDTO[] = response.data.factoryDropDown.map(factory => ({
+            const factoryList: FactoryDropDownDTO[] = response.data.factoryDropDown.map((factory: FactoryDropDownDTO) => ({
               factoryId: factory.factoryId,
               label: factory.label
             }));
@@ -596,7 +592,26 @@ createRotation(event:boolean) {
    * Format date for display in header
    */
   formatDateHeader(date: Date): string {
-    return format(date, 'dd-MM');
+    return format(date, 'MMM dd');
+  }
+  
+  /**
+   * Format day name (Mon, Tue, etc) for calendar header
+   */
+  formatDay(date: Date): string {
+    return format(date, 'EEE');
+  }
+  
+  /**
+   * Check if a date is today
+   */
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
   }
 
   /**

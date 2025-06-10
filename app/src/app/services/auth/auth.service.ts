@@ -10,6 +10,7 @@ import { ForgotPasswordRequestDto } from '../../dto/auth/forgotpassword.dto';
 import { UserService } from './user.service';
 import { ResponseWrapperDto } from '../../dto/response-wrapper.dto';
 import { ResetPasswordRequestDto } from '../../dto/auth/resetpassword.dto';
+import { RecoverPasswordDto } from '../../dto/auth/recoverpassword.dto'
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,48 @@ export class AuthService {
           console.error('Login failed:', error);
           // Extract backend error message if available
           const message = error.error?.message || error.message || 'Login failed. Please check credentials and try again.';
+          return throwError(() => new Error(message));
+        })
+      );
+  }
+
+  /**
+   * Recover password by sending email to user
+   * @param data Object containing user email
+   */
+  recoverPassword(data: RecoverPasswordDto): Observable<ResponseWrapperDto<any>> {
+    return this.http.post<ResponseWrapperDto<any>>(`${this.API_URL}/recover-password`, data)
+      .pipe(
+        catchError(error => {
+          console.error('Password recovery request failed:', error);
+          const message = error.error?.message || error.message || 'Failed to send password recovery email. Please try again.';
+          return throwError(() => new Error(message));
+        })
+      );
+  }
+
+  /**
+   * Reset password with token
+   * @param data Object containing new password and confirmation password
+   */
+  resetPassword(data: ResetPasswordRequestDto): Observable<ResponseWrapperDto<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${data.token}`
+    });
+
+    // Create the payload matching exactly what the backend expects
+    const payload = {
+      password: data.password,
+      confPassword: data.confPassword
+    };
+
+    console.log('Reset password payload:', payload); // Log the payload for debugging
+
+    return this.http.put<ResponseWrapperDto<any>>(`${this.API_URL}/reset-password`, payload, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Password reset failed:', error);
+          const message = error.error?.message || error.message || 'Failed to reset password. Please try again.';
           return throwError(() => new Error(message));
         })
       );
@@ -110,10 +153,10 @@ export class AuthService {
   }
   logout(): Observable<void> {
     const refreshToken = this.userService.getRefreshToken();
-    
+
     // Clear user data regardless of API call result
     this.userService.clearUserData();
-    
+
     // Call backend logout endpoint if we have a refresh token
     if (refreshToken) {
       return this.http.post<void>(`${this.API_URL}/logout`, { refreshToken })
@@ -126,33 +169,9 @@ export class AuthService {
     } else {
       return of(undefined);
     }
-  
+
   }
 
-  /**
-   * Request a password reset email
-   */
-  forgotPassword(data: ForgotPasswordRequestDto): Observable<ResponseWrapperDto<any>> {
-    return this.http.post<ResponseWrapperDto<any>>(`${this.API_URL}/forgot-password`, data)
-      .pipe(
-        catchError(error => {
-          console.error('Forgot password request failed:', error);
-          const message = error.error?.message || error.message || 'Failed to send password reset email. Please try again.';
-          return throwError(() => new Error(message));
-        })
-      );
-  }
 
-  /**
-   * Reset password with token
-   */
-  resetPassword(data: ResetPasswordRequestDto): Observable<ResponseWrapperDto<any>> {
-    return this.http.post<ResponseWrapperDto<any>>(`${this.API_URL}/reset-password`, data).pipe(
-      catchError(error => {
-        console.error('Password reset failed:', error);
-        const message = error.error?.message || error.message || 'Failed to reset password. Please try again.';
-        return throwError(() => new Error(message));
-      })
-    );
-  }
+
 }

@@ -19,7 +19,12 @@ Base Layout & Container
     margin: 0 auto;
     width: 100%;
 }
-/* Header */
+/* Header Container */
+.header-container {
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+}
+
 .projects-header h1 {
     font-size: 1.9rem;
     font-weight: 600;
@@ -29,16 +34,20 @@ Base Layout & Container
 .projects-header p {
     font-size: 1rem;
     color: #6c757d;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 /* Summary Stats */
 .summary-stats {
     display: flex;
     flex-wrap: wrap;
     gap: 1.8rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
     font-size: 0.95rem;
     color: #495057;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .summary-stats .stat-item {
     display: flex;
@@ -47,60 +56,157 @@ Base Layout & Container
 }
 .summary-stats .indicator {
     display: inline-block;
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    margin-right: 0.4rem; /* Adjusted from gap */
+    margin-right: 0.5rem;
 }
-.summary-stats .indicator.active { background-color: #0d6efd; } /* Example: Blue */
-.summary-stats .indicator.completed { background-color: #198754; } /* Example: Green */
-.summary-stats .indicator.upcoming { background-color: #ffc107; } /* Example: Yellow */
+.summary-stats .indicator.active { background-color: var(--orange-primary); } /* Changed to theme variable */
+.summary-stats .indicator.inactive { background-color: #ffc107; } /* Yellow */
+.summary-stats .indicator.completed { background-color: #198754; } /* Green */
+.summary-stats .indicator.cancelled { background-color: #ef4444; } /* Red */
 .summary-stats .count {
     font-weight: 600;
     color: #343a40;
 }
 
-/* Toolbar */
+/* Toolbar Container & Layout */
+.toolbar-container {
+    margin-bottom: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--orange-light) !important;
+    border: 1px solid rgba(255, 140, 0, 0.15) !important;
+}
+
 .toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 2rem;
     align-items: center;
+    justify-content: flex-start;
 }
+
 .toolbar .search-field {
     flex-grow: 1;
-    min-width: 300px;
-    max-width: 450px;
-}
-:host ::ng-deep .toolbar .search-field .p-inputtext {
+    min-width: 250px;
+    max-width: 300px;
     width: 100%;
+}
+
+.toolbar .client-filter {
+    flex-grow: 1;
+    min-width: 250px;
+    max-width: 300px;
+    width: 100%;
+}
+
+.toolbar .new-project-button {
+    margin-left: auto;
+}
+
+/* Modern Orange Theme Input Styling */
+:host {
+    --orange-primary: #FF8C00;
+    --orange-light: #fff8f0;
+    --orange-hover: #e67e00;
+    --orange-shadow: rgba(255, 140, 0, 0.2);
+    --card-bg: #fff;
+    --page-bg: #f8fafc; /* Lighter background like report component */
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #ced4da;
+}
+
+/* Page Background */
+.projects-layout {
+    background-color: var(--page-bg);
+    min-height: 100vh;
+}
+
+/* Search Input Styling */
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border-radius: 6px !important;
+    border: 1px solid var(--border-color) !important;
+    height: 44px !important;
     font-size: 0.95rem;
-    border-radius: 6px;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text-secondary) !important;
+    box-sizing: border-box;
 }
-:host ::ng-deep .toolbar .search-field .p-input-icon {
+
+:host ::ng-deep .search-input.p-input-icon-left {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+:host ::ng-deep .search-input.p-input-icon-left > i {
+    position: absolute;
+    left: 1rem;
     top: 50%;
-    margin-top: -.5rem; /* Vertically center */
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 2;
 }
+
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:hover,
+:host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:focus {
+  border-color: var(--orange-primary) !important;
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important;
+  outline: 0 !important;
+}
+
+:host ::ng-deep .p-button.p-button-warning {
+    background-color: var(--orange-primary);
+    border-color: var(--orange-primary);
+    color: #fff;
+}
+
+:host ::ng-deep .p-button.p-button-warning:hover {
+    background-color: var(--orange-hover);
+    border-color: var(--orange-hover);
+}
+
+:host ::ng-deep .p-button.p-button-warning.p-button-outlined {
+    background-color: #fffbeb;
+    border-color: #facc15;
+    color: #ca8a04;
+    font-weight: 500;
+}
+
+:host ::ng-deep .p-button.p-button-warning.p-button-outlined:hover {
+    background-color: #fef9c3;
+}
+
 :host ::ng-deep .toolbar .filter-button {
     color: #6c757d;
     border-color: #ced4da;
-    border-radius: 6px;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
 }
+
 :host ::ng-deep .toolbar .filter-button:hover {
     background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #495057;
 }
-:host ::ng-deep .toolbar .new-project-button {
-    background-color: #FF8C00; /* Dark Orange */
-    border-color: #FF8C00;
+
+.toolbar .new-project-button {
+    background-color: var(--orange-primary); /* Using theme variable */
+    border-color: var(--orange-primary);
     color: #ffffff;
     margin-left: auto; /* Pushes to the right */
     border-radius: 6px;
 }
 :host ::ng-deep .toolbar .new-project-button:hover,
 :host ::ng-deep .toolbar .new-project-button:focus {
-    background-color: #e07b00; /* Slightly darker orange */
-    border-color: #d37300;
+    background-color: var(--orange-hover); /* Using hover theme variable */
+    border-color: var(--orange-hover);
     color: #ffffff;
 }
 
@@ -109,12 +215,14 @@ Refined Table Styles
 ============================ */
 .table-container {
     background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     overflow: hidden; /* Important for border-radius clipping */
+    position: relative; /* For positioning paginator */
+    margin-bottom: 2rem;
+    /* Consistent with report page */
+    padding: 1.5rem;
 }
-
-
 :host ::ng-deep .custom-table .p-datatable-thead > tr > th {
     background-color: #f8f9fa; /* Light header background */
     color: #495057;
@@ -161,8 +269,8 @@ Refined Table Styles
     background-color: #e9ecef;
 }
 :host ::ng-deep .custom-table .p-paginator .p-paginator-page.p-highlight {
-    background-color: #FF8C00; /* Match primary button color */
-    border-color: #FF8C00;
+    background-color: var(--orange-primary); /* Using theme variable */
+    border-color: var(--orange-primary);
     color: white;
 }
 :host ::ng-deep .custom-table .p-paginator .p-dropdown .p-dropdown-label {
@@ -213,11 +321,29 @@ Refined Table Styles
     box-shadow: none;
     outline: none;
 }
+
 :host ::ng-deep .p-dialog .p-dialog-content {
     background-color: #ffffff;
     padding: 1.75rem; /* Consistent padding */
     color: #4b5563;
     line-height: 1.6;
+}
+
+/* Pagination positioning */
+:host ::ng-deep .p-paginator {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #f0f0f0;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Ensure paginator is always at bottom right */
+:host ::ng-deep .p-datatable .p-paginator-bottom {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    border-top: 1px solid #f0f0f0;
 }
 /* =============================================
    NEW VIEW DIALOG STYLES (Matching Image Target)
@@ -290,7 +416,7 @@ Refined Table Styles
 .view-card-section {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #f1f3f5; /* Lighter divider */
+    border-bottom: 1px solid var(--orange-light); /* Lighter divider */
 }
 .view-card-section:last-of-type {
     margin-bottom: 0;
@@ -330,7 +456,7 @@ Refined Table Styles
     width: 36px;
     height: 36px;
     font-size: 1rem;
-    background-color: #fff3cd !important; /* Background from image */
+    background-color: var(--orange-light) !important; /* Updated to match theme */
     color: #f97316 !important; /* Text color from image */
     flex-shrink: 0;
 }
@@ -373,7 +499,8 @@ Refined Table Styles
     color: #6b7280;
 }
 .view-member-name {
-    /* Simple text style */
+    font-weight: 500;
+    color: #525252;
 }
 
 /* Duration/Client Value */
@@ -405,7 +532,8 @@ Refined Table Styles
         margin-bottom: 0.5rem;
     }
     .view-card-status {
-        /* Align self to start if needed */
+        align-self: flex-start;
+        margin-bottom: 0.25rem;
     }
     .view-section-content {
         padding-left: 0.5rem; /* Reduce indent on small screens */
@@ -439,8 +567,8 @@ Refined Table Styles
     color: #1f2937;
 }
 :host ::ng-deep .p-dialog-footer .p-button-warning {
-    background-color: #FF8C00; /* Match theme */
-    border-color: #FF8C00;
+    background-color: var(--orange-primary); /* Using theme variable */
+    border-color: var(--orange-primary);
     color: #ffffff;
 }
 :host ::ng-deep .p-dialog-footer .p-button-warning:enabled:hover {

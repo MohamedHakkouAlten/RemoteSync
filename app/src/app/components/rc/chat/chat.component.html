@@ -1,0 +1,52 @@
+<!-- Chat Button -->
+<button class="chat-float-button" (click)="toggleChat()">
+  <i class="pi pi-comments"></i>
+</button>
+
+<!-- Chat Window -->
+<div class="chat-window" [class.open]="isChatOpen">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="header-content">
+      <i class="pi pi-comments"></i>
+      <span>{{ 'chat.title' | translate }}</span>
+    </div>
+    <i class="pi" [class.pi-chevron-down]="isChatOpen" [class.pi-chevron-up]="!isChatOpen"></i>
+  </div>
+
+  <!-- Chat Messages -->
+  <div class="chat-messages" #chatContainer>
+    <div *ngIf="messages.length === 0" class="system-message">
+      {{ 'chat.no_messages' | translate }}
+    </div>
+    <div *ngFor="let message of messages" 
+         [ngClass]="{
+           'message': true,
+           'user-message': message.senderId === currentUserIdentifier,
+           'other-message': message.senderId !== currentUserIdentifier,
+           'system-message': message.type === 'SYSTEM'
+         }">
+      <div class="message-header">
+        <span class="username">{{ message.username }}</span>
+        <span class="timestamp">{{ message.timestamp | date:'short' }}</span>
+      </div>
+      <div class="message-content">
+        {{ message.content }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <form class="chat-input" [formGroup]="chatForm" (ngSubmit)="sendMessage()">
+    <input type="text" 
+           formControlName="message" 
+           [placeholder]="'chat.type_message' | translate"
+           [disabled]="!stompClient">
+    <button type="submit" 
+            [disabled]="!chatForm.valid || !stompClient"
+            class="send-button"
+            [title]="'chat.send' | translate">
+      <i class="pi pi-send"></i>
+    </button>
+  </form>
+</div>

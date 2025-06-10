@@ -1,15 +1,42 @@
 /* src/app/report/report.component.css */
 :host {
-    display: block; /* Ensures the component takes up layout space */
-  }
+  display: block;
+  width: 100%;
+  --orange-primary: #FF8C00;
+  --orange-light: #fff8f0;
+  --orange-hover: #e67e00;
+  --orange-shadow: rgba(255, 140, 0, 0.2);
+}
 
-  /* --- Filter Bar Styles (Keep as before) --- */
-  .filter-bar .p-input-icon-left > .p-inputtext { padding-left: 2.5rem; }
-  .filter-bar .p-input-icon-left > i { left: 0.75rem; color: #9ca3af; }
-  .filter-bar .p-button.p-button-outlined.p-button-secondary:not(.p-button-warning) { color: #4b5563; border-color: #d1d5db; }
-  .filter-bar .p-button.p-button-outlined.p-button-secondary:not(.p-button-warning):hover { background-color: #f9fafb; }
-  .filter-bar .p-button.p-button-warning { background-color: #fffbeb; border-color: #facc15; color: #ca8a04; font-weight: 500; }
-  .filter-bar .p-button.p-button-warning:hover { background-color: #fef9c3; }
+.reports-layout {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: #f5f7f9;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.reports-container {
+  padding: 2rem 2.5rem;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.reports-header {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 2rem;
+}
+
+.filter-bar .p-button.p-button-outlined.p-button-secondary:not(.p-button-warning):hover { background-color: #f9fafb; }
+.filter-bar .p-button.p-button-warning { background-color: #fffbeb; border-color: #facc15; color: #ca8a04; font-weight: 500; }
+.filter-bar .p-button.p-button-warning:hover { background-color: #fef9c3; }
 
   /* === Orange Theme Input & Dropdown (from Associate Project) === */
   :host {
@@ -17,11 +44,15 @@
     --card-bg: #fff;
     --page-bg: #f3f4f6;
     --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --border-color: #ced4da;
   }
+  
+  /* Search Input Styling */
   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext {
     padding: 0.75rem 1rem 0.75rem 2.75rem;
     border-radius: 6px !important;
-    border: 2px solid var(--page-bg) !important;
+    border: 1px solid var(--border-color) !important;
     height: 44px !important;
     font-size: 0.95rem;
     width: 100%;
@@ -30,11 +61,13 @@
     color: var(--text-secondary) !important;
     box-sizing: border-box;
   }
-  :host ::ng-deep .search-input.p-input-icon-left.flex-grow, .search-input.p-input-icon-left {
+  
+  :host ::ng-deep .search-input.p-input-icon-left {
     position: relative;
-    display: inline-block;
+    display: block;
     width: 100%;
   }
+  
   :host ::ng-deep .search-input.p-input-icon-left > i {
     position: absolute;
     left: 1rem;
@@ -44,7 +77,7 @@
     font-size: 1rem;
     pointer-events: none;
     z-index: 2;
-}
+  }
 
   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:hover,
   :host ::ng-deep .search-input.p-input-icon-left > .p-inputtext:focus {
@@ -53,36 +86,200 @@
     outline: 0 !important;
   }
   :host ::ng-deep .filter-dropdown.p-dropdown {
-    width: 180px;
+    width: 100%;
     height: 44px;
     border-radius: 6px !important;
     background-color: var(--card-bg) !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
-    border: 2px solid var(--page-bg) !important;
+    border: 1px solid var(--border-color) !important;
   }
+  
+  :host ::ng-deep .filter-dropdown .p-dropdown-label {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+  
   :host ::ng-deep .filter-dropdown.p-dropdown:hover,
   :host ::ng-deep .filter-dropdown.p-dropdown:focus-within {
     border-color: var(--orange-primary) !important;
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important;
   }
 
-  /* --- Report Card Styles (Keep as before) --- */
-    :host ::ng-deep.report-card .p-button-outlined.p-button-danger .p-button-label { font-family: inter !important;font-weight: 400!important;}
-  .report-card .p-button-outlined.p-button-danger { color: var(--color-primary); border-color: var(--color-primary); font-family: inter !important;font-weight: 300;  color: var(--color-primary);}
-  .report-card .p-button-outlined.p-button-danger:hover { background-color: var(--color-primary); border-color: var(--color-primary); color: white !important; }
-  .status-badge { line-height: 1; }
+/* Report Card Grid Container */
+.report-grid-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
 
-  /* --- Paginator Customization (Keep as before) --- */
-  :host ::ng-deep .p-paginator { padding: 0; background: none; border: none; }
-  :host ::ng-deep .p-paginator .p-paginator-element:not(.p-disabled):not(.p-highlight):hover { background-color: #f3f4f6; }
-  :host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page { min-width: 2.25rem; height: 2.25rem; font-size: 0.875rem; border-radius: 4px; }
-  :host ::ng-deep .p-paginator .p-paginator-first,
-  :host ::ng-deep .p-paginator .p-paginator-prev,
-  :host ::ng-deep .p-paginator .p-paginator-next,
-  :host ::ng-deep .p-paginator .p-paginator-last { min-width: 2.25rem; height: 2.25rem; border-radius: 4px; }
-  :host ::ng-deep .p-paginator .p-dropdown { height: 2.25rem; border-radius: 4px; }
-  :host ::ng-deep .p-paginator .p-dropdown .p-dropdown-label { font-size: 0.875rem; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+/* Report Card Styles - Enhanced */
+.report-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
 
-  /* --- Calendar Input Customization (Keep as before) --- */
+.report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+:host ::ng-deep.report-card .p-button-outlined.p-button-danger .p-button-label { font-family: inter !important;font-weight: 400!important;}
+.report-card .p-button-outlined.p-button-danger { color: var(--color-primary); border-color: var(--color-primary); font-family: inter !important;font-weight: 300;  color: var(--color-primary);}
+.report-card .p-button-outlined.p-button-danger:hover { background-color: var(--color-primary); border-color: var(--color-primary); color: white !important; }
+.status-badge { line-height: 1; }
+
+/* Pagination Container Styles */
+.paginator-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-summary {
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+/* Paginator Component Styles */
+:host ::ng-deep .p-paginator { padding: 0; background: none; border: none; }
+:host ::ng-deep .p-paginator .p-paginator-element:not(.p-disabled):not(.p-highlight):hover { background-color: var(--orange-light); }
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page { min-width: 2.25rem; height: 2.25rem; font-size: 0.875rem; border-radius: 6px; }
+:host ::ng-deep .p-paginator .p-paginator-first,
+:host ::ng-deep .p-paginator .p-paginator-prev,
+:host ::ng-deep .p-paginator .p-paginator-next,
+:host ::ng-deep .p-paginator .p-paginator-last { min-width: 2.25rem; height: 2.25rem; border-radius: 6px; }
+:host ::ng-deep .p-paginator .p-dropdown { height: 2.25rem; border-radius: 6px; }
+:host ::ng-deep .p-paginator .p-dropdown .p-dropdown-label { font-size: 0.875rem; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+
+/* Orange Theme Paginator */
+:host ::ng-deep .paginator-orange .p-paginator-page.p-highlight {
+  background-color: var(--orange-primary) !important;
+  color: white !important;
+}
+
+:host ::ng-deep .paginator-orange .p-paginator-element:focus {
+  box-shadow: 0 0 0 2px var(--orange-shadow) !important;
+}
+
+  /* Additional Card Styles */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.card-title {
+  padding: 1rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-date {
+  padding: 0 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  padding: 1rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+/* View Report Button Styling */
+:host ::ng-deep .p-button-outlined.p-button-warning {
+  color: var(--orange-primary);
+  border-color: var(--orange-primary);
+  background-color: transparent;
+}
+
+:host ::ng-deep .p-button-outlined.p-button-warning:hover {
+  background-color: var(--orange-light);
+  border-color: var(--orange-hover);
+}
+
+/* Toolbar Styling */
+.toolbar {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  gap: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #4b5563;
+  border-bottom: 2px solid var(--orange-primary);
+}
+
+/* --- Calendar Input Customization --- */
   :host ::ng-deep .calendar-orange .p-inputtext, :host ::ng-deep .p-calendar.calendar-orange .p-inputtext {
     padding-left: 2.5rem;
     height: 44px !important;
@@ -93,13 +290,30 @@
     color: var(--text-secondary) !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
-:host ::ng-deep .calendar-orange .p-inputtext:hover,
-:host ::ng-deep .calendar-orange .p-inputtext:focus,
-:host ::ng-deep .p-calendar.calendar-orange .p-inputtext:hover,
+/* Calendar Styling */
+:host ::ng-deep .calendar-orange .p-calendar {
+  width: 100%;
+}
+
+:host ::ng-deep .calendar-orange .p-inputtext {
+  padding: 0.75rem !important;
+  border-radius: 6px !important;
+  height: 44px !important;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--card-bg) !important;
+  color: var(--text-secondary) !important;
+  width: 100% !important;
+}
+
+:host ::ng-deep .p-calendar.calendar-orange .p-inputtext:hover {
+  border-color: var(--orange-primary) !important;
+}
+
 :host ::ng-deep .p-calendar.calendar-orange .p-inputtext:focus {
-    border-color: var(--orange-primary) !important;
-    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important;
-    outline: 0 !important;
+  border-color: var(--orange-primary) !important;
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2) !important;
+  outline: 0 !important;
 }
 :host ::ng-deep .calendar-orange .p-input-icon, :host ::ng-deep .p-calendar.calendar-orange .p-input-icon {
     position: absolute;
@@ -129,6 +343,357 @@
     height: 1rem;
     pointer-events: none;
 }
-:host ::ng-deep .p-calendar button.p-datepicker-trigger { display: none; }
+/* Base Layout */
+:host {
+  display: block;
+}
 
+.reports-layout {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: #f5f7f9;
+}
 
+/* Header Section */
+.reports-header {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 2rem;
+}
+
+.reports-header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.reports-header p {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Summary Stats */
+.summary-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 1.25rem 2rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.summary-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.summary-stats .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.summary-stats .count {
+  font-weight: 600;
+  color: #333;
+  margin-left: 0.25rem;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 1.5rem 2rem;
+}
+
+.toolbar .search-field {
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.toolbar .date-filter,
+.toolbar .status-filter {
+  min-width: 200px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .toolbar .date-filter,
+  .toolbar .status-filter {
+    width: 220px;
+  }
+}
+
+:host ::ng-deep .toolbar .p-dropdown,
+:host ::ng-deep .toolbar .p-calendar {
+  width: 100%;
+  height: 44px;
+}
+
+:host ::ng-deep .toolbar .p-dropdown-label,
+:host ::ng-deep .toolbar .p-calendar input {
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .status-filter .p-dropdown,
+:host ::ng-deep .date-filter .p-calendar {
+  border: 2px solid #f3f4f6;
+  box-shadow: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:host ::ng-deep .status-filter .p-dropdown:hover,
+:host ::ng-deep .date-filter .p-calendar:hover {
+  border-color: #FF8C00;
+}
+
+:host ::ng-deep .status-filter .p-dropdown:focus-within,
+:host ::ng-deep .date-filter .p-calendar:focus-within {
+  border-color: #FF8C00;
+  box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+  outline: none;
+}
+
+:host ::ng-deep .toolbar .calendar-filter .p-datepicker-trigger {
+  color: var(--text-muted);
+  background-color: transparent;
+  border: none;
+  border-left: 1px solid var(--border-color);
+  border-radius: 0 6px 6px 0;
+  height: 44px;
+  margin-left: -1px;
+}
+
+:host ::ng-deep .toolbar .calendar-filter .p-datepicker-trigger:hover {
+  background-color: rgba(255, 140, 0, 0.04);
+  color: var(--orange-primary);
+}
+
+:host ::ng-deep .toolbar .calendar-filter .p-datepicker-trigger:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+:host ::ng-deep .toolbar .p-dropdown:focus,
+:host ::ng-deep .toolbar .p-calendar:focus {
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+  border-color: #ff9800;
+}
+
+/* Table Container */
+.table-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+  padding: 1.75rem 2rem;
+}
+
+/* Report Cards Grid */
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-card {
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  height: 100%;
+}
+
+.report-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-color: #ddd;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #ff9800;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.card-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 1.25rem;
+}
+
+.card-actions {
+  margin-top: auto;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1rem;
+}
+
+.card-actions button {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+/* Status Tags */
+.status-tag {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 16px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-tag.text-green-800.bg-green-100 {
+  background-color: rgba(74, 222, 128, 0.2);
+  color: rgb(20, 83, 45);
+}
+
+.status-tag.text-blue-800.bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: rgb(30, 64, 175);
+}
+
+.status-tag.text-yellow-800.bg-yellow-100 {
+  background-color: rgba(250, 204, 21, 0.2);
+  color: rgb(133, 77, 14);
+}
+
+.status-tag.text-red-800.bg-red-100 {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: rgb(153, 27, 27);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  grid-column: 1 / -1;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  color: #ddd;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #888;
+}
+
+/* Paginator */
+.paginator-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 0.5rem 0 0.5rem;
+  border-top: 1px solid #eee;
+  margin-top: 1.5rem;
+}
+
+.paginator-summary {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+:host ::ng-deep .p-paginator {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page.p-highlight {
+  background-color: #ff9800;
+  border-color: #ff9800;
+  color: #fff;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page:not(.p-highlight):hover,
+:host ::ng-deep .p-paginator .p-paginator-first:hover,
+:host ::ng-deep .p-paginator .p-paginator-prev:hover,
+:host ::ng-deep .p-paginator .p-paginator-next:hover,
+:host ::ng-deep .p-paginator .p-paginator-last:hover {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .reports-layout {
+    padding: 1rem;
+  }
+  
+  .reports-header,
+  .summary-stats,
+  .toolbar,
+  .table-container {
+    padding: 1.25rem;
+  }
+  
+  .reports-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .toolbar .search-field {
+    min-width: 100%;
+  }
+}

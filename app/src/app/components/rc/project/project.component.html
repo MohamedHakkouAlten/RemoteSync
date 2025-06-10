@@ -1,49 +1,89 @@
-<app-default-layout >
-<div class="projects-layout">
-<p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
+<app-default-layout>
+<div class="projects-layout w-full">
+    <p-toast position="top-center" styleClass="w-full md:w-auto z-50"></p-toast>
 
-    <main class="projects-container">
-        <header class="projects-header">
-            <h1>{{ 'projectPage.title' | translate }}</h1>
-            <p>{{ 'projectPage.subtitle' | translate }}</p>
-        </header>
-
-        <div class="summary-stats">
-            <span>{{ 'projectPage.summaryStats.totalProjects' | translate }} <strong class="count">{{ totalProjectCount }}</strong></span>
-            <span class="stat-item"><span class="w-3 h-3 bg-green-500 rounded-full"></span>{{ 'projectPage.summaryStats.completed' | translate }} <strong class="count">{{ completedProjectCount }}</strong></span>
-            <span class="stat-item"><span class="w-3 h-3 bg-blue-500 rounded-full"></span>{{ 'projectPage.summaryStats.active' | translate }} <strong class="count">{{ activeProjectCount }}</strong></span>
-            <span class="stat-item"><span class="w-3 h-3 bg-yellow-400 rounded-full"></span>{{ 'projectPage.summaryStats.inactive' | translate }} <strong class="count">{{ inActiveProjectCount }}</strong></span>
-            <span class="stat-item"><span class="w-3 h-3 bg-red-500 rounded-full"></span>{{ 'projectPage.summaryStats.cancelled' | translate }} <strong class="count">{{ cancelledProjectCount }}</strong></span>
+    <main class="projects-container w-full max-w-full">
+        <!-- Enhanced Page Header in Container -->
+        <div class="header-container bg-gradient-to-r from-white to-orange-50 rounded-xl shadow-md p-6 mb-6 border-l-4 border-orange-500">
+            <header class="projects-header">
+                <h1 class="text-2xl font-bold text-gray-800">{{ 'project_rc.title' | translate }}</h1>
+                <p class="text-gray-600 mt-2">{{ 'project_rc.subtitle' | translate }}</p>
+            </header>
         </div>
 
-        <div class="toolbar">
-            <p-iconField iconPosition="left" class="search-field">
-                <p-inputIcon styleClass="pi pi-search" />
-                <input
-                    pInputText
-                    type="text"
-                    [(ngModel)]="searchLabel"
-                    (input)="searchByLabel($event)"
-                    [placeholder]="'projectPage.toolbar.searchProjectsPlaceholder' | translate" />
-            </p-iconField>
-            <p-iconField iconPosition="left" class="search-field">
-                <p-inputIcon styleClass="pi pi-user" />
-                <input
-                    pInputText
-                    type="text"
-                    [(ngModel)]="searchClient"
-                    (input)="searchByClient($event)"
-                    [placeholder]="'projectPage.toolbar.searchClientPlaceholder' | translate" />
-            </p-iconField>
-            <button type="button" class=" bg-primary  h-[40px] cursor-pointer rounded-full w-[40px] pt-1 pr-0.5" (click)="onClear()" [pTooltip]="'projectPage.toolbar.clearSearchTooltip' | translate" tooltipPosition="top">
-                <i  class="pi pi-times text-white !text-[18px]" ></i>
-            </button>
-            <button pButton type="button" [label]="'projectPage.toolbar.newProjectButton' | translate" icon="pi pi-plus" class="p-button-warning new-project-button" (click)="showCreateProjectDialog()"></button>
+        <!-- Enhanced Summary Stats -->
+        <div class="summary-stats rounded-xl overflow-hidden bg-white shadow-md border border-gray-100">
+            <span>{{ 'project_rc.summaryStats.totalProjects' | translate }} <strong class="count">{{ totalProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator completed"></span>{{ 'project_rc.summaryStats.completed' | translate }} <strong class="count">{{ completedProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator active"></span>{{ 'project_rc.summaryStats.active' | translate }} <strong class="count">{{ activeProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator inactive"></span>{{ 'project_rc.summaryStats.inactive' | translate }} <strong class="count">{{ inActiveProjectCount }}</strong></span>
+            <span class="stat-item"><span class="indicator cancelled"></span>{{ 'project_rc.summaryStats.cancelled' | translate }} <strong class="count">{{ cancelledProjectCount }}</strong></span>
         </div>
 
-        <div class="table-container">
+        <!-- Enhanced Toolbar in Container -->
+        <div class="toolbar-container rounded-xl shadow-md p-6 mb-6 filter-bar bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
+            <!-- Project Search and Filters -->
+            <div class="toolbar flex flex-wrap items-center gap-4 w-full">
+                <!-- Project Search -->
+                <div class="search-field">
+                    <span class="p-input-icon-left search-input">
+                        <i class="pi pi-search"></i>
+                        <input
+                            pInputText
+                            type="text"
+                            class="w-full"
+                            [(ngModel)]="searchLabel"
+                            (input)="searchByLabel($event)"
+                            [placeholder]="'project_rc.toolbar.searchProjectsPlaceholder' | translate" />
+                    </span>
+                </div>
+                
+                <!-- Client Search -->
+                <div class="client-filter">
+                    <span class="p-input-icon-left search-input">
+                        <i class="pi pi-user"></i>
+                        <input
+                            pInputText
+                            type="text"
+                            class="w-full"
+                            [(ngModel)]="searchClient"
+                            (input)="searchByClient($event)"
+                            [placeholder]="'project_rc.toolbar.searchClientPlaceholder' | translate" />
+                    </span>
+                </div>
+                
+                <!-- Clear Button -->
+                <button type="button" class="p-button p-button-warning p-button-outlined h-[44px] cursor-pointer rounded-md" 
+                    (click)="onClear()" 
+                    [pTooltip]="'project_rc.toolbar.clearSearchTooltip' | translate" 
+                    tooltipPosition="top">
+                    <i class="pi pi-filter-slash mr-2"></i>
+                    <span>{{ 'project_rc.toolbar.clearSearchTooltip' | translate }}</span>
+                </button>
+                
+                <!-- Add New Project Button -->
+                <button pButton 
+                    type="button" 
+                    [label]="'project_rc.toolbar.newProjectButton' | translate" 
+                    icon="pi pi-plus" 
+                    class="p-button-warning ml-auto shadow-sm hover:shadow-md transition-shadow" 
+                    (click)="showCreateProjectDialog()"></button>
+            </div>
+        </div>
+
+        <!-- Enhanced Projects Table Container -->
+        <div class="table-container bg-white rounded-xl shadow-md p-6 overflow-hidden border border-gray-100">
+            <!-- Custom pagination summary -->
+            <div class="paginator-summary text-gray-700 font-medium mt-2 mb-4" *ngIf="totalRecords && totalRecords > 0">
+                {{ 'project_rc.paginationSummary' | translate: { 
+                    start: state().first() + 1, 
+                    end: calculateLastDisplayedItemNumber(),
+                    total: totalRecords 
+                } }}
+            </div>
             <p-table
                 #projectTable
+                class="custom-table w-full"
                 [value]="allProjects"
                 [paginator]="true"
                 [rows]="this.state().rows()"
@@ -53,7 +93,8 @@
                 [totalRecords]="totalRecords"
                 (onSort)="onSortChange($event)"
                 (onPage)="onPageChange($event)"
-                [currentPageReportTemplate]="'projectPage.table.paginationReport' | translate"
+                [currentPageReportTemplate]="''"
+                [showCurrentPageReport]="false"
                 [rowsPerPageOptions]="[5, 10, 25, 50]"
                 dataKey="id"
                 styleClass="custom-table"
@@ -61,40 +102,42 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="label">{{ 'projectPage.table.header.label' | translate }} <p-sortIcon field="label"></p-sortIcon></th>
-                        <th pSortableColumn="titre">{{ 'projectPage.table.header.projectName' | translate }} <p-sortIcon field="titre"></p-sortIcon></th>
-                        <th pSortableColumn="client">{{ 'projectPage.table.header.client' | translate }} <p-sortIcon field="client"></p-sortIcon></th>
-                        <th>{{ 'projectPage.table.header.duration' | translate }}</th>
-                        <th pSortableColumn="status">{{ 'projectPage.table.header.status' | translate }} <p-sortIcon field="status"></p-sortIcon></th>
-                        <th>{{ 'projectPage.table.header.actions' | translate }}</th>
+                        <th pSortableColumn="label">{{ 'project_rc.table.header.label' | translate }} <p-sortIcon field="label"></p-sortIcon></th>
+                        <th pSortableColumn="titre">{{ 'project_rc.table.header.projectName' | translate }} <p-sortIcon field="titre"></p-sortIcon></th>
+                        <th pSortableColumn="client">{{ 'project_rc.table.header.client' | translate }} <p-sortIcon field="client"></p-sortIcon></th>
+                        <th>{{ 'project_rc.table.header.duration' | translate }}</th>
+                        <th pSortableColumn="status">{{ 'project_rc.table.header.status' | translate }} <p-sortIcon field="status"></p-sortIcon></th>
+                        <th>{{ 'project_rc.table.header.actions' | translate }}</th>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-project> <!-- Corrected #body to pTemplate="body" -->
                     <tr>
-                        <td class="rc-cell">
+                        <td class="rc-cell font-medium text-gray-800">
                             {{project?.label}}
                         </td>
-                        <td>{{ project.titre}}</td>
-                        <td>{{ project?.owner?.label}}</td>
-                        <td>{{ project.startDate+" - "+project.deadLine }}</td>
+                        <td class="text-gray-700">{{ project.titre}}</td>
+                        <td class="text-gray-700">{{ project?.owner?.label}}</td>
+                        <td class="text-gray-700 whitespace-nowrap">{{ project.startDate+" - "+project.deadLine }}</td>
                         <td>
-                            <!-- Use the helper function for translated status -->
-                            <p-tag [value]="getTranslatedStatus(project.status)" [severity]="getStatusSeverity(project.status)" [rounded]="true"></p-tag>
+                            <!-- Enhanced status tag with better visual style -->
+                            <p-tag [value]="getTranslatedStatus(project.status)" [severity]="getStatusSeverity(project.status)" [rounded]="true" styleClass="font-medium"></p-tag>
                         </td>
                         <td class="actions-cell">
-                            <ng-container *ngIf="project.isDeleted==false">
-                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-secondary" (click)="editProject(project)" [pTooltip]="'projectPage.table.actionsTooltip.edit' | translate" tooltipPosition="top"></button>
-                            </ng-container>
-                            <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary" (click)="viewProject(project)" [pTooltip]="'projectPage.table.actionsTooltip.view' | translate" tooltipPosition="top"></button>
-                            <button [disabled]="project.isDeleted==true" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteProject(project)" [pTooltip]="'projectPage.table.actionsTooltip.delete' | translate" tooltipPosition="top"></button>
+                            <div class="flex items-center justify-end gap-1">
+                                <ng-container *ngIf="project.isDeleted==false">
+                                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-secondary hover:bg-gray-100" (click)="editProject(project)" [pTooltip]="'project_rc.table.actionsTooltip.edit' | translate" tooltipPosition="top"></button>
+                                </ng-container>
+                                <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-text p-button-secondary hover:bg-gray-100" (click)="viewProject(project)" [pTooltip]="'project_rc.table.actionsTooltip.view' | translate" tooltipPosition="top"></button>
+                                <button [disabled]="project.isDeleted==true" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger hover:bg-red-50" (click)="deleteProject(project)" [pTooltip]="'project_rc.table.actionsTooltip.delete' | translate" tooltipPosition="top"></button>
+                            </div>
                         </td>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td [attr.colspan]="6" class="text-center" style="padding: 2rem;">{{ 'projectPage.table.emptyMessage' | translate }}</td> <!-- Adjusted colspan -->
+                        <td [attr.colspan]="6" class="text-center" style="padding: 2rem;">{{ 'project_rc.table.emptyMessage' | translate }}</td> <!-- Adjusted colspan -->
                     </tr>
                 </ng-template>
 
@@ -102,7 +145,7 @@
                     <tr>
                         <td [attr.colspan]="6" class="text-center" style="padding: 2rem;"> <!-- Adjusted colspan -->
                             <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-                            <span style="display: block; margin-top: 0.5rem;">{{ 'projectPage.table.loadingMessage' | translate }}</span>
+                            <span style="display: block; margin-top: 0.5rem;">{{ 'project_rc.table.loadingMessage' | translate }}</span>
                         </td>
                     </tr>
                 </ng-template>
@@ -122,5 +165,12 @@
     <!-- === VIEW PROJECT DIALOG (Image Style) === -->
     <!-- ======================================= -->
     <app-view-project (hideDialog)="hideViewProjectDialog()" [displayViewProjectDialog]="displayViewProjectDialog" [projectToView]="projectToView" />
+    <!-- Enhanced Confirmation Dialog for Delete -->
+    <p-confirmDialog [style]="{width: '450px'}" 
+               [breakpoints]="{'960px': '75vw', '640px': '100vw'}"
+               styleClass="rounded-xl shadow-lg overflow-hidden"
+               icon="pi pi-exclamation-triangle"
+               rejectButtonStyleClass="p-button-text p-button-secondary"
+               acceptButtonStyleClass="p-button-danger"></p-confirmDialog>
 </div>
 </app-default-layout>

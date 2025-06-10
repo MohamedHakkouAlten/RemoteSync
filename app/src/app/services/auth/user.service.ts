@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ResponseWrapperDto } from '../../dto/response-wrapper.dto';
+import { SupportedLanguage } from '../language/language.service';
 
 // User info interface
 export interface UserInfo {
@@ -11,6 +12,7 @@ export interface UserInfo {
   lastName: string;
   roles: string[];
 }
+
 export interface UserListItem{
   userId:string,
   name:string
@@ -20,12 +22,16 @@ export interface UserListItem{
   providedIn: 'root'
 })
 export class UserService {
-  // Storage keys
-  private readonly TOKEN_KEY = 'access_token';
+
+  // Private token keys in localStorage
+  private readonly ACCESS_TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly FIRST_NAME_KEY = 'first_name';
   private readonly LAST_NAME_KEY = 'last_name';
   private readonly ROLES_KEY = 'roles';
+
+  // Supported languages for URL detection
+  private readonly SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'fr', 'es'];
 
   // Subject for basic user info (name, roles)
   private userInfoSubject = new BehaviorSubject<UserInfo | null>(null);
@@ -35,8 +41,10 @@ export class UserService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private http:HttpClient,
-    private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.loadInitialState();
   }
 
@@ -44,12 +52,11 @@ export class UserService {
    * Loads initial state from storage
    */
   private loadInitialState(): void {
-    console.log("validdddd"+ this.hasValidAuthData())
     if (this.hasValidAuthData()) {
       const firstName = this.getFirstNameFromStorage() || '';
       const lastName = this.getLastNameFromStorage() || '';
       const roles = this.getRolesFromStorage();
-      
+
       this.userInfoSubject.next({ firstName, lastName, roles });
       this.isAuthenticatedSubject.next(true);
     } else {
@@ -73,18 +80,18 @@ export class UserService {
   storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string, roles: string[]): void {
     // Process roles - remove 'ROLE_' prefix if present
     const processedRoles = roles.map(r => r.startsWith('ROLE_') ? r.slice(5) : r);
-    
+
     // Store in localStorage
-    localStorage.setItem(this.TOKEN_KEY, accessToken);
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
     localStorage.setItem(this.FIRST_NAME_KEY, firstName);
     localStorage.setItem(this.LAST_NAME_KEY, lastName);
     localStorage.setItem(this.ROLES_KEY, JSON.stringify(processedRoles));
-    
+
     // Update state with processed roles
     this.userInfoSubject.next({ firstName, lastName, roles: processedRoles });
     this.isAuthenticatedSubject.next(true);
-    
+
     // Log roles for debugging
     console.log('Stored roles:', processedRoles);
   }
@@ -94,12 +101,12 @@ export class UserService {
    */
   clearUserData(): void {
     // Clear localStorage
-    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.FIRST_NAME_KEY);
     localStorage.removeItem(this.LAST_NAME_KEY);
     localStorage.removeItem(this.ROLES_KEY);
-    
+
     // Clear state
     this.userInfoSubject.next(null);
     this.isAuthenticatedSubject.next(false);
@@ -109,11 +116,11 @@ export class UserService {
    * Gets the access token
    */
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
   }
 
   isTokenExpired(token:string){
-  
+
 console.log(this.getExpirationDateFromToken(token))
 return true;
   }
@@ -180,7 +187,7 @@ return true;
     const firstName = this.getFirstNameFromStorage();
     const lastName = this.getLastNameFromStorage();
     const roles = this.getRolesFromStorage();
-    
+
     return !!(token && firstName && lastName && roles.length > 0);
   }
 
@@ -209,7 +216,27 @@ return true;
    * Gets the current user's last name synchronously
    */
   getLastName(): string | null {
-    return this.userInfoSubject.value?.lastName ?? null;
+    return this.getLastNameFromStorage();
+  }
+
+  /**
+   * Updates the user's first and last name in localStorage and userInfoSubject
+   * Used when profile is updated
+   */
+  updateUserName(firstName: string, lastName: string): void {
+    // Update localStorage
+    localStorage.setItem(this.FIRST_NAME_KEY, firstName);
+    localStorage.setItem(this.LAST_NAME_KEY, lastName);
+
+    // Update userInfoSubject with current roles
+    const currentUserInfo = this.userInfoSubject.getValue();
+    if (currentUserInfo) {
+      this.userInfoSubject.next({
+        firstName,
+        lastName,
+        roles: currentUserInfo.roles
+      });
+    }
   }
 
   /**
@@ -235,35 +262,69 @@ return true;
   }
 
   /**
+   * Get the current language from URL or default to English
+   */
+  getCurrentLanguage(): SupportedLanguage {
+    try {
+      // Get from URL if available
+      const path = window.location.pathname;
+      const segments = path.split('/');
+
+      // Look for language code in URL segments
+      for (const segment of segments) {
+        if (segment && this.SUPPORTED_LANGUAGES.includes(segment as SupportedLanguage)) {
+          return segment as SupportedLanguage;
+        }
+      }
+
+      // Try to get from localStorage if set previously
+      const storedLang = localStorage.getItem('remotesync_language');
+      if (storedLang && this.SUPPORTED_LANGUAGES.includes(storedLang as SupportedLanguage)) {
+        return storedLang as SupportedLanguage;
+      }
+    } catch (error) {
+      console.error('Error determining language:', error);
+    }
+
+    // Default to English if not found or on error
+    return 'en';
+  }
+
+  /**
    * Get the default redirect URL based on user role
    */
   getDefaultRedirectUrl(): string {
     const roles = this.getUserRoles();
-    
+    const currentLang = this.getCurrentLanguage();
+
     // Debug logging
     console.log('Current roles for redirection:', roles);
+    console.log('Current language:', currentLang);
     console.log('Has RC role?', roles.includes('RC'));
     console.log('Has ASSOCIATE role?', roles.includes('ASSOCIATE'));
-    
+
     // Check for roles in a case-insensitive way
     const hasAdmin = roles.some(r => r.toUpperCase() === 'ADMIN');
     const hasRC = roles.some(r => r.toUpperCase() === 'RC');
     const hasAssociate = roles.some(r => r.toUpperCase() === 'ASSOCIATE');
-    
+
     console.log('Case-insensitive checks - RC:', hasRC, 'Associate:', hasAssociate);
-    
+
+    // Ensure we have a valid language prefix
+    const langPrefix = currentLang ? `/${currentLang}` : '/en';
+
     if (hasAdmin) {
       console.log('Redirecting to Admin dashboard');
-      return '/remotesync/admin/dashboard';
+      return `${langPrefix}/remotesync/admin/dashboard`;
     } else if (hasRC) {
       console.log('Redirecting to RC dashboard');
-      return '/remotesync/rc/dashboard';
+      return `${langPrefix}/remotesync/rc/dashboard`;
     } else if (hasAssociate) {
       console.log('Redirecting to Associate dashboard');
-      return '/remotesync/associate/dashboard';
+      return `${langPrefix}/remotesync/associate/dashboard`;
     } else {
       console.log('No matching role found, redirecting to Login');
-      return '/remoteSync/login';
+      return `${langPrefix}/remotesync/login`;
     }
   }
 
@@ -273,17 +334,27 @@ return true;
   redirectAfterLogin(returnUrl?: string): void {
     // Debug logging
     console.log('redirectAfterLogin called with returnUrl:', returnUrl);
-    
+
+    const currentLang = this.getCurrentLanguage();
+    const langPrefix = currentLang ? `/${currentLang}` : '/en';
+
     // Only use returnUrl if it's explicitly provided and not a default dashboard URL
     const isDefaultDashboard = returnUrl && (
-      returnUrl.includes('/associate/dashboard') ||
-      returnUrl.includes('/rc/dashboard') ||
-      returnUrl.includes('/admin/dashboard')
+      returnUrl.includes(`${langPrefix}/remotesync/associate/dashboard`) ||
+      returnUrl.includes(`${langPrefix}/remotesync/rc/dashboard`) ||
+      returnUrl.includes(`${langPrefix}/remotesync/admin/dashboard`)
     );
-    
+
     if (returnUrl && returnUrl !== '/' && !isDefaultDashboard) {
       console.log('Using provided returnUrl for redirection:', returnUrl);
-      this.router.navigateByUrl(returnUrl);
+      try {
+        this.router.navigateByUrl(returnUrl);
+      } catch (error) {
+        console.error('Navigation error with returnUrl:', error);
+        // Fallback to role-based URL on error
+        const roleBasedUrl = this.getDefaultRedirectUrl();
+        this.router.navigateByUrl(roleBasedUrl);
+      }
     } else {
       // Get role-based URL
       const roleBasedUrl = this.getDefaultRedirectUrl();

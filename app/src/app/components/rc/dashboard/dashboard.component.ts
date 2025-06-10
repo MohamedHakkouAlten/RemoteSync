@@ -9,9 +9,12 @@ import { UserUtils } from '../../../utilities/UserUtils';
 import { Rotation, UserRotation } from '../../../models/rotation.model';
 import { DashBoardDataDTO } from '../../../dto/rc/dashboardDataDTO';
 import { TranslateService } from '@ngx-translate/core';
-import { RcService, RcDashboardResponse, ReportDTO } from '../../../services/rc.service';
+import { RcService } from '../../../services/rc.service';
+import { RcDashboardResponse } from '../../../dto/rc/rc-dashboard-response.dto';
+import { RcRecentAssociateRotations } from '../../../dto/rc/rc-recent-associate-rotations.dto';
 import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
 import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
+import { ReportDTO } from '../../../dto/aio/report.dto';
 
 @Component({
   selector: 'app-dashboard',
@@ -159,7 +162,7 @@ currentLanguage: SupportedLanguage = 'en';
           // Transform the recentAssociateRotations data for the table if available
           if (res.data.recentAssociateRotations && Array.isArray(res.data.recentAssociateRotations) && res.data.recentAssociateRotations.length > 0) {
             // Create a simple mapping of rotation data for the table
-            this.tableData = res.data.recentAssociateRotations.map(rotation => {
+            this.tableData = res.data.recentAssociateRotations.map((rotation: RcRecentAssociateRotations) => {
               if (!rotation) return null;
               
               const fullName = rotation.fullName || '';
@@ -180,7 +183,7 @@ currentLanguage: SupportedLanguage = 'en';
                   remoteDates: Array.isArray(rotation.remoteDates) ? rotation.remoteDates : []
                 }
               } as UserRotation;
-            }).filter(item => item !== null);
+            }).filter((item: UserRotation | null) => item !== null);
             
             this.totalRecords = this.tableData.length;
           } else {

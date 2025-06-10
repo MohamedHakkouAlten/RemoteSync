@@ -13,7 +13,9 @@ import { ButtonModule } from 'primeng/button';
 import { Project } from '../../../../models/project.model';
 import { SelectOption } from '../project.component';
 import { InputTextModule } from 'primeng/inputtext';
-import { ClientListItem, RcService } from '../../../../services/rc.service';
+import { RcService } from '../../../../services/rc.service';
+import { ClientDropDownDTO } from '../../../../dto/rc/client-dropdown.dto';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 
@@ -22,22 +24,23 @@ import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
   providers :[
     RcService
   ],
-  imports: [ CommonModule,
-    DialogModule,
-          DropdownModule,
-          CalendarModule,
-          AvatarModule,
-          DropdownModule,
-          ButtonModule,
-          InputTextModule,
-           FormsModule,
-          AutoCompleteModule],
+  imports: [ 
+      CommonModule,
+      DialogModule,
+      DropdownModule,
+      CalendarModule,
+      AvatarModule,
+      ButtonModule,
+      InputTextModule,
+      FormsModule,
+      AutoCompleteModule,
+      TranslateModule],
   templateUrl: './edit-project.component.html',
   styleUrl: './edit-project.component.css'
 })
 export class EditProjectComponent implements OnInit ,OnChanges{
 
-initialClients:ClientListItem[]=[]
+initialClients: ClientDropDownDTO[] = []
 searchClientSubject$=new Subject<string>
 searchItem:string=''
 today=new Date()
@@ -53,9 +56,9 @@ console.log(this.clients)
 
 
   @Input() projectToEdit: Project | null = null;
-selectedClient:ClientListItem|null=null
+selectedClient: ClientDropDownDTO | null = null
 
-  clients: ClientListItem[] = []
+  clients: ClientDropDownDTO[] = []
   @Input() displayEditProjectDialog: boolean = false;
   @Output() hideDialog=new EventEmitter<boolean>(false)
   @Output() editeProject=new EventEmitter<Project>()
@@ -80,7 +83,7 @@ selectedClient:ClientListItem|null=null
   }
   ngOnInit(): void {
    this.setupDebouncing()
-   this.rcService.getClientListByLabel().subscribe((res)=>this.initialClients=res)
+   this.rcService.getClientListByLabel().subscribe((res: ClientDropDownDTO[]) => this.initialClients = res)
     this.selectedClient={clientId:this.projectToEdit?.owner!.clientId!,label:this.projectToEdit?.owner!.label!};   
     console.log(this.projectToEdit)
   }
@@ -88,8 +91,8 @@ setupDebouncing(){
   this.searchClientSubject$.pipe(
     debounceTime(1000),
     distinctUntilChanged(),
-    switchMap(searchItem=>this.rcService.getClientListByLabel(searchItem))
-    ).subscribe(res=>this.clients=res)
+    switchMap((searchItem: string) => this.rcService.getClientListByLabel(searchItem))
+    ).subscribe((res: ClientDropDownDTO[]) => this.clients = res)
 }
   
   

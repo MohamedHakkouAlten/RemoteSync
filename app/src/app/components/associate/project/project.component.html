@@ -3,27 +3,27 @@
   <div *ngIf="isLoading || loadingError" class="fixed inset-0 flex items-center justify-center bg-gray-800/40 backdrop-blur-sm z-50">
     <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
       <p-progressSpinner *ngIf="isLoading && !loadingError" strokeWidth="4" styleClass="w-16 h-16"></p-progressSpinner>
-      <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">Loading projects...</span>
+      <span *ngIf="isLoading && !loadingError" class="mt-4 text-gray-600 font-medium">{{ 'project_associate.loading_projects' | translate }}</span>
       <div *ngIf="loadingError" class="text-center">
         <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-2"></i>
-        <p class="text-red-500 font-semibold">Loading Error</p>
-        <p class="text-gray-600 text-sm mt-1 mb-4">Unable to load the projects data. Please try again.</p>
-        <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadProjects()">Retry</button>
+        <p class="text-red-500 font-semibold">{{ 'project_associate.loading_error' | translate }}</p>
+        <p class="text-gray-600 text-sm mt-1 mb-4">{{ 'project_associate.loading_error_message' | translate }}</p>
+        <button class="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors" (click)="loadProjects()">{{ 'common.retry' | translate }}</button>
       </div>
     </div>
   </div>
 
   <div class="dashboard-layout">
-    <!-- Dashboard Header with welcome message -->
-    <div class="dashboard-welcome">
-      <h1>My Projects</h1>
-      <p class="welcome-text">Manage and view all your assigned projects</p>
-    </div>
-    
-    <div style="margin: 0 auto; padding: 0 20px;">
+    <!-- Main container with width constraint -->
+    <div style="width: 100%; margin: 0 auto; padding: 0 20px;">
+      <!-- Dashboard Header with welcome message -->
+      <div class="dashboard-welcome">
+        <h1>{{ 'project_associate.title' | translate }}</h1>
+        <p class="welcome-text">{{ 'project_associate.subtitle' | translate }}</p>
+      </div>
       <!-- Header with filters -->
       <div class="projects-header bg-white rounded-lg shadow-sm p-4 mb-5">
-        
+
         <div class="filter-bar flex flex-wrap items-center gap-4">
           <span class="p-input-icon-left search-input" style="flex-grow: 1; min-width: 200px; width: 100%; max-width: 480px;">
             <i class="pi pi-search"></i>
@@ -33,14 +33,14 @@
               [(ngModel)]="searchTerm"
               (ngModelChange)="onSearchTermChange()"
               class="hover:!border-orange-500 w-full"
-              placeholder="Search by title or label..." />
+              placeholder="{{ 'project_associate.search_placeholder' | translate }}" />
           </span>
 
-          <p-dropdown 
-            [options]="statusOptions" 
-            [(ngModel)]="selectedStatus" 
-            (onChange)="onFilterChange()" 
-            placeholder="All Status" 
+          <p-dropdown
+            [options]="statusOptions"
+            [(ngModel)]="selectedStatus"
+            (onChange)="onFilterChange()"
+            placeholder="{{ 'project_associate.all_status' | translate }}"
             [showClear]="true"
             styleClass="filter-dropdown"
             [style]="{'min-width': '150px', 'width': 'auto'}"
@@ -48,13 +48,13 @@
             optionValue="value">
           </p-dropdown>
 
-          <p-dropdown 
-            [options]="clientOptions" 
-            [(ngModel)]="selectedClient" 
-            (onChange)="onClientFilterChange()" 
-            placeholder="All Clients" 
+          <p-dropdown
+            [options]="clientOptions"
+            [(ngModel)]="selectedClient"
+            (onChange)="onClientFilterChange()"
+            placeholder="{{ 'project_associate.all_clients' | translate }}"
             [showClear]="true"
-            optionLabel="name" 
+            optionLabel="name"
             optionValue="id"
             styleClass="filter-dropdown"
             [style]="{'min-width': '150px', 'width': 'auto'}">
@@ -67,7 +67,7 @@
         <div class="project-card" *ngFor="let project of pagedProjects?.projectDTOS" [ngClass]="'status-' + (project.status ? project.status.toLowerCase() : 'none')" [style]="{'height': '100%'}">
           <!-- Card Status Indicator -->
           <div class="card-status-indicator"></div>
-          
+
           <!-- Card Header -->
           <div class="card-top">
             <h3 class="project-title">{{ project.label }}</h3>
@@ -84,20 +84,20 @@
               <span class="client-sector">{{ project.owner.sector || 'General' }}</span>
             </div>
           </div>
-          
+
           <!-- Project Timeline -->
           <div class="project-info">
             <div class="info-item">
               <i class="pi pi-calendar info-icon"></i>
               <div class="info-content">
-                <span class="info-label">Start Date</span>
+                <span class="info-label">{{ 'project_associate.start_date' | translate }}</span>
                 <span class="info-value">{{ project.startDate ? (project.startDate | date: 'MMM d, yyyy') : 'N/A' }}</span>
               </div>
             </div>
             <div class="info-item">
               <i class="pi pi-flag info-icon"></i>
               <div class="info-content">
-                <span class="info-label">Deadline</span>
+                <span class="info-label">{{ 'project_associate.deadline' | translate }}</span>
                 <span class="info-value">{{ project.deadLine ? (project.deadLine | date: 'MMM d , yyyy') : 'N/A' }}</span>
               </div>
             </div>
@@ -106,7 +106,7 @@
           <!-- Project Progress Section -->
           <div class="project-progress">
             <div class="progress-header">
-              <span class="progress-label">Progress</span>
+              <span class="progress-label">{{ 'project_associate.progress' | translate }}</span>
               <span class="progress-value" [ngClass]="{'complete': getProjectProgress(project) === 100}">{{ getProjectProgress(project) }}%</span>
             </div>
             <!-- Direct style attribute used for progress bar to ensure color works -->
@@ -114,23 +114,23 @@
               <div class="custom-progress-bar" [style.width.%]="getProjectProgress(project)" [style.background-color]="getProgressBarColor(project)"></div>
             </div>
           </div>
-          
+
           <!-- Card Actions -->
           <div class="card-actions">
-            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-outlined view-details-btn" pTooltip="View Details" (click)="viewProjectDetails(project)"></button>
+            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-outlined view-details-btn" pTooltip="{{ 'project_associate.view_details' | translate }}" (click)="viewProjectDetails(project)"></button>
           </div>
         </div>
 
         <div *ngIf="(!pagedProjects || !pagedProjects.projectDTOS || pagedProjects.projectDTOS.length === 0) && !isLoading" class="no-projects-message">
-          No projects found matching your criteria.
+          {{ 'project_associate.no_projects_found' | translate }}
         </div>
       </div>
 
       <!-- Always show paginator, but only enable when we have multiple pages -->
       <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-        <p-paginator 
-          [rows]="pageSize" 
-          [totalRecords]="pagedProjects?.totalElements || 0" 
+        <p-paginator
+          [rows]="pageSize"
+          [totalRecords]="pagedProjects?.totalElements || 0"
           (onPageChange)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 30, 50]"
           [alwaysShow]="true">
@@ -143,7 +143,7 @@
       <div class="loading-spinner flex items-center justify-center h-60 w-full">
         <div class="text-center">
           <i class="pi pi-search" style="font-size: 2.5rem; color: #d1d5db;"></i>
-          <p class="mt-4 text-gray-500">Loading projects or no results found</p>
+          <p class="mt-4 text-gray-500">{{ 'project_associate.loading_or_no_results' | translate }}</p>
         </div>
       </div>
     </ng-template>

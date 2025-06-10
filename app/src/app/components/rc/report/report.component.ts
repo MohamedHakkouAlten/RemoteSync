@@ -10,7 +10,7 @@ import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { PagedReports } from '../../../dto/response-wrapper.dto';
 import { MessageService } from 'primeng/api';
 import { RcService } from '../../../services/rc.service';
-
+import { TranslateService } from '@ngx-translate/core';
 
 // --- Interface & Data ---
 interface Report {
@@ -25,11 +25,11 @@ interface Report {
 }
 export interface ReportFilter {
   name: string,
-   status:ReportStatus|string,
-  startDate:string,
-    endDate:string,
-      pageNumber: number,
-        pageSize: number,
+  status: ReportStatus | string,
+  startDate: string,
+  endDate: string,
+  pageNumber: number,
+  pageSize: number,
 
 }
 @Component({
@@ -41,6 +41,10 @@ export interface ReportFilter {
 })
 export class ReportComponent implements OnInit {
 
+  page = signal(0);
+  rows = signal(6); // Initial page size
+  first = signal(0);
+
   allReports = signal<PagedReports>({
     reports: [],
     totalElements: 0,
@@ -50,58 +54,64 @@ export class ReportComponent implements OnInit {
 
   });
 
-      filter = computed(():ReportFilter => {
-
-        return {
-      
-            pageNumber: this.state().page(),
-            pageSize: this.state().row(),
-            name:this.searchTerm(),
-            startDate : this.startDate(),
-            endDate : this.endDate(),
-            status : this.selectedStatus()
-
-
-        }
-    })
+  filter = computed((): ReportFilter => {
+    return {
+      pageNumber: this.page(),
+      pageSize: this.rows(),
+      name: this.searchTerm(),
+      startDate: this.startDate(),
+      endDate: this.endDate(),
+      status: this.selectedStatus()
+    };
+  });
+  
+  totalRecords = computed(() => this.allReports().totalElements);
 
   filteredReports: Report[] = [];
   paginatedReports: Report[] = [];
-  startDate=computed(()=>(this.selectedDateRange()!=null)?format(this.selectedDateRange()![0], 'yyyy-MM-dd'):'')
-  endDate=computed(()=>(this.selectedDateRange()!=null)?format(this.selectedDateRange()![1], 'yyyy-MM-dd'):'')
-
+  startDate = computed(() => (this.selectedDateRange()?.[0] ? format(this.selectedDateRange()![0], 'yyyy-MM-dd') : ''));
+  endDate = computed(() => (this.selectedDateRange()?.[1] ? format(this.selectedDateRange()![1], 'yyyy-MM-dd') : ''));
 
   state = computed(() => {
     return {
       filter: this.activeFilter(),
       page: signal(0),
-      row: signal(6)
-
+      row: signal(6),
+      first: signal(0)
     }
   })
+
   activeFilter = signal<'status' | 'date' | 'user' | 'none'>('none')
   userUtils = UserUtils
   // --- Filtering State ---
-  searchTerm=signal<string>('');
-  
-  selectedDateRange=signal<Date[] | null>(null);
-  selectedStatus=signal<string>('');
+  searchTerm = signal<string>('');
+  // --- Filtering State ---
+  selectedDateRange = signal<Date[] | null>(null);
+  selectedStatus = signal<string>('');
   selectedUser: string | null = null;
 
   private searchUserInputChange$ = new Subject<string>();
 
   // --- Status Options ---
-  statusOptions = [
+  statusOptions: { label: string, value: string }[] = [];
 
-    { label: 'Completed', value: 'ACCEPTED' },
-    { label: 'In Progress', value: 'OPENED' },
-    { label: 'Pending', value: 'PENDING' },
-    { label: 'Rejected', value: 'REJECTED' }
-  ];
-
-  // --- Pagination State ---
-  totalRecords = computed(() => this.allReports().totalElements)
-
+  // --- Status Counts ---
+  acceptedReportsCount = computed(() => {
+    return this.allReports().reports.filter(report => report.status === ReportStatus.ACCEPTED).length;
+  });
+  
+  pendingReportsCount = computed(() => {
+    return this.allReports().reports.filter(report => report.status === ReportStatus.PENDING).length;
+  });
+  
+  openedReportsCount = computed(() => {
+    return this.allReports().reports.filter(report => report.status === ReportStatus.OPENED).length;
+  });
+  
+  rejectedReportsCount = computed(() => {
+    return this.allReports().reports.filter(report => report.status === ReportStatus.REJECTED).length;
+  });
+  
 
   // --- Modal State ---
   displayReportModal: boolean = false;
@@ -109,24 +119,22 @@ export class ReportComponent implements OnInit {
   // Used to force modal rerender if needed
 
   constructor(
-    private rcService:RcService,
+    private rcService: RcService,
 
-    private messageService: MessageService
+    private messageService: MessageService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
-
-    this.setupDebouncing()
-    this.setReports()
-    console.log(this.allReports())
-
-
+    // Initialize status options with translated labels
+    this.initStatusOptions();
+    
+    // Setup search debouncing
+    this.setupDebouncing();
+    
+    // Fetch initial reports
+    this.setReports();
   }
-
-
-
-
-
 
   onStatusChange() {
     if (this.activeFilter() !== 'status') this.activeFilter.set('status')
@@ -145,30 +153,32 @@ export class ReportComponent implements OnInit {
   }
   onNameChange() {
     if (this.activeFilter() !== 'user') this.activeFilter.set('user')
-     this.selectedDateRange.set(null)
+    this.selectedDateRange.set(null)
     this.selectedStatus.set('')
 
     this.setReports()
   }
-  onPageChange(event: PaginatorState): void {
+   onPageChange(event: PaginatorState): void {
+    const { page, rows, first } = event;
+    if (page === undefined || rows === undefined || first === undefined) return;
 
-    const rows = event.rows ?? this.state().row();
-    const page = event.page ?? this.state().page();
-    this.state().row.set(rows)
-    this.state().page.set(page)
-    this.setReports()
+    // Update the single source of truth
+    this.page.set(page);
+    this.rows.set(rows);
+    this.first.set(first);
+
+    // Fetch data for the new page
+    this.setReports();
   }
-
   setReports() {
 
-    
-      this.rcService.getFilteredReports(this.filter()).subscribe(pagedData => { this.allReports.set(pagedData); });
-    
+    // this.rcService.getReports().subscribe(reports => { this.allReports.set(reports); });
+    this.rcService.getFilteredReports(this.filter()).subscribe(pagedData => { this.allReports.set(pagedData); });
   }
 
   clearFilters() {
 
-     this.selectedDateRange.set(null)
+    this.selectedDateRange.set(null)
     this.selectedStatus.set('')
     this.searchTerm.set('')
     this.activeFilter.set('none')
@@ -203,22 +213,22 @@ export class ReportComponent implements OnInit {
       })
     ).subscribe(pagedData => { this.allReports.set(pagedData); });;
   }
-  updateReportStatus(newStatus: ReportStatus): void {
-    this.rcService.updateReport(this.selectedReport?.reportId!, newStatus).subscribe({
+  updateReportStatus(updatedReport: RCReport): void {
+    this.rcService.updateReport(updatedReport.reportId!, updatedReport.status!).subscribe({
       next: () => {
         this.setReports()
         this.displayReportModal = false
         this.messageService.add({
           severity: 'success',
-          summary: "report updated successfully"
+          summary: this.translate.instant('report_rc.messages.updateSuccess')
         })
       },
       error: (err) => {
-        console.log(err)
+        console.error(err)
         this.displayReportModal = false
         this.messageService.add({
           severity: 'error',
-          summary: err
+          summary: this.translate.instant('report_rc.messages.updateError')
         })
       }
     })
@@ -233,12 +243,12 @@ export class ReportComponent implements OnInit {
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
     }
   }
-  getReportBorder(report:RCReport){
+  getReportBorder(report: RCReport) {
     console.log(`border-1 border-[${this.getStatusTextColor(report.status!)}]`)
- return {
+    return {
 
-      'border-color': this.getStatusTextColor(report.status!) ,
-      'border-with' :'2px' 
+      'border-color': this.getStatusTextColor(report.status!),
+      'border-with': '2px'
       // If you want the border color to match bg
     };
   }
@@ -252,27 +262,54 @@ export class ReportComponent implements OnInit {
     }
   }
   getStatusClass(status: ReportStatus): string {
-    // CSS classes remain the same
+    // Updated classes to match the orange theme for consistency
 
     switch (status) {
-      case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200'; // Added border for definition
-      case ReportStatus.PENDING: return 'bg-blue-100 text-blue-700 border border-blue-200';
-      case ReportStatus.OPENED: return 'bg-blue-100 text-blue-700 border border-blue-200'; // Added border
-      case ReportStatus.REJECTED: return 'bg-yellow-100 text-yellow-700 border border-yellow-200'; // Added border
-      default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
+      case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200';
+      case ReportStatus.PENDING: return 'bg-orange-100 text-orange-700 border border-orange-200';
+      case ReportStatus.OPENED: return 'bg-orange-100 text-orange-700 border border-orange-200';
+      case ReportStatus.REJECTED: return 'bg-red-100 text-red-700 border border-red-200';
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200';
     }
   }
 
-  get paginationSummary(): string {
-    if (this.totalRecords() === 0) return 'Showing 0 reports';
-    const row = this.state().row();
-    const start = row * this.state().page()
-    const end = Math.min(start + row, this.totalRecords());
-    return `Showing ${start + 1}–${end} of ${this.totalRecords()} reports`;
+  clearDateRange(): void {
+    this.selectedDateRange.set(null);
   }
 
-  clearDateRange(): void {
-     this.selectedDateRange.set(null);
+  /**
+   * Gets the translated status label from translation keys
+   * @param status The status enum value
+   * @returns Translated status text
+   */
+  getTranslatedStatus(status: ReportStatus): string {
+    if (!status) return '';
 
+    const statusKey = status.toString().toLowerCase();
+    return this.translate.instant(`report_rc.statusTypes.${statusKey}`);
+  }
+  
+  /**
+   * Initializes status dropdown options with translated labels
+   */
+  private initStatusOptions(): void {
+    this.statusOptions = [
+      { 
+        label: this.translate.instant('report_rc.statusTypes.accepted'), 
+        value: ReportStatus.ACCEPTED 
+      },
+      { 
+        label: this.translate.instant('report_rc.statusTypes.opened'), 
+        value: ReportStatus.OPENED 
+      },
+      { 
+        label: this.translate.instant('report_rc.statusTypes.pending'), 
+        value: ReportStatus.PENDING 
+      },
+      { 
+        label: this.translate.instant('report_rc.statusTypes.rejected'), 
+        value: ReportStatus.REJECTED 
+      }
+    ];
   }
 }

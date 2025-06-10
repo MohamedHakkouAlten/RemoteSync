@@ -1,5 +1,5 @@
-import { Client } from './client.dto';
-import { PagedProjectDTO } from './paged-project.dto';
+import { Client } from './aio/client.dto';
+import { PagedProjectDTO } from './associate/paged-project.dto';
 
 export interface InitialProjectsDTO {
   allClients: Client[];

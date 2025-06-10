@@ -31,6 +31,9 @@ public class JwtService {
     @Value("${security.jwt.refresh-token-expiration-time}")
     private long jwtRefreshExpiration;
 
+    @Value("${security.jwt.reset-password-token-expiration-time}")
+    private long jwtResetPasswordExpiration;
+
     // Extract the username (subject) from the JWT token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -69,6 +72,13 @@ public class JwtService {
         extraClaims.put("type", "refresh");
         // Call generateToken to create the JWT with the specified expiration for refresh tokens.
         return generateToken(extraClaims, userDetails, jwtRefreshExpiration);
+    }
+
+    public String generateResetPasswordToken(User userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", userDetails.getUserId().toString());
+        extraClaims.put("type", "reset-password");
+        return generateToken(extraClaims, userDetails, jwtResetPasswordExpiration);
     }
 
     // Common method to generate a JWT with extra claims, user details, and expiration time.

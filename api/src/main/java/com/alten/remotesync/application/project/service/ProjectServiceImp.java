@@ -258,32 +258,21 @@ public class ProjectServiceImp implements ProjectService {
         return projectMapper.toProjectDTO(result.getContent().get(0));
     }
 
-    private List<Object[]> getLargestTeamProject(){
+    public List<Object[]> getLargestTeamProject() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
         Root<AssignedRotation> root = query.from(AssignedRotation.class);
 
-        // Join to Project to select it
-        Join<AssignedRotation, Project> projectJoin = root.join("project");
-
-        // Count distinct users for each project
+        Join<AssignedRotation, Project> project = root.join("project");
         Expression<Long> userCount = cb.countDistinct(root.get("user"));
 
-        // SELECT: Project object and the count of distinct users
-        query.multiselect(projectJoin, userCount);
-
-        // WHERE: Filter by rotation status
+        query.multiselect(project, userCount);
         query.where(cb.equal(root.get("rotationAssignmentStatus"), "ACTIVE"));
-
-        // GROUP BY: Group results by project
-        query.groupBy(projectJoin);
-
-        // ORDER BY: Order by user count descending
+        query.groupBy(project);
         query.orderBy(cb.desc(userCount));
 
-        // Execute query and apply LIMIT (setMaxResults)
-        return  entityManager.createQuery(query)
-                .setMaxResults(1) // Get the project with the highest user count
+        return entityManager.createQuery(query)
+                .setMaxResults(1)
                 .getResultList();
     }
 
@@ -339,7 +328,7 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public List<ProjectDropDownDTO> getRcAllProjectsByClient(GlobalDTO globalDTO) {
-        return projectDomainRepository.findAllByOwner_ClientIdAndIsDeleted(globalDTO.clientId(),false).orElseThrow().stream().map(projectMapper::toProjectDropDownDTO).toList();
+        return projectDomainRepository.findAllByOwner_ClientIdAndIsDeleted(globalDTO.clientId(), false).orElseThrow().stream().map(projectMapper::toProjectDropDownDTO).toList();
     }
 
     @Override

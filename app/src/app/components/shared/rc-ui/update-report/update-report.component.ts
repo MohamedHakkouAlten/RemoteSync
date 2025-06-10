@@ -1,9 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
+import { ButtonModule } from 'primeng/button';
 import { RCReport } from '../../../../models/report.model';
 import { ReportStatus } from '../../../../enums/report-status.enum';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserAvatarComponent } from "../../shared-ui/user-avatar/user-avatar.component";
 import { UserUtils } from '../../../../utilities/UserUtils';
 
@@ -15,41 +18,66 @@ import { UserUtils } from '../../../../utilities/UserUtils';
     DialogModule,
     AvatarModule,
     CommonModule,
+    TranslateModule,
+    ButtonModule,
+    TooltipModule,
     UserAvatarComponent
 ]
 })
-export class UpdateReportComponent {
+export class UpdateReportComponent implements OnInit {
 
 
   @Input() report :RCReport |null=null
   @Input() visible :boolean=false
 
-  @Output() updateReport=new EventEmitter<ReportStatus>()
+  @Output() updateReport=new EventEmitter<RCReport>()
   @Output() visibleChange=new EventEmitter<boolean>()
 
 
-  userUtils=UserUtils
-reportStatus = ReportStatus;
+  userUtils = UserUtils;
+  reportStatus = ReportStatus;
+constructor(private translate: TranslateService) {}
+
+ngOnInit() {
+  // Component initialization logic
+}
+
 closeReportModal() {
-  this.visibleChange.next(false)
-
+  this.visible = false; // Close the dialog
+  this.visibleChange.emit(false); // Emit the visibility change
 }
+
 updateReportStatus(status:ReportStatus) {
-
-  this.updateReport.next(status)
-
+  // Emit the update event with the new status
+  if (this.report) {
+    this.report.status = status; // Update local status
+    this.updateReport.emit(this.report);
+    this.closeReportModal(); // Close dialog after update
+  }
 }
-    getStatusClass(status: ReportStatus): string {
-      // CSS classes remain the same
-  
-      switch (status) {
-        case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200'; // Added border for definition
-        case ReportStatus.PENDING: return 'bg-blue-100 text-blue-700 border border-blue-200';
-        case ReportStatus.OPENED: return 'bg-blue-100 text-blue-700 border border-blue-200'; // Added border
-        case ReportStatus.REJECTED: return 'bg-yellow-100 text-yellow-700 border border-yellow-200'; // Added border
-        default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
-      }
+
+  getStatusClass(status: ReportStatus): string {
+    // Updated classes to match the orange theme
+    switch (status) {
+      case ReportStatus.ACCEPTED: return 'bg-green-100 text-green-700 border border-green-200'; 
+      case ReportStatus.PENDING: return 'bg-orange-100 text-orange-700 border border-orange-200';
+      case ReportStatus.OPENED: return 'bg-orange-100 text-orange-700 border border-orange-200';
+      case ReportStatus.REJECTED: return 'bg-red-100 text-red-700 border border-red-200';
+      default: return 'bg-gray-100 text-gray-700 border border-gray-200';
     }
+  }
+  
+  /**
+   * Gets the translated status label from translation keys
+   * @param status The status enum value
+   * @returns Translated status text
+   */
+  getTranslatedStatus(status: ReportStatus): string {
+    if (!status) return '';
+    
+    const statusKey = status.toString().toLowerCase();
+    return this.translate.instant(`report_rc.statusTypes.${statusKey}`);
+  }
   
 
 }

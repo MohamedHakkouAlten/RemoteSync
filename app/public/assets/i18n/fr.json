@@ -1,73 +1,124 @@
 {
   "navigation": {
-    "dashboard": "Tableau de Bord",
+    "dashboard": "Tableau de bord",
     "project": "Projet",
     "report": "Rapport",
     "calendar": "Calendrier",
     "notification": "Notification",
     "notifications": "Notifications",
     "settings": "Paramètres",
-    "signOut": "Se Déconnecter",
+    "signOut": "Déconnexion",
     "profile": "Profil"
   },
   "login": {
-    "welcomeBack": "Content de vous revoir",
-    "signInToContinue": "Connectez-vous pour continuer vers RemoteSync",
+    "welcomeBack": "Bienvenue",
+    "signInToContinue": "Connectez-vous pour continuer sur RemoteSync",
     "usernameOrEmail": "Nom d'utilisateur ou Email",
     "enterUsernameOrEmail": "Entrez votre nom d'utilisateur ou email",
     "password": "Mot de passe",
     "enterPassword": "Entrez votre mot de passe",
-    "signIn": "Se Connecter",
-    "forgotPassword": "Mot de passe oublié ?",
-    "loginSuccessful": "Connexion Réussie",
-    "welcomeBackUser": "Content de vous revoir, {{name}} !",
-    "loginFailed": "Échec de la Connexion",
+    "signIn": "Se connecter",
+    "forgotPassword": "Mot de passe oublié?",
+    "loginSuccessful": "Connexion réussie",
+    "welcomeBackUser": "Bienvenue, {{name}}!",
+    "loginFailed": "Échec de connexion",
     "invalidCredentials": "Identifiants invalides. Veuillez réessayer.",
-    "enterValidCredentials": "Veuillez entrer un nom d'utilisateur ou un e-mail et un mot de passe valides."
+    "enterValidCredentials": "Veuillez entrer un nom d'utilisateur ou email et mot de passe valides."
   },
   "forgotPassword": {
-    "title": "Mot de Passe Oublié ?",
-    "subtitle": "Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe",
-    "emailAddress": "Adresse e-mail",
-    "enterEmail": "Entrez votre e-mail",
-    "sendResetLink": "Envoyer le Lien de Réinitialisation",
+    "title": "Mot de passe oublié?",
+    "subtitle": "Entrez votre adresse email et nous vous enverrons des instructions pour réinitialiser votre mot de passe",
+    "emailAddress": "Adresse email",
+    "enterEmail": "Entrez votre email",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
     "sending": "Envoi en cours...",
-    "backToLogin": "Retour à la Connexion",
-    "resetLinkSent": "Lien de Réinitialisation Envoyé",
-    "checkYourEmail": "Veuillez vérifier votre e-mail pour les instructions de réinitialisation de votre mot de passe.",
-    "resetLinkFailed": "Échec de l'Envoi du Lien de Réinitialisation",
-    "emailNotFound": "E-mail non trouvé. Veuillez réessayer.",
-    "enterValidEmail": "Veuillez entrer une adresse e-mail valide."
+    "backToLogin": "Retour à la connexion",
+    "resetLinkSent": "Lien de réinitialisation envoyé",
+    "checkYourEmail": "Veuillez vérifier votre email pour les instructions de réinitialisation de votre mot de passe.",
+    "resetLinkFailed": "Échec de l'envoi du lien",
+    "emailNotFound": "Email non trouvé. Veuillez réessayer.",
+    "enterValidEmail": "Veuillez entrer une adresse email valide."
   },
   "resetPassword": {
-    "title": "Définissez Votre Nouveau Mot de Passe",
+    "title": "Définir votre nouveau mot de passe",
     "subtitle": "Veuillez entrer votre nouveau mot de passe ci-dessous et le confirmer.",
-    "newPassword": "Nouveau Mot de Passe",
+    "newPassword": "Nouveau mot de passe",
     "enterNewPassword": "Entrez le nouveau mot de passe",
-    "confirmPassword": "Confirmez le Nouveau Mot de Passe",
+    "confirmPassword": "Confirmer le nouveau mot de passe",
     "confirmNewPassword": "Confirmez le nouveau mot de passe",
-    "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères et inclure des majuscules, des minuscules et des chiffres.",
+    "passwordRequirements": "Le mot de passe doit comporter au moins 8 caractères et inclure des lettres majuscules, minuscules et des chiffres.",
     "passwordsMismatch": "Les mots de passe ne correspondent pas.",
-    "updatePassword": "Mettre à Jour le Mot de Passe",
+    "updatePassword": "Mettre à jour le mot de passe",
     "updating": "Mise à jour...",
-    "passwordUpdated": "Mot de Passe Mis à Jour",
+    "passwordUpdated": "Mot de passe mis à jour",
     "passwordUpdateSuccess": "Votre mot de passe a été mis à jour avec succès !",
-    "passwordUpdateFailed": "Échec de la Réinitialisation du Mot de Passe",
+    "passwordUpdateFailed": "Échec de la réinitialisation du mot de passe",
     "invalidToken": "Jeton de réinitialisation invalide. Veuillez demander un nouveau lien de réinitialisation de mot de passe.",
-    "invalidLink": "Lien Invalide",
+    "invalidLink": "Lien invalide",
     "linkExpired": "Le lien de réinitialisation du mot de passe est invalide ou a expiré.",
-    "errorUpdatingPassword": "Erreur lors de la Mise à Jour du Mot de Passe",
+    "errorUpdatingPassword": "Erreur lors de la mise à jour du mot de passe",
     "correctErrors": "Veuillez corriger les erreurs ci-dessous.",
     "fillPasswordFields": "Veuillez remplir correctement les deux champs de mot de passe."
   },
   "branding": {
-    "trackPresence": "Suivez la Présence de Votre Équipe",
-    "onSiteOrRemote": "Sur site ou à distance ?",
+    "trackPresence": "Suivez la présence de votre équipe",
+    "onSiteOrRemote": "Sur site ou à distance?",
     "realTimeVisibility": "Visibilité en temps réel des rotations des consultants",
     "stats": {
       "clients": "500+ Clients",
       "consultants": "10 000+ Consultants",
-      "planning": "98% Amélioration de la Planification"
+      "planning": "98% Planification améliorée"
+    }
+  },
+  "report_rc": {
+    "title": "Rapports",
+    "subtitle": "Aperçu de tous les rapports et demandes de rotation",
+    "searchPlaceholder": "Rechercher des rapports...",
+    "dateRangePlaceholder": "Sélectionner une période",
+    "allStatus": "Tous les statuts",
+    "clear": "Effacer",
+    "viewReport": "Voir le rapport",
+    "noReportsMessage": "Aucun rapport à afficher.",
+    "summaryStats": {
+      "totalReports": "Rapports totaux:",
+      "accepted": "Terminés:",
+      "pending": "En attente:",
+      "opened": "En cours:",
+      "rejected": "Rejetés:"
+    },
+    "paginationSummary": "Affichage de {start} à {end} sur {total} rapports",
+    "statusTypes": {
+      "accepted": "Terminé",
+      "pending": "En attente",
+      "opened": "En cours",
+      "rejected": "Rejeté"
+    },
+    "viewDialog": {
+      "title": "Titre",
+      "date": "Date",
+      "status": "Statut",
+      "description": "Description",
+      "noDescription": "Aucune description disponible.",
+      "reject": "Rejeter",
+      "inProgress": "En cours",
+      "accept": "Accepter",
+      "rejectTooltip": "Marquer comme Rejeté",
+      "inProgressTooltip": "Marquer comme En cours",
+      "acceptTooltip": "Marquer comme Terminé"
+    },
+    "filters": {
+      "title": "Filtres",
+      "status": "Statut",
+      "dateRange": "Période",
+      "search": "Recherche"
+    },
+    "reportCard": {
+      "createdAt": "Créé le",
+      "createdBy": "Créé par"
+    },
+    "update": {
+      "success": "Rapport mis à jour avec succès",
+      "error": "Échec de la mise à jour du rapport"
     }
   },
   "languages": {
@@ -75,7 +126,178 @@
     "french": "Français",
     "spanish": "Espagnol"
   },
-  "dashboardPage": {
+  "common": {
+    "view_all": "Voir tout",
+    "retry": "Réessayer"
+  },
+  "days": {
+    "sunday_short": "Dim",
+    "monday_short": "Lun",
+    "tuesday_short": "Mar",
+    "wednesday_short": "Mer",
+    "thursday_short": "Jeu",
+    "friday_short": "Ven",
+    "saturday_short": "Sam"
+  },
+  "months": {
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Mai",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre"
+  },
+  "dashboard_associate": {
+    "title": "Tableau de bord Associé",
+    "welcome_message": "Bienvenue,",
+    "activity_overview": "Voici l'aperçu de votre dernière activité.",
+    "loading": "Chargement du tableau de bord...",
+    "loading_error": "Erreur de chargement",
+    "loading_error_message": "Impossible de charger les données du tableau de bord. Veuillez réessayer.",
+    "total_projects": "Projets totaux",
+    "on_site_weeks": "Semaines sur site",
+    "reports": "Rapports",
+    "current_project": "Projet actuel",
+    "progress": "Progression",
+    "client": "Client",
+    "timeline": "Chronologie",
+    "team_size": "Taille de l'équipe",
+    "previous_projects": "Projets précédents",
+    "project_name": "Nom du projet",
+    "duration": "Durée",
+    "status": "Statut",
+    "work_schedule": "Horaire de travail",
+    "recent_reports": "Rapports récents",
+    "no_reports_available": "Aucun rapport récent disponible",
+    "on_site_work_days": "Jours de travail sur site"
+  },
+  "project_associate": {
+    "title": "Mes Projets",
+    "subtitle": "Gérez et consultez tous vos projets assignés",
+    "loading_projects": "Chargement des projets...",
+    "loading_error": "Erreur de chargement",
+    "loading_error_message": "Impossible de charger les données des projets. Veuillez réessayer.",
+    "search_placeholder": "Rechercher par titre ou étiquette...",
+    "all_status": "Tous les statuts",
+    "all_clients": "Tous les clients",
+    "start_date": "Date de début",
+    "deadline": "Date limite",
+    "progress": "Progression",
+    "view_details": "Voir les détails",
+    "no_projects_found": "Aucun projet correspondant à vos critères.",
+    "loading_or_no_results": "Chargement des projets ou aucun résultat trouvé"
+  },
+  "report_associate": {
+    "title": "Rapports",
+    "subtitle": "Gérez et suivez toutes vos demandes de rotation et rapports",
+    "loading_reports": "Chargement des rapports...",
+    "loading_error": "Erreur de chargement",
+    "loading_error_message": "Impossible de charger les données des rapports. Veuillez réessayer.",
+    "search_placeholder": "Rechercher par titre...",
+    "all_status": "Tous les statuts",
+    "create_rotation_request": "Créer une demande de rotation",
+    "no_reports_found": "Aucun rapport trouvé",
+    "no_reports_message": "Aucun rapport correspondant à vos critères.",
+    "form_title": "Titre",
+    "form_report_type": "Type de rapport",
+    "select_report_type": "Sélectionnez un type de rapport",
+    "form_reason": "Raison",
+    "form_description": "Description",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "subtitle": "Gérez vos informations personnelles et vos préférences de compte",
+    "complete": "complet",
+    "loading": "Chargement de votre profil...",
+    "privacy_notice": "Vos informations de profil peuvent être partagées avec les services ALTEN RemoteSync et les systèmes partenaires selon vos paramètres de confidentialité",
+    "personal_information": "Informations Personnelles",
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "username": "Nom d'utilisateur",
+    "contact_preferences": "Contact et Préférences",
+    "email": "E-mail",
+    "language": "Langue",
+    "phone_number": "Numéro de téléphone",
+    "save_changes": "Enregistrer les modifications",
+    "first_name_placeholder": "Entrez votre prénom",
+    "last_name_placeholder": "Entrez votre nom",
+    "username_placeholder": "Nom d'utilisateur",
+    "email_placeholder": "Adresse e-mail",
+    "language_placeholder": "Sélectionnez votre langue",
+    "phone_placeholder": "Entrez votre numéro de téléphone",
+    "phone_format_hint": "Format: {{format}} (indicatif pays avec espace, puis numéro)",
+    "phone_format_error": "Format de numéro de téléphone invalide. Format attendu: +CODE NUMERO (ex: {{example}})",
+    "update_success": "Profil mis à jour avec succès",
+    "last_updated": "Dernière mise à jour",
+    "days_ago": "jours",
+    "all_changes_saved": "Toutes les modifications seront enregistrées"
+  },
+
+  "calendar_associate": {
+    "title": "Calendrier",
+    "loading": "Chargement du calendrier...",
+    "loading_error": "Erreur de chargement",
+    "loading_error_message": "Impossible de charger les données du calendrier. Veuillez réessayer.",
+    "create_report": "Créer un rapport",
+    "week": "Semaine",
+    "month": "Mois",
+    "year": "Année",
+    "view_week": "Vue par semaine",
+    "view_month": "Vue par mois",
+    "view_year": "Vue par année",
+    "in_site": "Sur site",
+    "remote": "Télétravail",
+    "no_entry": "Aucune entrée",
+    "no_events": "Aucun événement",
+    "week_mostly_in_site": "Semaine: Principalement sur site",
+    "week_mostly_remote": "Semaine: Principalement en télétravail",
+    "edit_entry": "Modifier l'entrée pour",
+    "delete_entry": "Supprimer l'entrée",
+    "save_changes": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "note": "Note (Optionnel)",
+    "note_label": "Note:",
+    "note_placeholder": "Ajoutez des notes pertinentes...",
+    "today": "Aujourd'hui",
+    "current": "Actuel",
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Mai",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre",
+    "sun": "Dim",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mer",
+    "thu": "Jeu",
+    "fri": "Ven",
+    "sat": "Sam",
+    "remote_type": "Télétravail",
+    "in_site_type": "Sur site"
+  },
+  "dashboard_rc": {
     "activeProjects": "Projets Actifs",
     "completedProjects": "Projets Terminés",
     "siteStatisticsTitle": "Statistiques du Site",
@@ -98,7 +320,6 @@
     },
     "table": {
       "headerName": "Nom",
-      "paginationReport": "Affichage de {first}-{last} sur {totalRecords} entrées",
       "emptyMessage": "Aucun enregistrement trouvé."
     },
     "pendingRequests": {
@@ -107,9 +328,10 @@
       "noRequests": "Aucune demande en attente."
     }
   },
-  "projectPage": {
+  "project_rc": {
     "title": "Projets",
     "subtitle": "Aperçu de tous les projets actifs, à venir et terminés",
+    "paginationSummary": "Affichage de {start} à {end} sur {total} projets",
     "summaryStats": {
       "totalProjects": "Projets Totaux :",
       "completed": "Terminés :",
@@ -123,7 +345,33 @@
       "newProjectButton": "Nouveau Projet",
       "clearSearchTooltip": "Effacer la recherche"
     },
+    "form": {
+      "title": "Titre",
+      "titlePlaceholder": "Saisir le titre du projet",
+      "label": "Étiquette",
+      "labelPlaceholder": "Saisir l'étiquette du projet",
+      "selectStatus": "Sélectionner un statut",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "clientPlaceholder": "Rechercher un client",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "update": "Mettre à jour",
+      "editProject": "Modifier le Projet",
+      "viewProject": "Voir le Projet",
+      "progress": "Progression"
+    },
+    "client": {
+      "name": "Nom",
+      "ice": "ICE",
+      "label": "Étiquette",
+      "email": "Email"
+    },
     "table": {
+      "paginationReport": "Affichage de {first} à {last} sur {totalRecords} projets",
+      "title": "Projets",
+      "empty": "Aucun projet trouvé",
+      "search": "Rechercher des projets",
       "header": {
         "label": "Étiquette",
         "projectName": "Nom du Projet",
@@ -137,7 +385,7 @@
         "view": "Voir",
         "delete": "Supprimer"
       },
-      "paginationReport": "Affichage de {first} à {last} sur {totalRecords} entrées",
+
       "emptyMessage": "Aucun projet trouvé correspondant à vos critères de recherche.",
       "loadingMessage": "Chargement des données des projets..."
     },
@@ -147,7 +395,78 @@
       "inactive": "Inactif",
       "cancelled": "Annulé",
       "upcoming": "À venir"
+    },
+    "deleteConfirmation": {
+      "header": "Confirmer la suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer le projet '{titre}'?",
+      "accept": "Oui, supprimer",
+      "reject": "Non, le garder",
+      "success": "Projet supprimé",
+      "successDetail": "Le projet a été supprimé avec succès.",
+      "cancelled": "Opération de suppression annulée"
+    }
+  },
+  "calendar_rc": {
+    "title": "Calendrier de Rotation",
+    "search": "Rechercher",
+    "filters": {
+      "title": "Filtres",
+      "client": "Client",
+      "project": "Projet",
+      "factory": "Usine",
+      "subfactory": "Sous-usine",
+      "clear": "Effacer"
+    },
+    "buttons": {
+      "createRotation": "Créer une nouvelle rotation",
+      "save": "Enregistrer",
+      "cancel": "Annuler"
+    },
+    "viewSelector": {
+      "placeholder": "Sélectionner une vue"
+    },
+    "grid": {
+      "userColumnHeader": "Utilisateur",
+      "userRole": "Consultant",
+      "noUsersFound": "Aucun utilisateur trouvé",
+      "tryDifferentFilters": "Essayez de modifier vos filtres"
+    },
+    "pendingChanges": "Modifications en attente",
+    "pendingChangesDescription": "Vous avez des modifications non enregistrées qui doivent être sauvegardées ou annulées.",
+    "legend": {
+      "title": "Légende",
+      "onSite": "Sur site",
+      "remote": "À distance",
+      "off": "Absent",
+      "today": "Aujourd'hui"
+    }
+  },
+  "rotation_rc": {
+    "modal": {
+      "title": "Créer une Rotation"
+    },
+    "form": {
+      "selectProject": "Sélectionner un Projet",
+      "selectProjectPlaceholder": "Sélectionner un projet",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "selectCollaborators": "Sélectionner des Collaborateurs",
+      "collaboratorsPlaceholder": "Rechercher et ajouter des collaborateurs...",
+      "rotationPattern": "Modèle de Rotation",
+      "patternSummary": "{{weeks}} semaines à distance tous les {{period}} semaines",
+      "selectCustomDates": "Sélectionner des dates personnalisées"
+    },
+    "tabs": {
+      "automatic": "Rotation Automatique",
+      "custom": "Dates Personnalisées"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "createRotation": "Créer la Rotation"
+    },
+    "validation": {
+      "projectRequired": "Le projet est requis.",
+      "collaboratorRequired": "Au moins un collaborateur est requis."
     }
   }
-
 }

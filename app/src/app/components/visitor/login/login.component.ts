@@ -42,10 +42,16 @@ export class LoginComponent implements OnInit {
       this.currentLanguage = lang;
     });
 
-    // If already logged in, redirect to return URL
+    // If already logged in, redirect to return URL or dashboard
     this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       if (isAuthenticated) {
-        this.router.navigate([this.returnUrl]);
+        if (this.returnUrl) {
+          // If we have a valid returnUrl, navigate to it
+          this.router.navigateByUrl(this.returnUrl);
+        } else {
+          // Otherwise use the role-based redirect
+          this.authService.redirectAfterLogin();
+        }
       }
     });
   }
@@ -74,7 +80,7 @@ export class LoginComponent implements OnInit {
           // Get translated messages
           const successSummary = this.translate.instant('login.loginSuccessful');
           const welcomeMessage = this.translate.instant('login.welcomeBackUser', { name: response.data!.firstName });
-          
+
           this.messageService.add({
             severity: 'success',
             summary: successSummary,
@@ -89,7 +95,7 @@ export class LoginComponent implements OnInit {
             // Otherwise let the role-based logic determine the dashboard
             // Convert null to undefined to match the expected parameter type
             this.authService.redirectAfterLogin(this.returnUrl || undefined);
-            
+
             // Log for debugging
             console.log('Login successful, redirecting with returnUrl:', this.returnUrl);
           }, 1000);
@@ -99,7 +105,7 @@ export class LoginComponent implements OnInit {
           // Get translated error messages
           const errorSummary = this.translate.instant('login.loginFailed');
           const errorDetail = error.message || this.translate.instant('login.invalidCredentials');
-          
+
           this.messageService.add({
             severity: 'error',
             summary: errorSummary,
@@ -112,7 +118,7 @@ export class LoginComponent implements OnInit {
       // Get translated validation error message
       const errorSummary = this.translate.instant('login.loginFailed');
       const errorDetail = this.translate.instant('login.enterValidCredentials');
-      
+
       this.messageService.add({
         severity: 'error',
         summary: errorSummary,

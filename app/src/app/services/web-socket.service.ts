@@ -4,6 +4,7 @@ import { UserService } from './auth/user.service';
 
 import { BehaviorSubject, filter, Observable, Observer, of, switchMap } from 'rxjs';
 import SockJS from 'sockjs-client';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class WebSocketService {
   private stompClientConnected = new BehaviorSubject<Client | null>(null);
 constructor(private authService: UserService) {
 
-    this.websocketUrl =  'http://localhost:8080/ws';
+    this.websocketUrl =  `${environment.websocketUrl}`;
 
     this.initializeStompClient();
   }

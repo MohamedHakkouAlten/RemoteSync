@@ -51,14 +51,14 @@ export class NavigationComponent implements OnInit {
     userAvatarUrl: string = 'assets/images/avatar.png'; // Replace with your actual path
     logoUrl: string = 'assets/images/alten.png'; // Replace with your actual path
     navItems: {label: string, routerLink: string}[] = [];
-    
+
     // Mobile menu state
     isMobileMenuOpen: boolean = false;
-   
 
-    
+
+
   constructor(
-    private router: Router, 
+    private router: Router,
     private authService: AuthFacadeService,
     private translate: TranslateService,
     private languageService: LanguageService,
@@ -78,7 +78,7 @@ export class NavigationComponent implements OnInit {
     const firstName = this.authService.getFirstName() || '';
     const lastName = this.authService.getLastName() || '';
     this.userName = firstName && lastName ? `${firstName} ${lastName}` : 'Guest User';
-    
+
     // Subscribe to user info changes to update name when user logs in/out
     this.authService.userInfo$.subscribe(userInfo => {
       if (userInfo) {
@@ -87,7 +87,7 @@ export class NavigationComponent implements OnInit {
         this.userName = 'Guest User';
       }
     });
-    
+
     this.setupMenuItems();
     // Set up navigation items based on user role
     this.setupNavItems();
@@ -142,7 +142,7 @@ export class NavigationComponent implements OnInit {
    */
   setupNavItems(): void {
     const userRoles = this.authService.getUserRoles();
-    
+
     if (userRoles.includes('ADMIN')) {
       this.navItems = [
         { label: 'navigation.dashboard', routerLink: `/${this.currentLanguage}/remotesync/admin/dashboard` }
@@ -160,7 +160,6 @@ export class NavigationComponent implements OnInit {
         { label: 'navigation.dashboard', routerLink: `/${this.currentLanguage}/remotesync/associate/dashboard` },
         { label: 'navigation.project', routerLink: `/${this.currentLanguage}/remotesync/associate/project` },
         { label: 'navigation.report', routerLink: `/${this.currentLanguage}/remotesync/associate/report` },
-        { label: 'navigation.notification', routerLink: `/${this.currentLanguage}/remotesync/associate/notification` },
         { label: 'navigation.calendar', routerLink: `/${this.currentLanguage}/remotesync/associate/calendar` }
       ];
     } else {
@@ -168,7 +167,7 @@ export class NavigationComponent implements OnInit {
       this.navItems = [];
     }
   }
-  
+
 
   onNotificationClick() {
     // Implement notification logic
@@ -180,7 +179,7 @@ export class NavigationComponent implements OnInit {
    */
   navigateToProfile(): void {
     const userRoles = this.authService.getUserRoles();
-    
+
     if (userRoles.includes('ADMIN')) {
       this.router.navigate([`/${this.currentLanguage}/remotesync/admin/profile`]);
     } else if (userRoles.includes('RC')) {
@@ -193,27 +192,27 @@ export class NavigationComponent implements OnInit {
   }
 
 
-  
 
-  
+
+
     openSettingsPage(): void {
       console.log('Navigate to User Settings page triggered.');
       // Implement actual navigation logic
     }
-  
+
     signOut(): void {
       console.log('Sign Out triggered.');
       // Implement sign out logic using auth service
       this.authService.logout().subscribe();
     }
-    
+
     /**
      * Toggle mobile menu visibility
      */
     toggleMobileMenu(): void {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
     }
-    
+
     /**
      * Close mobile menu
      */
@@ -221,8 +220,8 @@ export class NavigationComponent implements OnInit {
       this.isMobileMenuOpen = false;
     }
 
-   
 
-  
+
+
 
 }

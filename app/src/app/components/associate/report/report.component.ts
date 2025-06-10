@@ -10,15 +10,15 @@ import { MessageService } from 'primeng/api';
 import { AssociateService } from '../../../services/associate.service';
 
 // Import DTOs and enums
-import { PagedReportDTO } from '../../../dto/paged-report.dto';
-import { ReportDTO } from '../../../dto/report.dto';
-import { PagedReportSearchDTO } from '../../../dto/paged-report-search.dto';
+import { PagedReportDTO } from '../../../dto/associate/paged-report.dto';
+import { PagedReportSearchDTO } from '../../../dto/associate/paged-report-search.dto';
 import { ReportStatus } from '../../../dto/report-status.enum';
 import { ReportType } from '../../../dto/report-type.enum';
 import { CreateAssociateReportDTO } from '../../../dto/associate/create-report.dto';
 
 // Import shared models
-import { Report, TagSeverity, SelectOption, ReportFilter } from '../models/report.model';
+import { Report, TagSeverity, SelectOption } from '../../../dto/associate/report.model';
+import { ReportDTO } from '../../../dto/aio/report.dto';
 
 @Component({
   selector: 'app-report',
@@ -30,13 +30,13 @@ export class ReportComponent implements OnInit, OnDestroy {
   // Data properties
   reports: Report[] = [];
   pagedReports: PagedReportDTO | null = null;
-  
+
   // New report form data
   newReportTitle: string = '';
   newReportType: string = ReportType.REQUEST_ROTATION; // Default type
   newReportReason: string = '';
   newReportDescription: string = '';
-  
+
   // Filtering properties
   searchTerm: string = '';
   selectedStatus: string | null = null;
@@ -57,30 +57,30 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   // Pagination properties
   totalRecords: number = 0;
-  rows: number = 9; // Number of reports per page (3 columns * 3 rows)
+  rows: number = 10; // Number of reports per page (must match an option in rowsPerPageOptions)
   first: number = 0; // Index of the first record to display
 
   // Loading state
   isLoading = false;
   loadingError = false;
   formSubmitted = false;
-  
+
   // UI state properties
   displayCreateDialog: boolean = false;
-  
+
   // Form properties
   reportForm!: FormGroup;
-  
+
   // Private properties for subscription management
   private searchSubject = new Subject<string>();
   private subscriptions: Subscription[] = [];
   private loadingTimeout: any = null;
-  
+
   // Display data for UI
   displayedReports: Report[] = [];
 
   constructor(
-    private associateService: AssociateService, 
+    private associateService: AssociateService,
     private fb: FormBuilder,
     private messageService: MessageService
   ) { }
@@ -96,17 +96,17 @@ export class ReportComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.loadReports();
     });
-    
+
     // Add to subscriptions array for cleanup
     this.subscriptions.push(searchSubscription);
-    
+
     // Initialize the form with validators
     this.initReportForm();
-    
+
     // Initial load of reports
     this.loadReports();
   }
-  
+
   // Initialize form with validation
   private initReportForm(): void {
     this.reportForm = this.fb.group({
@@ -123,7 +123,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Cleanup all subscriptions to prevent memory leaks
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    
+
     // Clear any pending timeouts
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
@@ -150,7 +150,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   saveNewReport(): void {
     this.formSubmitted = true;
-    
+
     if (this.reportForm.invalid) {
       // Form is invalid - focus on the first invalid field and show validation errors
       this.messageService.add({
@@ -160,7 +160,7 @@ export class ReportComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    
+
     // Create the DTO from the form values
     const reportData: CreateAssociateReportDTO = {
       title: this.reportForm.value.title,
@@ -168,7 +168,7 @@ export class ReportComponent implements OnInit, OnDestroy {
       type: this.reportForm.value.type,
       description: this.reportForm.value.description
     };
-    
+
     this.associateService.createAssociateReport(reportData).subscribe({
       next: (response) => {
         this.messageService.add({
@@ -189,18 +189,18 @@ export class ReportComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   // Helper method to check if a field is invalid and touched
   isFieldInvalid(fieldName: string): boolean {
     const field = this.reportForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.formSubmitted));
   }
-  
+
   // Helper method to get field error message
   getFieldErrorMessage(fieldName: string): string {
     const field = this.reportForm.get(fieldName);
     if (!field) return '';
-    
+
     if (field.errors?.['required']) {
       return 'This field is required';
     }
@@ -210,7 +210,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     if (field.errors?.['maxlength']) {
       return `Maximum length is ${field.errors['maxlength'].requiredLength} characters`;
     }
-    
+
     return '';
   }
 
@@ -229,17 +229,17 @@ export class ReportComponent implements OnInit, OnDestroy {
   loadReports(): void {
     // Guard clause to prevent multiple concurrent requests
     if (this.isLoading) return;
-    
+
     try {
       this.isLoading = true;
       this.loadingError = false;
-      
+
       // Clear any existing timeout
       if (this.loadingTimeout) {
         clearTimeout(this.loadingTimeout);
         this.loadingTimeout = null;
       }
-      
+
       // Set a timeout to show error if loading takes too long
       this.loadingTimeout = setTimeout(() => {
         if (this.isLoading) {
@@ -253,27 +253,27 @@ export class ReportComponent implements OnInit, OnDestroy {
           });
         }
       }, 15000); // 15 seconds timeout
-      
+
       // Create DTO with current values - ensure pageSize is never zero
       const pageSize = this.rows || 10; // Default to 10 if rows is somehow 0
-      
+
       // Create search parameters
       const searchParams: Record<string, any> = {
         pageNumber: Math.max(0, Math.floor(this.first / pageSize)), // Ensure non-negative
         pageSize: pageSize
       };
-      
+
       // Only add defined and non-empty values
       if (this.searchTerm) searchParams['title'] = this.searchTerm.trim();
       if (this.selectedStatus) searchParams['status'] = this.selectedStatus;
       if (this.selectedType) searchParams['type'] = this.selectedType;
-      
+
       // Clean the object by removing undefined, null, and empty string values
       const cleanSearchDto = Object.fromEntries(
-        Object.entries(searchParams).filter(([_, value]) => 
+        Object.entries(searchParams).filter(([_, value]) =>
           value !== undefined && value !== null && value !== '')
       ) as PagedReportSearchDTO;
-      
+
       // Create a subscription for report loading
       const reportSubscription = this.associateService.getAssociateOldReports(cleanSearchDto).subscribe({
         next: (response) => {
@@ -282,14 +282,14 @@ export class ReportComponent implements OnInit, OnDestroy {
             clearTimeout(this.loadingTimeout);
             this.loadingTimeout = null;
           }
-          
+
           // Validate response and data
           if (response && response.data) {
             const pagedData = response.data as PagedReportDTO;
-            
+
             // Validate totalElements is a number
             this.totalRecords = typeof pagedData.totalElements === 'number' ? pagedData.totalElements : 0;
-            
+
             // Validate reportDTOs is an array before mapping
             if (Array.isArray(pagedData.reportDTOs)) {
               this.displayedReports = pagedData.reportDTOs.map(dto => this.mapReportDtoToUi(dto));
@@ -302,18 +302,18 @@ export class ReportComponent implements OnInit, OnDestroy {
             this.displayedReports = [];
             this.totalRecords = 0;
           }
-          
+
           this.isLoading = false;
         },
         error: (error) => {
           console.error('Error loading reports:', error);
-          
+
           // Clear the timeout
           if (this.loadingTimeout) {
             clearTimeout(this.loadingTimeout);
             this.loadingTimeout = null;
           }
-          
+
           this.isLoading = false;
           this.loadingError = true;
           this.messageService.add({
@@ -324,7 +324,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           });
         }
       });
-      
+
       // Add to subscriptions for proper cleanup
       this.subscriptions.push(reportSubscription);
     } catch (error) {
@@ -340,12 +340,12 @@ export class ReportComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
+
   // Maps backend DTO to UI format
   private mapReportDtoToUi(dto: ReportDTO): Report {
     // Determine icon based on type (this logic can be refined based on actual types)
     let typeIcon = 'pi pi-file';
-    
+
     return {
       id: dto.reportId,
       title: dto.title,
@@ -362,7 +362,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.first = 0; // Reset to first page when filters change
     this.loadReports();
   }
-  
+
   // Handle search term changes with debouncing
   onSearchChange(): void {
     this.first = 0; // Reset to first page

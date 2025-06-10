@@ -26,8 +26,9 @@ import { CalendarModule } from 'primeng/calendar';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 
 import { RcService } from '../../../services/rc.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AddProjectComponent } from './add-project/add-project.component';
 import { EditProjectComponent } from './edit-project/edit-project.component';
 import { ViewProjectComponent } from './view-project/view-project.component';
@@ -62,20 +63,22 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     DialogModule,
     DropdownModule,
     CalendarModule,
-    DropdownModule,
-    AutoCompleteModule
+    AutoCompleteModule,
     // InputTextareaModule // Add if needed
     // ---------------------------------------
-    ,
-    TranslateModule,
+    // Essential for i18n and translations
+    TranslateModule, // Using forChild() for proper child module support
     ToastModule,
+    ConfirmDialogModule,
     AddProjectComponent,
     EditProjectComponent,
     ViewProjectComponent,
     DefaultLayoutComponent
 ],
-providers:[RcService,
+providers:[
+    RcService,
     MessageService,
+    ConfirmationService,
     LanguageService,
     TranslateService
 ]

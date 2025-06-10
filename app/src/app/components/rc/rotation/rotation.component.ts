@@ -3,7 +3,12 @@ import { FormGroup, FormBuilder, FormsModule, ReactiveFormsModule } from '@angul
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { addDays, addMonths, format, getDay, getMonth, getYear, isAfter, isBefore, isSameDay, isSameMonth, startOfMonth, endOfMonth, getWeek, getDate, differenceInDays, addWeeks, startOfWeek } from 'date-fns';
-import { ProjectDropDownDTO, RcAssociateDTO, RcService, RcAssignRotationUser, CustomDate, RotationStatus } from '../../../services/rc.service';
+import { RcService } from '../../../services/rc.service';
+import { ProjectDropDownDTO } from '../../../dto/rc/project-dropdown.dto';
+import { RcAssociateDTO } from '../../../dto/rc/rc-associate.dto';
+import { RcAssignRotationUser } from '../../../dto/rc/rc-assign-rotation-user.dto';
+import { CustomDate } from '../../../dto/rc/custom-date.dto';
+import { RotationStatus } from '../../../dto/rc/rotation-status.enum';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
@@ -349,8 +354,6 @@ stateOptions: any[] = [{ label: 'day', value: 'day' },{ label: 'week', value: 'w
 
   createRotation() {
     // Validate required fields
-
-
     if (!this.startDate || !this.endDate) {
       alert('Please select start and end dates');
       return;
@@ -361,10 +364,17 @@ stateOptions: any[] = [{ label: 'day', value: 'day' },{ label: 'week', value: 'w
       return;
     }
 
-    // Create the rotation request payload
+    // Extract just the IDs from the collaborators to avoid sending full objects
+    const associateIds = this.selectedCollaborators.map(collaborator => collaborator.id);
+
+    // Create the rotation request payload matching the backend DTO structure
     const rotationData: RcAssignRotationUser = {
-      associates: this.selectedCollaborators.map(c => c.id),
+      userId: '', // This is required by our interface but not used by the backend
+      dates: [], // This is required by our interface but not used by the backend
       projectId: this.selectedProject?.id,
+      // Send only the associate IDs in the associates field (matching backend's expected field name)
+      associates: associateIds,
+      // Additional properties used by the application
       startDate: this.formatDateKey(this.startDate()),
       endDate: this.formatDateKey(this.endDate()),
       remoteWeeksPerCycle: this.weeksValue,
@@ -372,24 +382,21 @@ stateOptions: any[] = [{ label: 'day', value: 'day' },{ label: 'week', value: 'w
       customDates: this.customDates
     };
 
-
-
     console.log('Sending rotation request:', rotationData);
 
     this.loading = true;
-
   
-      this.rcService.createRotation(rotationData).subscribe(
-        (response) => {
-          console.log('Rotation created successfully:', response);
-          this.loading = false;
-          this.closeModal();
-          this.rotationCreated.emit(true);
-        },
-        (error) => {
-          console.error('Error creating rotation:', error);
-          this.loading = false;
-          this.rotationCreated.emit(false)
+    this.rcService.createRotation(rotationData).subscribe(
+      (response) => {
+        console.log('Rotation created successfully:', response);
+        this.loading = false;
+        this.closeModal();
+        this.rotationCreated.emit(true);
+      },
+      (error) => {
+        console.error('Error creating rotation:', error);
+        this.loading = false;
+        this.rotationCreated.emit(false)
         }
       );
   }
@@ -397,5 +404,4 @@ stateOptions: any[] = [{ label: 'day', value: 'day' },{ label: 'week', value: 'w
     return format(date, this.dateFormat)
   }
 }
-
 

@@ -21,9 +21,10 @@ import java.util.UUID;
 
 @Repository
 public interface ProjectDomainRepository extends JpaRepository<Project, UUID>, JpaSpecificationExecutor<Project> {
-    Optional<List<Project>> findAllByOwner_ClientIdAndIsDeleted(UUID clientId,Boolean isDeleted);
+    Optional<List<Project>> findAllByOwner_ClientIdAndIsDeleted(UUID ownerClientId, Boolean isDeleted);
 
     Optional<List<Project>> findTop10ByLabelContainsIgnoreCase(String label);
+    Optional<List<Project>> findAllBy(Pageable pageable);
     Optional<List<Project>> findAllByIsDeleted(Boolean isDeleted);
     Optional<Page<Project>> findAllByLabelContainingIgnoreCase(String label,Pageable pageable);
     Optional<Page<Project>> findAllByOwner_LabelContainingIgnoreCase(String label,Pageable pageable);
@@ -102,6 +103,13 @@ SELECT DISTINCT p FROM AssignedRotation ar
             "GROUP BY ar.project.projectId")
     Optional<Page<Project>> fetchAssociateProjects(@Param("userId") UUID userId, Pageable pageable);
 
+    @Query("SELECT DISTINCT p FROM AssignedRotation ar " +
+            "INNER JOIN Project p ON p.projectId = ar.project.projectId " +
+            "INNER JOIN Client c ON c.clientId = p.owner.clientId " +
+            "WHERE ar.user.userId = :userId " +
+            "GROUP BY p.projectId " +
+            "ORDER BY COUNT(DISTINCT ar.user.userId) DESC")
+    Optional<Project> fetchProjectWithLargestTeam(@Param("userId") UUID userId);
 
 
 

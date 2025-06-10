@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Needed for ngModel
+import { TranslateModule } from '@ngx-translate/core'; // For i18n support
 
 // --- PrimeNG Modules ---
 import { InputTextModule } from 'primeng/inputtext'; // For search input
@@ -14,6 +15,7 @@ import { ButtonModule } from 'primeng/button'; // Optional for icons etc.
 import { PaginatorModule } from 'primeng/paginator';
 import { InputIconModule } from 'primeng/inputicon'; // For search icon
 import { IconFieldModule } from 'primeng/iconfield'; // For icon+input field
+import { TooltipModule } from 'primeng/tooltip'; // For pTooltip directive
 
 // Import NavigationComponent
 import { NavigationComponent } from '../../shared/navigation/navigation.component';
@@ -30,7 +32,7 @@ import { DefaultLayoutComponent } from '../../shared/layout/default-layout.compo
   imports: [
     CommonModule,
     FormsModule,
-    ProjectRoutingModule,    
+    ProjectRoutingModule,
     InputTextModule,
     DropdownModule,
     ProgressBarModule,
@@ -43,7 +45,9 @@ import { DefaultLayoutComponent } from '../../shared/layout/default-layout.compo
     DefaultLayoutComponent,
     PaginatorModule,
     InputIconModule,
-    IconFieldModule
+    IconFieldModule,
+    TooltipModule,
+    TranslateModule
   ]
 })
 export class ProjectModule { }

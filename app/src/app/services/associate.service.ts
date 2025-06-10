@@ -5,8 +5,7 @@ import { environment } from '../../environments/environment';
 import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
 
 // Project-related imports
-import { ProjectDTO } from '../dto/project.dto';
-import { PagedProjectDTO } from '../dto/paged-project.dto';
+import { ProjectDTO } from '../dto/aio/project.dto';
 import { ProjectsCountDTO } from '../dto/projects-count.dto';
 import { PagedProjectSearchDTO } from '../dto/paged-global-id.dto';
 import { AssociateProjectByClientDTO } from '../dto/associate/associate-project-by-client.dto';
@@ -14,18 +13,20 @@ import { AssociateProjectByLabelDTO } from '../dto/associate/associate-project-b
 import { InitialProjectsDTO } from '../dto/initial-projects.dto';
 
 // Report-related imports
-import { PagedReportDTO } from '../dto/paged-report.dto';
-import { PagedReportSearchDTO } from '../dto/paged-report-search.dto';
+import { PagedReportDTO } from '../dto/associate/paged-report.dto';
+import { PagedReportSearchDTO } from '../dto/associate/paged-report-search.dto';
 import { CreateAssociateReportDTO } from '../dto/associate/create-report.dto';
 
 // Dashboard & profile imports
 import { DashboardDTO } from '../dto/dashboard.dto';
 import { ProfileDTO } from '../dto/profile.dto';
+import { AssociateUpdateProfileDTO } from '../dto/associate-update-profile.dto';
 import { CurrentRotationsDTO } from '../dto/associate/current-rotations.dto';
 
 // Notification-related imports
-import { PagedNotificationSearchDTO } from '../dto/paged-notification-search.dto';
 import { PagedNotificationDTO } from '../dto/notification.dto';
+import { PagedProjectDTO } from '../dto/associate/paged-project.dto';
+import { PagedNotificationSearchDTO } from '../dto/aio/paged-notification-search.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -107,18 +108,18 @@ export class AssociateService {
   getMyReports(pageNumber: number, pageSize: number): Observable<ResponseWrapperDto<PagedReportDTO>> {
     return this.http.get<ResponseWrapperDto<PagedReportDTO>>(`${this.apiUrl}/myReports/${pageNumber}/${pageSize}`);
   }
-  
+
   /**
    * Fetches old reports with search criteria
    * @param pagedReportSearchDTO Search parameters for filtering reports
    * @returns Paginated reports matching criteria
    */
   getAssociateOldReports(pagedReportSearchDTO: PagedReportSearchDTO): Observable<ResponseWrapperDto<PagedReportDTO>> {
-    return this.http.get<ResponseWrapperDto<PagedReportDTO>>(`${this.apiUrl}/my-reports`, { 
-      params: pagedReportSearchDTO as any 
+    return this.http.get<ResponseWrapperDto<PagedReportDTO>>(`${this.apiUrl}/my-reports`, {
+      params: pagedReportSearchDTO as any
     });
   }
-  
+
   /**
    * Creates a new associate report
    * @param createAssociateReportDTO Data for the new report
@@ -152,6 +153,15 @@ export class AssociateService {
    */
   getAssociateProfile(): Observable<ResponseWrapperDto<ProfileDTO>> {
     return this.http.get<ResponseWrapperDto<ProfileDTO>>(`${this.apiUrl}/my-profile`);
+  }
+
+  /**
+   * Updates the associate's profile information
+   * @param updateData Profile data to update (first name, last name, phone number)
+   * @returns Updated profile data
+   */
+  updateAssociateProfile(updateData: AssociateUpdateProfileDTO): Observable<ResponseWrapperDto<ProfileDTO>> {
+    return this.http.put<ResponseWrapperDto<ProfileDTO>>(`${this.apiUrl}/my-profile/update`, updateData);
   }
   //#endregion
 

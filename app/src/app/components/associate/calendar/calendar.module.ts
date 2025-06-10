@@ -2,6 +2,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Keep FormsModule for ngModel
+import { TranslateModule } from '@ngx-translate/core'; // Import for translations
 
 // --- PrimeNG Modules ---
 import { ButtonModule } from 'primeng/button';
@@ -23,6 +24,7 @@ import { NavigationComponent } from "../../shared/navigation/navigation.componen
   imports: [
     CommonModule,
     FormsModule, // Needed for [(ngModel)] in the modal
+    TranslateModule, // Add TranslateModule for i18n support
     CalendarRoutingModule,
     // PrimeNG
     ButtonModule,

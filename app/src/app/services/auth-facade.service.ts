@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 
 import { LoginRequestDto, LoginResponseDTO } from '../dto/auth/login.dto';
 import { ForgotPasswordRequestDto } from '../dto/auth/forgotpassword.dto';
-
+import { RecoverPasswordDto } from '../dto/auth/recoverpassword.dto';
 import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
 import { ResetPasswordRequestDto } from '../dto/auth/resetpassword.dto';
 import { AuthService } from './auth/auth.service';
 import { UserInfo, UserService } from './auth/user.service';
+import { SupportedLanguage } from './language/language.service';
 
 /**
  * This facade maintains the original AuthService interface
@@ -41,10 +42,11 @@ export class AuthFacadeService {
   }
 
   /**
-   * Request a password reset email
+   * Recover password by sending a recovery email
    */
-  forgotPassword(data: ForgotPasswordRequestDto): Observable<any> {
-    return this.authService.forgotPassword(data);
+
+  recoverPassword(data: RecoverPasswordDto): Observable<ResponseWrapperDto<any>> {
+    return this.authService.recoverPassword(data);
   }
   clearUserData(){
     return this.userService.clearUserData()
@@ -56,7 +58,7 @@ export class AuthFacadeService {
   /**
    * Reset password with token
    */
-  resetPassword(data: ResetPasswordRequestDto): Observable<any> {
+  resetPassword(data: ResetPasswordRequestDto): Observable<ResponseWrapperDto<any>> {
     return this.authService.resetPassword(data);
   }
 
@@ -66,7 +68,11 @@ export class AuthFacadeService {
   logout(): Observable<void> {
     const result = this.authService.logout();
     // Navigate to login page after logout
-    this.router.navigate(['/remotesync/login']);
+    const language = this.userService.getCurrentLanguage();
+
+    console.log(language)
+
+    this.router.navigate([`${language}/remotesync/login`]);
     return result;
   }
 

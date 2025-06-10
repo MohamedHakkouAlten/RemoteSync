@@ -1,5 +1,5 @@
-import { ProjectDTO } from './project.dto';
-import { ReportDTO } from './report.dto';
+import { ProjectDTO } from './aio/project.dto';
+import { ReportDTO } from './aio/report.dto';
 
 export interface DashboardDTO {
   onSiteWeeks: string[];

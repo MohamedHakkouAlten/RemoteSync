@@ -1,6 +1,6 @@
 // Request DTOs
-export interface ResetPasswordRequestDto{
+export interface ResetPasswordRequestDto {
     token: string;
-    newPassword: string;
-    confirmPassword: string;
+    password: string;  // Renamed to match backend DTO field
+    confPassword: string;  // Renamed to match backend DTO field
 }

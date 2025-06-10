@@ -17,8 +17,8 @@ import java.util.UUID;
 @Repository
 public interface UserDomainRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
 
-    User findByUsername(String username);
-    User findByEmail(String email);
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
 
 
     Integer countAllByRoles(List<Role> roles);

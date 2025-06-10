@@ -1,39 +1,42 @@
-/* src/app/components/associate/report/report.component.css */
+/* ==========================================================================
+   Report Component Styles
+   ========================================================================== */
 
-/* ============================
-   Layout & Container
-   ============================ */
-   :host {
+/* Layout & Container */
+:host {
     display: block;
     background-color: #f8f9fa; /* Light background for the whole page */
     min-height: calc(100vh - 60px); /* Full height minus header height */
     font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
   }
-  
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
   .report-layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Ensure layout takes full viewport height */
+    width: 100%;
   }
-  
+
   .report-container {
     padding: 1.5rem 2rem; /* Standard padding */
     flex-grow: 1;
-    max-width: 1200px; /* Optional: Constrain max width */
     margin: 0 auto; /* Center content */
     width: 100%;
   }
-  
+
   .report-header h1 {
     font-size: 1.75rem; /* Slightly smaller than dashboard */
     font-weight: 600;
     color: #343a40;
     margin-bottom: 1.5rem;
   }
-  
-  /* ============================
-     Filter Bar
-     ============================ */
+
+  /* Filter Bar */
   .filter-bar {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
@@ -41,30 +44,30 @@
     margin-bottom: 2rem;
     align-items: center;
   }
-  
+
   .search-input {
     flex-grow: 1; /* Take available space */
     min-width: 250px; /* Minimum width before wrapping */
   }
-  
+
   /* Ensure PrimeNG input fills the container */
   :host ::ng-deep .search-input .p-inputtext {
     width: 100%;
   }
-  
+
   /* Orange-themed hover states for all inputs */
   :host ::ng-deep .p-inputtext:enabled:hover,
   :host ::ng-deep .p-dropdown:hover .p-dropdown-trigger,
   :host ::ng-deep .p-dropdown:hover .p-dropdown-label {
     border-color: #f97316 !important;
   }
-  
+
   /* Error state styling */
   :host ::ng-deep .ng-invalid.ng-dirty,
   :host ::ng-deep .ng-invalid.ng-touched {
     border-color: #ef4444 !important;
   }
-  
+
   /* Display validation message styling */
   :host ::ng-deep .p-error {
     color: #ef4444;
@@ -72,7 +75,7 @@
     margin-top: 0.25rem;
     display: block;
   }
-  
+
   /* Fix line clamp for webkit browsers */
   .line-clamp-3 {
     display: -webkit-box;
@@ -83,12 +86,12 @@
     text-overflow: ellipsis;
     max-height: 4.5em;
   }
-  
+
   :host ::ng-deep .filter-dropdown .p-dropdown {
     min-width: 160px;
     width: auto; /* Allow dropdown to size based on content */
   }
-  
+
   /* Style the create button like the image */
   :host ::ng-deep .create-button.p-button-warning {
     background-color: #FF8C00; /* Orange color from image */
@@ -102,16 +105,14 @@
     border-color: #e07b00;
     box-shadow: 0 0 0 0.2rem rgba(255, 140, 0, 0.5); /* PrimeNG focus style */
   }
-  
-  /* ============================
-     Report Grid & Cards
-     ============================ */
+
+  /* Report Grid & Cards */
   .report-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
     gap: 1.5rem; /* Spacing between cards */
   }
-  
+
   .report-card {
     background-color: #ffffff;
     border-radius: 8px;
@@ -124,16 +125,16 @@
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     min-height: 200px; /* Give cards a minimum height */
   }
-  
+
   .report-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.05);
   }
-  
+
   .card-content {
     margin-bottom: 1rem;
   }
-  
+
   .report-title {
     font-size: 1.05rem; /* Slightly smaller title */
     font-weight: 600;
@@ -149,7 +150,7 @@
     text-overflow: ellipsis;
     max-height: 2.7em;
   }
-  
+
   .report-type {
     display: flex;
     align-items: center;
@@ -158,11 +159,11 @@
     color: #6c757d;
     margin-bottom: 0.75rem;
   }
-  
+
   .report-type i {
     font-size: 0.9rem;
   }
-  
+
   .report-description {
     font-size: 0.875rem;
     color: #495057;
@@ -177,7 +178,7 @@
     text-overflow: ellipsis;
     min-height: calc(1.5em * 2); /* Reserve space for 2 lines (adjust em based on font-size) */
   }
-  
+
   .card-footer {
     display: flex;
     justify-content: space-between;
@@ -186,7 +187,7 @@
     padding-top: 0.75rem;
     margin-top: auto; /* Crucial to push footer to the bottom */
   }
-  
+
   .report-date {
     display: flex;
     align-items: center;
@@ -194,48 +195,46 @@
     font-size: 0.8rem;
     color: #6c757d;
   }
-  
+
   .report-date i {
     font-size: 0.9rem;
   }
-  
+
   /* Status Badge Styling using p-tag severities */
   :host ::ng-deep .p-tag {
     font-size: 0.75rem;
     padding: 0.2rem 0.6rem !important; /* Fine-tune padding */
     font-weight: 500;
   }
-  
+
   /* Customizing p-tag colors slightly to match image better */
   /* Accepted (Green) - Default 'success' is fine */
   :host ::ng-deep .p-tag.p-tag-success { background-color: #DCFCE7; color: #166534; }
-  
+
   /* Pending (Orange) - Using 'warn' */
   :host ::ng-deep .p-tag.p-tag-warn { background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A;}
-  
+
   /* Rejected (Red) - Default 'danger' is fine */
   :host ::ng-deep .p-tag.p-tag-danger  { background-color: #FEE2E2; color: #991B1B; }
-  
+
   /* In review (Grey) - Using 'info' or 'secondary' */
   :host ::ng-deep .p-tag.p-tag-info    { background-color: #E5E7EB; color: #374151; } /* Using grey colors */
-  
-  
-  /* ============================
-     Pagination & No Reports
-     ============================ */
+
+
+  /* Pagination & No Reports */
   .pagination-container {
     margin-top: 2.5rem;
     display: flex;
     justify-content: center;
   }
-  
+
   /* Style Paginator elements */
   :host ::ng-deep .p-paginator {
     background-color: transparent;
     border: none;
     padding: 0;
   }
-  
+
   :host ::ng-deep .p-paginator .p-paginator-page,
   :host ::ng-deep .p-paginator .p-paginator-first,
   :host ::ng-deep .p-paginator .p-paginator-prev,
@@ -256,8 +255,8 @@
       height: 2.5rem;
       margin: 0 0.5rem;
   }
-  
-  
+
+
   .no-reports-message {
     text-align: center;
     padding: 3rem 1rem;
@@ -268,11 +267,9 @@
     border: 1px solid #e9ecef;
     margin-top: 1.5rem; /* Add margin if grid is empty */
   }
-  
-  
-  /* ============================
-     Responsive Adjustments
-     ============================ */
+
+
+  /* Responsive Adjustments */
   @media (max-width: 768px) {
     .report-container {
       padding: 1.5rem 1rem; /* Reduce padding */
@@ -298,25 +295,21 @@
     .report-grid {
       grid-template-columns: 1fr; /* Single column */
     }
-  
+
     /* Adjust dialog width on smaller screens */
     :host ::ng-deep .p-dialog {
       width: 90vw !important;
       min-width: unset !important;
     }
   }
-  
- /* ============================
-   Custom Dialog Styling
-   ============================ */
 
-/* Overall Dialog Container */
+ /* Dialog Styles */
 :host ::ng-deep .p-dialog {
     border-radius: 8px; /* Match card corner radius */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Slightly more pronounced shadow */
     border: none; /* Remove default border if any */
   }
-  
+
   /* Dialog Header */
   :host ::ng-deep .p-dialog .p-dialog-header {
     background-color: #f97316; /* Orange header */
@@ -326,12 +319,12 @@
     border-top-right-radius: 8px;
     border-bottom: none;
   }
-  
+
   :host ::ng-deep .p-dialog .p-dialog-title {
     font-weight: 600; /* Bold title */
     font-size: 1.1rem;
   }
-  
+
   /* Dialog Header Icons (e.g., Close Button) */
   :host ::ng-deep .p-dialog .p-dialog-header-icon {
     color: #ffffff; /* White icon */
@@ -345,70 +338,53 @@
     border-color: transparent;
     box-shadow: none;
   }
-  
+
   /* Dialog Content Area */
   :host ::ng-deep .p-dialog .p-dialog-content {
     background-color: #ffffff;
     padding: 1.5rem; /* Consistent padding */
     color: #495057;
   }
-  
-  /* Input Fields inside the Dialog */
-  :host ::ng-deep .p-dialog .field label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #4b5563; /* Slightly softer label color */
-    font-size: 0.875rem;
+
+  /* Dialog Input Styles */
+  :host ::ng-deep .p-dialog .field .p-inputtext,
+  :host ::ng-deep .p-dialog .field .p-inputtextarea {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    padding: 0.5rem 0.75rem;
+    min-height: 40px; /* Consistent height with other inputs */
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  
- /* src/app/components/associate/report/report.component.css */
 
-/* Find this rule (or similar) */
-:host ::ng-deep .p-dialog .field .p-inputtext,
-:host ::ng-deep .p-dialog .field .p-inputtextarea {
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  width: 100%; /* --- THIS IS THE KEY --- */
-  box-sizing: border-box; /* Important: Include padding/border in the 100% width */
-  font-family: inherit;
-  padding: 0.5rem 0.75rem;
-  min-height: 38px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
+  /* Make sure the textarea is vertically resizable but with a min-height */
+  :host ::ng-deep .p-dialog .field .p-inputtextarea {
+    resize: vertical;
+    min-height: 120px; /* Adjust as needed for the textarea's size */
+  }
 
-/* Ensure input and textarea fill container and have consistent padding */
-:host ::ng-deep .p-dialog .field .p-inputtext,
-:host ::ng-deep .p-dialog .field .p-inputtextarea {
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-  padding: 0.5rem 0.75rem;
-  min-height: 40px; /* Adjust for consistent height with other inputs */
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
+  /* Focus and hover styles */
+  :host ::ng-deep .p-dialog .field .p-inputtext:enabled:focus,
+  :host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:focus {
+    border-color: #f97316; /* Orange focus border */
+    box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.5);
+  }
 
-/* Make sure the textarea is vertically resizable but with a min-height */
-:host ::ng-deep .p-dialog .field .p-inputtextarea {
-  resize: vertical;
-  min-height: 120px; /* Adjust as needed for the textarea's size */
-}
+  :host ::ng-deep .p-dialog .field .p-inputtext:enabled:hover,
+  :host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:hover {
+    border-color: #f97316; /* Orange hover border */
+  }
 
-/* Focus and hover styles */
+/* Input Focus and hover styles */
 :host ::ng-deep .p-dialog .field .p-inputtext:enabled:focus,
 :host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:focus {
   border-color: #f97316; /* Orange focus border */
   box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.5);
 }
 
-:host ::ng-deep .p-dialog .field .p-inputtext:enabled:hover,
-:host ::ng-deep .p-dialog .field .p-inputtextarea:enabled:hover {
-  border-color: #f97316; /* Orange hover border */
-}
 
-  
   /* Dialog Footer */
   :host ::ng-deep .p-dialog .p-dialog-footer {
     background-color: #f8f9fa; /* Light grey footer background */
@@ -420,7 +396,7 @@
     justify-content: flex-end;
     gap: 0.5rem;
   }
-  
+
   /* Footer Buttons */
   :host ::ng-deep .p-dialog-footer .p-button-text {
     color: #6c757d; /* Standard grey for cancel */
@@ -428,7 +404,7 @@
   :host ::ng-deep .p-dialog-footer .p-button-text:hover {
     background-color: rgba(0, 0, 0, 0.04); /* Subtle hover */
   }
-  
+
   :host ::ng-deep .p-dialog-footer .p-button-warning {
     /* Orange theme */
     background-color: #f97316;

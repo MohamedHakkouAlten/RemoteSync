@@ -49,18 +49,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (userId != null && userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String tokenType = jwtService.extractClaim(jwt, claims -> claims.get("type", String.class));
-                boolean isRefreshToken = "refresh".equals(tokenType);
                 Instant expirationTime = jwtService.extractClaim(jwt, claims -> claims.getExpiration().toInstant());
                 boolean isTokenValid = jwtService.isTokenValid(jwt, userEmail);
+                String path = request.getServletPath();
 
-                if (isRefreshToken && !request.getServletPath().equals("/api/v1/auth/refreshToken")) {
-                    sendJsonResponse(response, HttpServletResponse.SC_FORBIDDEN, "Invalid Token Usage", "Refresh token cannot be used to access resources", tokenType, expirationTime, userEmail);
+                if (!isTokenValid) {
+                    sendJsonResponse(
+                            response,
+                            HttpServletResponse.SC_UNAUTHORIZED,
+                            "Token Validation Failed",
+                            "The token is invalid or has expired. Please log in again or use a refresh token.",
+                            tokenType,
+                            expirationTime,
+                            userEmail
+                    );
                     return;
                 }
 
-
-                if (!isRefreshToken && !isTokenValid) {
-                    sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token", "Invalid or expired token", tokenType, expirationTime, userEmail);
+                if (!isTokenAllowedForEndpoint(tokenType, path)) {
+                    sendJsonResponse(
+                            response,
+                            HttpServletResponse.SC_FORBIDDEN,
+                            "Invalid Token Type",
+                            getTokenTypeErrorMessage(tokenType, path),
+                            tokenType,
+                            expirationTime,
+                            userEmail
+                    );
                     return;
                 }
 
@@ -75,23 +90,72 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
+            sendJsonResponse(
+                    response,
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Token Expired",
+                    "Your session has expired. Please log in again.",
+                    null, null, null
+            );
 
-            sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT expired", e.getMessage(), null, null, null);
+            return;
         } catch (Exception exception) {
-            sendJsonResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authentication Error", exception.getMessage(), null, null, null);
-            handlerExceptionResolver.resolveException(request, response, null, exception);
+            sendJsonResponse(
+                    response,
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Authentication Failed",
+                    "Invalid authentication token or credentials.",
+                    null, null, null
+            );
+            return;
         }
     }
-    private void sendJsonResponse(HttpServletResponse response, int status, String error, String message, String tokenType, Instant expirationTime, String userEmail) throws IOException {
+
+    private void sendJsonResponse(HttpServletResponse response,
+                                  int status,
+                                  String errorTitle,
+                                  String errorDetail,
+                                  String tokenType,
+                                  Instant expirationTime,
+                                  String userEmail) throws IOException {
+
         response.setStatus(status);
         response.setContentType("application/json");
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("error", error);
-        responseBody.put("message", message);
-        responseBody.put("tokenType", tokenType);
-        responseBody.put("expiresAt", expirationTime != null ? expirationTime.toString() : null);
-        responseBody.put("userEmail", userEmail);
-        responseBody.put("timestamp", Instant.now().toString());
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", status);
+        body.put("error", errorTitle);
+        body.put("message", errorDetail);
+
+        if (tokenType != null) body.put("tokenType", tokenType);
+        if (expirationTime != null) body.put("expiresAt", expirationTime.toString());
+        if (userEmail != null) body.put("userEmail", userEmail);
+
+        objectMapper.writeValue(response.getWriter(), body);
+    }
+
+    private static final String REFRESH_ENDPOINT = "/api/v1/auth/refresh-token";
+    private static final String RESET_PASSWORD_ENDPOINT = "/api/v1/auth/reset-password";
+
+    private static final String TOKEN_TYPE_REFRESH = "refresh";
+    private static final String TOKEN_TYPE_RESET_PASSWORD = "reset-password";
+
+
+    private boolean isTokenAllowedForEndpoint(String tokenType, String path) {
+        return switch (path) {
+            case REFRESH_ENDPOINT -> TOKEN_TYPE_REFRESH.equals(tokenType);
+            case RESET_PASSWORD_ENDPOINT -> TOKEN_TYPE_RESET_PASSWORD.equals(tokenType);
+            default -> !TOKEN_TYPE_REFRESH.equals(tokenType) && !TOKEN_TYPE_RESET_PASSWORD.equals(tokenType);
+        };
+    }
+
+    private String getTokenTypeErrorMessage(String tokenType, String path) {
+        return switch (path) {
+            case REFRESH_ENDPOINT -> "Access token cannot be used to refresh session. Please use a valid refresh token.";
+            case RESET_PASSWORD_ENDPOINT -> "This endpoint requires a reset-password token. Access denied.";
+            default -> "The provided token type is not allowed for this endpoint.";
+        };
     }
 }

@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 // Import Dashboard Components and Routing
 import { DashboardRoutingModule } from './dashboard-routing.module';
@@ -17,6 +19,9 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { CardModule } from 'primeng/card';
 
+// Import Chat Module
+import { ChatModule } from '../chat/chat.module';
+
 // Import standalone components
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
 import { ProjectStatsCardComponent } from "../../shared/rc-ui/project-stats-card/project-stats-card.component";
@@ -24,7 +29,7 @@ import { SiteStatsCardComponent } from "../../shared/rc-ui/site-stats-card/site-
 import { UserAvatarComponent } from "../../shared/shared-ui/user-avatar/user-avatar.component";
 
 // Import services
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthFacadeService } from '../../../services/auth-facade.service';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 import { LanguageService } from '../../../services/language/language.service';
@@ -36,7 +41,10 @@ import { LanguageService } from '../../../services/language/language.service';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
     DashboardRoutingModule,
+    ChatModule,
     // PrimeNG Modules
     RippleModule,
     MenubarModule,

@@ -6,28 +6,22 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     color: #333;
     box-sizing: border-box;
-}
 
-*, *:before, *:after {
-    box-sizing: inherit;
-}
-
-/* Modern Color Palette */
-:host {
+    /* Modern Color Palette */
     /* Primary Colors */
     --green-primary: #28a745; /* Green for completed */
     --orange-primary: #FF8C00; /* Orange for in progress */
     --red-primary: #dc3545; /* Red for at risk */
     --gray-primary: #6c757d; /* Gray for on hold */
     --light-orange: #FFEFD5; /* Very light orange */
-    
+
     /* Status Colors */
     --status-completed: var(--green-primary);
     --status-inprogress: var(--orange-primary);
     --status-atrisk: var(--red-primary);
     --status-cancelled: #6c757d;
     --status-onhold: var(--gray-primary);
-    
+
     /* UI Colors */
     --page-bg: #f8f9fa; /* Light gray background */
     --card-bg: #ffffff;
@@ -36,7 +30,7 @@
     --text-muted: #6c757d;
     --search-bg: #ffffff;
     --border-color: #e9ecef;
-    
+
     /* Avatar colors */
     --avatar-bg-retail: #FFEFD5; /* Light orange */
     --avatar-text-retail: #FF8C00; /* Orange text */
@@ -44,17 +38,17 @@
     --avatar-text-tourism: #0088CC; /* Blue text */
     --avatar-bg-manufacturing: #FFF0F0; /* Light red */
     --avatar-text-manufacturing: #E74C3C; /* Red text */
-    
+
     /* Shadow */
     --card-shadow: 0 2px 8px rgba(0,0,0,0.03);
     --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.07);
 }
 
-.dashboard-layout { 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 100vh; 
-    background-color: #f8f9fa; 
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
     padding: 0 0 2rem 0;
     width: 100%;
 }
@@ -79,21 +73,21 @@
 }
 
 /* Main Content Layout */
-.dashboard-main { 
-    display: flex; 
-    flex-grow: 1; 
-    padding: 0 2rem; 
-    gap: 1.5rem; 
+.dashboard-main {
+    display: flex;
+    flex-grow: 1;
+    padding: 0 2rem;
+    gap: 1.5rem;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
 }
 
-.main-content { 
-    flex: 1 1 70%; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 1.5rem; 
+.main-content {
+    flex: 1 1 70%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     width: 100%;
 }
 
@@ -469,27 +463,27 @@
     .projects-page {
         padding: 1.5rem;
     }
-    
+
     .projects-filters {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .search-and-filters {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .filter-dropdowns {
         width: 100%;
     }
-    
-    :host ::ng-deep .search-input input, 
+
+    :host ::ng-deep .search-input input,
     :host ::ng-deep .p-dropdown {
         width: 100%;
     }
-    
+
     .projects-grid {
         grid-template-columns: 1fr;
     }
@@ -499,11 +493,11 @@
     .projects-page {
         padding: 1rem;
     }
-    
+
     .page-header h1 {
         font-size: 1.5rem;
     }
-    
+
     .project-dates {
         flex-direction: column;
     }
@@ -790,7 +784,7 @@
 }
 
 :host ::ng-deep .p-paginator .p-paginator-element {
-    border-radius: 8px !important; 
+    border-radius: 8px !important;
     margin: 0 0.2rem !important;
     min-width: 2.5rem !important;
     height: 2.5rem !important;
@@ -813,7 +807,7 @@
         padding-left: 1.5rem;
         padding-right: 1.5rem;
     }
-    
+
     .projects-header { flex-direction: column; align-items: stretch; }
     .filter-bar { justify-content: flex-start; }
 
@@ -825,15 +819,15 @@
     .filter-bar > p-dropdown:nth-of-type(1) { margin-right: 0; }
 
     .projects-grid { grid-template-columns: 1fr; }
-    
+
     .card-top,
-    .client-section, 
+    .client-section,
     .project-info,
     .project-progress,
     .card-actions {
         padding: 1rem;
     }
-    
+
     .projects-header h2 {
         font-size: 1.2rem;
     }
@@ -843,23 +837,23 @@
     .dashboard-welcome {
         padding: 1rem 1rem 0.5rem;
     }
-    
+
     .dashboard-main {
         padding: 0 1rem 1rem;
     }
-    
+
     .projects-header h2 {
         font-size: 1.1rem;
     }
-    
+
     .card-top,
-    .client-section, 
+    .client-section,
     .project-info,
     .project-progress,
     .card-actions {
         padding: 0.75rem;
     }
-    
+
     .project-title {
         font-size: 1rem;
     }
@@ -1077,7 +1071,7 @@
 }
 
 /* Project Progress */
-.project-progress { 
+.project-progress {
     padding: 1.25rem;
     border-top: 1px solid var(--border-color-base);
 }
@@ -1188,46 +1182,46 @@
     }
 }
 
-@media (max-width: 1200px) { 
-    .main-content { flex-basis: 100%; } 
+@media (max-width: 1200px) {
+    .main-content { flex-basis: 100%; }
     .projects-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 }
 
-@media (max-width: 992px) { 
-    .dashboard-main { 
-        flex-direction: column; 
-    } 
-    
-    .main-content { 
-        flex-basis: auto; 
+@media (max-width: 992px) {
+    .dashboard-main {
+        flex-direction: column;
+    }
+
+    .main-content {
+        flex-basis: auto;
         max-width: none;
-    } 
-    
-    .projects-grid { 
-        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */ 
-    } 
-    
+    }
+
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    }
+
     :host ::ng-deep .search-input input {
         min-width: 220px;
     }
 }
 
 @media (max-width: 992px) {
-    .projects-grid { 
-        grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on medium screens */ 
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on medium screens */
     }
-    
+
     /* Ensure filter bar items have proper spacing */
     .filter-bar {
         gap: 12px;
     }
-    
+
     /* Search input grows but has max width */
     :host ::ng-deep .search-input {
         flex: 1 1 60%;
         max-width: 480px;
     }
-    
+
     /* Dropdown sizing */
     :host ::ng-deep .filter-dropdown.p-dropdown,
     :host ::ng-deep .p-dropdown {
@@ -1241,22 +1235,22 @@
     .dashboard-welcome {
         padding: 1.25rem 1.5rem 0.5rem;
     }
-    
+
     .dashboard-welcome h1 {
         font-size: 1.5rem;
     }
-    
-    .dashboard-main { 
-        padding: 0 1.5rem 1.5rem; 
-        gap: 1rem; 
-    } 
-    
+
+    .dashboard-main {
+        padding: 0 1.5rem 1.5rem;
+        gap: 1rem;
+    }
+
     .projects-header { padding: 1rem; }
     .header-title-section { margin-bottom: 1rem; }
-    
-    .filter-bar { 
-        flex-direction: column; 
-        align-items: stretch; 
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
         gap: 1rem;
     }
 
@@ -1265,7 +1259,7 @@
         width: 100%;
         margin-bottom: 0.5rem;
     }
-    
+
     /* Dropdown takes full width */
     :host ::ng-deep .filter-dropdown.p-dropdown {
         width: 100% !important;
@@ -1273,28 +1267,28 @@
     }
 
     /* Make grid single column */
-    .projects-grid { 
-        grid-template-columns: 1fr !important; 
+    .projects-grid {
+        grid-template-columns: 1fr !important;
     }
-    
+
     /* Adjust padding for card elements */
     .card-top,
-    .client-section, 
+    .client-section,
     .project-info,
     .project-progress,
     .card-actions {
         padding: 1rem;
     }
-    
+
     .projects-header h2 {
         font-size: 1.2rem;
     }
-    
+
     /* Pagination on mobile */
     :host ::ng-deep .p-paginator {
         justify-content: center;
     }
-    
+
     /* Make paginator more compact on mobile */
     :host ::ng-deep .p-paginator .p-paginator-element {
         min-width: 2rem !important;
@@ -1307,23 +1301,23 @@
     .dashboard-welcome {
         padding: 1rem 1rem 0.5rem;
     }
-    
+
     .dashboard-main {
         padding: 0 1rem 1rem;
     }
-    
+
     .projects-header h2 {
         font-size: 1.1rem;
     }
-    
+
     .card-top,
-    .client-section, 
+    .client-section,
     .project-info,
     .project-progress,
     .card-actions {
         padding: 0.75rem;
     }
-    
+
     .project-title {
         font-size: 1rem;
     }

@@ -7,4 +7,5 @@ export interface ProfileDTO {
   email: string;
   username: string;
   phoneNumber: string;
+  updatedAt?: string; // ISO date string format
 }

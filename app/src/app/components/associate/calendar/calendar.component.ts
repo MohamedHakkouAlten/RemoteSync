@@ -1,16 +1,18 @@
 // src/app/calendar/calendar.component.ts
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { format, startOfWeek, endOfWeek, addDays, startOfMonth, endOfMonth, getDaysInMonth, getDay, addMonths, subMonths, addYears, subYears, getMonth, getYear, eachMonthOfInterval, startOfYear, endOfYear, eachDayOfInterval, isSameDay, isSameMonth, isToday as isDateToday, set, parseISO } from 'date-fns'; // Import isToday as isDateToday to avoid conflict
 import { Subscription } from 'rxjs';
 
 // Import services
 import { AssociateService } from '../../../services/associate.service';
+import { WebSocketService } from '../../../services/web-socket.service';
 
 // Import DTOs
 import { CurrentRotationsDTO } from '../../../dto/associate/current-rotations.dto';
 
 // Import shared models
-import { CalendarEvent, DayData, WeekData, MonthSummary, CalendarView, CalendarFilter } from '../models/calendar.model';
+import { CalendarEvent, DayData, WeekData, MonthSummary, CalendarView, CalendarFilter } from '../../../dto/associate/calendar.model';
 
 // Import helpers
 import { CalendarHelpers } from '../utils/calendar-helpers';
@@ -21,7 +23,7 @@ import { CalendarHelpers } from '../utils/calendar-helpers';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnDestroy {
 
   // --- View State ---
   currentView: CalendarView = 'year'; // Start with Year view as per first image
@@ -51,17 +53,27 @@ export class CalendarComponent implements OnInit {
   isLoading = false;
   loadingError = false;
   private loadingTimeout: any = null;
-  
-  // --- Labels ---
-  inSiteLabel = "In Site";
-  remoteLabel = "Remote";
-  noEventsLabel = "No entry"; // Changed label slightly
-  createReportLabel = "Create Report";
-  weekLabel = "Week";
-  monthLabel = "Month";
-  yearLabel = "Year";
 
-  constructor(private cdRef: ChangeDetectorRef, private associateService: AssociateService) { }
+  // --- Labels ---
+  // Using translation keys instead of hardcoded strings
+  inSiteLabel = "calendar_associate.in_site";
+  remoteLabel = "calendar_associate.remote";
+  noEventsLabel = "calendar_associate.no_entry";
+  createReportLabel = "calendar_associate.create_report";
+  weekLabel = "calendar_associate.week";
+  monthLabel = "calendar_associate.month";
+  yearLabel = "calendar_associate.year";
+  noRotationsMessage = "calendar_associate.no_rotations";
+  hasRotations: boolean = true;
+
+  private webSocketSubscription: Subscription | null = null;
+
+  constructor(
+    private cdRef: ChangeDetectorRef, 
+    private associateService: AssociateService, 
+    private translateService: TranslateService,
+    private webSocketService: WebSocketService
+  ) { }
 
   ngOnInit(): void {
     this.loadEventsFromLocalStorage();
@@ -70,36 +82,61 @@ export class CalendarComponent implements OnInit {
     // Set initial view based on example images (optional, default to month is also fine)
     this.currentView = 'year'; // Or 'month' if preferred default
     this.updateViewData();
+    
+    // Subscribe to WebSocket updates
+    this.subscribeToRotationUpdates();
   }
-  
+
   ngOnDestroy(): void {
     // Clear any pending timeout
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
       this.loadingTimeout = null;
     }
+    
+    // Unsubscribe from WebSocket
+    if (this.webSocketSubscription) {
+      this.webSocketSubscription.unsubscribe();
+      this.webSocketSubscription = null;
+    }
   }
-  
+
+  private subscribeToRotationUpdates(): void {
+    this.webSocketSubscription = this.webSocketService.watchRotationTopic().subscribe({
+      next: (data) => {
+        console.log('Received rotation update:', data);
+        // Clear current calendar data
+        this.eventsData = {};
+        this.workLocationDates = [];
+        // Reload the calendar data
+        this.loadCurrentRotations();
+      },
+      error: (error) => {
+        console.error('Error in rotation WebSocket subscription:', error);
+      }
+    });
+  }
+
   // Helper method to populate sample data for demonstration
   populateSampleData(): void {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth();
-    
+
     // Clear existing data for demo purposes
     this.eventsData = {};
     this.workLocationDates = [];
-    
+
     // Add entries for current week (mix of remote and in-site)
     for (let i = -2; i <= 2; i++) {
       const date = addDays(today, i);
       if (getDay(date) > 0 && getDay(date) < 6) { // Weekdays only
         const isRemote = i % 2 === 0; // Alternate between remote and in-site
-        this.addSampleEntry(date, isRemote ? 'Remote' : 'In Site', 
+        this.addSampleEntry(date, isRemote ? 'Remote' : 'In Site',
           isRemote ? 'Working from home today' : 'Meeting with client team');
       }
     }
-    
+
     // Add some entries from last month
     const lastMonth = subMonths(today, 1);
     for (let i = 5; i <= 20; i += 3) {
@@ -109,7 +146,7 @@ export class CalendarComponent implements OnInit {
         this.addSampleEntry(date, isRemote ? 'Remote' : 'In Site');
       }
     }
-    
+
     // Add some entries from next month
     const nextMonth = addMonths(today, 1);
     for (let i = 3; i <= 25; i += 4) {
@@ -119,7 +156,7 @@ export class CalendarComponent implements OnInit {
         this.addSampleEntry(date, isRemote ? 'Remote' : 'In Site');
       }
     }
-    
+
     // Add some entries from previous year
     const lastYear = subYears(today, 1);
     for (let month = 0; month < 12; month += 2) { // Every other month
@@ -133,17 +170,17 @@ export class CalendarComponent implements OnInit {
         }
       }
     }
-    
+
     // Save the sample data
     this.saveEventsToLocalStorage();
     this.saveWorkLocationDates();
   }
-  
+
   // Helper to add a sample entry
   addSampleEntry(date: Date, locationType: 'Remote' | 'In Site', note: string = ''): void {
     const key = format(date, 'yyyy-MM-dd');
     const color = locationType === 'Remote' ? 'orange' : 'blue';
-    
+
     // Create event
     this.eventsData[key] = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
@@ -152,7 +189,7 @@ export class CalendarComponent implements OnInit {
       note: note,
       date: date // Add required date property
     };
-    
+
     // Update work location dates array
     this.updateWorkLocationDates(date, locationType);
   }
@@ -372,10 +409,10 @@ export class CalendarComponent implements OnInit {
       const key = format(this.selectedDayData.date, 'yyyy-MM-dd');
       if (this.eventsData[key]) {
           delete this.eventsData[key];
-          
+
           // Remove from workLocationDates array
           this.removeWorkLocationDate(this.selectedDayData.date);
-          
+
           this.saveEventsToLocalStorage();
           this.saveWorkLocationDates(); // Save work location dates
           this.closeEditModal();
@@ -420,21 +457,32 @@ export class CalendarComponent implements OnInit {
     }, 0);
   }
 
+  // Get translated month name
+  private getTranslatedMonth(date: Date): string {
+    const monthIndex = getMonth(date);
+    const monthKeys = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
+    ];
+    return this.translateService.instant(`calendar_associate.${monthKeys[monthIndex]}`);
+  }
+
   get displayDateRange(): string {
     switch (this.currentView) {
       case 'week':
         const start = startOfWeek(this.currentDate, { weekStartsOn: 0 });
         const end = endOfWeek(this.currentDate, { weekStartsOn: 0 });
-        // Format: Mar 10 - Mar 16, 2024 (Handle month change across week)
-        const startFormat = format(start, 'MMM d');
-        const endFormat = format(end, 'MMM d, yyyy');
-         if (!isSameMonth(start, end)) {
-            return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`;
+        const startDay = format(start, 'd');
+        const endDay = format(end, 'd');
+        const year = format(end, 'yyyy');
+
+        if (!isSameMonth(start, end)) {
+            return `${this.getTranslatedMonth(start)} ${startDay} - ${this.getTranslatedMonth(end)} ${endDay}, ${year}`;
         } else {
-            return `${format(start, 'MMM d')} - ${format(end, 'd, yyyy')}`;
+            return `${this.getTranslatedMonth(start)} ${startDay} - ${endDay}, ${year}`;
         }
       case 'month':
-        return format(this.currentDate, 'MMMM yyyy');
+        return `${this.getTranslatedMonth(this.currentDate)} ${format(this.currentDate, 'yyyy')}`;
       case 'year':
         return format(this.currentDate, 'yyyy');
     }
@@ -468,12 +516,12 @@ export class CalendarComponent implements OnInit {
   loadCurrentRotations(): void {
     this.isLoading = true;
     this.loadingError = false;
-    
+
     // Clear any existing timeout
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
-    
+
     // Set a timeout to show error if loading takes too long
     this.loadingTimeout = setTimeout(() => {
       if (this.isLoading) {
@@ -481,139 +529,149 @@ export class CalendarComponent implements OnInit {
         console.error('Loading timeout: Calendar data could not be loaded within 15 seconds');
       }
     }, 15000); // 15 seconds timeout
-    
+
     console.log('Fetching current rotations...');
     // First, load existing events data from localStorage to preserve user notes
     this.loadEventsFromLocalStorage();
-    
+
     this.associateService.getCurrentRotations().subscribe({
       next: (response) => {
         console.log('Received rotation data:', response);
-        if (response && response.data) {
-          // Save existing events with notes before clearing work location dates
-          const existingEventsWithNotes: { [key: string]: CalendarEvent } = {};
-          Object.keys(this.eventsData).forEach(key => {
-            if (this.eventsData[key].note) {
-              existingEventsWithNotes[key] = this.eventsData[key];
-            }
-          });
-          
-          // Clear work location dates but preserve notes
+        
+        // Clear the timeout as we got a response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
+
+        this.isLoading = false;
+
+        if (!response || !response.data) {
+          // Handle 204 NO CONTENT or empty response
+          this.eventsData = {};
           this.workLocationDates = [];
-          
-          console.log('Processing on-site dates:', response.data.onSiteDates);
-          // Process on-site dates
-          if (response.data.onSiteDates && response.data.onSiteDates.length > 0) {
-            response.data.onSiteDates.forEach(dateStr => {
-              const date = parseISO(dateStr);
-              console.log('Adding on-site date:', dateStr, date);
-              
-              // Add to workLocationDates array
-              this.workLocationDates.push({
-                date: date,
-                locationType: 'In Site'
-              });
-              
-              // Also add to eventsData for proper display
-              const key = format(date, 'yyyy-MM-dd');
-              // If there's an existing note for this date, preserve it
-              if (existingEventsWithNotes[key]) {
-                this.eventsData[key] = {
-                  ...existingEventsWithNotes[key],
-                  id: `onsite-${key}`,
-                  type: 'In Site',
-                  color: 'orange', // Orange for In Site (per visitor UI preferences)
-                  description: `In Site: ${response.data?.projectLabel || 'Project'}`
-                };
-              } else {
-                this.eventsData[key] = {
-                  id: `onsite-${key}`,
-                  type: 'In Site',
-                  color: 'orange', // Orange for In Site (per visitor UI preferences)
-                  description: `In Site: ${response.data?.projectLabel || 'Project'}`,
-                  date: parseISO(key) // Add required date property using the key (yyyy-MM-dd format)
-                };
-              }
-            });
-          }
-          
-          console.log('Processing remote dates:', response.data.remoteDates);
-          // Process remote dates
-          if (response.data.remoteDates && response.data.remoteDates.length > 0) {
-            response.data.remoteDates.forEach(dateStr => {
-              const date = parseISO(dateStr);
-              console.log('Adding remote date:', dateStr, date);
-              
-              // Add to workLocationDates array
-              this.workLocationDates.push({
-                date: date,
-                locationType: 'Remote'
-              });
-              
-              // Also add to eventsData for proper display
-              const key = format(date, 'yyyy-MM-dd');
-              // If there's an existing note for this date, preserve it
-              if (existingEventsWithNotes[key]) {
-                this.eventsData[key] = {
-                  ...existingEventsWithNotes[key],
-                  id: `remote-${key}`,
-                  type: 'Remote',
-                  color: 'blue', // Blue for Remote
-                  description: `Remote: ${response.data?.projectLabel || 'Project'}`
-                };
-              } else {
-                this.eventsData[key] = {
-                  id: `remote-${key}`,
-                  type: 'Remote',
-                  color: 'blue', // Blue for Remote
-                  description: `Remote: ${response.data?.projectLabel || 'Project'}`,
-                  date: parseISO(key) // Add required date property using the key (yyyy-MM-dd format)
-                };
-              }
-            });
-          }
-          
-          // Save data to localStorage for persistence
           this.saveEventsToLocalStorage();
           this.saveWorkLocationDates();
-          
-          console.log('Updated workLocationDates:', this.workLocationDates);
-          console.log('Updated eventsData:', this.eventsData);
-          
-          // Clear the timeout as we got a response
-          if (this.loadingTimeout) {
-            clearTimeout(this.loadingTimeout);
-            this.loadingTimeout = null;
-          }
-          
-          this.isLoading = false;
-          
-          // Force a complete refresh of the view
-          setTimeout(() => {
-            this.updateViewData();
-            this.cdRef.detectChanges();
-            console.log('Calendar view updated with rotation data');
-          }, 0);
+          this.updateViewData();
+          this.cdRef.detectChanges();
+          return;
         }
+
+        // Save existing events with notes before clearing work location dates
+        const existingEventsWithNotes: { [key: string]: CalendarEvent } = {};
+        Object.keys(this.eventsData).forEach(key => {
+          if (this.eventsData[key].note) {
+            existingEventsWithNotes[key] = this.eventsData[key];
+          }
+        });
+
+        // Clear work location dates but preserve notes
+        this.workLocationDates = [];
+
+        console.log('Processing on-site dates:', response.data.onSiteDates);
+        // Process on-site dates
+        if (response.data.onSiteDates && response.data.onSiteDates.length > 0) {
+          response.data.onSiteDates.forEach(dateStr => {
+            const date = parseISO(dateStr);
+            console.log('Adding on-site date:', dateStr, date);
+
+            // Add to workLocationDates array
+            this.workLocationDates.push({
+              date: date,
+              locationType: 'In Site'
+            });
+
+            // Also add to eventsData for proper display
+            const key = format(date, 'yyyy-MM-dd');
+            // If there's an existing note for this date, preserve it
+            if (existingEventsWithNotes[key]) {
+              this.eventsData[key] = {
+                ...existingEventsWithNotes[key],
+                id: `onsite-${key}`,
+                type: 'In Site',
+                color: 'orange', // Orange for In Site (per visitor UI preferences)
+                description: `In Site: ${response.data?.projectLabel || 'Project'}`
+              };
+            } else {
+              this.eventsData[key] = {
+                id: `onsite-${key}`,
+                type: 'In Site',
+                color: 'orange', // Orange for In Site (per visitor UI preferences)
+                description: `In Site: ${response.data?.projectLabel || 'Project'}`,
+                date: parseISO(key) // Add required date property using the key (yyyy-MM-dd format)
+              };
+            }
+          });
+        }
+
+        console.log('Processing remote dates:', response.data.remoteDates);
+        // Process remote dates
+        if (response.data.remoteDates && response.data.remoteDates.length > 0) {
+          response.data.remoteDates.forEach(dateStr => {
+            const date = parseISO(dateStr);
+            console.log('Adding remote date:', dateStr, date);
+
+            // Add to workLocationDates array
+            this.workLocationDates.push({
+              date: date,
+              locationType: 'Remote'
+            });
+
+            // Also add to eventsData for proper display
+            const key = format(date, 'yyyy-MM-dd');
+            // If there's an existing note for this date, preserve it
+            if (existingEventsWithNotes[key]) {
+              this.eventsData[key] = {
+                ...existingEventsWithNotes[key],
+                id: `remote-${key}`,
+                type: 'Remote',
+                color: 'blue', // Blue for Remote
+                description: `Remote: ${response.data?.projectLabel || 'Project'}`
+              };
+            } else {
+              this.eventsData[key] = {
+                id: `remote-${key}`,
+                type: 'Remote',
+                color: 'blue', // Blue for Remote
+                description: `Remote: ${response.data?.projectLabel || 'Project'}`,
+                date: parseISO(key) // Add required date property using the key (yyyy-MM-dd format)
+              };
+            }
+          });
+        }
+
+        // Save data to localStorage for persistence
+        this.saveEventsToLocalStorage();
+        this.saveWorkLocationDates();
+
+        console.log('Updated workLocationDates:', this.workLocationDates);
+        console.log('Updated eventsData:', this.eventsData);
+
+        // Force a complete refresh of the view
+        setTimeout(() => {
+          this.updateViewData();
+          this.cdRef.detectChanges();
+          console.log('Calendar view updated with rotation data');
+        }, 0);
       },
       error: (error) => {
         console.error('Error loading rotations:', error);
-        
+
         // Clear the timeout as we got an error response
         if (this.loadingTimeout) {
           clearTimeout(this.loadingTimeout);
           this.loadingTimeout = null;
         }
-        
+
         this.isLoading = false;
         this.loadingError = true;
-        
+
         // If there's an error, try to load from local storage as fallback
         this.loadWorkLocationDatesFromLocalStorage();
       }
     });
   }
-  
+
   // --- Work Location Dates Methods (As Fallback) ---
   loadWorkLocationDatesFromLocalStorage(): void {
     const storedData = localStorage.getItem('workLocationDatesV1');
@@ -644,7 +702,7 @@ export class CalendarComponent implements OnInit {
 
   updateWorkLocationDates(date: Date, locationType: 'Remote' | 'In Site'): void {
     // Check if the date already exists in the array
-    const existingIndex = this.workLocationDates.findIndex(item => 
+    const existingIndex = this.workLocationDates.findIndex(item =>
       isSameDay(item.date, date)
     );
 
@@ -662,7 +720,7 @@ export class CalendarComponent implements OnInit {
 
   removeWorkLocationDate(date: Date): void {
     // Remove the date from the array
-    this.workLocationDates = this.workLocationDates.filter(item => 
+    this.workLocationDates = this.workLocationDates.filter(item =>
       !isSameDay(item.date, date)
     );
   }

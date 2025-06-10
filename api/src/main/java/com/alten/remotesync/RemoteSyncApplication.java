@@ -55,7 +55,7 @@ public class RemoteSyncApplication {
         SpringApplication.run(RemoteSyncApplication.class, args);
     }
 
-    //@Bean
+    @Bean
     public CommandLineRunner init(
             AssignedRotationDomainRepository assignedRotationRepository,
             ClientDomainRepository clientRepository,
@@ -191,7 +191,7 @@ public class RemoteSyncApplication {
                     .password(passwordEncoder.encode("admin123"))
                     .reference(1001L)
                     .phoneNumber("+212600000001")
-                    .roles(List.of(roles.get(0)))
+                    .roles(List.of(roles.get(2)))
                     .isDeleted(false)
                     .subFactory(subFactory1)
                     .build();
@@ -212,7 +212,7 @@ public class RemoteSyncApplication {
             User normalUser = User.builder()
                     .firstName("Mohamed")
                     .lastName("Hakkou")
-                    .email("mohamed.hakkou@remotesync.com")
+                    .email("hakkoumohamed23@gmail.com")
                     .username("mohamedhakkou")
                     .password(passwordEncoder.encode("client123"))
                     .reference(1006L)
@@ -931,7 +931,7 @@ public class RemoteSyncApplication {
 //                    .createdBy(adminUser)
 //                    .build();
 
-            List<AssignedRotation> assignedRotations = List.of(assignedRotation1, assignedRotation2, assignedRotation3, assignedRotation4);
+            List<AssignedRotation> assignedRotations = List.of(assignedRotation1, assignedRotation2, assignedRotation3 /*assignedRotation4*/);
             assignedRotationRepository.saveAll(assignedRotations);
 
             // Create Logs with logical data for our three users - 10 entries total

@@ -1,295 +1,437 @@
 /* ==========================================================================
    Base Styles
    ========================================================================== */
-   :host {
-    display: block;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: #333;
-    box-sizing: border-box;
-  }
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
 
-  *, *:before, *:after {
-    box-sizing: inherit;
-  }
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
 
-  /* ==========================================================================
+/* ==========================================================================
      Layout Styles
      ========================================================================== */
-  .login-container {
-    display: flex;
-    min-height: 100vh;
-    background-color: #f9fafb;
-    position: relative;
-  }
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  position: relative;
+}
 
-  /* Language Selector Container */
-  .language-selector-container {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 10;
-    width: auto;
-    max-width: 120px;
-    border-radius: 4px;
-    padding: 0.25rem;
-  }
+/* Language Selector Container */
+.language-selector-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  width: auto;
+  max-width: 120px;
+  border-radius: 4px;
+  padding: 0.25rem;
+}
 
-  /* Left Column (Form Side) */
-  .login-form-column {
-    flex: 0 0 42%;
-    padding: 2rem 4rem;
-    display: flex;
-    flex-direction: column;
-    background-color: #f9fafb;
-    box-sizing: border-box;
-  }
+/* Left Column (Form Side) */
+.login-form-column {
+  flex: 0 0 42%;
+  padding: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+  box-sizing: border-box;
+}
 
-  /* Right Column (Branding Side) */
-  .branding-column {
-    flex-grow: 1;
-    color: white;
-    padding: 4rem 5rem 4rem 8rem; /* T R B L - Adjust Left padding */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Vertically center */
-    position: relative;
-    box-sizing: border-box;
-    text-align: center;
-    overflow: hidden;
-    background: linear-gradient(to bottom, #f97316 85%, #ea580c 100%);
-    background-color: #f97316;
-    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
-  }
+/* Right Column (Branding Side) */
+.branding-column {
+  flex-grow: 1;
+  color: white;
+  padding: 4rem 5rem 4rem 8rem; /* T R B L - Adjust Left padding */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center */
+  position: relative;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #f97316 85%, #ea580c 100%);
+  background-color: #f97316;
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+}
 
-  /* ==========================================================================
+/* ==========================================================================
      Left Column Content Styles
      ========================================================================== */
 
-  /* Logo Area */
-  .logo-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 4rem;
-  }
-  .logo-image { height: 2.5rem; width: auto; margin-right: 0.75rem; }
-  .logo-text-wrapper { display: flex; flex-direction: column; line-height: 1.2; }
-  .logo-text-main { font-size: 1.25rem; font-weight: 600; color: #1f2937; letter-spacing: 0.025em; }
-  .logo-text-sub { font-size: 0.875rem; font-weight: 500; color: #4b5563; letter-spacing: 0.05em; }
+/* Logo Area */
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+.logo-image {
+  height: 2.5rem;
+  width: auto;
+  margin-right: 0.75rem;
+}
+.logo-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.logo-text-main {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.025em;
+}
+.logo-text-sub {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  letter-spacing: 0.05em;
+}
 
-  /* Form Content Wrapper */
-  .form-content-wrapper { margin-top: 2rem; }
-  h1 { font-size: 1.875rem; font-weight: 700; color: #1f2937; margin: 0 0 0.5rem 0; }
-  .subtitle { font-size: 1rem; color: #6b7280; margin-top: 0; margin-bottom: 2rem; }
+/* Form Content Wrapper */
+.form-content-wrapper {
+  margin-top: 2rem;
+}
+h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+.subtitle {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
 
-  /* Form Card */
-  .form-card {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    border: 1px solid #e5e7eb;
-  }
+/* Form Card */
+.form-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+}
 
-  /* Form Elements */
-  .form-group { margin-bottom: 1.25rem; }
-  .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.375rem; }
-  .w-full { width: 100%; } /* Utility class */
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.375rem;
+}
+.w-full {
+  width: 100%;
+} /* Utility class */
 
-  /* Sign In Button */
-  .btn.btn-signin {
-    display: block; width: 100%; padding: 0.75rem 1rem; color: white;
-    font-weight: 600; border: none; border-radius: 0.5rem; cursor: pointer;
-    transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    margin-top: 1.5rem; margin-bottom: 1rem; text-align: center;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    background: linear-gradient(to bottom, #fb923c, #f97316);
-    background-color: #f97316;
-  }
-  .btn.btn-signin:hover {
-    background: linear-gradient(to bottom, #fdba74, #fb923c);
-    background-color: #ea580c;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-  .btn.btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
+/* Sign In Button */
+.btn.btn-signin {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background: linear-gradient(to bottom, #fb923c, #f97316);
+  background-color: #f97316;
+}
+.btn.btn-signin:hover {
+  background: linear-gradient(to bottom, #fdba74, #fb923c);
+  background-color: #ea580c;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.btn.btn-signin:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-  /* Forgot Password Link */
-  .forgot-password-link {
-    display: block; text-align: center; font-size: 0.875rem; color: #6b7280;
-    text-decoration: none; margin-top: 1.5rem;
-  }
-  .forgot-password-link:hover { color: #f97316; text-decoration: underline; }
+/* Forgot Password Link */
+.forgot-password-link {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+  margin-top: 1.5rem;
+}
+.forgot-password-link:hover {
+  color: #f97316;
+  text-decoration: underline;
+}
 
-  /* ==========================================================================
+/* ==========================================================================
      Right Column Content Styles
      ========================================================================== */
-  .branding-content {
-    position: relative; z-index: 1; max-width: 500px; margin: 0; /* Let flex centering handle position */
-  }
-  .branding-content h2 { font-size: 2.5rem; font-weight: 700; margin: 0; line-height: 1.2; }
-  .branding-content h3 { font-size: 1.5rem; font-weight: 700; margin-top: 0.75rem; }
-  .branding-content > p { font-size: 1rem; margin-top: 1.25rem; line-height: 1.6; opacity: 0.9; }
-  .stats { margin-top: 3.5rem; }
-  .stats p { font-size: 1rem; margin-bottom: 0.625rem; font-weight: 500; margin-top: 0; }
+.branding-content {
+  position: relative;
+  z-index: 1;
+  max-width: 500px;
+  margin: 0; /* Let flex centering handle position */
+}
+.branding-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+.branding-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+.branding-content > p {
+  font-size: 1rem;
+  margin-top: 1.25rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+.stats {
+  margin-top: 3.5rem;
+}
+.stats p {
+  font-size: 1rem;
+  margin-bottom: 0.625rem;
+  font-weight: 500;
+  margin-top: 0;
+}
 
-  /* ==========================================================================
+/* ==========================================================================
      PrimeNG Component Overrides & Icon Alignment
      ========================================================================== */
 
-  /* Container for icon + input */
-  :host ::ng-deep .p-input-icon-left {
-    position: relative;
-    display: block; /* Changed from inline-block for consistency */
-    width: 100%;
-  }
+/* Container for icon + input */
+:host ::ng-deep .p-input-icon-left {
+  position: relative;
+  display: block; /* Changed from inline-block for consistency */
+  width: 100%;
+}
 
-  /* Icon positioning (applies to both i elements) */
-  :host ::ng-deep .p-input-icon-left > i {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0.75rem;
-    margin-top: 0;
-    color: #9ca3af;
-    z-index: 1;
-  }
+/* Icon positioning (applies to both i elements) */
+:host ::ng-deep .p-input-icon-left > i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.75rem;
+  margin-top: 0;
+  color: #9ca3af;
+  z-index: 1;
+}
 
-  /* Base styling for email input */
-  :host ::ng-deep .p-input-icon-left > input.p-inputtext {
-    padding-left: 2.5rem !important; /* Space for icon */
-    height: 2.75rem !important; /* Explicit height */
-    padding-top: 0.625rem !important; /* Vertical padding */
-    padding-bottom: 0.625rem !important; /* Vertical padding */
-    box-sizing: border-box !important;
-    width: 100% !important;
-    border: 1px solid #ced4da !important; /* Default border */
-    border-radius: 0.5rem !important; /* Consistent rounding */
-    font-size: 1rem;
-  }
+/* Base styling for email input */
+:host ::ng-deep .p-input-icon-left > input.p-inputtext {
+  padding-left: 2.5rem !important; /* Space for icon */
+  height: 2.75rem !important; /* Explicit height */
+  padding-top: 0.625rem !important; /* Vertical padding */
+  padding-bottom: 0.625rem !important; /* Vertical padding */
+  box-sizing: border-box !important;
+  width: 100% !important;
+  border: 1px solid #ced4da !important; /* Default border */
+  border-radius: 0.5rem !important; /* Consistent rounding */
+  font-size: 1rem;
+}
 
-  /* Base styling for the INPUT INSIDE p-password */
-  :host ::ng-deep .p-input-icon-left > p-password input.p-inputtext {
-    padding-left: 2.5rem !important; /* Space for icon */
-    height: 2.75rem !important; /* Explicit height - MATCH EMAIL */
-    padding-top: 0.625rem !important; /* Vertical padding - MATCH EMAIL */
-    padding-bottom: 0.625rem !important; /* Vertical padding - MATCH EMAIL */
-    box-sizing: border-box !important;
-    width: 100% !important;
-    border: 1px solid #ced4da !important; /* Default border - MATCH EMAIL */
-    border-radius: 0.5rem !important; /* Consistent rounding - MATCH EMAIL */
-    font-size: 1rem;
-  }
+/* Base styling for the INPUT INSIDE p-password */
+:host ::ng-deep .p-input-icon-left > p-password input.p-inputtext {
+  padding-left: 2.5rem !important; /* Space for icon */
+  height: 2.75rem !important; /* Explicit height - MATCH EMAIL */
+  padding-top: 0.625rem !important; /* Vertical padding - MATCH EMAIL */
+  padding-bottom: 0.625rem !important; /* Vertical padding - MATCH EMAIL */
+  box-sizing: border-box !important;
+  width: 100% !important;
+  border: 1px solid #ced4da !important; /* Default border - MATCH EMAIL */
+  border-radius: 0.5rem !important; /* Consistent rounding - MATCH EMAIL */
+  font-size: 1rem;
+}
 
-  /* Styling for p-password wrapper component */
-  :host ::ng-deep .p-input-icon-left > p-password.p-password {
-    display: block; /* Ensure block display */
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    /* The wrapper height should be determined by its inner input */
-    /* If there's still extra space, check computed styles on this element */
-  }
+/* Styling for p-password wrapper component */
+:host ::ng-deep .p-input-icon-left > p-password.p-password {
+  display: block; /* Ensure block display */
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  /* The wrapper height should be determined by its inner input */
+  /* If there's still extra space, check computed styles on this element */
+}
 
-  /* Password toggle icon (eye) */
-  :host ::ng-deep .p-password .p-password-icon {
-    color: #9ca3af;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 0;
-    right: 0.75rem;
-    cursor: pointer; /* Add pointer cursor */
-  }
-  :host ::ng-deep .p-password .p-password-icon:hover {
-    color: #4b5563;
-  }
+/* Password toggle icon (eye) */
+:host ::ng-deep .p-password .p-password-icon {
+  color: #9ca3af;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 0;
+  right: 0.75rem;
+  cursor: pointer; /* Add pointer cursor */
+}
+:host ::ng-deep .p-password .p-password-icon:hover {
+  color: #4b5563;
+}
 
-  /* ==========================================================================
+/* ==========================================================================
    Form Validation Styles (Angular Classes)
    ========================================================================== */
 
-  /* Target the specific INPUT element when invalid and touched */
-  /* Includes direct input and input within p-password */
-  :host ::ng-deep input.ng-touched.ng-invalid {
-    border: 2px solid #dc3545 !important; /* Red border */
-  }
+/* Target the specific INPUT element when invalid and touched */
+/* Includes direct input and input within p-password */
+:host ::ng-deep input.ng-touched.ng-invalid {
+  border: 2px solid #dc3545 !important; /* Red border */
+}
 
-  /* Target the specific INPUT element when valid and touched */
-  /* Includes direct input and input within p-password */
-  :host ::ng-deep input.ng-touched.ng-valid {
-    border: 2px solid #28a745 !important; /* Green border */
-  }
+/* Target the specific INPUT element when valid and touched */
+/* Includes direct input and input within p-password */
+:host ::ng-deep input.ng-touched.ng-valid {
+  border: 2px solid #28a745 !important; /* Green border */
+}
 
-  /* --- Password Input Validation --- */
-  /* Target the P-PASSWORD component when invalid and touched */
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid {
-    display: block;
-    border: 2px solid #dc3545 !important; /* Red border */
-    border-radius: 0.5rem !important;
-  }
+/* --- Password Input Validation --- */
+/* Target the P-PASSWORD component when invalid and touched */
+:host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid {
+  display: block;
+  border: 2px solid #dc3545 !important; /* Red border */
+  border-radius: 0.5rem !important;
+}
 
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid:hover {
-    display: block;
-    border: 2px solid var(--color-orange-500) !important; /* Red border */
-    border-radius: 0.5rem !important;
-  }
+:host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid:hover {
+  display: block;
+  border: 2px solid var(--color-orange-500) !important; /* Red border */
+  border-radius: 0.5rem !important;
+}
 
-  /* When p-password is invalid, make the INNER input border transparent */
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid input.p-inputtext {
+/* When p-password is invalid, make the INNER input border transparent */
+:host
+  ::ng-deep
+  .p-input-icon-left
+  > p-password.ng-touched.ng-invalid
+  input.p-inputtext {
+     border-radius: 5px !important;
     border-color: transparent !important;
-  }
+  
+}
 
-  /* Target the P-PASSWORD component when valid and touched */
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid {
-    display: block;
-    border: 2px solid #28a745 !important; /* Green border */
-    border-radius: 0.5rem !important;
-  }
+/* Target the P-PASSWORD component when valid and touched */
+:host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid {
+  display: block;
+  border: 2px solid #28a745 !important; /* Green border */
+  border-radius: 0.5rem !important;
+}
 
-  /* When p-password is valid, make the INNER input border transparent */
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid input.p-inputtext {
-    border-color: transparent !important;
-  }
+/* When p-password is valid, make the INNER input border transparent */
+:host
+  ::ng-deep
+  .p-input-icon-left
+  > p-password.ng-touched.ng-valid
+  input.p-inputtext {
+  border-color: transparent !important;
+}
 
-  /* Remove focus outline when valid/invalid borders are shown */
-  :host ::ng-deep input.ng-touched.ng-invalid:focus,
-  :host ::ng-deep input.ng-touched.ng-valid:focus,
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid:focus,
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid:focus {
-    box-shadow: none !important;
-  }
+/* Remove focus outline when valid/invalid borders are shown */
+:host ::ng-deep input.ng-touched.ng-invalid:focus,
+:host ::ng-deep input.ng-touched.ng-valid:focus,
+:host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid:focus,
+:host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid:focus {
+  box-shadow: none !important;
+}
 
-  /* Also remove focus outline from inner password input */
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-invalid input.p-inputtext:focus,
-  :host ::ng-deep .p-input-icon-left > p-password.ng-touched.ng-valid input.p-inputtext:focus {
-    box-shadow: none !important;
-  }
+/* Also remove focus outline from inner password input */
+:host
+  ::ng-deep
+  .p-input-icon-left
+  > p-password.ng-touched.ng-invalid
+  input.p-inputtext:focus,
+:host
+  ::ng-deep
+  .p-input-icon-left
+  > p-password.ng-touched.ng-valid
+  input.p-inputtext:focus {
+  box-shadow: none !important;
+}
 
-  /* ==========================================================================
+/* ==========================================================================
      Responsive Styles
      ========================================================================== */
 
-  @media (max-width: 992px) {
-    .login-form-column { flex-basis: 50%; padding: 2rem 3rem; }
-     .branding-column { clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%); padding: 3rem 4rem 3rem 6rem; }
-     .branding-content h2 { font-size: 2.25rem; }
-     .branding-content h3 { font-size: 1.375rem; }
+@media (max-width: 992px) {
+  .login-form-column {
+    flex-basis: 50%;
+    padding: 2rem 3rem;
   }
-
-  @media (max-width: 768px) {
-    .login-container { flex-direction: column; }
-    .login-form-column {
-       flex-basis: auto; width: 100%; order: 1; padding: 3rem 1.5rem;
-       min-height: 100vh; justify-content: center;
-    }
-    .logo-container { justify-content: center; margin-bottom: 2.5rem; }
-    .form-content-wrapper { margin-top: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
-    .form-card { padding: 1.5rem; width: 100%; max-width: 400px; }
-     h1 { font-size: 1.5rem; text-align: center; }
-     .subtitle { font-size: 0.875rem; text-align: center; margin-bottom: 1.5rem;}
-    .branding-column { display: none; } /* Hide branding on mobile */
+  .branding-column {
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+    padding: 3rem 4rem 3rem 6rem;
   }
+  .branding-content h2 {
+    font-size: 2.25rem;
+  }
+  .branding-content h3 {
+    font-size: 1.375rem;
+  }
+}
 
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .login-form-column {
+    flex-basis: auto;
+    width: 100%;
+    order: 1;
+    padding: 3rem 1.5rem;
+    min-height: 100vh;
+    justify-content: center;
+  }
+  .logo-container {
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+  .form-content-wrapper {
+    margin-top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-card {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .branding-column {
+    display: none;
+  } /* Hide branding on mobile */
+}
 
-  /* --- Password Input Validation --- */
+/* --- Password Input Validation --- */
 /* Target the P-PASSWORD HOST element when invalid and touched */
 :host ::ng-deep p-password.ng-touched.ng-invalid {
   border: 2px solid #dc3545 !important; /* Red border ON THE HOST */
@@ -316,20 +458,20 @@
 /* When HOST is valid, make the INNER input border transparent */
 :host ::ng-deep p-password.ng-touched.ng-valid input.p-inputtext {
   border-color: transparent !important;
-   /* Reduce height slightly ONLY if host padding/border adds to total height */
-   /* height: calc(2.75rem - 2px) !important; */
+  /* Reduce height slightly ONLY if host padding/border adds to total height */
+  /* height: calc(2.75rem - 2px) !important; */
 }
 
 /* --- Focus Outline Removal (Keep As Is, Targets Correctly) --- */
 :host ::ng-deep input.ng-touched.ng-invalid:focus,
 :host ::ng-deep p-password.ng-touched.ng-invalid:focus, /* Focus on host */
 :host ::ng-deep input.ng-touched.ng-valid:focus,
-:host ::ng-deep p-password.ng-touched.ng-valid:focus { /* Focus on host */
+:host ::ng-deep p-password.ng-touched.ng-valid:focus {
+  /* Focus on host */
   box-shadow: none !important;
 }
 /* Also remove focus outline from inner password input */
 :host ::ng-deep p-password.ng-touched.ng-invalid input.p-inputtext:focus,
 :host ::ng-deep p-password.ng-touched.ng-valid input.p-inputtext:focus {
-   box-shadow: none !important; /* Remove inner focus too */
+  box-shadow: none !important; /* Remove inner focus too */
 }
-

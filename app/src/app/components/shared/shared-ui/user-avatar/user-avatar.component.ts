@@ -13,11 +13,11 @@ export class UserAvatarComponent implements OnInit  {
   ngOnInit(): void {
     console.log(this.textColor)
   }
-@Input() userInitials:string= " "
-@Input() size:number=30
-@Input() textSize:number=12
-@Input() textColor:string='#F57C00'
-@Input() bgColor:string='#FFF8E1'
+@Input() userInitials: string = " "
+@Input() size: string | number = 30
+@Input() textSize: number = 12
+@Input() textColor: string = '#F57C00'
+@Input() bgColor: string = '#FFF8E1'
 
 get avatarInlineStyle(): { [key: string]: string } {
     return {
@@ -29,8 +29,27 @@ get avatarInlineStyle(): { [key: string]: string } {
     };
   }
 
-get avatarStyle():string {
-return `!h-[${this.size}px] !w-[${this.size}px] !text-[${this.textSize}px] `
+get avatarStyle(): string {
+  // Support string predefined sizes like 'small', 'medium', 'large'
+  let sizeValue = this.size;
+  
+  if (typeof this.size === 'string') {
+    switch(this.size) {
+      case 'small': sizeValue = 24; break;
+      case 'medium': sizeValue = 36; break;
+      case 'large': sizeValue = 48; break;
+      case 'xlarge': sizeValue = 64; break;
+      default: 
+        // If it's a string but not one of the predefined values, try to parse it as number
+        if (!isNaN(parseInt(this.size))) {
+          sizeValue = parseInt(this.size);
+        } else {
+          sizeValue = 30; // Default fallback
+        }
+    }
+  }
+  
+  return `!h-[${sizeValue}px] !w-[${sizeValue}px] !text-[${this.textSize}px] `;
 }
 
 }

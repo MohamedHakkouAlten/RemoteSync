@@ -12,6 +12,6 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
     @Override
     public User loadUserByUsername(String username) {
-        return userDomainRepository.findByUsername(username);
+        return userDomainRepository.findByUsername(username).orElseThrow();
     }
 }

@@ -1,160 +1,160 @@
 /* Add custom styles here if Tailwind isn't sufficient */
 /* For example, to ensure the calendar popup is above the dialog */
 :host ::ng-deep .p-datepicker {
-    z-index: 50!important; /* Ensure datepicker is above dialog (default mask z-index is 1100) */
-  }
-  
-  /* Adjust multiselect chip appearance if needed */
+  z-index: 50!important; /* Ensure datepicker is above dialog (default mask z-index is 1100) */
+}
 
-  /* Ensure full width for calendar input */
-  :host ::ng-deep .p-calendar .p-inputtext {
-      width: 100%;
-  }
+/* Adjust multiselect chip appearance if needed */
 
-  :host ::ng-deep .p-togglebutton-content{
-    font-size: 15px !important;
-    padding: 2px 10px !important;
-    border-radius: 4px;
+/* Ensure full width for calendar input */
+:host ::ng-deep .p-calendar .p-inputtext {
+    width: 100%;
+}
+
+:host ::ng-deep .p-togglebutton-content{
+  font-size: 15px !important;
+  padding: 2px 10px !important;
+  border-radius: 4px;
 font-weight: 400;
 
 
-    font-family: inter;
-  }
-  :host ::ng-deep .p-selectbutton {
-    padding: 10px;
+  font-family: inter;
+}
+:host ::ng-deep .p-selectbutton {
+  padding: 10px;
 
-  }
-   :host ::ng-deep .p-togglebutton{
-        background: var(--color-gray-100);
-        border: 0;
-    padding: 4px 5px !important;
-  }
+}
+ :host ::ng-deep .p-togglebutton{
+      background: var(--color-gray-100);
+      border: 0;
+  padding: 4px 5px !important;
+}
 
 
 :host ::ng-deep .p-togglebutton-checked .p-togglebutton-content{
-  background: var(--color-primary) !important;
-  color: white;
+background: var(--color-primary) !important;
+color: white;
 }
 
-  body .p-datepicker-panel .p-datepicker-group .p-datepicker-calendar td .p-datepicker-day {
-    width: 1.5rem !important; /* Adjust size */
-    height: 1.5rem !important;
-    font-size: 0.75rem !important; /* Adjust size */
-    line-height: 1.5rem !important; /* Helps vertical centering */
-    padding: 0 !important;
-    /* Add flex centering if needed */
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: red !important;
+body .p-datepicker-panel .p-datepicker-group .p-datepicker-calendar td .p-datepicker-day {
+  width: 1.5rem !important; /* Adjust size */
+  height: 1.5rem !important;
+  font-size: 0.75rem !important; /* Adjust size */
+  line-height: 1.5rem !important; /* Helps vertical centering */
+  padding: 0 !important;
+  /* Add flex centering if needed */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: red !important;
 }
 
-  /* Common candidates: .p-multiselect-label, .p-multiselect-token-container */
+/* Common candidates: .p-multiselect-label, .p-multiselect-token-container */
 :host ::ng-deep .p-multiselect.p-multiselect-chip .p-multiselect-label {
-    /* 1. Allow chips to wrap onto the next line */
-    white-space: normal !important; /* Override potential 'nowrap' */
-    /* If the container uses flexbox, ensure wrapping is enabled */
-    /* flex-wrap: wrap !important; /* Often default for block-like elements */
+  /* 1. Allow chips to wrap onto the next line */
+  white-space: normal !important; /* Override potential 'nowrap' */
+  /* If the container uses flexbox, ensure wrapping is enabled */
+  /* flex-wrap: wrap !important; /* Often default for block-like elements */
 
-    /* 2. CRITICAL: Set a maximum height for the chip area */
-    /* Adjust this value based on how many lines you want before scrolling */
-    max-height: 70px !important; /* Example: Approx 2-3 lines of chips */
+  /* 2. CRITICAL: Set a maximum height for the chip area */
+  /* Adjust this value based on how many lines you want before scrolling */
+  max-height: 70px !important; /* Example: Approx 2-3 lines of chips */
 
-    /* 3. Enable vertical scrolling ONLY when content exceeds max-height */
-    overflow-y: auto !important;
+  /* 3. Enable vertical scrolling ONLY when content exceeds max-height */
+  overflow-y: auto !important;
 
-    /* 4. Prevent horizontal scrolling */
-    overflow-x: hidden !important;
+  /* 4. Prevent horizontal scrolling */
+  overflow-x: hidden !important;
 
-    /* 5. Ensure it takes up space even when empty for consistent height */
-    /* display: block !important; /* Or flex, depending on internal structure */
-    /* min-height: 36px; */ /* Match typical input height if needed */
+  /* 5. Ensure it takes up space even when empty for consistent height */
+  /* display: block !important; /* Or flex, depending on internal structure */
+  /* min-height: 36px; */ /* Match typical input height if needed */
 
-     /* Adjust padding if necessary, especially top/bottom */
-     padding-top: 0.25rem !important;
-     padding-bottom: 0.25rem !important;
+   /* Adjust padding if necessary, especially top/bottom */
+   padding-top: 0.25rem !important;
+   padding-bottom: 0.25rem !important;
 }
 
 
 
 
 :host ::ng-deep .p-dialog .p-dialog-header { /* Target headers inside any p-dialog */
-    border-bottom: 0.5px solid #E5E7EB !important; /* Reduced thickness for example */
-    /* padding-bottom: 10px; */ /* Maybe adjust padding instead of border? */
-    padding-right: 50px !important;
-  }
-  
+  border-bottom: 0.5px solid #E5E7EB !important; /* Reduced thickness for example */
+  /* padding-bottom: 10px; */ /* Maybe adjust padding instead of border? */
+  padding-right: 50px !important;
+}
+
 
 
 :host ::ng-deep .p-autocomplete .p-chip .p-chip-remove-icon { 
 
-    color: #364153 !important;
-    font-size: 14px ;
+  color: #364153 !important;
+  font-size: 14px ;
 }
 :host ::ng-deep .p-icon {
-    width: 13px;
-    height: 13px;
+  width: 13px;
+  height: 13px;
 }
 
 
-  :host  ::ng-deep  .p-chip {
-    border-radius: 16px !important; 
- 
-    font-family: inter;
-    font-size: 12px;
-    /* Add other styles if desired */
-  }
- :host ::ng-deep .p-select .p-select-label {
-    color: #364153 !important;
-    font-size: 15px !important;
-    font-family: inter;
+:host  ::ng-deep  .p-chip {
+  border-radius: 16px !important; 
+
+  font-family: inter;
+  font-size: 12px;
+  /* Add other styles if desired */
+}
+:host ::ng-deep .p-select .p-select-label {
+  color: #364153 !important;
+  font-size: 15px !important;
+  font-family: inter;
 }
 :host ::ng-deep .p-select .p-select-dropdown {
-    color: #364153 !important;
+  color: #364153 !important;
 }
 /* Add to your component's CSS file or a global stylesheet */
 
 /* Style for the week number cell itself to indicate clickability */
 :host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber {
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out; /* Smooth transition */
-  border-radius: 4px; /* Optional: Rounded corners */
-  text-align: center; /* Ensure text is centered */
+cursor: pointer;
+transition: background-color 0.2s ease-in-out; /* Smooth transition */
+border-radius: 4px; /* Optional: Rounded corners */
+text-align: center; /* Ensure text is centered */
 }
 
 /* Style for when the week number cell is hovered (optional) */
 :host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:hover {
-  background-color: #e9ecef; /* Light background on hover */
+background-color: #e9ecef; /* Light background on hover */
 }
 
 /* Style for the SELECTED week number cell */
 :host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber.selected-week {
-  background-color: #007bff; /* Example: Bootstrap primary blue */
-  color: white; /* White text for contrast */
-  font-weight: bold;
+background-color: #007bff; /* Example: Bootstrap primary blue */
+color: white; /* White text for contrast */
+font-weight: bold;
 }
 
 /* Style for focus outline (accessibility) */
 :host ::ng-deep .p-datepicker .p-datepicker-calendar td.p-datepicker-weeknumber:focus {
-    outline: 2px solid #007bff;
-    outline-offset: 1px;
+  outline: 2px solid #007bff;
+  outline-offset: 1px;
 }
 
 
 :host ::ng-deep .customDates .p-datepicker .p-datepicker-panel {
-  position: static !important;
-  
- 
+position: static !important;
+
+
 }
 :host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day {
-  width: 22px !important;
-  height:22px !important;
-  font-size: 12px;
-  color: white;
-  background: #007bff;
+width: 22px !important;
+height:22px !important;
+font-size: 12px;
+color: white;
+background: #007bff;
 }
 :host ::ng-deep .customDates .p-datepicker-calendar .p-datepicker-day.p-disabled , .p-component:disabled {
-   
-  color: black;
-  background: transparent !important;
+ 
+color: black;
+background: transparent !important;
 }

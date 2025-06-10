@@ -1,5 +1,5 @@
 {
-  "navigation": {
+    "navigation": {
     "dashboard": "Dashboard",
     "project": "Project",
     "report": "Report",
@@ -75,7 +75,179 @@
     "french": "French",
     "spanish": "Spanish"
   },
-  "dashboardPage": {
+  "common": {
+    "view_all": "View All",
+    "retry": "Retry"
+  },
+  "days": {
+    "sunday_short": "Sun",
+    "monday_short": "Mon",
+    "tuesday_short": "Tue",
+    "wednesday_short": "Wed",
+    "thursday_short": "Thu",
+    "friday_short": "Fri",
+    "saturday_short": "Sat"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "dashboard_associate": {
+    "title": "Associate Dashboard",
+    "welcome_message": "Welcome back,",
+    "activity_overview": "Here's your latest activity overview.",
+    "loading": "Loading dashboard...",
+    "loading_error": "Loading Error",
+    "loading_error_message": "Unable to load the dashboard data. Please try again.",
+    "total_projects": "Total Projects",
+    "on_site_weeks": "On-site weeks",
+    "reports": "Reports",
+    "current_project": "Current Project",
+    "progress": "Progress",
+    "client": "Client",
+    "timeline": "Timeline",
+    "team_size": "Team Size",
+    "previous_projects": "Previous Projects",
+    "project_name": "Project Name",
+    "duration": "Duration",
+    "status": "Status",
+    "work_schedule": "Work Schedule",
+    "recent_reports": "Recent Reports",
+    "no_reports_available": "No reports available",
+    "on_site_work_days": "On-site work days"
+  },
+  "project_associate": {
+    "title": "My Projects",
+    "subtitle": "Manage and view all your assigned projects",
+    "loading_projects": "Loading projects...",
+    "loading_error": "Loading Error",
+    "loading_error_message": "Unable to load the projects data. Please try again.",
+    "search_placeholder": "Search by title or label...",
+    "all_status": "All Status",
+    "all_clients": "All Clients",
+    "start_date": "Start Date",
+    "deadline": "Deadline",
+    "progress": "Progress",
+    "view_details": "View Details",
+    "no_projects_found": "No projects found matching your criteria.",
+    "loading_or_no_results": "Loading projects or no results found"
+  },
+  "report_associate": {
+    "title": "Reports",
+    "subtitle": "Manage and track all your rotation requests and reports",
+    "loading_reports": "Loading reports...",
+    "loading_error": "Loading Error",
+    "loading_error_message": "Unable to load the reports data. Please try again.",
+    "search_placeholder": "Search by title...",
+    "all_status": "All Status",
+    "create_rotation_request": "Create Rotation Request",
+    "no_reports_found": "No reports found",
+    "no_reports_message": "No reports matching your criteria were found.",
+    "form_title": "Title",
+    "form_report_type": "Report Type",
+    "select_report_type": "Select a report type",
+    "form_reason": "Reason",
+    "form_description": "Description",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account preferences",
+    "complete": "complete",
+    "loading": "Loading your profile...",
+    "privacy_notice": "Your profile information may be shared with ALTEN RemoteSync services and partner systems according to your privacy settings",
+    "personal_information": "Personal Information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "username": "Username",
+    "contact_preferences": "Contact & Preferences",
+    "email": "Email",
+    "language": "Language",
+    "phone_number": "Phone Number",
+    "save_changes": "Save changes",
+    "first_name_placeholder": "Enter your first name",
+    "last_name_placeholder": "Enter your last name",
+    "username_placeholder": "Username",
+    "email_placeholder": "Email address",
+    "language_placeholder": "Select your language",
+    "phone_placeholder": "Enter your phone number",
+    "phone_format_hint": "Format: {{format}} (country code with space, then number)",
+    "phone_format_error": "Invalid phone number format. Expected format: +CODE PHONE_NUMBER (e.g., {{example}})",
+    "update_success": "Profile updated successfully",
+    "last_updated": "Last updated",
+    "days_ago": "days ago",
+    "all_changes_saved": "All changes will be saved"
+  },
+
+  "calendar_associate": {
+    "title": "Calendar",
+    "loading": "Loading calendar...",
+    "loading_error": "Loading Error",
+    "loading_error_message": "Unable to load the calendar data. Please try again.",
+    "create_report": "Create Report",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "view_week": "Week View",
+    "view_month": "Month View",
+    "view_year": "Year View",
+    "in_site": "In Site",
+    "remote": "Remote",
+    "no_entry": "No entry",
+    "no_events": "No events",
+    "week_mostly_in_site": "Week: Mostly In Site",
+    "week_mostly_remote": "Week: Mostly Remote",
+    "edit_entry": "Edit Entry for",
+    "delete_entry": "Delete Entry",
+    "save_changes": "Save Changes",
+    "cancel": "Cancel",
+    "note": "Note (Optional)",
+    "note_label": "Note:",
+    "note_placeholder": "Add any relevant notes...",
+    "today": "Today",
+    "current": "Current",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December",
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "remote_type": "Remote",
+    "in_site_type": "In Site"
+  },
+
+  "dashboard_rc": {
     "activeProjects": "Active Projects",
     "completedProjects": "Completed Projects",
     "siteStatisticsTitle": "Site Statistics",
@@ -107,9 +279,10 @@
       "noRequests": "No pending requests."
     }
   },
- "projectPage": {
+  "project_rc": {
     "title": "Projects",
     "subtitle": "Overview of all active, upcoming, and completed projects",
+    "paginationSummary": "Showing {start} to {end} of {total} projects",
     "summaryStats": {
       "totalProjects": "Total Projects:",
       "completed": "Completed:",
@@ -121,7 +294,29 @@
       "searchProjectsPlaceholder": "Search projects...",
       "searchClientPlaceholder": "Search Client...",
       "newProjectButton": "New Project",
-      "clearSearchTooltip": "Clear search" 
+      "clearSearchTooltip": "Clear search"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter project title",
+      "label": "Label",
+      "labelPlaceholder": "Enter project label",
+      "selectStatus": "Select a status",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "clientPlaceholder": "Search for client",
+      "cancel": "Cancel",
+      "save": "Save",
+      "update": "Update",
+      "editProject": "Edit Project",
+      "viewProject": "View Project",
+      "progress": "Progress"
+    },
+    "client": {
+      "name": "Name",
+      "ice": "ICE",
+      "label": "Label",
+      "email": "Email"
     },
     "table": {
       "header": {
@@ -137,18 +332,171 @@
         "view": "View",
         "delete": "Delete"
       },
-      "paginationReport": "Showing {first} to {last} of {totalRecords} entries",
+      "paginationSummary": "Showing {first} to {last} of {totalRecords} entries",
       "emptyMessage": "No projects found matching your search criteria.",
       "loadingMessage": "Loading projects data..."
     },
-    "statusTypes": { 
+    "statusTypes": {
       "active": "Active",
       "completed": "Completed",
       "inactive": "Inactive",
       "cancelled": "Cancelled",
-      "upcoming": "Upcoming" 
-
-    
+      "upcoming": "Upcoming"
+    },
+    "deleteConfirmation": {
+      "header": "Confirm Delete",
+      "message": "Are you sure you want to delete the project '{titre}'?",
+      "accept": "Yes, delete",
+      "reject": "No, keep it",
+      "success": "Project Deleted",
+      "successDetail": "The project has been successfully deleted.",
+      "cancelled": "Delete operation cancelled"
+    }
+  },
+  "report_rc": {
+    "title": "Reports",
+    "subtitle": "Overview of all reports and rotation requests",
+    "searchPlaceholder": "Search reports...",
+    "dateRangePlaceholder": "Select date range",
+    "allStatus": "All Status",
+    "clear": "Clear",
+    "viewReport": "View Report",
+    "noReportsMessage": "There are no reports to display.",
+    "paginationSummary": "Showing {start}–{end} of {total} reports",
+    "summaryStats": {
+      "totalReports": "Total Reports:",
+      "accepted": "Completed:",
+      "pending": "Pending:",
+      "opened": "In Progress:",
+      "rejected": "Rejected:"
+    },
+    "statusTypes": {
+      "accepted": "Completed",
+      "pending": "Pending",
+      "opened": "In Progress",
+      "rejected": "Rejected"
+    },
+    "filters": {
+      "title": "Filters",
+      "status": "Status",
+      "dateRange": "Date Range",
+      "search": "Search"
+    },
+    "reportCard": {
+      "createdAt": "Created on",
+      "createdBy": "Created by"
+    },
+    "update": {
+      "success": "Report updated successfully",
+      "error": "Failed to update report"
+    },
+    "viewDialog": {
+      "title": "Title",
+      "date": "Date",
+      "status": "Status",
+      "description": "Description",
+      "noDescription": "No description available.",
+      "reject": "Reject",
+      "inProgress": "In Progress",
+      "accept": "Accept",
+      "rejectTooltip": "Mark as Rejected",
+      "inProgressTooltip": "Mark as In Progress",
+      "acceptTooltip": "Mark as Completed"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "type_message": "Type your message...",
+    "welcome": "Welcome to the chat!",
+    "send": "Send",
+    "online": "Online",
+    "offline": "Offline",
+    "connecting": "Connecting...",
+    "disconnected": "Disconnected",
+    "reconnect": "Reconnect",
+    "message_sent": "Message sent",
+    "message_failed": "Failed to send message",
+    "no_messages": "No messages yet",
+    "new_message": "New message from {{name}}",
+    "open_chat": "Open chat",
+    "close_chat": "Close chat"
+  },
+  "calendar_rc": {
+    "title": "Rotation Schedule",
+    "subtitle": "Manage on-site and remote rotations for team members",
+    "search": "Search",
+    "filters": {
+      "title": "Filters",
+      "client": "Client",
+      "project": "Project",
+      "factory": "Factory",
+      "subfactory": "SubFactory",
+      "clear": "Clear filters"
+    },
+    "buttons": {
+      "createRotation": "Create a new Rotation",
+      "refreshData": "Refresh Data",
+      "addRotation": "Add Rotation",
+      "previousPeriod": "Previous Period",
+      "nextPeriod": "Next Period",
+      "today": "Today"
+    },
+    "viewSelector": {
+      "placeholder": "Select View",
+      "week": "Week",
+      "month": "Month"
+    },
+    "grid": {
+      "associate": "Associate",
+      "userColumnHeader": "User",
+      "userRole": "Consultant",
+      "noUsersFound": "No users found matching your criteria."
+    },
+    "noRotations": {
+      "title": "No Rotations Found",
+      "subtitle": "No rotation data available for the selected period or filters."
+    },
+    "pendingChanges": {
+      "message": "You have pending changes that need to be saved.",
+      "saveButton": "Save Changes",
+      "cancelButton": "Cancel"
+    },
+    "legend": {
+      "title": "Legend",
+      "onsite": "On-site",
+      "onSite": "On-site",
+      "remote": "Remote",
+      "off": "Off (No Assignment)",
+      "today": "Today"
+    },
+    "pendingChangesDescription": "You have pending changes that need to be saved or discarded."
+  },
+  "rotation_rc": {
+    "modal": {
+      "title": "Create Rotation"
+    },
+    "form": {
+      "selectProject": "Select Project",
+      "selectProjectPlaceholder": "Select project",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "selectCollaborators": "Select Collaborators",
+      "collaboratorsPlaceholder": "Search and add collaborators...",
+      "rotationPattern": "Rotation Pattern",
+      "patternSummary": "{{weeks}} remote weeks every {{period}} weeks",
+      "selectCustomDates": "Select custom dates"
+    },
+    "tabs": {
+      "automatic": "Automatic Rotation",
+      "custom": "Custom Dates"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "createRotation": "Create Rotation"
+    },
+    "validation": {
+      "projectRequired": "Project is required.",
+      "collaboratorRequired": "At least one collaborator is required."
+    }
   }
-}
 }

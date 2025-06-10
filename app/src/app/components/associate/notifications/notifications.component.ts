@@ -2,7 +2,7 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
 import { AssociateService } from '../../../services/associate.service';
 import { NotificationDTO, PagedNotificationDTO } from '../../../dto/notification.dto';
-import { PagedNotificationSearchDTO } from '../../../dto/paged-notification-search.dto';
+import { PagedNotificationSearchDTO } from '../../../dto/aio/paged-notification-search.dto';
 import { NotificationStatus } from '../../../dto/notification-status.enum';
 import { finalize } from 'rxjs';
 import { DatePipe } from '@angular/common';

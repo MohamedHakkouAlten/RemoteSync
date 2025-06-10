@@ -1,6 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ReportRoutingModule } from './report-routing.module';
 import { ReportComponent } from './report.component';
@@ -15,6 +16,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 
 // --- Shared Components ---
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
@@ -42,11 +44,13 @@ import { UpdateReportComponent } from '../../shared/rc-ui/update-report/update-r
     ButtonModule,
     AvatarModule,
     TagModule,
+    TooltipModule,
     NavigationComponent,
     UserAvatarComponent,
     UpdateReportComponent,
     ToastModule,
-    DefaultLayoutComponent
+    DefaultLayoutComponent,
+    TranslateModule.forChild()
 ],
 providers :[
  

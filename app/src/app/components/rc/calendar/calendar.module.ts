@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { CalendarRoutingModule } from './calendar-routing.module';
 import { CalendarComponent } from './calendar.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { AvatarModule } from 'primeng/avatar';
-import { ToggleSwitch } from 'primeng/toggleswitch';
 import { NavigationComponent } from "../../shared/navigation/navigation.component";
 import { InputIcon } from 'primeng/inputicon';
 import { IconField } from 'primeng/iconfield';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { SelectButton } from 'primeng/selectbutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TooltipModule } from 'primeng/tooltip';
 import { ThreeStateToggleComponent } from "../../shared/three-state-toggle/three-state-toggle.component";
 import { RotationComponent } from "../rotation/rotation.component";
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PaginatorModule } from 'primeng/paginator';
@@ -30,21 +30,27 @@ import { WebSocketService } from '../../../services/web-socket.service';
   imports: [
     CommonModule,
     CalendarRoutingModule,
-    FormsModule, // Import FormsModule
-    // PrimeNG
+    FormsModule,
+    ReactiveFormsModule,
+    // PrimeNG Components
     ButtonModule,
     InputTextModule,
     DropdownModule,
     AvatarModule,
+    SelectButtonModule,
+    TooltipModule,
+    AutoCompleteModule,
+    ToastModule,
+    PaginatorModule,
+    // Standalone Components
     NavigationComponent,
     InputIcon,
     IconField,
-    AutoCompleteModule,
     ThreeStateToggleComponent,
     RotationComponent,
-    ToastModule,
-    PaginatorModule,
-    DefaultLayoutComponent
+    DefaultLayoutComponent,
+    // Translation Support
+    TranslateModule.forChild()
 ],
 providers :[
     MessageService,

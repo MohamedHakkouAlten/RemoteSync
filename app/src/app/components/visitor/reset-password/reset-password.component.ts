@@ -34,10 +34,10 @@ export class ResetPasswordComponent implements OnInit {
     submitted: boolean = false;
     loading: boolean = false;
     resetToken: string | null = null;
-    currentLanguage: SupportedLanguage = 'en'; // Default language
-  
+    currentLanguage: SupportedLanguage = 'en';
+
     @ViewChild('setPasswordForm') setPasswordForm!: NgForm;
-  
+
     constructor(
       private messageService: MessageService,
       private authService: AuthFacadeService,
@@ -46,17 +46,17 @@ export class ResetPasswordComponent implements OnInit {
       private translate: TranslateService,
       private languageService: LanguageService
     ) { }
-  
+
     ngOnInit(): void {
       // Subscribe to language changes
       this.languageService.currentLanguage$.subscribe(lang => {
         this.currentLanguage = lang;
       });
-      
+
       // Get reset token from URL query parameter
       this.route.queryParams.subscribe(params => {
         this.resetToken = params['token'];
-        
+
         // Check token after params are received
         if (!this.resetToken) {
           // Use hardcoded messages initially
@@ -74,19 +74,19 @@ export class ResetPasswordComponent implements OnInit {
               detail: 'El enlace de restablecimiento de contraseña es inválido o ha expirado.'
             }
           };
-          
+
           // Get messages for current language or fallback to English
           const messages = errorMessages[this.currentLanguage] || errorMessages['en'];
-          
+
           setTimeout(() => {
-            this.messageService.add({ 
-              severity: 'error', 
-              summary: messages.summary, 
-              detail: messages.detail, 
-              life: 5000 
+            this.messageService.add({
+              severity: 'error',
+              summary: messages.summary,
+              detail: messages.detail,
+              life: 5000
             });
           }, 500);
-          
+
           // Navigate to forgot password page after a delay
           setTimeout(() => {
             this.router.navigate(['/' + this.currentLanguage + '/remotesync/forgot-password']);
@@ -94,42 +94,45 @@ export class ResetPasswordComponent implements OnInit {
         }
       });
     }
-  
-  
+
+
     // --- Component Methods ---
-  
+
     /**
      * Handles the password update logic.
      */
     updatePassword(): void {
       this.submitted = true;
-  
+
       // Mark controls as touched for validation feedback
       if (this.setPasswordForm?.controls) {
         Object.keys(this.setPasswordForm.controls).forEach(key => {
           this.setPasswordForm.controls[key].markAsTouched();
         });
       }
-  
+
       // Manual check for password match
       const passwordsDoMatch = this.newPassword === this.confirmPassword;
-      
+
       // Check form validity and password match
       if (this.setPasswordForm?.valid && passwordsDoMatch && this.resetToken) {
         this.loading = true;
 
+        // Make sure password fields are constructed correctly
         const credentials: ResetPasswordRequestDto = {
-          token: this.resetToken,
-          newPassword: this.newPassword,
-          confirmPassword: this.confirmPassword
+          token: this.resetToken!,
+          password: this.newPassword,         // Use field name that matches backend DTO
+          confPassword: this.confirmPassword  // Use field name that matches backend DTO
         };
-        
+
+        console.log('Sending reset password request with credentials:', credentials);
+
         // Call the auth service to reset the password
         this.authService.resetPassword(credentials)
           .subscribe({
             next: (response) => {
               this.loading = false;
-              
+
               // Show success message
               this.messageService.add({
                 severity: 'success',
@@ -137,7 +140,7 @@ export class ResetPasswordComponent implements OnInit {
                 detail: this.translate.instant('resetPassword.passwordUpdateSuccess'),
                 life: 4000
               });
-              
+
               // Navigate to login page after success
               setTimeout(() => {
                 this.router.navigate(['/' + this.currentLanguage + '/remotesync/login']);
@@ -145,7 +148,7 @@ export class ResetPasswordComponent implements OnInit {
             },
             error: (error) => {
               this.loading = false;
-              
+
               // Show error message
               this.messageService.add({
                 severity: 'error',
@@ -158,7 +161,7 @@ export class ResetPasswordComponent implements OnInit {
       } else {
         // Handle validation errors
         let errorDetail = this.translate.instant('resetPassword.correctErrors');
-        
+
         if (!this.resetToken) {
           errorDetail = this.translate.instant('resetPassword.invalidToken');
         } else if (!passwordsDoMatch && this.newPassword && this.confirmPassword) {
@@ -168,7 +171,7 @@ export class ResetPasswordComponent implements OnInit {
         } else if (!this.setPasswordForm?.valid) {
           errorDetail = this.translate.instant('resetPassword.fillPasswordFields');
         }
-  
+
         console.log('Password reset failed: Form invalid or passwords mismatch.');
         this.messageService.add({
           severity: 'error',

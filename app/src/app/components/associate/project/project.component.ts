@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AssociateService } from '../../../services/associate.service';
-import { ProjectDTO } from '../../../dto/project.dto';
-import { PagedProjectDTO } from '../../../dto/paged-project.dto';
+import { ProjectDTO } from '../../../dto/aio/project.dto';
+import { PagedProjectDTO } from '../../../dto/associate/paged-project.dto';
 import { ProjectStatus } from '../../../dto/project-status.enum';
 import { debounceTime, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
 import { Subject, of, Subscription } from 'rxjs';
 import { PagedProjectSearchDTO } from '../../../dto/paged-global-id.dto';
 import { AssociateProjectByLabelDTO } from '../../../dto/associate/associate-project-by-label.dto';
 import { AssociateProjectByClientDTO } from '../../../dto/associate/associate-project-by-client.dto';
-import { Client } from '../../../dto/client.dto';
+import { Client } from '../../../dto/aio/client.dto';
 
 // Import shared interfaces from the models folder
-import { ClientSelectItem, StatusSelectItem } from '../models/interfaces';
+import { ClientSelectItem, StatusSelectItem } from '../../../dto/associate/interfaces';
 
 // Import utility helpers
 import { AssociateUIHelpers } from '../utils/ui-helpers';
@@ -36,7 +36,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   pagedProjects: PagedProjectDTO | null = null;
   isLoading: boolean = false;
   loadingError: boolean = false;
-  
+
   // Pagination properties
   currentPage: number = 0;
   pageSize: number = 10;
@@ -70,24 +70,24 @@ export class ProjectComponent implements OnInit, OnDestroy {
       this.currentPage = 0;
       this.loadProjects();
     });
-    
+
     // Add to subscriptions array for cleanup
     this.subscriptions.push(searchSubscription);
   }
-  
+
   /**
    * Clean up subscriptions and timers on component destruction
    */
   ngOnDestroy(): void {
     // Clear all subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    
+
     // Clear any pending timers
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
   }
-  
+
   /**
    * Initialize status filter options
    */
@@ -96,7 +96,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
       { label: 'All Status', value: null },
       { label: 'In Progress', value: ProjectStatus.ACTIVE },
       { label: 'Completed', value: ProjectStatus.COMPLETED },
-      { label: 'At Risk', value: ProjectStatus.PENDING },
       { label: 'On Hold', value: ProjectStatus.INACTIVE },
       { label: 'Cancelled', value: ProjectStatus.CANCELLED }
     ];
@@ -105,12 +104,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
   loadInitialData(): void {
     this.isLoading = true;
     this.loadingError = false;
-    
+
     // Clear any existing timeout
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
-    
+
     // Set a timeout to show error if loading takes too long
     this.loadingTimeout = setTimeout(() => {
       if (this.isLoading) {
@@ -122,31 +121,31 @@ export class ProjectComponent implements OnInit, OnDestroy {
         if (response.status === 'success' && response.data) {
           // Set clients for dropdown
           this.loadClientsForDropdown(response.data.allClients);
-          
+
           // Set initial projects - the response already contains a PagedProjectDTO
           this.pagedProjects = response.data.projects;
         } else {
           this.pagedProjects = null;
         }
-        
+
         // Clear the timeout as we got a response
         if (this.loadingTimeout) {
           clearTimeout(this.loadingTimeout);
           this.loadingTimeout = null;
         }
-        
+
         this.isLoading = false;
       }),
       catchError(error => {
         console.error('Error loading initial projects data:', error);
         this.pagedProjects = null;
-        
+
         // Clear the timeout as we got an error response
         if (this.loadingTimeout) {
           clearTimeout(this.loadingTimeout);
           this.loadingTimeout = null;
         }
-        
+
         this.isLoading = false;
         this.loadingError = true;
         return of(null);
@@ -157,12 +156,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
   loadProjects(): void {
     this.isLoading = true;
     this.loadingError = false;
-    
+
     // Clear any existing timeout
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
-    
+
     // Set a timeout to show error if loading takes too long
     this.loadingTimeout = setTimeout(() => {
       if (this.isLoading) {
@@ -202,13 +201,13 @@ export class ProjectComponent implements OnInit, OnDestroy {
       catchError(error => {
         console.error('Error fetching all projects:', error);
         this.pagedProjects = null;
-        
+
         // Clear the timeout as we got an error response
         if (this.loadingTimeout) {
           clearTimeout(this.loadingTimeout);
           this.loadingTimeout = null;
         }
-        
+
         this.isLoading = false;
         this.loadingError = true;
         return of(null);
@@ -239,23 +238,23 @@ export class ProjectComponent implements OnInit, OnDestroy {
       catchError(error => {
         console.error('Error searching projects by label:', error);
         this.pagedProjects = null;
-        
+
         // Clear the timeout as we got an error response
         if (this.loadingTimeout) {
           clearTimeout(this.loadingTimeout);
           this.loadingTimeout = null;
         }
-        
+
         this.isLoading = false;
         this.loadingError = true;
         return of(null);
       })
     ).subscribe();
   }
-  
+
   fetchProjectsByClient(): void {
     if (!this.selectedClient) {
-        this.fetchAllProjects(); 
+        this.fetchAllProjects();
         return;
     }
     const dto: AssociateProjectByClientDTO = {
@@ -275,13 +274,13 @@ export class ProjectComponent implements OnInit, OnDestroy {
         catchError(error => {
           console.error('Error fetching projects by client:', error);
           this.pagedProjects = null;
-          
+
           // Clear the timeout as we got an error response
           if (this.loadingTimeout) {
             clearTimeout(this.loadingTimeout);
             this.loadingTimeout = null;
           }
-          
+
           this.isLoading = false;
           this.loadingError = true;
           return of(null);
@@ -295,7 +294,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       id: client.clientId,
       name: client.label || client.name || client.clientId // Use label as name, fallback to name or ID
     }));
-    
+
     // Add "All Clients" option at the beginning of the dropdown
     this.clientOptions = [{ name: 'All Clients', id: null }, ...mappedClients];
   }
@@ -306,12 +305,12 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   onFilterChange(): void {
     this.currentPage = 0;
-    this.loadProjects(); 
+    this.loadProjects();
   }
-  
+
   onClientFilterChange(): void {
     this.currentPage = 0;
-    this.searchTerm = ''; 
+    this.searchTerm = '';
     this.loadProjects();
   }
 
@@ -328,8 +327,8 @@ export class ProjectComponent implements OnInit, OnDestroy {
     const now = Date.now();
 
     if (project.status === ProjectStatus.COMPLETED) return 100;
-    if (project.status === ProjectStatus.CANCELLED || project.status === ProjectStatus.INACTIVE) return 0; 
-    if (now >= end ) return 100; 
+    if (project.status === ProjectStatus.CANCELLED || project.status === ProjectStatus.INACTIVE) return 0;
+    if (now >= end ) return 100;
     if (now < start) return 0;
 
     const progress = ((now - start) / (end - start)) * 100;
@@ -338,10 +337,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   getProjectStatusSeverity(status?: string): BadgeSeverity {
     if (!status) return 'secondary';
-    
+
     // Convert any status string to proper BadgeSeverity type
     const statusLower = status.toLowerCase();
-    
+
     if (statusLower.includes('active') || statusLower.includes('progress')) {
       return 'warn';
     } else if (statusLower.includes('risk') || statusLower.includes('danger')) {
@@ -355,14 +354,14 @@ export class ProjectComponent implements OnInit, OnDestroy {
     } else if (statusLower.includes('pend')) {
       return 'info';
     }
-    
+
     return 'secondary';
   }
-  
+
   getProgressBarColor(project: ProjectDTO): string {
     return AssociateUIHelpers.getProgressBarColor(project?.status);
   }
-  
+
   /**
    * Get CSS class based on client sector/industry
    * @param sector Client sector or industry (can be undefined)
@@ -370,7 +369,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
    */
   getSectorClass(sector: string | undefined): string {
     if (!sector) return 'default-sector';
-    
+
     const sectorLower = sector.toLowerCase();
     if (sectorLower.includes('tech') || sectorLower.includes('software')) {
       return 'tech-sector';
@@ -385,7 +384,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     }
     return 'default-sector';
   }
-  
+
   /**
    * Get client initials for avatar display
    * @param project Project containing client info
@@ -393,10 +392,10 @@ export class ProjectComponent implements OnInit, OnDestroy {
    */
   getClientInitials(project: ProjectDTO): string {
     if (!project || !project.owner || !project.owner.name) return 'CL';
-    
+
     const clientName = project.owner.name;
     const nameParts = clientName.split(' ');
-    
+
     if (nameParts.length >= 2) {
       return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
     } else if (nameParts.length === 1 && nameParts[0].length >= 2) {
@@ -405,7 +404,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       return 'CL';
     }
   }
-  
+
   /**
    * Navigate to project details page
    * @param project Project to view details for

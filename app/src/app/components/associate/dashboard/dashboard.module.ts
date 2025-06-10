@@ -10,6 +10,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BadgeModule } from 'primeng/badge';
 import { AvatarModule } from 'primeng/avatar';
 
+// Translation Module
+import { TranslateModule } from '@ngx-translate/core';
+
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 import { MonthNamePipe } from './month-name.pipe'; // Your custom pipe
@@ -33,6 +36,7 @@ import { DefaultLayoutComponent } from '../../shared/layout/default-layout.compo
     ProgressSpinnerModule, // For loading spinner
     BadgeModule,
     AvatarModule,
+    TranslateModule,     // Add TranslateModule for i18n support
     DefaultLayoutComponent, // Assuming standalone
     NavigationComponent     // Add NavigationComponent, assuming standalone (used in DashboardComponent.html)
   ],
