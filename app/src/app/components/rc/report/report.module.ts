@@ -1,7 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { ReportRoutingModule } from './report-routing.module';
 import { ReportComponent } from './report.component';
@@ -27,6 +26,8 @@ import { RcService } from '../../../services/rc.service';
 import { UserAvatarComponent } from '../../shared/shared-ui/user-avatar/user-avatar.component';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 import { UpdateReportComponent } from '../../shared/rc-ui/update-report/update-report.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from '../../../services/language/language.service';
 
 @NgModule({
   declarations: [
@@ -49,13 +50,14 @@ import { UpdateReportComponent } from '../../shared/rc-ui/update-report/update-r
     UserAvatarComponent,
     UpdateReportComponent,
     ToastModule,
-    DefaultLayoutComponent,
-    TranslateModule.forChild()
+    TranslateModule,
+    DefaultLayoutComponent
 ],
 providers :[
- 
+ LanguageService,
   MessageService,
-     RcService
+     RcService,
+     TranslateService
 ]
   // No providers needed here unless DatePipe isn't provided elsewhere
 })

@@ -13,8 +13,10 @@ Base Layout & Container
     min-height: 100vh;
 }
 .projects-container {
-    padding: 2rem 2.5rem;
-    flex-grow: 1;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap:20px;
     max-width: 100%;
     margin: 0 auto;
     width: 100%;
@@ -41,13 +43,13 @@ Base Layout & Container
     display: flex;
     flex-wrap: wrap;
     gap: 1.8rem;
-    margin-bottom: 1.5rem;
+
     font-size: 0.95rem;
     color: #495057;
-    background-color: white;
-    padding: 1.5rem;
+  
+
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
 }
 .summary-stats .stat-item {
     display: flex;
@@ -72,7 +74,7 @@ Base Layout & Container
 
 /* Toolbar Container & Layout */
 .toolbar-container {
-    margin-bottom: 1.5rem;
+   
     border-radius: 0.5rem;
     background-color: var(--orange-light) !important;
     border: 1px solid rgba(255, 140, 0, 0.15) !important;
@@ -119,7 +121,7 @@ Base Layout & Container
 
 /* Page Background */
 .projects-layout {
-    background-color: var(--page-bg);
+
     min-height: 100vh;
 }
 
@@ -216,12 +218,12 @@ Refined Table Styles
 .table-container {
     background-color: #ffffff;
     border-radius: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    
     overflow: hidden; /* Important for border-radius clipping */
     position: relative; /* For positioning paginator */
     margin-bottom: 2rem;
     /* Consistent with report page */
-    padding: 1.5rem;
+
 }
 :host ::ng-deep .custom-table .p-datatable-thead > tr > th {
     background-color: #f8f9fa; /* Light header background */

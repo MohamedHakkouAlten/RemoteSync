@@ -6,11 +6,12 @@ import { RCReport } from '../../../models/report.model';
 import { ReportStatus } from '../../../enums/report-status.enum';
 import { UserUtils } from '../../../utilities/UserUtils';
 import { format } from 'date-fns';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, take } from 'rxjs';
 import { PagedReports } from '../../../dto/response-wrapper.dto';
 import { MessageService } from 'primeng/api';
 import { RcService } from '../../../services/rc.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ReportFilter } from '../../../dto/rc/report-filter.dto';
 
 // --- Interface & Data ---
 interface Report {
@@ -23,15 +24,7 @@ interface Report {
   status: 'completed' | 'in progress' | 'pending';
   description?: string;
 }
-export interface ReportFilter {
-  name: string,
-  status: ReportStatus | string,
-  startDate: string,
-  endDate: string,
-  pageNumber: number,
-  pageSize: number,
 
-}
 @Component({
   selector: 'app-report',
   standalone: false,
@@ -127,7 +120,16 @@ export class ReportComponent implements OnInit {
 
   ngOnInit(): void {
     // Initialize status options with translated labels
-    this.initStatusOptions();
+       this.initStatusOptions(); // Call the new initialization method
+
+    // Optional: Re-initialize options if language changes dynamically
+    this.translate.onLangChange
+      .pipe() // Use takeUntil for proper unsubscription
+      .subscribe(() => {
+        console.log('Language changed, re-initializing all status options.');
+ 
+        this.initStatusOptions();
+      });
     
     // Setup search debouncing
     this.setupDebouncing();
@@ -220,7 +222,7 @@ export class ReportComponent implements OnInit {
         this.displayReportModal = false
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.instant('report_rc.messages.updateSuccess')
+          summary: this.translate.instant('report_rc.update.success')
         })
       },
       error: (err) => {
@@ -228,7 +230,7 @@ export class ReportComponent implements OnInit {
         this.displayReportModal = false
         this.messageService.add({
           severity: 'error',
-          summary: this.translate.instant('report_rc.messages.updateError')
+          summary: this.translate.instant('report_rc.update.error')
         })
       }
     })
@@ -243,6 +245,37 @@ export class ReportComponent implements OnInit {
       default: return 'bg-gray-100 text-gray-700 border border-gray-200'; // Added border
     }
   }
+   private initStatusOptions(): void {
+      
+      const translationKeys = [
+        "report_rc.statusTypes.accepted",
+        "report_rc.statusTypes.pending",
+        "report_rc.statusTypes.opened",
+        "report_rc.statusTypes.rejected"
+      ];
+  
+      this.translate.get(translationKeys).pipe(
+        take(1)
+      ).subscribe(translations => {
+        // Populate the reportStatusOptions array with translated labels
+        this.statusOptions = [
+          { label: translations["report_rc.statusTypes.accepted"], value: ReportStatus.ACCEPTED },
+          { label: translations["report_rc.statusTypes.pending"], value: ReportStatus.PENDING },
+          { label: translations["report_rc.statusTypes.opened"], value: ReportStatus.OPENED },
+          { label: translations["report_rc.statusTypes.rejected"], value: ReportStatus.REJECTED }
+        ];
+    
+      }, error => {
+        console.error('Error fetching translations for report status options:', error);
+        // Fallback to untranslated labels on error
+        this.statusOptions = [
+          { label: 'Accepted', value: ReportStatus.ACCEPTED },
+          { label: 'Pending', value: ReportStatus.PENDING },
+          { label: 'In Progress', value: ReportStatus.OPENED },
+          { label: 'Rejected', value: ReportStatus.REJECTED }
+        ];
+      });
+    }
   getReportBorder(report: RCReport) {
     console.log(`border-1 border-[${this.getStatusTextColor(report.status!)}]`)
     return {
@@ -292,24 +325,5 @@ export class ReportComponent implements OnInit {
   /**
    * Initializes status dropdown options with translated labels
    */
-  private initStatusOptions(): void {
-    this.statusOptions = [
-      { 
-        label: this.translate.instant('report_rc.statusTypes.accepted'), 
-        value: ReportStatus.ACCEPTED 
-      },
-      { 
-        label: this.translate.instant('report_rc.statusTypes.opened'), 
-        value: ReportStatus.OPENED 
-      },
-      { 
-        label: this.translate.instant('report_rc.statusTypes.pending'), 
-        value: ReportStatus.PENDING 
-      },
-      { 
-        label: this.translate.instant('report_rc.statusTypes.rejected'), 
-        value: ReportStatus.REJECTED 
-      }
-    ];
-  }
+  
 }

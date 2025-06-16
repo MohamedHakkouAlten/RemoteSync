@@ -10,6 +10,7 @@ import { SupportedLanguage } from '../language/language.service';
 export interface UserInfo {
   firstName: string;
   lastName: string;
+  userId:string;
   roles: string[];
 }
 
@@ -28,6 +29,7 @@ export class UserService {
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly FIRST_NAME_KEY = 'first_name';
   private readonly LAST_NAME_KEY = 'last_name';
+  private readonly USER_ID="userId";
   private readonly ROLES_KEY = 'roles';
 
   // Supported languages for URL detection
@@ -56,8 +58,9 @@ export class UserService {
       const firstName = this.getFirstNameFromStorage() || '';
       const lastName = this.getLastNameFromStorage() || '';
       const roles = this.getRolesFromStorage();
+      const userId=this.getUserIdFromStorage() || '';
 
-      this.userInfoSubject.next({ firstName, lastName, roles });
+      this.userInfoSubject.next({ firstName, lastName,userId, roles });
       this.isAuthenticatedSubject.next(true);
     } else {
       this.clearUserData();
@@ -77,7 +80,7 @@ export class UserService {
   /**
    * Stores user authentication data
    */
-  storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string, roles: string[]): void {
+  storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string,userId:string, roles: string[]): void {
     // Process roles - remove 'ROLE_' prefix if present
     const processedRoles = roles.map(r => r.startsWith('ROLE_') ? r.slice(5) : r);
 
@@ -86,10 +89,11 @@ export class UserService {
     localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
     localStorage.setItem(this.FIRST_NAME_KEY, firstName);
     localStorage.setItem(this.LAST_NAME_KEY, lastName);
+    localStorage.setItem(this.USER_ID,userId)
     localStorage.setItem(this.ROLES_KEY, JSON.stringify(processedRoles));
 
     // Update state with processed roles
-    this.userInfoSubject.next({ firstName, lastName, roles: processedRoles });
+    this.userInfoSubject.next({ firstName, lastName,userId, roles: processedRoles });
     this.isAuthenticatedSubject.next(true);
 
     // Log roles for debugging
@@ -161,6 +165,10 @@ return true;
     return localStorage.getItem(this.LAST_NAME_KEY);
   }
 
+   private getUserIdFromStorage(): string | null {
+    return localStorage.getItem(this.USER_ID);
+  }
+
   /**
    * Gets the roles from storage
    */
@@ -230,10 +238,12 @@ return true;
 
     // Update userInfoSubject with current roles
     const currentUserInfo = this.userInfoSubject.getValue();
+       const userId=this.getUserIdFromStorage() || '';
     if (currentUserInfo) {
       this.userInfoSubject.next({
         firstName,
         lastName,
+        userId,
         roles: currentUserInfo.roles
       });
     }
@@ -244,6 +254,10 @@ return true;
    */
   getFullName(): string | null {
     return (this.userInfoSubject.value?.firstName ?? '') + ' ' + (this.userInfoSubject.value?.lastName ?? '');
+  }
+
+   getUserId(): string | null {
+    return (this.userInfoSubject.value?.userId ?? '') ;
   }
 
   /**

@@ -91,6 +91,7 @@ public class UserServiceImp implements UserService {
                 jwtService.generateRefreshToken(dbUser),
                 dbUser.getFirstName(),
                 dbUser.getLastName(),
+                dbUser.getUserId(),
                 dbUser.getRoles().stream()
                         .map(r -> String.valueOf(r.getAuthority()))
                         .toList()
@@ -142,6 +143,7 @@ public class UserServiceImp implements UserService {
                 jwtService.generateRefreshToken(user),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getUserId(),
                 user.getRoles().stream()
                         .map(r -> String.valueOf(r.getAuthority()))
                         .toList()
@@ -231,6 +233,7 @@ public class UserServiceImp implements UserService {
                 jwtService.generateRefreshToken(dbUser),
                 dbUser.getFirstName(),
                 dbUser.getLastName(),
+                dbUser.getUserId(),
                 dbUser.getRoles().stream()
                         .map(r -> String.valueOf(r.getAuthority()))
                         .toList()

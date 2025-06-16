@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ResponseWrapperDto } from '../dto/response-wrapper.dto';
 
@@ -24,7 +24,7 @@ import { AssociateUpdateProfileDTO } from '../dto/associate-update-profile.dto';
 import { CurrentRotationsDTO } from '../dto/associate/current-rotations.dto';
 
 // Notification-related imports
-import { PagedNotificationDTO } from '../dto/notification.dto';
+import { InitialNotificationDTO, PagedNotificationDTO, PanelNotificationDTO } from '../dto/notification.dto';
 import { PagedProjectDTO } from '../dto/associate/paged-project.dto';
 import { PagedNotificationSearchDTO } from '../dto/aio/paged-notification-search.dto';
 
@@ -176,5 +176,28 @@ export class AssociateService {
       params: pagedNotificationSearchDTO as any
     });
   }
+    getInitialAssociateNotifications(): Observable<InitialNotificationDTO> {
+    return this.http.get<ResponseWrapperDto<InitialNotificationDTO>>(`${this.apiUrl}/notifications/initialize`, {
+      
+    }).pipe(
+      map((response)=>response.data as InitialNotificationDTO));
+  }
+      getPanelAssociateNotifications(): Observable<PanelNotificationDTO> {
+    return this.http.get<ResponseWrapperDto<PanelNotificationDTO>>(`${this.apiUrl}/notifications/panel`, {
+      
+    }).pipe(
+      map((response)=>response.data as PanelNotificationDTO));
+  }
+        setNotificationAsRead(notificationId:string){
+
+    return this.http.put(`${this.apiUrl}/notifications/update`,notificationId)
+  }
+       markAllNotificationAsRead(){
+
+    return this.http.put(`${this.apiUrl}/notifications/markAllRead`,{})
+  }
   //#endregion
+}
+export interface NotificationId {
+  notificationId : string
 }

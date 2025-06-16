@@ -25,7 +25,7 @@ public interface ProjectDomainRepository extends JpaRepository<Project, UUID>, J
 
     Optional<List<Project>> findTop10ByLabelContainsIgnoreCase(String label);
     Optional<List<Project>> findAllBy(Pageable pageable);
-    Optional<List<Project>> findAllByIsDeleted(Boolean isDeleted);
+    Optional<List<Project>> findAllByIsDeletedAndStatus(Boolean isDeleted,ProjectStatus status);
     Optional<Page<Project>> findAllByLabelContainingIgnoreCase(String label,Pageable pageable);
     Optional<Page<Project>> findAllByOwner_LabelContainingIgnoreCase(String label,Pageable pageable);
 
@@ -34,7 +34,7 @@ SELECT DISTINCT p FROM AssignedRotation ar
     JOIN Project p ON p.projectId = ar.project.projectId
     JOIN Client c ON c.clientId = p.owner.clientId
     WHERE ar.user.userId = :userId
-      AND p.status IN ('COMPLETED', 'CANCELLED')
+    AND ar.project.projectId IS NOT NULL
       AND (:label IS NULL OR LOWER(p.label) LIKE LOWER(CONCAT('%', :label, '%')))
       AND (:status IS NULL OR p.status = :status)
       AND (:clientId IS NULL OR c.clientId = :clientId)""")

@@ -35,8 +35,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
 
-        config.enableSimpleBroker("/topic");
-
+        config.enableSimpleBroker("/topic","/user");
+        config.setUserDestinationPrefix("/user");
         config.setApplicationDestinationPrefixes("/app");
     }
 
@@ -65,7 +65,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                        String token = authorizationHeader.substring(7);
 
                        String username = jwtService.extractUsername(token);
-                       logger.warn("STOMP Connect: Expired JWT token: {}", username);
+                       logger.warn("STOMP Connect: Expired JWT token: {}", username+ jwtService.extractUserId(token));
                        UserPrincipal userPrincipal = new UserPrincipal(jwtService.extractUserId(token), username);
                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userPrincipal, null, jwtService.extractAuthorities(token));
                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

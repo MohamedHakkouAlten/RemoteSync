@@ -5,7 +5,10 @@ import com.alten.remotesync.application.assignedRotation.record.response.OnSiteW
 import com.alten.remotesync.application.assignedRotation.service.AssignedRotationService;
 import com.alten.remotesync.application.client.record.response.ClientDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.notification.record.request.NotificationByStatusDTO;
 import com.alten.remotesync.application.notification.record.request.PagedNotificationSearchDTO;
+import com.alten.remotesync.application.notification.record.response.AssociateInitialeNotificationsDTO;
+import com.alten.remotesync.application.notification.record.response.AssociatePanelNotificationsDTO;
 import com.alten.remotesync.application.notification.service.NotificationService;
 import com.alten.remotesync.application.project.record.request.PagedProjectSearchDTO;
 import com.alten.remotesync.application.project.record.response.PagedProjectDTO;
@@ -18,9 +21,11 @@ import com.alten.remotesync.application.report.record.response.PagedReportDTO;
 import com.alten.remotesync.application.report.service.ReportService;
 import com.alten.remotesync.application.user.record.request.AssociateUpdateProfileDTO;
 import com.alten.remotesync.application.user.service.UserService;
+import com.alten.remotesync.domain.notification.enumeration.NotificationStatus;
 import com.alten.remotesync.kernel.security.jwt.userPrincipal.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +36,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -127,13 +133,58 @@ public class AssociateController {
     }
 
     @GetMapping({"/associate/my-notifications"})
-    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
     public ResponseEntity<?> associateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success(notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(pagedNotificationSearchDTO.pageNumber(), pagedNotificationSearchDTO.pageSize(), pagedNotificationSearchDTO.title(), pagedNotificationSearchDTO.status(), pagedNotificationSearchDTO.createdAt(), userPrincipal.userId())),
                         HttpStatus.OK));
     }
+    @GetMapping({"/associate/notifications/initialize"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
+    public ResponseEntity<?> initialAssociateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
+        AssociateInitialeNotificationsDTO initialNotificationsDTO=new AssociateInitialeNotificationsDTO(
+                notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(0,20, null, null, null, userPrincipal.userId())),
+                notificationService.countTotalAssociateNotificationsByStatus(new NotificationByStatusDTO( userPrincipal.userId(),List.of(NotificationStatus.URGENT))),
+                notificationService.countTotalAssociateNotificationsByStatus(new NotificationByStatusDTO(userPrincipal.userId(),List.of(NotificationStatus.IMPORTANT))),
+                notificationService.countTotalAssociateNotificationsByStatus(new NotificationByStatusDTO(userPrincipal.userId(),List.of(NotificationStatus.NORMAL,NotificationStatus.ALERT,NotificationStatus.INFO)))
+        );
 
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(initialNotificationsDTO,
+                        HttpStatus.OK));
+    }
+    @GetMapping({"/associate/notifications/panel"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
+    public ResponseEntity<?> panelAssociateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
+        AssociatePanelNotificationsDTO initialNotificationsDTO=new AssociatePanelNotificationsDTO(
+                notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(0,20, null, null, null, userPrincipal.userId())),
+                notificationService.countUnreadNotifications(userPrincipal.userId())) ;
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success(initialNotificationsDTO,
+                        HttpStatus.OK));
+    }
+    @PutMapping({"/associate/notifications/update"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
+    public ResponseEntity<?> setNotificationAsRead(@RequestBody String notificationId) {
+
+
+       notificationService.setNotificationAsRead(notificationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success("the notification was set to read successfully",
+                        HttpStatus.OK));
+    }
+    @PutMapping({"/associate/notifications/markAllRead"})
+    @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
+    public ResponseEntity<?> markAllNotificationAsRead(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+
+        notificationService.markAllNotificationAsRead(userPrincipal.userId());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseWrapper.success("all notification was set to read successfully",
+                        HttpStatus.OK));
+    }
     @GetMapping({"/associate/my-profile", "/rc/my-profile"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ', 'RC:READ')")
     public ResponseEntity<?> associateProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {

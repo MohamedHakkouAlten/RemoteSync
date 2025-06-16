@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserAvatarComponent } from "../../shared-ui/user-avatar/user-avatar.component";
 import { UserUtils } from '../../../../utilities/UserUtils';
+import { format, Locale } from 'date-fns';
+import { LanguageService, SupportedLanguage } from '../../../../services/language/language.service';
+import { es, fr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-update-report',
@@ -25,7 +28,15 @@ import { UserUtils } from '../../../../utilities/UserUtils';
 ]
 })
 export class UpdateReportComponent implements OnInit {
-
+formatDate(date: string) {
+       const lang=this.getDateLang()
+return (lang)?format(date, 'MMM d, yyyy',{locale:lang}):format(date, 'MMM d, yyyy')
+}
+  getDateLang():Locale|null{
+    if(this.currentLanguage=='fr') return fr
+    else if(this.currentLanguage=='es') return es
+    return null
+  }
 
   @Input() report :RCReport |null=null
   @Input() visible :boolean=false
@@ -33,13 +44,16 @@ export class UpdateReportComponent implements OnInit {
   @Output() updateReport=new EventEmitter<RCReport>()
   @Output() visibleChange=new EventEmitter<boolean>()
 
-
+currentLanguage: SupportedLanguage = 'en';
   userUtils = UserUtils;
   reportStatus = ReportStatus;
-constructor(private translate: TranslateService) {}
+constructor(private translate: TranslateService,private languageService:LanguageService) {}
 
 ngOnInit() {
-  // Component initialization logic
+     this.languageService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
+    });
+
 }
 
 closeReportModal() {

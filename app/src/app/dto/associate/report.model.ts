@@ -20,7 +20,7 @@ export interface Report {
   typeIcon: string;
   description: string;
   date: string;
-  status: string;
+  status: ReportStatus
   statusSeverity?: TagSeverity;
 }
 

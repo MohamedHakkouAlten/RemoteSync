@@ -15,7 +15,11 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner'; // <-- Add for 
 // --- Routing & Component ---
 import { CalendarRoutingModule } from './calendar-routing.module';
 import { CalendarComponent } from './calendar.component';
-import { NavigationComponent } from "../../shared/navigation/navigation.component"; // Assuming standalone
+import { NavigationComponent } from "../../shared/navigation/navigation.component";
+import { AddReportComponent } from "../report/add-report/add-report.component"; // Assuming standalone
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 
 @NgModule({
   declarations: [
@@ -27,14 +31,18 @@ import { NavigationComponent } from "../../shared/navigation/navigation.componen
     TranslateModule, // Add TranslateModule for i18n support
     CalendarRoutingModule,
     // PrimeNG
+    ToastModule,
     ButtonModule,
     TooltipModule,
-    DialogModule,         // <-- Import
-    InputTextarea,  // <-- Import
-    RadioButtonModule,    // <-- Import
+    DialogModule, // <-- Import
+    InputTextarea, // <-- Import
+    RadioButtonModule, // <-- Import
     ProgressSpinnerModule, // <-- Import for loading state
     // Shared Components (if NavigationComponent is standalone, import it here)
     NavigationComponent // <-- Make sure this is correctly imported or declared standalone
-  ]
+    ,
+    AddReportComponent,
+    DefaultLayoutComponent
+],providers:[MessageService]
 })
 export class CalendarModule { }

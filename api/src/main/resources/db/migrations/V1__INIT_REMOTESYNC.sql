@@ -56,7 +56,8 @@ CREATE TABLE notification
     title            VARCHAR(255) NULL,
     `description`    VARCHAR(255) NULL,
     status           VARCHAR(255) NULL,
-    created_at       date NULL,
+    is_read          BOOLEAN  NULL,
+    created_at       DATETIME NULL,
     receiver_user_id BINARY(16)   NULL,
     CONSTRAINT pk_notification PRIMARY KEY (notification_id)
 );
@@ -88,8 +89,8 @@ CREATE TABLE report
     type               VARCHAR(255) NULL,
     status             VARCHAR(255) NULL,
     `description`      VARCHAR(255) NULL,
-    created_at         date NULL,
-    updated_at         date NULL,
+    created_at         DATETIME NULL,
+    updated_at         DATETIME NULL,
     created_by_user_id BINARY(16)   NULL,
     updated_by_user_id BINARY(16)   NULL,
     CONSTRAINT pk_report PRIMARY KEY (report_id)

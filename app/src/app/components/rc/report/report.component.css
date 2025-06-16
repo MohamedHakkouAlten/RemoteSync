@@ -11,27 +11,28 @@
 .reports-layout {
   width: 100%;
   min-height: calc(100vh - 60px);
-  background-color: #f5f7f9;
+
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
 .reports-container {
-  padding: 2rem 2.5rem;
-  flex-grow: 1;
+  padding: 2.5rem ;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
   max-width: 100%;
-  margin: 0 auto;
+
 }
 
 /* Header Section */
 .reports-header {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  
   margin-bottom: 1.5rem;
-  padding: 1.75rem 2rem;
+  
 }
 
 .filter-bar .p-button.p-button-outlined.p-button-secondary:not(.p-button-warning):hover { background-color: #f9fafb; }
@@ -91,7 +92,7 @@
     border-radius: 6px !important;
     background-color: var(--card-bg) !important;
     transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
-    border: 1px solid var(--border-color) !important;
+    border: 1px solid var(--color-orange-200) !important;
   }
   
   :host ::ng-deep .filter-dropdown .p-dropdown-label {
@@ -136,17 +137,7 @@
 .status-badge { line-height: 1; }
 
 /* Pagination Container Styles */
-.paginator-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06);
-  padding: 1rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+
 
 .pagination-summary {
   color: #4b5563;
@@ -201,7 +192,7 @@
 }
 
 .card-title {
-  padding: 1rem;
+  
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
@@ -209,7 +200,7 @@
 }
 
 .card-date {
-  padding: 0 1rem 1rem;
+
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -218,8 +209,8 @@
 }
 
 .card-actions {
-  padding: 1rem;
-  border-top: 1px solid #f0f0f0;
+
+  border-top: 1px solid var(--color-gray-100);
   display: flex;
   justify-content: flex-end;
 }
@@ -267,9 +258,9 @@
 .toolbar {
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+  
   margin-bottom: 1.5rem;
-  padding: 1.25rem 1.5rem;
+ 
   gap: 1.25rem;
   display: flex;
   flex-wrap: wrap;
@@ -300,7 +291,7 @@
   border-radius: 6px !important;
   height: 44px !important;
   font-size: 0.95rem;
-  border: 1px solid var(--border-color) !important;
+  border: 1px solid var(--color-orange-200) !important;
   background-color: var(--card-bg) !important;
   color: var(--text-secondary) !important;
   width: 100% !important;
@@ -351,16 +342,16 @@
 .reports-layout {
   width: 100%;
   min-height: calc(100vh - 60px);
-  background-color: #f5f7f9;
+
 }
 
 /* Header Section */
 .reports-header {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+ 
+ 
   margin-bottom: 1.5rem;
-  padding: 1.75rem 2rem;
+  
 }
 
 .reports-header h1 {
@@ -383,8 +374,8 @@
   gap: 1.5rem;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  padding: 1.25rem 2rem;
+
+ 
   margin-bottom: 1.5rem;
   align-items: center;
 }
@@ -422,16 +413,17 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  padding: 1.5rem 2rem;
+
 }
 
 .toolbar .search-field {
-  flex-grow: 1;
+  flex-grow: 2;
   min-width: 250px;
 }
 
 .toolbar .date-filter,
 .toolbar .status-filter {
+  flex-grow: 1;
   min-width: 200px;
   width: 100%;
 }
@@ -504,11 +496,10 @@
 /* Table Container */
 .table-container {
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
   overflow: hidden;
   position: relative;
-  padding: 1.75rem 2rem;
+
 }
 
 /* Report Cards Grid */
@@ -521,7 +512,7 @@
 
 .report-card {
   background-color: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 1.5rem;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -578,15 +569,12 @@
   margin-bottom: 1.25rem;
 }
 
-.card-actions {
-  margin-top: auto;
-  border-top: 1px solid #f0f0f0;
-  padding-top: 1rem;
-}
+
 
 .card-actions button {
   width: 100%;
   font-size: 0.9rem;
+
 }
 
 /* Status Tags */
@@ -638,16 +626,6 @@
 }
 
 /* Paginator */
-.paginator-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1.25rem 0.5rem 0 0.5rem;
-  border-top: 1px solid #eee;
-  margin-top: 1.5rem;
-}
 
 .paginator-summary {
   color: #64748b;
@@ -686,7 +664,7 @@
   .summary-stats,
   .toolbar,
   .table-container {
-    padding: 1.25rem;
+   
   }
   
   .reports-grid {

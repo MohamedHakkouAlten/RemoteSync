@@ -6,6 +6,11 @@ import { PagedNotificationSearchDTO } from '../../../dto/aio/paged-notification-
 import { NotificationStatus } from '../../../dto/notification-status.enum';
 import { finalize } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { WebSocketService } from '../../../services/web-socket.service';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
+import { UserService } from '../../../services/auth/user.service';
+import { TranslateService } from '@ngx-translate/core';
 
 // Local interface for mapped notification data with UI-specific properties
 interface Notification {
@@ -25,8 +30,7 @@ interface Notification {
 interface TabConfig {
   title: string;
   value: string; // Unique identifier for the tab
-  filterFn: (notification: Notification) => boolean; // Function to filter notifications
-  countSignal: () => number; // Function returning the count signal for the badge
+  count:number
 }
 
 @Component({
@@ -44,17 +48,17 @@ export class NotificationsComponent implements OnInit {
   
   // Status dropdown options
   statusOptions = [
-    { label: 'Urgent', value: NotificationStatus.URGENT },
-    { label: 'Important', value: NotificationStatus.IMPORTANT },
-    { label: 'Normal', value: NotificationStatus.NORMAL },
-    { label: 'Info', value: NotificationStatus.INFO },
-    { label: 'Alert', value: NotificationStatus.ALERT },
-    { label: 'Request', value: NotificationStatus.REQUEST }
+    { label: 'notification_page.status.urgent', value: NotificationStatus.URGENT },
+    { label: 'notification_page.status.important', value: NotificationStatus.IMPORTANT },
+    { label: 'notification_page.status.normal', value: NotificationStatus.NORMAL },
+    { label: 'notification_page.status.info', value: NotificationStatus.INFO },
+    { label: 'notification_page.status.alert', value: NotificationStatus.ALERT },
+    { label: 'notification_page.status.request', value: NotificationStatus.REQUEST }
   ];
 
   private allNotifications = signal<Notification[]>([]); // Holds ALL notifications (using signals)
   loading = signal<boolean>(false); // Loading state
-
+  currentLanguage: SupportedLanguage = 'en';
   // Computed signals for counts
   allCount = computed(() => this.allNotifications().length);
   urgentCount = computed(() => this.allNotifications().filter(n => n.status === NotificationStatus.URGENT).length);
@@ -63,10 +67,10 @@ export class NotificationsComponent implements OnInit {
 
   // Tab Configuration
   tabs: TabConfig[] = [
-    { title: 'All', value: 'all', filterFn: (n) => true, countSignal: this.allCount },
-    { title: 'Urgent', value: 'urgent', filterFn: (n) => n.status === NotificationStatus.URGENT, countSignal: this.urgentCount },
-    { title: 'Important', value: 'important', filterFn: (n) => n.status === NotificationStatus.IMPORTANT, countSignal: this.importantCount },
-    { title: 'Normal', value: 'normal', filterFn: (n) => n.status === NotificationStatus.NORMAL || n.status === NotificationStatus.INFO, countSignal: this.normalCount }
+ { title: 'notification_page.tabs.all', value: 'all', count: 0 },
+    { title: 'notification_page.tabs.urgent', value: 'urgent', count: 0 },
+    { title: 'notification_page.tabs.important', value: 'important', count: 0 },
+    { title: 'notification_page.tabs.normal', value: 'normal', count: 0 }
   ];
 
   // Active Tab State
@@ -81,8 +85,8 @@ export class NotificationsComponent implements OnInit {
 
   // Filtered list based on active tab (computed signal)
   filteredNotifications = computed(() => {
-    const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.filterFn || (() => true);
-    return this.allNotifications().filter(currentFilterFn);
+    const currentFilterFn = this.tabs.find(t => t.value === this.activeTabValue())?.count|| (() => true);
+    return this.allNotifications();
   });
 
   // Displayed list based on pagination applied to filtered list (computed signal)
@@ -95,11 +99,34 @@ export class NotificationsComponent implements OnInit {
 
   constructor(
     private associateService: AssociateService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private router:Router,
+    private languageService:LanguageService,
+    private userService:UserService,
+    private translateService:TranslateService
+
+   
   ) {}
 
   ngOnInit(): void {
-    this.loadNotifications();
+  //  this.loadNotifications();
+      this.languageService.currentLanguage$.subscribe((lang) => {
+      this.currentLanguage = lang;
+
+    });
+    this.associateService.getInitialAssociateNotifications().subscribe(res=>{
+      console.log(res)
+      this.tabs[0].count=res.notifications.totalElements
+      this.tabs[1].count=res.urgentCount
+      this.tabs[2].count=res.importantCount
+      this.tabs[3].count=res.normalCount
+          const mappedNotifications = res.notifications.notificationDTOs.map(dto => this.mapNotificationDto(dto));
+            
+            // Update all signals
+            this.allNotifications.set(mappedNotifications);
+
+      
+    })
   }
 
   loadNotifications(): void {
@@ -166,6 +193,7 @@ export class NotificationsComponent implements OnInit {
    * Apply all active filters and reload notifications
    */
   applyFilters(): void {
+    console.log("called")
     this.currentPage.set(0); // Reset to first page
     this.first.set(0);
     this.loadNotifications();
@@ -192,9 +220,9 @@ export class NotificationsComponent implements OnInit {
   private mapNotificationDto(dto: NotificationDTO): Notification {
     // Determine notification type based on status
     let type: 'report' | 'rotation' | 'general' = 'general';
-    if (dto.status === NotificationStatus.URGENT || dto.status === NotificationStatus.IMPORTANT) {
+    if (dto.title.toLocaleLowerCase().includes("report")) {
       type = 'report';
-    } else if (dto.status === NotificationStatus.REQUEST) {
+    } else if (dto.title.toLocaleLowerCase().includes("rotation")) {
       type = 'rotation';
     }
     
@@ -215,7 +243,7 @@ export class NotificationsComponent implements OnInit {
       senderName: 'System Notification', // The API doesn't provide a sender name
       timestamp,
       message: dto.description,
-      isRead: false, // The API doesn't indicate if a notification is read
+      isRead: dto.isRead, // The API doesn't indicate if a notification is read
       status: dto.status,
       statusClass
     };
@@ -233,24 +261,40 @@ export class NotificationsComponent implements OnInit {
   
   // Helper method to format timestamp
   private formatTimestamp(dateString: string): string {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} min ago`;
-    
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    
-    const diffDays = Math.floor(diffHours / 24);
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    
-    return date.toLocaleDateString();
+  if (!dateString) {
+    return '';
   }
+
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.round(diffMs / 60000);
+
+  if (diffMins < 1) {
+    return this.translateService.instant('time.ago.just_now');
+  }
+
+  if (diffMins < 60) {
+    const key = diffMins === 1 ? 'time.ago.minutes_one' : 'time.ago.minutes_other';
+    // The 'count' parameter will replace {{count}} in the JSON string
+    return this.translateService.instant(key, { count: diffMins });
+  }
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) {
+    const key = diffHours === 1 ? 'time.ago.hours_one' : 'time.ago.hours_other';
+    return this.translateService.instant(key, { count: diffHours });
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) {
+    const key = diffDays === 1 ? 'time.ago.days_one' : 'time.ago.days_other';
+    return this.translateService.instant(key, { count: diffDays });
+  }
+
+  // Fallback for older dates, which is already locale-aware
+  return date.toLocaleDateString();
+}
   
   // Helper method to get CSS class based on notification status
   private getStatusClass(status: NotificationStatus): string {
@@ -307,17 +351,47 @@ export class NotificationsComponent implements OnInit {
     console.log(`Viewing calendar related to notification ${id}`);
   }
 
-  viewReport(id: string): void {
-    console.log(`Viewing report related to notification ${id}`);
+  viewReport(notification:Notification): void {
+     const userRoles = this.userService.getUserRoles();
+    if(notification.type=="rotation") {
+       if(userRoles.includes('ADMIN'))  {
+       this.router.navigate([`/${this.currentLanguage}/remotesync/admin/calendar`])
+      } else if  (userRoles.includes('RC'))
+      {
+    this.router.navigate([`/${this.currentLanguage}/remotesync/rc/calendar`])
+      } else {
+         this.router.navigate([`/${this.currentLanguage}/remotesync/associate/calendar`])
+      }
+       }
+    
+    else if(notification.type=="report") {
+       if(userRoles.includes('ADMIN'))  {
+       this.router.navigate([`/${this.currentLanguage}/remotesync/admin/report`])
+      } else if  (userRoles.includes('RC'))
+      {
+    this.router.navigate([`/${this.currentLanguage}/remotesync/rc/report`])
+      } else {
+         this.router.navigate([`/${this.currentLanguage}/remotesync/associate/report`])
+      }
+    
+    }
+  this.associateService.setNotificationAsRead(notification.id).subscribe()
   }
 
   dismissNotification(id: string): void {
     console.log(`Dismissing notification ${id}`);
     this.allNotifications.update(currentNotifications =>
-        currentNotifications.filter(n => n.id !== id)
+        currentNotifications.map(notification=>{
+          if(notification.id==id){
+       notification.isRead=true
+    return notification
+          }
+       return notification
+        })
     );
     // Re-calculate totalRecords based on potentially new filtered list size
     this.updateTotalRecords();
+    this.associateService.setNotificationAsRead(id).subscribe()
 
     // Adjust 'first' if the current page becomes empty after deletion (more complex with signals)
     // Check if the current 'first' is now beyond the new totalRecords

@@ -15,14 +15,14 @@ import { SelectOption } from '../project.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { RcService } from '../../../../services/rc.service';
 import { ClientDropDownDTO } from '../../../../dto/rc/client-dropdown.dto';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-edit-project',
   providers :[
-    RcService
+    RcService,TranslateService
   ],
   imports: [ 
       CommonModule,
@@ -62,7 +62,7 @@ selectedClient: ClientDropDownDTO | null = null
   @Input() displayEditProjectDialog: boolean = false;
   @Output() hideDialog=new EventEmitter<boolean>(false)
   @Output() editeProject=new EventEmitter<Project>()
-  constructor(private rcService:RcService)
+  constructor(private rcService:RcService,private translateService:TranslateService)
   {
 
   }
@@ -85,7 +85,15 @@ selectedClient: ClientDropDownDTO | null = null
    this.setupDebouncing()
    this.rcService.getClientListByLabel().subscribe((res: ClientDropDownDTO[]) => this.initialClients = res)
     this.selectedClient={clientId:this.projectToEdit?.owner!.clientId!,label:this.projectToEdit?.owner!.label!};   
-    console.log(this.projectToEdit)
+        this.initStatusOptions()
+      
+     this.translateService.onLangChange
+      .pipe(take(1)) // Use takeUntil for proper unsubscription
+      .subscribe(() => {
+        console.log('Language changed, re-initializing status options.');
+        this.initStatusOptions()
+      });
+
   }
 setupDebouncing(){
   this.searchClientSubject$.pipe(
@@ -95,17 +103,33 @@ setupDebouncing(){
     ).subscribe((res: ClientDropDownDTO[]) => this.clients = res)
 }
   
+  private initStatusOptions(): void {
+      
+  const translationKeys = [
+      "project_rc.statusTypes.active",
+      "project_rc.statusTypes.completed",
+      "project_rc.statusTypes.inactive",
+      "project_rc.statusTypes.cancelled"
+    ];
   
+    // Get the translations asynchronously
+    this.translateService.get(translationKeys).pipe(
+      take(1) // Take only one emission and complete
+    ).subscribe(translations => {
+      this.projectStatusOptions = [
+        { label: translations["project_rc.statusTypes.active"], value: ProjectStatus.ACTIVE },
+        { label: translations["project_rc.statusTypes.completed"], value: ProjectStatus.COMPLETED },
+        { label: translations["project_rc.statusTypes.inactive"], value: ProjectStatus.INACTIVE },
+        { label: translations["project_rc.statusTypes.cancelled"], value: ProjectStatus.CANCELLED }
+      ];
+      console.log('Status options initialized with translations:');
+    });
+  
+    }
 
  
 
-    projectStatusOptions: SelectOption[] = [
-        { label: 'Select Status', value: null },
-        { label: 'Active', value: ProjectStatus.ACTIVE },
-        { label: 'InActive', value: ProjectStatus.INACTIVE},
-        { label: 'Completed', value: ProjectStatus.COMPLETED },
-         { label: 'Cancelled', value: ProjectStatus.CANCELLED }
-    ];
+    projectStatusOptions: SelectOption[] = []
 
 
 onHideDialog(){

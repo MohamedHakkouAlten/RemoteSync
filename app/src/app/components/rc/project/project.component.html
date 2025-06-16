@@ -1,10 +1,10 @@
 <app-default-layout>
-<div class="projects-layout w-full">
+<div class="projects-layout w-full bg-white">
     <p-toast position="top-center" styleClass="w-full md:w-auto z-50"></p-toast>
 
     <main class="projects-container w-full max-w-full">
         <!-- Enhanced Page Header in Container -->
-        <div class="header-container bg-gradient-to-r from-white to-orange-50 rounded-xl shadow-md p-6 mb-6 border-l-4 border-orange-500">
+        <div class="     ">
             <header class="projects-header">
                 <h1 class="text-2xl font-bold text-gray-800">{{ 'project_rc.title' | translate }}</h1>
                 <p class="text-gray-600 mt-2">{{ 'project_rc.subtitle' | translate }}</p>
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Enhanced Summary Stats -->
-        <div class="summary-stats rounded-xl overflow-hidden bg-white shadow-md border border-gray-100">
+        <div class="summary-stats rounded-xl py-4 overflow-hidden  ">
             <span>{{ 'project_rc.summaryStats.totalProjects' | translate }} <strong class="count">{{ totalProjectCount }}</strong></span>
             <span class="stat-item"><span class="indicator completed"></span>{{ 'project_rc.summaryStats.completed' | translate }} <strong class="count">{{ completedProjectCount }}</strong></span>
             <span class="stat-item"><span class="indicator active"></span>{{ 'project_rc.summaryStats.active' | translate }} <strong class="count">{{ activeProjectCount }}</strong></span>
@@ -21,7 +21,7 @@
         </div>
 
         <!-- Enhanced Toolbar in Container -->
-        <div class="toolbar-container rounded-xl shadow-md p-6 mb-6 filter-bar bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
+        <div class="toolbar-container rounded-xl  p-4 mb-2 filter-bar bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
             <!-- Project Search and Filters -->
             <div class="toolbar flex flex-wrap items-center gap-4 w-full">
                 <!-- Project Search -->
@@ -31,7 +31,7 @@
                         <input
                             pInputText
                             type="text"
-                            class="w-full"
+                            class="w-full !border !border-orange-200"
                             [(ngModel)]="searchLabel"
                             (input)="searchByLabel($event)"
                             [placeholder]="'project_rc.toolbar.searchProjectsPlaceholder' | translate" />
@@ -45,7 +45,7 @@
                         <input
                             pInputText
                             type="text"
-                            class="w-full"
+                             class="w-full !border !border-orange-200"
                             [(ngModel)]="searchClient"
                             (input)="searchByClient($event)"
                             [placeholder]="'project_rc.toolbar.searchClientPlaceholder' | translate" />
@@ -66,21 +66,14 @@
                     type="button" 
                     [label]="'project_rc.toolbar.newProjectButton' | translate" 
                     icon="pi pi-plus" 
-                    class="p-button-warning ml-auto shadow-sm hover:shadow-md transition-shadow" 
+                    class="p-button-warning ml-auto  hover:shadow-md transition-shadow" 
                     (click)="showCreateProjectDialog()"></button>
             </div>
         </div>
 
         <!-- Enhanced Projects Table Container -->
-        <div class="table-container bg-white rounded-xl shadow-md p-6 overflow-hidden border border-gray-100">
-            <!-- Custom pagination summary -->
-            <div class="paginator-summary text-gray-700 font-medium mt-2 mb-4" *ngIf="totalRecords && totalRecords > 0">
-                {{ 'project_rc.paginationSummary' | translate: { 
-                    start: state().first() + 1, 
-                    end: calculateLastDisplayedItemNumber(),
-                    total: totalRecords 
-                } }}
-            </div>
+        <div class="table-container bg-white rounded-xl overflow-hidden ">
+
             <p-table
                 #projectTable
                 class="custom-table w-full"
@@ -93,8 +86,12 @@
                 [totalRecords]="totalRecords"
                 (onSort)="onSortChange($event)"
                 (onPage)="onPageChange($event)"
-                [currentPageReportTemplate]="''"
-                [showCurrentPageReport]="false"
+                [currentPageReportTemplate]=" 'project_rc.paginationSummary' | translate: { 
+                    start: state().first() + 1, 
+                    end: calculateLastDisplayedItemNumber(),
+                    total: totalRecords 
+                } "
+              
                 [rowsPerPageOptions]="[5, 10, 25, 50]"
                 dataKey="id"
                 styleClass="custom-table"

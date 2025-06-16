@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ReportRoutingModule } from './report-routing.module';
 import { ReportComponent } from './report.component';
 import { MessageService } from 'primeng/api';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
@@ -18,6 +18,7 @@ import { InputTextarea } from 'primeng/inputtextarea';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DefaultLayoutComponent } from '../../shared/layout/default-layout.component';
+import { AddReportComponent } from "./add-report/add-report.component";
 
 @NgModule({
   declarations: [
@@ -40,10 +41,11 @@ import { DefaultLayoutComponent } from '../../shared/layout/default-layout.compo
     ToastModule,
     ProgressSpinnerModule,
     DefaultLayoutComponent,
-    TranslateModule
-  ],
+    TranslateModule,
+    AddReportComponent
+],
   providers: [
-    MessageService
+    MessageService,TranslateService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

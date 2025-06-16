@@ -58,7 +58,7 @@
           <div class="card-header">
             <h2>{{ 'dashboard_associate.current_project' | translate }}</h2>
             <div class="project-status-pill" [ngClass]="'project-status-' + currentProject.status.toLowerCase()">
-              {{ currentProject.status }}
+              {{  getTranslatedStatus(currentProject.status) }}
             </div>
           </div>
 
@@ -86,7 +86,7 @@
               <i class="pi pi-clock detail-icon"></i>
               <div>
                 <span class="detail-label">{{ 'dashboard_associate.timeline' | translate }}</span>
-                <span class="detail-value">{{ currentProject.timeline }}</span>
+                <span class="detail-value">{{ formatDate(currentProject.startDate) +" - "+ formatDate(currentProject.deadLine) }}</span>
               </div>
             </div>
             <div class="detail-item">
@@ -122,7 +122,7 @@
               <div class="table-cell client-name">{{ project.client }}</div>
               <div class="table-cell duration">{{ project.duration }}</div>
               <div class="table-cell status">
-                <span class="status-badge" [ngClass]="'status-' + project.status.toLowerCase()">{{ project.status }}</span>
+                <span class="status-badge" [ngClass]="'status-' + project.status.toLowerCase()">{{ getTranslatedStatus(project.status) }}</span>
               </div>
             </div>
           </div>
@@ -202,13 +202,13 @@
                     <h3 class="report-title">{{ report.title }}</h3>
                     <span class="report-reason">{{ report.reason }}</span>
                   </div>
-                  <span class="report-badge" [ngClass]="'status-' + report.statusSeverity">{{ report.status }}</span>
+                  <span class="report-badge" [ngClass]="'status-' + report.statusSeverity">{{  getTranslatedReportStatus(report.status!) }}</span>
                 </div>
                 <p class="report-description">{{ report.description | slice:0:100 }}{{ report.description.length > 100 ? '...' : '' }}</p>
                 <div class="report-footer">
                   <div class="report-meta">
                     <i class="pi pi-calendar" style="font-size: 0.8rem;"></i>
-                    <span class="report-date">{{ report.date }}</span>
+                    <span class="report-date">{{ formatDate(report.date) }}</span>
                   </div>
                   <div class="report-type">
                     <i class="pi pi-tag" style="font-size: 0.8rem;"></i>

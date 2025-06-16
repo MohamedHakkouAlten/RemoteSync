@@ -9,9 +9,10 @@ import { Component, Input } from '@angular/core';
       class="btn"
       [ngClass]="[btnClass, widthClass]"
       [disabled]="disabled"
+
       (click)="onClick($event)"
     >
-      <i *ngIf="icon" [class]="icon" style="margin-right: 0.5rem"></i>
+
       {{ label }}
     </button>
   `,

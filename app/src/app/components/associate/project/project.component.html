@@ -71,7 +71,7 @@
           <!-- Card Header -->
           <div class="card-top">
             <h3 class="project-title">{{ project.label }}</h3>
-            <p-badge [value]="project.status" [severity]="getProjectStatusSeverity(project.status)" styleClass="status-badge"></p-badge>
+            <p-badge [value]="getTranslatedStatus(project.status)" [severity]="getProjectStatusSeverity(project.status)" styleClass="status-badge"></p-badge>
           </div>
 
           <!-- Client Details -->
@@ -91,14 +91,14 @@
               <i class="pi pi-calendar info-icon"></i>
               <div class="info-content">
                 <span class="info-label">{{ 'project_associate.start_date' | translate }}</span>
-                <span class="info-value">{{ project.startDate ? (project.startDate | date: 'MMM d, yyyy') : 'N/A' }}</span>
+                <span class="info-value">{{ formatDate(project.startDate) }}</span>
               </div>
             </div>
             <div class="info-item">
               <i class="pi pi-flag info-icon"></i>
               <div class="info-content">
                 <span class="info-label">{{ 'project_associate.deadline' | translate }}</span>
-                <span class="info-value">{{ project.deadLine ? (project.deadLine | date: 'MMM d , yyyy') : 'N/A' }}</span>
+                <span class="info-value">{{ formatDate(project.deadLine)  }}</span>
               </div>
             </div>
           </div>
@@ -115,10 +115,10 @@
             </div>
           </div>
 
-          <!-- Card Actions -->
+          <!-- Card Actions
           <div class="card-actions">
             <button pButton icon="pi pi-eye" class="p-button-rounded p-button-outlined view-details-btn" pTooltip="{{ 'project_associate.view_details' | translate }}" (click)="viewProjectDetails(project)"></button>
-          </div>
+          </div> -->
         </div>
 
         <div *ngIf="(!pagedProjects || !pagedProjects.projectDTOS || pagedProjects.projectDTOS.length === 0) && !isLoading" class="no-projects-message">

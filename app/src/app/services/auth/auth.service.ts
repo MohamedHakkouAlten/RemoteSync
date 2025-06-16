@@ -43,6 +43,7 @@ export class AuthService {
             loginData.data!.refreshToken,
             loginData.data!.firstName,
             loginData.data!.lastName,
+            loginData.data!.userId,
             loginData.data!.roles
           );
         }),
@@ -124,6 +125,7 @@ export class AuthService {
                 loginData.data.refreshToken,
                 loginData.data.firstName,
                 loginData.data.lastName,
+                loginData.data.userId,
                 loginData.data.roles
             );
         } else {

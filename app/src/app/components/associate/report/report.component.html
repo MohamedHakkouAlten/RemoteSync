@@ -44,7 +44,7 @@
           placeholder="{{ 'report_associate.all_status' | translate }}"
           optionLabel="label"
           optionValue="value"
-          styleClass="filter-dropdown md:w-44" />
+          styleClass="filter-dropdown md:w-60" />
 
         <div class="flex-grow flex justify-end">
           <p-button
@@ -70,7 +70,7 @@
               <i class="pi pi-calendar mr-2"></i>
               <span>{{ report.date }}</span>
             </div>
-            <p-tag [value]="report.status" [severity]="getStatusSeverity(report.status)" rounded="true"></p-tag>
+            <p-tag [value]="getTranslatedReportStatus(report.status)" [severity]="getStatusSeverity(report.status)" rounded="true"></p-tag>
           </div>
         </div>
       </div>
@@ -95,85 +95,7 @@
       </div>
 
     </main>
-    <p-dialog
-      header="{{ 'report_associate.create_rotation_request' | translate }}"
-      [(visible)]="displayCreateDialog"
-      [modal]="true"
-      [style]="{ width: '40vw', 'min-width': '450px' }"
-      [draggable]="false"
-      [resizable]="false"
-      styleClass="report-dialog"
-      (onHide)="hideCreateDialog()">
-
-      <form [formGroup]="reportForm" class="p-fluid p-dialog-content-padding">
-        <div class="field">
-          <label for="reportTitle">{{ 'report_associate.form_title' | translate }}*</label>
-          <input
-            id="reportTitle"
-            type="text"
-            pInputText
-            formControlName="title"
-            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('title')}"
-            class="hover:!border-orange-500"
-            autofocus />
-          <small class="p-error" *ngIf="isFieldInvalid('title')">{{ getFieldErrorMessage('title') }}</small>
-        </div>
-
-        <div class="field">
-          <label for="reportType">{{ 'report_associate.form_report_type' | translate }}*</label>
-          <p-dropdown
-            id="reportType"
-            [options]="reportTypeOptions"
-            formControlName="type"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="{{ 'report_associate.select_report_type' | translate }}"
-            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('type')}"
-            styleClass="w-full">
-          </p-dropdown>
-          <small class="p-error" *ngIf="isFieldInvalid('type')">{{ getFieldErrorMessage('type') }}</small>
-        </div>
-
-        <div class="field">
-          <label for="reportReason">{{ 'report_associate.form_reason' | translate }}*</label>
-          <input
-            id="reportReason"
-            type="text"
-            pInputText
-            formControlName="reason"
-            [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('reason')}"
-            class="hover:!border-orange-500" />
-          <small class="p-error" *ngIf="isFieldInvalid('reason')">{{ getFieldErrorMessage('reason') }}</small>
-        </div>
-
-        <div class="field">
-          <label for="reportDescription">{{ 'report_associate.form_description' | translate }}</label>
-          <textarea
-            id="reportDescription"
-            pInputTextarea
-            formControlName="description"
-            rows="5"
-            class="w-full h-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-200 hover:!border-orange-500">
-          </textarea>
-        </div>
-      </form>
-
-      <ng-template pTemplate="footer">
-        <p-button
-          label="{{ 'report_associate.cancel' | translate }}"
-          icon="pi pi-times"
-          styleClass="p-button-text"
-          (click)="hideCreateDialog()"></p-button>
-        <p-button
-          label="{{ 'report_associate.save' | translate }}"
-          icon="pi pi-check"
-          styleClass="p-button-warning"
-          (click)="saveNewReport()"
-          [disabled]="reportForm.pristine"></p-button>
-      </ng-template>
-
-    </p-dialog>
-
+    <app-add-report *ngIf="displayCreateDialog" [displayCreateDialog]="displayCreateDialog" (cancelEvent)="hideCreateDialog()" (saveEvent)="saveNewReport($event)"></app-add-report>
     </div>
   </div>
 </app-default-layout>

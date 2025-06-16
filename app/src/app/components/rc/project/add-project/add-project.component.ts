@@ -13,14 +13,16 @@ import { SelectOption } from '../project.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { RcService } from '../../../../services/rc.service';
 import { ClientDropDownDTO } from '../../../../dto/rc/client-dropdown.dto';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+
+import { debounceTime, distinctUntilChanged, Subject, switchMap, take } from 'rxjs';
+
 
 @Component({
   selector: 'app-add-project',
     providers :[
-      RcService
+      RcService,TranslateService
     ],
   imports: [   
       CommonModule,
@@ -47,29 +49,55 @@ searchItem:string=''
 clients: ClientDropDownDTO[] = []
   initialClients: ClientDropDownDTO[] = []
   newProjectTitle: string = '';
+  
   newProjectLabel: string = '';
   newProjectStatus: ProjectStatus | null = null;
   newProjectDeadline: string | null = null;
   newProjectStartDate: string | null = null;
   newProjectClient: string | null = null; 
-  constructor(private rcService:RcService)
+  constructor(private rcService:RcService,private translateService:TranslateService)
   {
 
   }
   ngOnInit(): void {
- 
+    this.setStatusOptions()
+      
+     this.translateService.onLangChange
+      .pipe(take(1)) // Use takeUntil for proper unsubscription
+      .subscribe(() => {
+        console.log('Language changed, re-initializing status options.');
+        this.setStatusOptions()
+      });
+
    this.setupDebouncing()
    this.rcService.getClientListByLabel().subscribe((res: ClientDropDownDTO[]) => this.initialClients = res)
     
-  
+
    
   }
-    projectStatusOptions: SelectOption[] = [
-        { label: 'Select Status', value: null },
-        { label: 'Active', value: ProjectStatus.ACTIVE },
-        { label: 'InActive', value: ProjectStatus.INACTIVE},
-  
-    ];
+
+setStatusOptions(){
+ const translationKeys = [
+     "project_rc.statusTypes.active",
+
+     "project_rc.statusTypes.inactive",
+
+   ];
+ 
+   // Get the translations asynchronously
+   this.translateService.get(translationKeys).pipe(
+     take(1) // Take only one emission and complete
+   ).subscribe(translations => {
+    console.log("transssss"+translations["project_rc.statusTypes.active"])
+     this.projectStatusOptions= [
+       { label: translations["project_rc.statusTypes.active"], value: ProjectStatus.ACTIVE },
+       { label: translations["project_rc.statusTypes.inactive"], value: ProjectStatus.INACTIVE },
+ 
+     ];
+
+   });
+}
+    projectStatusOptions: SelectOption[] = [];
 setupDebouncing(){
   this.searchClientSubject$.pipe(
     debounceTime(1000),

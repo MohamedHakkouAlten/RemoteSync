@@ -9,6 +9,7 @@ import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
 import com.alten.remotesync.application.project.mapper.ProjectMapper;
 import com.alten.remotesync.application.project.record.request.*;
 import com.alten.remotesync.application.project.record.response.*;
+import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignmentStatus;
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.assignedRotation.repository.AssignedRotationDomainRepository;
 import com.alten.remotesync.domain.client.model.Client;
@@ -31,6 +32,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,19 +47,76 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public ProjectDTO getAssociateCurrentProject(GlobalDTO globalDTO) {
-        Project project = projectDomainRepository.fetchAssociateCurrentProject(globalDTO.userId()).orElseThrow(() -> new ProjectNotFoundException("No projects are associated with this user"));
+       Specification<Project> spec= (root, query, cb) -> {
+
+            Join<Project, AssignedRotation> assignedRotationJoin = root.join("projectAssignedRotations", JoinType.RIGHT);
+
+
+            Join<AssignedRotation, User> userJoin = assignedRotationJoin.join("user", JoinType.INNER);
+
+
+            Join<Project, Client> clientJoin = root.join("owner", JoinType.INNER);
+
+
+            query.distinct(true);
+
+
+
+            Predicate userIdCondition = cb.equal(userJoin.get("userId"), globalDTO.userId());
+           Predicate activeRotation = cb.equal(assignedRotationJoin.get("rotationAssignmentStatus"), RotationAssignmentStatus.ACTIVE);
+
+            Predicate projectIdNotNullCondition = cb.isNotNull(assignedRotationJoin.get("project").get("projectId"));
+
+
+            Predicate projectStatusActive = cb.equal(root.get("status"), ProjectStatus.ACTIVE); // Assuming ProjectStatus enum
+
+
+            return cb.and(
+                    userIdCondition,
+                    projectIdNotNullCondition,
+                    projectStatusActive,
+                    activeRotation
+
+            );
+        };
+        System.out.println(projectDomainRepository.findOne(spec));
+        Project project =  projectDomainRepository.findOne(spec).orElse(null);
         return projectMapper.toProjectDTO(project);
     }
 
     @Override
     public PagedProjectDTO getAssociateOldProjects(GlobalDTO globalDTO, PagedProjectSearchDTO pagedProjectSearchDTO) {
-        Page<Project> pagedProjects = projectDomainRepository.fetchAssociateOldProjectsFiltered(
-                globalDTO.userId(),
-                pagedProjectSearchDTO.label(),
-                pagedProjectSearchDTO.status(),
-                pagedProjectSearchDTO.clientId(),
+        Specification<Project> spec= (root, query, criteriaBuilder) -> {
+
+            query.distinct(true);
+
+            List<Predicate> predicates = new ArrayList<>();
+
+
+            Join<Project, AssignedRotation> assignedRotationJoin = root.join("projectAssignedRotations");
+
+            predicates.add(criteriaBuilder.equal(assignedRotationJoin.get("user").get("userId"), globalDTO.userId()));
+
+            if (pagedProjectSearchDTO.label() != null && !pagedProjectSearchDTO.label().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("label")), "%" + pagedProjectSearchDTO.label().toLowerCase() + "%"));
+            }
+
+            if (pagedProjectSearchDTO.status() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), pagedProjectSearchDTO.status()));
+            }
+
+            if (pagedProjectSearchDTO.clientId() != null) {
+                // This join is correct for filtering by the project's owner.
+                Join<Project, Client> clientJoin = root.join("owner");
+                predicates.add(criteriaBuilder.equal(clientJoin.get("clientId"), pagedProjectSearchDTO.clientId()));
+            }
+
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        Page<Project> pagedProjects = projectDomainRepository.findAll(spec,
                 PageRequest.of(pagedProjectSearchDTO.pageNumber(),
-                        (pagedProjectSearchDTO.pageSize() != null) ? pagedProjectSearchDTO.pageSize() : 10)).orElseThrow(() -> new UserNotFoundException("user not found"));
+                        (pagedProjectSearchDTO.pageSize() != null) ? pagedProjectSearchDTO.pageSize() : 10));
 
         return new PagedProjectDTO(pagedProjects.stream().map(projectMapper::toProjectDTO).toList(),
                 pagedProjects.getTotalPages(),
@@ -290,28 +349,29 @@ public class ProjectServiceImp implements ProjectService {
         if (projectId == null) {
             return List.of();
         }
-
+        System.out.println("meeeeeeeeee");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<AssignedRotation> arRoot = cq.from(AssignedRotation.class); // Start from AssignedRotation
 
+        // Join to the User entity from AssignedRotation
+        Join<AssignedRotation, User> userJoin = arRoot.join("user"); // "user" is the field name in AssignedRotation entity
 
-        Join<AssignedRotation, User> userJoin = arRoot.join("user"); // "user" is the field name in AssignedRotation
-        Join<AssignedRotation, Project> projectJoin = arRoot.join("project");
-
+        // Construct the initials expression
         Expression<String> firstNameInitial = cb.substring(userJoin.get("firstName"), 1, 1);
         Expression<String> lastNameInitial = cb.substring(userJoin.get("lastName"), 1, 1);
         Expression<String> initials = cb.concat(firstNameInitial, lastNameInitial);
 
-        cq.multiselect(
-                initials.alias("initials")
-        );
+        // Select the initials. Using alias is good practice.
+        cq.multiselect(initials.alias("initials"));
 
+        // --- Combine multiple predicates using cb.and() ---
+        Predicate projectPredicate = cb.equal(arRoot.get("project").get("projectId"), projectId);
+        Predicate statusPredicate = cb.equal(arRoot.get("rotationAssignmentStatus"), "ACTIVE");
 
-        Predicate projectPredicate = cb.equal(arRoot.get("project").get("projectId"),projectId);
-        cq.where(projectPredicate);
+        // Combine both predicates using AND
+        cq.where(cb.and(projectPredicate, statusPredicate));
 
-        cq.where(cb.equal(arRoot.get("rotationAssignmentStatus"), "ACTIVE"));
         // --- GROUP BY clause: Group by user ID ---
         cq.groupBy(userJoin.get("userId"));
 
@@ -333,7 +393,7 @@ public class ProjectServiceImp implements ProjectService {
 
     @Override
     public List<ProjectDropDownDTO> getRcAllProjects() {
-        return projectDomainRepository.findAllByIsDeleted(false).orElseThrow(()->new ProjectNotFoundException("project not found")).
+        return projectDomainRepository.findAllByIsDeletedAndStatus(false,ProjectStatus.ACTIVE).orElseThrow(()->new ProjectNotFoundException("project not found")).
                 stream().map(projectMapper::toProjectDropDownDTO).toList();
     }
 

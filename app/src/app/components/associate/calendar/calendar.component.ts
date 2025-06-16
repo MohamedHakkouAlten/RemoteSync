@@ -16,6 +16,7 @@ import { CalendarEvent, DayData, WeekData, MonthSummary, CalendarView, CalendarF
 
 // Import helpers
 import { CalendarHelpers } from '../utils/calendar-helpers';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-calendar',
@@ -24,6 +25,34 @@ import { CalendarHelpers } from '../utils/calendar-helpers';
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit, OnDestroy {
+openAddReport() {
+this.displayCreateDialog=true
+}
+  saveNewReport(event:boolean): void {
+   
+
+if(event)   { this.messageService.add({
+        severity: 'success',
+        // Use translation keys for summary and detail
+        summary: this.translateService.instant('report.create.successSummary'),
+        detail: this.translateService.instant('report.create.successDetail')
+      });
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        // Use translation keys for summary and detail
+        summary: this.translateService.instant('report.create.errorSummary'),
+        detail: this.translateService.instant('report.create.errorDetail')
+      });
+    }
+ 
+}
+
+  hideCreateDialog(): void {
+    this.displayCreateDialog = false; // Hide the dialog
+   
+  }
+
 
   // --- View State ---
   currentView: CalendarView = 'year'; // Start with Year view as per first image
@@ -67,12 +96,14 @@ export class CalendarComponent implements OnInit, OnDestroy {
   hasRotations: boolean = true;
 
   private webSocketSubscription: Subscription | null = null;
+displayCreateDialog: boolean=false;
 
   constructor(
     private cdRef: ChangeDetectorRef, 
     private associateService: AssociateService, 
     private translateService: TranslateService,
-    private webSocketService: WebSocketService
+    private webSocketService: WebSocketService,
+    private messageService:MessageService
   ) { }
 
   ngOnInit(): void {

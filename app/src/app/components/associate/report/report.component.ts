@@ -3,7 +3,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PaginatorState } from 'primeng/paginator';
-import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Subject, Subscription, debounceTime, distinctUntilChanged, take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 // Import services
@@ -19,6 +19,7 @@ import { CreateAssociateReportDTO } from '../../../dto/associate/create-report.d
 // Import shared models
 import { Report, TagSeverity, SelectOption } from '../../../dto/associate/report.model';
 import { ReportDTO } from '../../../dto/aio/report.dto';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report',
@@ -43,17 +44,42 @@ export class ReportComponent implements OnInit, OnDestroy {
   selectedType: string | null = null;
 
   // Dropdown options
-  statusOptions: SelectOption[] = [
-    { label: 'All Status', value: null },
-    { label: 'Pending', value: ReportStatus.PENDING },
-    { label: 'Accepted', value: ReportStatus.ACCEPTED },
-    { label: 'Rejected', value: ReportStatus.REJECTED },
-    { label: 'Opened', value: ReportStatus.OPENED }
-  ];
+  statusOptions: SelectOption[] =[] 
 
   reportTypeOptions: SelectOption[] = [
     { label: 'Request Rotation', value: 'REQUEST_ROTATION' },
   ];
+  private initStatusOptions(): void {
+    
+    const translationKeys = [
+      "report_rc.statusTypes.accepted",
+      "report_rc.statusTypes.pending",
+      "report_rc.statusTypes.opened",
+      "report_rc.statusTypes.rejected"
+    ];
+
+    this.translate.get(translationKeys).pipe(
+      take(1)
+    ).subscribe(translations => {
+      // Populate the reportStatusOptions array with translated labels
+      this.statusOptions = [
+        { label: translations["report_rc.statusTypes.accepted"], value: ReportStatus.ACCEPTED },
+        { label: translations["report_rc.statusTypes.pending"], value: ReportStatus.PENDING },
+        { label: translations["report_rc.statusTypes.opened"], value: ReportStatus.OPENED },
+        { label: translations["report_rc.statusTypes.rejected"], value: ReportStatus.REJECTED }
+      ];
+  
+    }, error => {
+      console.error('Error fetching translations for report status options:', error);
+      // Fallback to untranslated labels on error
+      this.statusOptions = [
+        { label: 'Accepted', value: ReportStatus.ACCEPTED },
+        { label: 'Pending', value: ReportStatus.PENDING },
+        { label: 'In Progress', value: ReportStatus.OPENED },
+        { label: 'Rejected', value: ReportStatus.REJECTED }
+      ];
+    });
+  }
 
   // Pagination properties
   totalRecords: number = 0;
@@ -82,14 +108,34 @@ export class ReportComponent implements OnInit, OnDestroy {
   constructor(
     private associateService: AssociateService,
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private translate:TranslateService
   ) { }
 
   /**
    * Initialize component data and setup subscriptions
    */
+        getTranslatedReportStatus(status: ReportStatus): string {
+        if (!status) return '';
+    
+        const statusKey = status.toString().toLowerCase();
+        return this.translate.instant(`report_rc.statusTypes.${statusKey}`);
+      }
+
   ngOnInit(): void {
     // Set up debounce for search input
+      this.initStatusOptions(); // Call the new initialization method
+
+    // Optional: Re-initialize options if language changes dynamically
+    this.translate.onLangChange
+      .pipe() // Use takeUntil for proper unsubscription
+      .subscribe(() => {
+        console.log('Language changed, re-initializing all status options.');
+ 
+        this.initStatusOptions();
+      });
+  
+
     const searchSubscription = this.searchSubject.pipe(
       debounceTime(400), // Wait for 400ms after user stops typing
       distinctUntilChanged() // Only emit if value changed
@@ -144,52 +190,28 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   hideCreateDialog(): void {
     this.displayCreateDialog = false; // Hide the dialog
-    this.reportForm.reset();
-    this.formSubmitted = false;
+   
   }
 
-  saveNewReport(): void {
-    this.formSubmitted = true;
+  saveNewReport(event:boolean): void {
+   
 
-    if (this.reportForm.invalid) {
-      // Form is invalid - focus on the first invalid field and show validation errors
+if(event)     { this.messageService.add({
+        severity: 'success',
+        // Use translation keys for summary and detail
+        summary: this.translate.instant('report.create.successSummary'),
+        detail: this.translate.instant('report.create.successDetail')
+      });
+    } else {
       this.messageService.add({
         severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please check all required fields'
+        // Use translation keys for summary and detail
+        summary: this.translate.instant('report.create.errorSummary'),
+        detail: this.translate.instant('report.create.errorDetail')
       });
-      return;
     }
-
-    // Create the DTO from the form values
-    const reportData: CreateAssociateReportDTO = {
-      title: this.reportForm.value.title,
-      reason: this.reportForm.value.reason,
-      type: this.reportForm.value.type,
-      description: this.reportForm.value.description
-    };
-
-    this.associateService.createAssociateReport(reportData).subscribe({
-      next: (response) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Report Created',
-          detail: 'Your report has been submitted successfully'
-        });
-        this.hideCreateDialog();
-        this.loadReports(); // Refresh the report list
-      },
-      error: (error) => {
-        console.error('Error creating report:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error?.error?.message || 'Failed to create report. Please try again.'
-        });
-      }
-    });
-  }
-
+ 
+}
   // Helper method to check if a field is invalid and touched
   isFieldInvalid(fieldName: string): boolean {
     const field = this.reportForm.get(fieldName);
@@ -246,11 +268,12 @@ export class ReportComponent implements OnInit, OnDestroy {
           this.loadingError = true;
           this.isLoading = false;
           this.messageService.add({
-            severity: 'error',
-            summary: 'Loading Error',
-            detail: 'Reports could not be loaded. Please try again later.',
-            life: 5000
-          });
+          severity: 'error',
+          // Use translation keys for summary and detail
+          summary: this.translate.instant('report.loading.errorSummary'),
+          detail: this.translate.instant('report.loading.errorDetail'),
+          life: 5000 // Message disappears after 5 seconds
+        });
         }
       }, 15000); // 15 seconds timeout
 
@@ -318,8 +341,8 @@ export class ReportComponent implements OnInit, OnDestroy {
           this.loadingError = true;
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
-            detail: error?.error?.message || 'Failed to load reports. Please try again later.',
+   summary: this.translate.instant('report.loading.errorSummary'),
+          detail: this.translate.instant('report.loading.errorDetail'),
             life: 5000
           });
         }
@@ -332,12 +355,13 @@ export class ReportComponent implements OnInit, OnDestroy {
       console.error('Unexpected error in loadReports:', error);
       this.isLoading = false;
       this.loadingError = true;
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Unexpected Error',
-        detail: 'An unexpected error occurred. Please try again later.',
-        life: 5000
-      });
+  this.messageService.add({
+      severity: 'error',
+      // Use translation keys for summary and detail
+      summary: this.translate.instant('error.unexpected.summary'),
+      detail: this.translate.instant('error.unexpected.detail'),
+      life: 5000 // Message disappears after 5 seconds
+    });
     }
   }
 

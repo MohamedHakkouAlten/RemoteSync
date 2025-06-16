@@ -114,10 +114,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
    */
   private handleProfileError(error: any): void {
     console.error('Error loading profile:', error);
-    this.messageService.add({
+  this.messageService.add({
       severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to load profile data. Please try again later.'
+      // Use translation keys for summary and detail
+      summary: this.translateService.instant('profile.load.errorSummary'),
+      detail: this.translateService.instant('profile.load.errorDetail')
     });
     this.isLoading = false;
   }
@@ -219,7 +220,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       // Show validation error message for phone number
       this.messageService.add({
         severity: 'error',
-        summary: 'Validation Error',
+         summary: this.translateService.instant('error.validation.summary'),
         detail: this.validationErrors['phoneNumber']
       });
       return;
@@ -309,7 +310,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           // Show error message for each field
           this.messageService.add({
             severity: 'error',
-            summary: `Validation Error: ${this.getFieldDisplayName(err.field)}`,
+            summary: `${this.translateService.instant('error.validation.summary')}: ${this.getFieldDisplayName(err.field)}`,
             detail: err.message
           });
         }
@@ -317,10 +318,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
     } else {
       // Generic error message for other types of errors
       this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Failed to update profile. Please try again later.'
-      });
+      severity: 'error',
+      // Use translation keys for summary and detail
+      summary: this.translateService.instant('profile.update.errorSummary'),
+      detail:  this.translateService.instant('profile.update.errorDetail')
+    });
     }
   }
 
@@ -355,10 +357,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.language = this.languageService.getCurrentLanguage();
     }
 
-    this.messageService.add({
+this.messageService.add({
       severity: 'info',
-      summary: 'Cancelled',
-      detail: 'Changes have been discarded.'
+      // Use translation keys for summary and detail
+      summary: this.translateService.instant('changes.discarded.summary'),
+      detail: this.translateService.instant('changes.discarded.detail')
     });
   }
 

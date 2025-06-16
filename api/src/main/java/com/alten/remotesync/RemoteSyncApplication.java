@@ -55,7 +55,7 @@ public class RemoteSyncApplication {
         SpringApplication.run(RemoteSyncApplication.class, args);
     }
 
-    @Bean
+    //@Bean
     public CommandLineRunner init(
             AssignedRotationDomainRepository assignedRotationRepository,
             ClientDomainRepository clientRepository,
@@ -1033,6 +1033,7 @@ public class RemoteSyncApplication {
                     .title("Welcome to RemoteSync")
                     .description("Welcome to the RemoteSync platform. Get started by exploring your dashboard.")
                     .status(NotificationStatus.NORMAL)
+                    .isRead(false)
                     .receiver(normalUser)
                     .build();
 
@@ -1041,6 +1042,7 @@ public class RemoteSyncApplication {
                     .description("You have been assigned to a new rotation. Please check your schedule.")
                     .status(NotificationStatus.IMPORTANT)
                     .receiver(normalUser)
+                    .isRead(false)
                     .build();
 
             Notification notification3 = Notification.builder()
@@ -1048,6 +1050,7 @@ public class RemoteSyncApplication {
                     .description("The deadline for project 'Analytics Dashboard' is approaching. Please ensure all tasks are completed.")
                     .status(NotificationStatus.ALERT)
                     .receiver(managerUser)
+                    .isRead(false)
                     .build();
 
             Notification notification4 = Notification.builder()
@@ -1055,6 +1058,7 @@ public class RemoteSyncApplication {
                     .description("Your request to override rotation has been approved.")
                     .status(NotificationStatus.INFO)
                     .receiver(normalUser)
+                    .isRead(false)
                     .build();
 
             Notification notification5 = Notification.builder()
@@ -1062,6 +1066,7 @@ public class RemoteSyncApplication {
                     .description("The system will undergo maintenance on Saturday night. Please save your work.")
                     .status(NotificationStatus.URGENT)
                     .receiver(adminUser)
+                    .isRead(false)
                     .build();
             
             Notification notification6 = Notification.builder()
@@ -1069,6 +1074,7 @@ public class RemoteSyncApplication {
                     .description("You have been assigned to the 'Mobile Banking App' project.")
                     .status(NotificationStatus.IMPORTANT)
                     .receiver(managerUser)
+                    .isRead(false)
                     .build();
                     
             Notification notification7 = Notification.builder()
@@ -1076,6 +1082,7 @@ public class RemoteSyncApplication {
                     .description("Don't forget to submit your weekly project progress report.")
                     .status(NotificationStatus.NORMAL)
                     .receiver(normalUser)
+                    .isRead(false)
                     .build();
                     
             Notification notification8 = Notification.builder()
@@ -1083,6 +1090,7 @@ public class RemoteSyncApplication {
                     .description("A meeting with client FG International has been scheduled for tomorrow at 14:00.")
                     .status(NotificationStatus.IMPORTANT)
                     .receiver(adminUser)
+                    .isRead(false)
                     .build();
                     
             Notification notification9 = Notification.builder()
@@ -1090,6 +1098,7 @@ public class RemoteSyncApplication {
                     .description("The quarterly team performance review is scheduled for next Monday at 10:00.")
                     .status(NotificationStatus.IMPORTANT)
                     .receiver(managerUser)
+                    .isRead(false)
                     .build();
                     
             Notification notification10 = Notification.builder()
@@ -1097,6 +1106,7 @@ public class RemoteSyncApplication {
                     .description("The new feature set has been deployed to production. Please verify functionality.")
                     .status(NotificationStatus.ALERT)
                     .receiver(adminUser)
+                    .isRead(false)
                     .build();
 
             List<Notification> notifications = List.of(notification1, notification2, notification3, notification4, 

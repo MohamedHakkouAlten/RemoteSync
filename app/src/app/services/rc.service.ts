@@ -204,12 +204,9 @@ export class RcService {
     let params = new HttpParams()
       .set("pageNumber", filter.pageNumber)
       .set("pageSize", filter.pageSize)
-      .set("name", "") // Always add empty name parameter to avoid null backend issues
+      .set("name", filter.name) // Always add empty name parameter to avoid null backend issues
     
-    // Only add optional parameters if they are not null, undefined, or empty
-    if (filter.title && filter.title.trim() !== '') {
-      params = params.set("title", filter.title.trim())
-    }
+  
     
     if (filter.startDate && filter.startDate.trim() !== '') {
       params = params.set("startDate", filter.startDate.trim())
@@ -306,20 +303,17 @@ export class RcService {
 
   getFilteredProjects(filter:ProjectFilter): Observable<PagedProject> {
     const url = this.projectApiUrl + "/filter"
-    
+    console.log(filter)
     // Always include all required parameters with default values to prevent null pointers
     let params = new HttpParams()
       .set("pageNumber", filter.pageNumber)
       .set("pageSize", filter.pageSize)
-      .set("filter", filter.name?.trim() || '') // Send name as 'filter' to match backend DTO
+      .set("filter", filter.filter?.trim() || '') // Send name as 'filter' to match backend DTO
       .set("sort", filter.sort?.trim() || '') // Default empty string
       .set("sortType", filter.sortType?.toString() || '0') // Default to 0
       .set("value", filter.value?.trim() || '') // Default empty string
     
-    // Only add optional parameters if they are not null, undefined, or empty
-    if (filter.clientId && filter.clientId.trim() !== '') {
-      params = params.set("clientId", filter.clientId.trim())
-    }  
+  
       
     return this.http.get<ResponseWrapperDto<PagedProject>>(url, { params }).pipe(
       map((response) => response.data as PagedProject)

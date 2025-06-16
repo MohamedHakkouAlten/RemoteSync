@@ -52,8 +52,8 @@ export class AuthFacadeService {
     return this.userService.clearUserData()
   }
 
-   storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string, roles: string[]): void {
-    return this.userService.storeUserData(accessToken, refreshToken, firstName, lastName, roles)
+   storeUserData(accessToken: string, refreshToken: string, firstName: string, lastName: string,userId:string, roles: string[]): void {
+    return this.userService.storeUserData(accessToken, refreshToken, firstName, lastName,userId, roles)
    }
   /**
    * Reset password with token

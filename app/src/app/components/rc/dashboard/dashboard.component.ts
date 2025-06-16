@@ -15,6 +15,8 @@ import { RcRecentAssociateRotations } from '../../../dto/rc/rc-recent-associate-
 import { ResponseWrapperDto } from '../../../dto/response-wrapper.dto';
 import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
 import { ReportDTO } from '../../../dto/aio/report.dto';
+import { UserService } from '../../../services/auth/user.service';
+import { ReportStatus } from '../../../enums/report-status.enum';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +28,7 @@ import { ReportDTO } from '../../../dto/aio/report.dto';
 export class DashboardComponent implements OnInit {
 
   navigateToCalendar() {
-    this.router.navigate([this.translate.currentLang + '/remotesync/rc/calendar'])
+       this.router.navigate([`/${this.userService.getCurrentLanguage()}/remotesync/rc/calendar`])
   }
 
   userUtils = UserUtils;
@@ -73,9 +75,29 @@ currentLanguage: SupportedLanguage = 'en';
     private languageService:LanguageService,
     private router: Router,
     private rcService: RcService,
+    private userService:UserService,
     private cd: ChangeDetectorRef) {
 
   }
+  viewAllProjects(): void {
+  
+
+  
+       this.router.navigate([`/${this.userService.getCurrentLanguage()}/remotesync/rc/project`])
+      
+       }
+         viewAllReports(): void {
+  
+     
+       this.router.navigate([`/${this.userService.getCurrentLanguage()}/remotesync/rc/report`])
+       }
+            getTranslatedReportStatus(status: ReportStatus): string {
+               if (!status) return '';
+           
+               const statusKey = status.toString().toLowerCase();
+               return this.translate.instant(`report_rc.statusTypes.${statusKey}`);
+             }
+       
 
   ngOnInit(): void {
   this.languageService.currentLanguage$.subscribe(lang => {

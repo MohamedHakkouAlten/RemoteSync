@@ -7,63 +7,62 @@ import { TagModule } from 'primeng/tag';
 import { Project } from '../../../../models/project.model';
 import { ProjectStatus } from '../../../../enums/project-status.enum';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, format, Locale } from 'date-fns';
 import { ProjectStatusSeverity } from '../project.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LanguageService } from '../../../../services/language/language.service';
+import { LanguageService, SupportedLanguage } from '../../../../services/language/language.service';
+
+
 import { take } from 'rxjs/operators';
+import { es, fr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-view-project',
-  imports: [ 
+  imports: [
+
     CommonModule,
     FormsModule,
     DialogModule,
     AvatarModule,
     TagModule,
-    ProgressBarModule,
-    TranslateModule
+    TranslateModule,
+     ProgressBarModule,
+  ],
+  providers:[
+    TranslateService,
+    LanguageService
   ],
   templateUrl: './view-project.component.html',
   styleUrl: './view-project.component.css'
 })
-export class ViewProjectComponent implements OnInit, OnChanges {
+export class ViewProjectComponent  implements OnInit{
 
    @Input() displayViewProjectDialog: boolean = false;
-   @Input() projectToView: Project | null = null;
+   @Input()  projectToView: Project | null = null;
 
    @Output() hideDialog=new EventEmitter<boolean>(false)
-   
-   constructor(
-     private translateService: TranslateService,
-     private languageService: LanguageService
-   ) {}
-   
-   ngOnInit(): void {
-     // Ensure translations are loaded on component initialization
-     this.refreshTranslations();
-     
-     // Subscribe to language changes to refresh translations
-     this.languageService.currentLanguage$.subscribe(lang => {
-       this.refreshTranslations();
-     });
-   }
+   currentLanguage: SupportedLanguage = 'en';
+   constructor(private translateService:TranslateService,
+    private languageService:LanguageService
+   ){
 
-   ngOnChanges(changes: SimpleChanges): void {
-     // If the dialog becomes visible or project changes, ensure translations are fresh
-     if (changes['projectToView'] || 
-         (changes['displayViewProjectDialog'] && changes['displayViewProjectDialog'].currentValue === true)) {
-       this.refreshTranslations();
-     }
    }
-   
-   private refreshTranslations(): void {
-     const currentLang = this.languageService.getCurrentLanguage();
-     this.translateService.use(currentLang).pipe(take(1)).subscribe(() => {
-       console.log(`ViewProject component translations refreshed for ${currentLang}`);
-     });
-   }
+  ngOnInit(): void {
 
+   this.languageService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
+
+    });
+  }
+  formatDate(date: string) {
+         const lang=this.getDateLang()
+  return (lang)?format(date, 'MMM d, yyyy',{locale:lang}):format(date, 'MMM d, yyyy')
+  }
+    getDateLang():Locale|null{
+      if(this.currentLanguage=='fr') return fr
+      else if(this.currentLanguage=='es') return es
+      return null
+    }
    getProgressValue():number{
        const totalDifference = differenceInDays(this.projectToView!.deadLine!,this.projectToView!.startDate!);
           const progressDifference = differenceInDays(new Date(), this.projectToView!.startDate!);
@@ -76,14 +75,14 @@ this.hideDialog.emit(true)
 }
     getStatusSeverity(status: ProjectStatus): ProjectStatusSeverity {
         switch (status) {
-            case ProjectStatus.ACTIVE   : return 'warn'; // Changed from 'info' to 'warn' for orange theme
-            case ProjectStatus.INACTIVE : return 'warn';
-            case ProjectStatus.COMPLETED: return 'success';
-            case ProjectStatus.CANCELLED: return 'danger';
-            default: return 'warn'; // Default to orange theme
+            case  ProjectStatus.ACTIVE   : return 'info';
+            case  ProjectStatus.INACTIVE : return 'warn';
+            case  ProjectStatus.COMPLETED: return 'success';
+            case  ProjectStatus.CANCELLED: return 'danger';
+            default: return 'info';
         }
     }
-    
+
     getTranslatedStatus(status: string): string {
         const key = `project_rc.statusTypes.${status.toLowerCase()}`;
         const translation = this.translateService.instant(key);

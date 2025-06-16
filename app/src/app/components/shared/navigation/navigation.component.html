@@ -84,7 +84,7 @@
              inputId="user_menu_id"
            >
              <ng-template pTemplate="item" let-item>
-               <a class="p-menuitem-link flex items-center py-3 px-4 hover:bg-gray-50" [attr.href]="item.url" [attr.target]="item.target" [attr.data-automationid]="item.automationId" [attr.tabindex]="item.disabled ? null : '0'" [attr.aria-disabled]="item.disabled" role="menuitem" [ngClass]="{'p-disabled': item.disabled}" (click)="item.command ? item.command() : null" pRipple>
+               <a class="p-menuitem-link flex items-center cursor-pointer py-3 px-4 hover:bg-gray-50" [attr.href]="item.url" [attr.target]="item.target" [attr.data-automationid]="item.automationId" [attr.tabindex]="item.disabled ? null : '0'" [attr.aria-disabled]="item.disabled" role="menuitem" [ngClass]="{'p-disabled': item.disabled}" (click)="item.command ? item.command() : null" pRipple>
                  <span class="p-menuitem-icon mr-3" *ngIf="item.icon" [ngClass]="item.icon"></span>
                  <span class="p-menuitem-text" *ngIf="item.label">{{item.label | translate}}</span>
                </a>

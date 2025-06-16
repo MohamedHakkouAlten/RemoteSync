@@ -142,3 +142,18 @@
   :host ::ng-deep .paginator-container .p-paginator .p-dropdown .p-dropdown-label {
       font-size: 0.8rem !important;
   }
+  :host ::ng-deep .p-select-label {
+    padding: 7.5px !important;
+    font-size: 15px !important;
+    padding-left: 10px !important;
+  }
+  :host ::ng-deep .p-datepicker-input {
+padding: 7.5px !important;
+padding-left: 10px !important;
+font-size: 15px !important;
+  }
+
+  :host ::ng-deep .p-inputtext {
+    font-family: inter !important;
+    font-size: 15px !important;
+  }

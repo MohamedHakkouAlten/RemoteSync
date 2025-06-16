@@ -34,7 +34,7 @@ constructor(private authService: UserService) {
         // You might need other headers your backend expects, e.g., 'X-Auth-Token'
       },
       debug: (str) => {
-        // console.log('STOMP Debug:', str);
+       console.log('STOMP Debug:', str);
       },
       reconnectDelay: 5000, // Try to reconnect every 5 seconds
       heartbeatIncoming: 4000, // Server will send heartbeats
@@ -92,6 +92,74 @@ watchRotationTopic(): Observable<any> {
         });
       })
     );
+  }
+  watchNotificationTopic(): Observable<any> {
+    // Wait for the STOMP client to be connected
+    return this.getConnectedClient().pipe(
+      filter(client => client !== null), // Only proceed when the client is connected
+      switchMap(connectedClient => {
+        // Now that we have a connected client, create a new Observable for the subscription
+        return new Observable<any>((observer: Observer<any>) => {
+          if (!connectedClient) {
+            observer.error('STOMP client not available for subscription.');
+            return;
+          }
+
+          console.log('Subscribing to /topic/notificaiton..'+this.authService.getUserId());
+          const subscription = connectedClient.subscribe(`/user/${this.authService.getUserId()}/topic/notification`, (message: IMessage) => {
+            try {
+              // Parse the message body (assuming it's JSON)
+              const parsedBody = JSON.parse(message.body);
+              observer.next(parsedBody); // Emit the parsed data
+            } catch (e) {
+              console.error('Error parsing STOMP message body for /topic/rotation:', e, message.body);
+              observer.error(new Error('Failed to parse message from /topic/rotation'));
+            }
+          });
+
+          // Return a teardown logic for when the Observable is unsubscribed
+          return () => {
+            console.log('Unsubscribing from /topic/notification');
+            subscription.unsubscribe(); // Unsubscribe from the STOMP topic
+          };
+        });
+      })
+    );
+  }
+   watchRCNotificationTopic(): Observable<any> {
+    // Wait for the STOMP client to be connected
+    if(this.authService.getUserRoles().includes("RC")){
+    return this.getConnectedClient().pipe(
+      filter(client => client !== null), // Only proceed when the client is connected
+      switchMap(connectedClient => {
+        // Now that we have a connected client, create a new Observable for the subscription
+        return new Observable<any>((observer: Observer<any>) => {
+          if (!connectedClient) {
+            observer.error('STOMP client not available for subscription.');
+            return;
+          }
+
+          console.log('Subscribing to /topic/notificaiton..');
+          const subscription = connectedClient.subscribe(`/topic/RCNotification`, (message: IMessage) => {
+            try {
+              // Parse the message body (assuming it's JSON)
+              const parsedBody = JSON.parse(message.body);
+              observer.next(parsedBody); // Emit the parsed data
+            } catch (e) {
+              console.error('Error parsing STOMP message body for /topic/rotation:', e, message.body);
+              observer.error(new Error('Failed to parse message from /topic/rotation'));
+            }
+          });
+
+          // Return a teardown logic for when the Observable is unsubscribed
+          return () => {
+            console.log('Unsubscribing from /topic/notification');
+            subscription.unsubscribe(); // Unsubscribe from the STOMP topic
+          };
+        });
+      })
+    );}
+    return of()
   }
   getStompClient():Client{
     return this.stompClient!

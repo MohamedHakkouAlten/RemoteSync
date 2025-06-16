@@ -21,6 +21,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageService } from '../../../services/language/language.service';
 
 interface CalendarDay {
   date: Date;
@@ -54,11 +56,14 @@ export interface ListItem {
     ButtonModule,
     AutoCompleteModule,
     DatePickerModule,
+    TranslateModule,
     InputTextModule,
     ToastModule,
     SelectButtonModule
   ],
-  providers: [DatePipe]
+  providers: [DatePipe, LanguageService,
+
+       TranslateService]
 })
 
 export class RotationComponent implements OnInit {

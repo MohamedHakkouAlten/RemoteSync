@@ -10,5 +10,6 @@ export interface LoginResponseDTO {
   refreshToken: string;
   firstName: string;
   lastName: string;
+  userId:string;
   roles: string[];
 }

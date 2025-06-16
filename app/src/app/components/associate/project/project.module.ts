@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Needed for ngModel
-import { TranslateModule } from '@ngx-translate/core'; // For i18n support
+import { TranslateModule, TranslateService } from '@ngx-translate/core'; // For i18n support
 
 // --- PrimeNG Modules ---
 import { InputTextModule } from 'primeng/inputtext'; // For search input
@@ -48,6 +48,6 @@ import { DefaultLayoutComponent } from '../../shared/layout/default-layout.compo
     IconFieldModule,
     TooltipModule,
     TranslateModule
-  ]
+  ],providers:[TranslateService]
 })
 export class ProjectModule { }

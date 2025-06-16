@@ -19,7 +19,7 @@ public interface UserDomainRepository extends JpaRepository<User, UUID>, JpaSpec
 
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
-
+    Optional<List<User>> findAllByRoles_Authority(String Authority);
 
     Integer countAllByRoles(List<Role> roles);
     @Query("SELECT u FROM User u WHERE LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))")

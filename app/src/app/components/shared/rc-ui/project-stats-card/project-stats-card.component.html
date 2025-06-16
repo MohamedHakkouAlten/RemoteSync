@@ -3,7 +3,7 @@
       <!-- Bar Chart Icon (SVG Example) -->
     <i [class]="icon" style="color:var(--color-primary);font-size: 20px;" ></i>
 
-      <a  href="/RemoteSync/RC/Project" class="text-sm text- text-primary hover:text-orange-600 ">View All</a>
+      <button (click)="viewAllProjects()"  class="text-[15px] cursor-pointer font-medium text-primary hover:text-orange-600  ">{{ 'dashboard_rc.pendingRequests.viewAllLink' | translate }}</button>
     </div>
     <p style="font-family: inter;" class="text-[36px] tracking-wider font-bold text-gray-900">{{ projectStats }}</p>
     <p class="text-sm text-gray-500">{{title}}</p>

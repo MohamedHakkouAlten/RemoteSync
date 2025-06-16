@@ -3,7 +3,53 @@
 :host ::ng-deep .p-datepicker {
   z-index: 50!important; /* Ensure datepicker is above dialog (default mask z-index is 1100) */
 }
+/* Dialog styling for view-project */
+:host ::ng-deep .p-dialog {
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
 
+/* Hide default dialog header */
+:host ::ng-deep .p-dialog .p-dialog-header {
+    display: none !important;
+}
+
+/* Style dialog content */
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 12px !important;
+ 
+    border: none;
+}
+
+/* Remove container padding for more control */
+:host ::ng-deep .view-project-dialog .p-dialog-content {
+    padding: 0;
+}
+
+/* Custom scrollbar styling for orange theme */
+::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #f9f9fb;
+    border-radius: 10px;
+}
+/* Custom progress bar styling - orange theme */
+:host ::ng-deep .custom-progress-bar .p-progressbar-value {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f59e0b; /* Amber-500 color for the scrollbar thumb */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d97706; /* Amber-600 color for hover state */
+}
 /* Adjust multiselect chip appearance if needed */
 
 /* Ensure full width for calendar input */

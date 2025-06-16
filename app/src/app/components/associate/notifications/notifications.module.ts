@@ -19,6 +19,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
+import { Router } from '@angular/router';
+import { WebSocketService } from '../../../services/web-socket.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -41,9 +44,10 @@ import { InputTextModule } from 'primeng/inputtext';
     DropdownModule,
     CalendarModule,
     InputTextModule,
-    DefaultLayoutComponent
+    DefaultLayoutComponent,
+    TranslateModule
   ],
-  providers: [DatePipe],
+  providers: [DatePipe,WebSocketService,TranslateService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class NotificationsModule { }

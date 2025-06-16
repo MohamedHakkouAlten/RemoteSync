@@ -3,7 +3,7 @@ import { AssociateService } from '../../../services/associate.service';
 import { ProjectDTO } from '../../../dto/aio/project.dto';
 import { PagedProjectDTO } from '../../../dto/associate/paged-project.dto';
 import { ProjectStatus } from '../../../dto/project-status.enum';
-import { debounceTime, distinctUntilChanged, tap, catchError } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap, catchError, take, takeUntil } from 'rxjs/operators';
 import { Subject, of, Subscription } from 'rxjs';
 import { PagedProjectSearchDTO } from '../../../dto/paged-global-id.dto';
 import { AssociateProjectByLabelDTO } from '../../../dto/associate/associate-project-by-label.dto';
@@ -15,6 +15,10 @@ import { ClientSelectItem, StatusSelectItem } from '../../../dto/associate/inter
 
 // Import utility helpers
 import { AssociateUIHelpers } from '../utils/ui-helpers';
+import { TranslateService } from '@ngx-translate/core';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
+import { format, Locale } from 'date-fns';
+import { es, fr } from 'date-fns/locale';
 
 // Define the specific string literal type for PrimeNG badge severity
 type BadgeSeverity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'contrast';
@@ -28,6 +32,14 @@ type BadgeSeverity = 'info' | 'success' | 'warn' | 'danger' | 'secondary' | 'con
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   // UI state properties
+      getTranslatedStatus(statusKey: string): string {
+        if (!statusKey) return '';
+        const formattedKey = statusKey.toLowerCase(); // Assuming keys in JSON are lowercase
+        // Construct the full translation key
+        const translationKey = `project_rc.statusTypes.${formattedKey}`;
+        // Get the translation, fallback to original if not found
+        return this.translate.instant(translationKey, { defaultValue: statusKey.charAt(0).toUpperCase() + statusKey.slice(1).toLowerCase() });
+    }
   searchTerm: string = '';
   selectedStatus: ProjectStatus | null = null;
   selectedClient: string | null = null;
@@ -49,16 +61,26 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private loadingTimeout: any = null;
   private searchSubject = new Subject<string>();
   private subscriptions: Subscription[] = [];
-
-  constructor(private associateService: AssociateService) { }
+currentLanguage: SupportedLanguage = 'en';
+  constructor(private associateService: AssociateService,private translate:TranslateService,private languageService:LanguageService) { }
 
   /**
    * Initialize component data and setup subscriptions
    */
   ngOnInit(): void {
     // Initialize status filter options
-    this.initStatusOptions();
+    
+   this.languageService.currentLanguage$.subscribe(lang => {
+      this.currentLanguage = lang;
 
+    });
+ this.initStatusOptions()
+     this.translate.onLangChange
+      .pipe(take(1)) // Use takeUntil for proper unsubscription
+      .subscribe(() => {
+        console.log('Language changed, re-initializing status options.');
+         this.initStatusOptions()
+      });
     // Load initial data (clients and projects)
     this.loadInitialData();
 
@@ -92,15 +114,37 @@ export class ProjectComponent implements OnInit, OnDestroy {
    * Initialize status filter options
    */
   private initStatusOptions(): void {
-    this.statusOptions = [
-      { label: 'All Status', value: null },
-      { label: 'In Progress', value: ProjectStatus.ACTIVE },
-      { label: 'Completed', value: ProjectStatus.COMPLETED },
-      { label: 'On Hold', value: ProjectStatus.INACTIVE },
-      { label: 'Cancelled', value: ProjectStatus.CANCELLED }
-    ];
-  }
+    
+const translationKeys = [
+    "project_rc.statusTypes.active",
+    "project_rc.statusTypes.completed",
+    "project_rc.statusTypes.inactive",
+    "project_rc.statusTypes.cancelled"
+  ];
 
+  // Get the translations asynchronously
+  this.translate.get(translationKeys).pipe(
+    take(1) // Take only one emission and complete
+  ).subscribe(translations => {
+    this.statusOptions = [
+      { label: translations["project_rc.statusTypes.active"], value: ProjectStatus.ACTIVE },
+      { label: translations["project_rc.statusTypes.completed"], value: ProjectStatus.COMPLETED },
+      { label: translations["project_rc.statusTypes.inactive"], value: ProjectStatus.INACTIVE },
+      { label: translations["project_rc.statusTypes.cancelled"], value: ProjectStatus.CANCELLED }
+    ];
+    console.log('Status options initialized with translations:', this.statusOptions);
+  });
+
+  }
+  formatDate(date: string|Date) {
+         const lang=this.getDateLang()
+  return (lang)?format(date, 'MMM d, yyyy',{locale:lang}):format(date, 'MMM d, yyyy')
+  }
+    getDateLang():Locale|null{
+      if(this.currentLanguage=='fr') return fr
+      else if(this.currentLanguage=='es') return es
+      return null
+    }
   loadInitialData(): void {
     this.isLoading = true;
     this.loadingError = false;
@@ -257,36 +301,38 @@ export class ProjectComponent implements OnInit, OnDestroy {
         this.fetchAllProjects();
         return;
     }
-    const dto: AssociateProjectByClientDTO = {
-        clientId: this.selectedClient,
-        pageNumber: this.currentPage,
-        pageSize: this.pageSize
+    const pagedDto: PagedProjectSearchDTO = {
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+      clientId:this.selectedClient
     };
-    this.associateService.getAssociateProjectsByClient(dto).pipe(
-        tap(response => {
-            if (response.status === 'success' && response.data) {
-                this.pagedProjects = response.data;
-            } else {
-                this.pagedProjects = null;
-            }
-            this.isLoading = false;
-        }),
-        catchError(error => {
-          console.error('Error fetching projects by client:', error);
+
+    this.associateService.getOldProjects(pagedDto).pipe(
+      tap(response => {
+        if (response.status === 'success' && response.data) {
+          this.pagedProjects = response.data;
+        } else {
           this.pagedProjects = null;
+        }
+        this.isLoading = false;
+      }),
+      catchError(error => {
+        console.error('Error searching projects by label:', error);
+        this.pagedProjects = null;
 
-          // Clear the timeout as we got an error response
-          if (this.loadingTimeout) {
-            clearTimeout(this.loadingTimeout);
-            this.loadingTimeout = null;
-          }
+        // Clear the timeout as we got an error response
+        if (this.loadingTimeout) {
+          clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = null;
+        }
 
-          this.isLoading = false;
-          this.loadingError = true;
-          return of(null);
+        this.isLoading = false;
+        this.loadingError = true;
+        return of(null);
       })
     ).subscribe();
   }
+
 
   loadClientsForDropdown(clients: Client[]): void {
     // Map Client objects to ClientSelectItem format
@@ -296,7 +342,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     }));
 
     // Add "All Clients" option at the beginning of the dropdown
-    this.clientOptions = [{ name: 'All Clients', id: null }, ...mappedClients];
+    this.clientOptions = [ ...mappedClients];
   }
 
   onSearchTermChange(): void {

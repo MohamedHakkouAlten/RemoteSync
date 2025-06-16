@@ -1,96 +1,90 @@
+<p-dialog   [(visible)]="showModal"  [showHeader]="false" [modal]="true"
+    [style]="{ width: '56vw' }" [breakpoints]="{'960px': '80vw', '1280px': '50vw'}"
+    styleClass="view-project-dialog rounded-xl shadow-lg " [draggable]="false" 
+    [resizable]="false" >
 
-
-<p-dialog
-  header="Create Rotation"
-  [(visible)]="showModal"
-  [modal]="false"
-  [draggable]="false"
-  [resizable]="false"
- 
-  styleClass="w-[98vw] md:w-[60vw] lg:w-[50vw] xl:w-[700px]"  
-  contentStyleClass="h-[var(--dialog-content-height-xs)] md:h-[var(--dialog-content-height-md)] lg:h-[var(--dialog-content-height-lg)] overflow-y-auto"
-  (onHide)="closeModal()"
-  [dismissableMask]="true"
-  
- 
-  >
-  <p-toast   position="top-center" styleClass="w-full md:w-auto  z-50"></p-toast>
-  <div #maindiv class="p-3 space-y-6   bg-white">
+  <p-toast position="top-center" styleClass="w-full md:w-auto z-50"></p-toast>
+  <div >
+          <div class="w-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-t-xl flex justify-between items-center px-6 pt-5 pb-4 ">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 backdrop-blur-sm p-2.5 rounded-lg">
+                    <i class="pi pi-folder-open text-xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-semibold text-white">{{ 'createRotationDialog.header' | translate}}</h1>
+            </div>
+            <button type="button" (click)="closeModal()" class="p-2 hover:bg-white/10 cursor-pointer rounded-full transition-colors">
+                <i class="pi pi-times text-white/80 hover:text-white"></i>
+            </button>
+        </div>
+  <div #maindiv          class="p-6 sm:p-8 bg-white flex flex-col gap-6  rounded-b-xl overflow-y-auto " style="max-height: 65vh;">
     <!-- 1. Select Project -->
     <div class="space-y-2">
-      <label for="project" style="font-family: inter;" class="block text-base font-medium text-[#333333]">Select Project</label>
+      <label for="project" style="font-family: inter;" class="block text-base font-medium text-[#333333]">{{ 'createRotationDialog.project.label' | translate }}</label>
       <p-dropdown
         inputId="project"
         [options]="projects"
         [(ngModel)]="selectedProject"
         optionLabel="name"
-        placeholder="Select project"
+        [placeholder]="'createRotationDialog.project.placeholder' | translate"
         [filter]="true"
-  
         filterBy="name"
         [showClear]="true"
         [style]="{'width': '100%'}"
         styleClass="w-full"
-     
         #projectDropdown="ngModel"
         [required]="true"
-
         [ngClass]="{'ng-invalid ng-dirty': projectDropdown.invalid && projectDropdown.dirty}"
       ></p-dropdown>
-       <!-- Basic validation message example -->
-       <small *ngIf="projectDropdown.invalid && projectDropdown.dirty" class="text-red-500 text-xs">Project is required.</small>
+      <small *ngIf="projectDropdown.invalid && projectDropdown.dirty" class="text-red-500 text-xs">{{ 'createRotationDialog.project.validation.required' | translate }}</small>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-1">
-        <label for="startDate" class="block text-[15px]  text-gray-700">Start Date</label>
+        <label for="startDate" class="block text-[15px] text-gray-700">{{ 'createRotationDialog.dates.startLabel' | translate }}</label>
         <p-datepicker
           inputId="startDate"
           [(ngModel)]="startDate"
           (onSelect)="initializeCalendar()"
           [iconDisplay]="'input'"
-           [showIcon]="true" 
+          [showIcon]="true"
           dateFormat="M dd, yy"
           [style]="{'width': '100%'}"
           appendTo="body"
           inputStyleClass="w-full"
           class="!text-[2px]"
           [required]="true"
-          appendTo="body"
           panelStyleClass="my-compact-datepicker"
         ></p-datepicker>
       </div>
-      
       <div class="space-y-1">
-        <label for="endDate" class="block text-[15px] text-gray-700">End Date</label>
+        <label for="endDate" class="block text-[15px] text-gray-700">{{ 'createRotationDialog.dates.endLabel' | translate }}</label>
         <p-datepicker
-        inputId="endDate"
-        [(ngModel)]="endDate"
-        (onSelect)="initializeCalendar()"
-        [showIcon]="true"
-        iconDisplay="input"  
-        dateFormat="M dd, yy"
-        [minDate]="startDateObj"
-        [style]="{'width': '100%'}"
-        inputStyleClass="w-full"
-        [required]="true"
-        panelStyleClass="my-compact-datepicker"
-        appendTo="body"
-    ></p-datepicker>
+          inputId="endDate"
+          [(ngModel)]="endDate"
+          (onSelect)="initializeCalendar()"
+          [showIcon]="true"
+          iconDisplay="input"
+          dateFormat="M dd, yy"
+          [minDate]="startDateObj"
+          [style]="{'width': '100%'}"
+          inputStyleClass="w-full"
+          [required]="true"
+          panelStyleClass="my-compact-datepicker"
+          appendTo="body"
+        ></p-datepicker>
       </div>
     </div>
-      <!-- 4. Select Collaborators -->
-      <div class="space-y-2">
-        <label for="collaborators" style="font-family: inter;" class="block text-base   text-gray-700">Select Collaborators</label>
-        <p-autoComplete
+    <!-- 4. Select Collaborators -->
+    <div class="space-y-2">
+      <label for="collaborators" style="font-family: inter;" class="block text-base text-gray-700">{{ 'createRotationDialog.collaborators.label' | translate }}</label>
+      <p-autoComplete
         inputId="collaborators"
         [(ngModel)]="selectedCollaborators"
         [suggestions]="filteredCollaborators"
-        
         (completeMethod)="filterCollaborators($event)"
         field="name"
         appendTo="body"
         [multiple]="true"
-        placeholder="Search and add collaborators..."
+        [placeholder]="'createRotationDialog.collaborators.placeholder' | translate"
         [minLength]="1"
         class="custom_auto !bg-red-400"
         [dropdown]="true"
@@ -100,161 +94,133 @@
         #collaboratorsModel="ngModel"
         (onClear)="$event?.stopPropagation()"
         [required]="true"
-     
-       >
-         <!-- Custom display for items in the suggestion dropdown -->
-         <ng-template let-collaborator pTemplate="item">
-            <div class="flex items-center  space-x-2 py-1 px-2">
-                <img *ngIf="collaborator.avatar" [src]="collaborator.avatar" class="w-6 h-6 rounded-full" alt="">
-                <span class="text-sm">{{ collaborator.name }}</span>
-            </div>
+      >
+        <ng-template let-collaborator pTemplate="item">
+          <div class="flex items-center space-x-2 py-1 px-2">
+            <img *ngIf="collaborator.avatar" [src]="collaborator.avatar" class="w-6 h-6 rounded-full" alt="">
+            <span class="text-sm">{{ collaborator.name }}</span>
+          </div>
         </ng-template>
-        <!-- NOTE: pTemplate="selectedItem" is not typically used with multiple=true -->
-        <!-- Selected items are handled via the ngModel array -->
       </p-autoComplete>
-
-        <!-- Basic validation message example -->
-         <small *ngIf="collaboratorsModel.invalid && collaboratorsModel.dirty" class="text-red-500 text-xs">At least one collaborator is required.</small>
-      </div>
+      <small *ngIf="collaboratorsModel.invalid && collaboratorsModel.dirty" class="text-red-500 text-xs">{{ 'createRotationDialog.collaborators.validation.required' | translate }}</small>
+    </div>
     <!-- 2. Rotation Mode Tabs -->
-    <div class="flex bg-[#F3F4F6] rounded-[8px] text-gray-700 p-1 gap-2 overflow-hidden">
+    <div class="flex bg-[#F3F4F6] rounded-[8px] text-gray-700 p-1 gap-2 ">
       <button
-        type="button"  style="font-family: Inter;"
-        class="flex-1 px-4 py-3 text-[15px]  text-center transition-colors duration-150 focus:outline-none"
+        type="button" style="font-family: Inter;"
+        class="flex-1 px-4 py-3 text-[15px] text-center transition-colors duration-150 focus:outline-none"
         [ngClass]="{
-          'bg-[#FF9500] text-white  rounded-[6px]': rotationType === 'automatic',
-          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6]  rounded-0': rotationType !== 'automatic'
+          'bg-[#FF9500] text-white rounded-[6px]': rotationType === 'automatic',
+          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6] rounded-0': rotationType !== 'automatic'
         }"
         (click)="rotationType = 'automatic'"
       >
-        Automatic Rotation
+        {{ 'createRotationDialog.rotationMode.automatic' | translate }}
       </button>
       <button
-        type="button"  style="font-family: Inter;"
-        class="flex-1 px-4 py-3 text-[15px]  text-center  border-gray-300 transition-colors duration-150 focus:outline-none"
+        type="button" style="font-family: Inter;"
+        class="flex-1 px-4 py-3 text-[15px] text-center border-gray-300 transition-colors duration-150 focus:outline-none"
         [ngClass]="{
-          'bg-[#FF9500] text-white  rounded-[6px]': rotationType === 'custom',
-          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6]  rounded-0': rotationType !== 'custom'
+          'bg-[#FF9500] text-white rounded-[6px]': rotationType === 'custom',
+          'bg-[#F3F4F6] text-[#4B5563] hover:bg-[#F3F4F6] rounded-0': rotationType !== 'custom'
         }"
         (click)="rotationType = 'custom'"
       >
-        Custom Dates
+        {{ 'createRotationDialog.rotationMode.custom' | translate }}
       </button>
     </div>
 
-
-      <!-- Automatic Rotation Fields -->
-      <div *ngIf="rotationType === 'automatic'" class="space-y-5">
-      
-        <div class="space-y-2">
-            <label class="block text-base text-gray-700">Rotation Pattern :  </label>
-            <div class="flex   items-center flex-col md:flex-row md:gap-y-5 justify-between space-x-3 text-sm">
-                <p-inputNumber
-                    inputId="rotationInterval"
-                    [(ngModel)]="weeksValue"
-                    [min]="1"
-                    (onInput)="initializeCalendar()"
-         
-                    mode="decimal"
-                    [showButtons]="true"
-                    decrementButtonClass="!bg-white "
-                    incrementButtonClass="!bg-white"
-                    buttonLayout="horizontal"
-                    incrementButtonIcon="pi pi-plus"
-                    decrementButtonIcon="pi pi-minus"
-                    required
-                    [max]="periodValue"
-                ></p-inputNumber>
-                <div class="flex flex-col items-center gap-2 justify-center">
-             <i class="pi pi-arrow-right-arrow-left text-gray-500"></i>
-            
-            </div>
-                 <p-inputNumber
-                    inputId="rotationPeriod"
-                    [(ngModel)]="periodValue"
-                    [min]="1"
-                    [max]="12"          
-                    mode="decimal"
-                    (onInput)="initializeCalendar()"
-                    [showButtons]="true"
-                    decrementButtonClass="!bg-white"
-                    incrementButtonClass="!bg-white"
-                    buttonLayout="horizontal"
-                    incrementButtonIcon="pi pi-plus"
-                    decrementButtonIcon="pi pi-minus"
-                    required
-                    required
-                ></p-inputNumber>
-                 
-            </div>
-            <h1 class="text-sm text-gray-500 ">{{weeksValue}} remote  weeks every {{periodValue}} weeks</h1>
-            
+    <!-- Automatic Rotation Fields -->
+    <div *ngIf="rotationType === 'automatic'" class="space-y-5">
+      <div class="space-y-2">
+        <label class="block text-base text-gray-700">{{ 'createRotationDialog.automaticRotation.patternLabel' | translate }}</label>
+        <div class="flex items-center flex-col md:flex-row md:gap-y-5 justify-between space-x-3 text-sm">
+          <p-inputNumber
+            inputId="rotationInterval"
+            [(ngModel)]="weeksValue"
+            [min]="1"
+            (onInput)="initializeCalendar()"
+            mode="decimal"
+            [showButtons]="true"
+            decrementButtonClass="!bg-white"
+            incrementButtonClass="!bg-white"
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            required
+            [max]="periodValue"
+          ></p-inputNumber>
+          <div class="flex flex-col items-center gap-2 justify-center">
+            <i class="pi pi-arrow-right-arrow-left text-gray-500"></i>
+          </div>
+          <p-inputNumber
+            inputId="rotationPeriod"
+            [(ngModel)]="periodValue"
+            [min]="1"
+            [max]="12"
+            mode="decimal"
+            (onInput)="initializeCalendar()"
+            [showButtons]="true"
+            decrementButtonClass="!bg-white"
+            incrementButtonClass="!bg-white"
+            buttonLayout="horizontal"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            required
+          ></p-inputNumber>
         </div>
+        <!-- Note the parameter binding for dynamic values -->
+        <h1 class="text-sm text-gray-500">{{ 'createRotationDialog.automaticRotation.summary' | translate:{ weeksValue: weeksValue, periodValue: periodValue } }}</h1>
       </div>
+    </div>
 
-      <!-- Custom Dates Fields -->
-          <!-- Custom Dates Fields -->
-          <div *ngIf="rotationType === 'custom'" class=" space-y-2 w-full ">
-            <div class="flex justify-between  items-center px-9">
-              <label for="customDates" class="block text-sm font-medium text-gray-700">Select custom dates</label>
-        <p-selectButton 
-        [options]="stateOptions" 
-        [(ngModel)]="selectionType" 
-        optionLabel="label" 
-        optionValue="value" />
-              </div>
-          <div class=" justify-center flex  ">
-                     <p-datepicker
-                class="customDates"
-                    inputId="customDates"
-                    [(ngModel)]="selectedDates"
-                    selectionMode="multiple"
-                    [inline]="true"
-                    [numberOfMonths]="2"
-                    [minDate]="startDate()"
-                    [maxDate]="endDate()"
-             
-                    panelStyleClass="my-compact-datepicker"
-                    
-                    #customDatesPicker 
-                    dateFormat="yyyy-mm-dd"
-                    [appendTo]="maindiv"
-                    (ngModelChange)="onSelectionChange($event)"
-                     
-           
-                   >  
-                    
-                </p-datepicker>
-            
-            
-             
-            </div>
-            </div>
-
-
-  
-
+    <!-- Custom Dates Fields -->
+    <div *ngIf="rotationType === 'custom'" class="space-y-2 w-full">
+      <div class="flex justify-between items-center px-9">
+        <label for="customDates" class="block text-sm font-medium text-gray-700">{{ 'createRotationDialog.customRotation.label' | translate }}</label>
+        <p-selectButton
+       [options]="[{ label: 'calendar_rc.viewSelector.day' | translate , value: 'day' },{ label: 'calendar_rc.viewSelector.week' | translate, value: 'week' }]" 
+          [(ngModel)]="selectionType"
+          optionLabel="label"
+          optionValue="value" />
+      </div>
+      <div class="justify-center flex">
+        <p-datepicker
+          class="customDates"
+          inputId="customDates"
+          [(ngModel)]="selectedDates"
+          selectionMode="multiple"
+          [inline]="true"
+          [numberOfMonths]="2"
+          [minDate]="startDate()"
+          [maxDate]="endDate()"
+          panelStyleClass="my-compact-datepicker"
+          #customDatesPicker
+          dateFormat="yyyy-mm-dd"
+          [appendTo]="maindiv"
+          (ngModelChange)="onSelectionChange($event)"
+        ></p-datepicker>
+      </div>
+    </div>
   </div>
-
+</div>
   <!-- Footer Actions -->
   <ng-template #footer>
-    <div class="flex justify-end gap-4 w-full px-6 pt-4  border-t border-gray-200">
-       <button
-            style="font-family: inter;"
-            class="text-[#4B5563] bg-[#F3F4F6] cursor-pointer border-0 rounded-[5px] px-4 py-2 text-[15px]"
-       
-            (click)="closeModal()"
-        >
-     Cancel</button>
-        <button
-       
+    <div class="flex justify-end gap-4 w-full px-6 pt-4 border-t border-gray-200">
+      <button
         style="font-family: inter;"
-        class="text-white bg-primary border-0 cursor-pointer rounded-[5px] px-4 py-2 text-[15px]"
-            (click)="createRotation()"
-          
-        >
-        Create Rotation
-    </button>
+        class="text-[#4B5563] bg-[#F3F4F6] cursor-pointer border-0 rounded-[5px] px-4 py-2 text-[15px]"
+        (click)="closeModal()"
+      >
+        {{ 'createRotationDialog.footer.cancel' | translate }}
+      </button>
+      <button
+        style="font-family: inter;"
+        class="text-white bg-gradient-to-r from-orange-500 to-orange-600 border-0 cursor-pointer rounded-[5px] px-4 py-2 text-[15px]"
+        (click)="createRotation()"
+      >
+        {{ 'createRotationDialog.footer.create' | translate }}
+      </button>
     </div>
   </ng-template>
 </p-dialog>

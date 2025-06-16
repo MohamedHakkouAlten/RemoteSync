@@ -106,7 +106,8 @@
     "december": "Diciembre"
   },
   "dashboard_associate": {
-    "title": "Panel de control del Asociado",
+    "weeks":"Semanas",
+    "title": "Panel de control ",
     "welcome_message": "Bienvenido de nuevo,",
     "activity_overview": "Aquí está el resumen de su última actividad.",
     "loading": "Cargando panel de control...",
@@ -165,6 +166,14 @@
     "save": "Guardar"
   },
   "profile": {
+     "update": {
+      "errorSummary": "Error",
+      "errorDetail": "No se pudo actualizar el perfil. Por favor, inténtelo de nuevo más tarde."
+    },
+    "load": {
+      "errorSummary": "Error",
+      "errorDetail": "No se pudieron cargar los datos del perfil. Por favor, inténtelo de nuevo más tarde."
+    },
     "title": "Mi Perfil",
     "subtitle": "Gestiona tu información personal y preferencias de cuenta",
     "complete": "completo",
@@ -252,7 +261,7 @@
   "project_rc": {
     "title": "Proyectos",
     "subtitle": "Resumen de todos los proyectos activos, próximos y completados",
-    "paginationSummary": "Mostrando {start} a {end} de {total} proyectos",
+    "paginationSummary": "Mostrando {{start}} a {{end}} de {{total}} proyectos",
     "summaryStats": {
       "totalProjects": "Proyectos totales:",
       "completed": "Completados:",
@@ -280,7 +289,9 @@
       "update": "Actualizar",
       "editProject": "Editar proyecto",
       "viewProject": "Ver proyecto",
-      "progress": "Progreso"
+      "progress": "Progreso",
+      
+  "summary": "Proyecto con un {{progress}}% de avance."
     },
     "client": {
       "name": "Nombre",
@@ -330,6 +341,7 @@
     },
     "table": {
       "headerName": "Nombre",
+      "paginationReport": "Mostrando {first} a {last} de {totalRecords} informes",
       "emptyMessage": "No se encontraron registros."
     },
     "pendingRequests": {
@@ -347,7 +359,7 @@
     "clear": "Limpiar",
     "viewReport": "Ver informe",
     "noReportsMessage": "No hay informes para mostrar.",
-    "paginationSummary": "Mostrando {start} a {end} de {total} informes",
+    "paginationSummary": "Mostrando {{start}} a {{end}} de {{total}} informes",
     "summaryStats": {
       "totalReports": "Total de informes:",
       "accepted": "Completados:",
@@ -401,21 +413,20 @@
       "clear": "limpiar"
     },
     "buttons": {
-      "createRotation": "Crear una nueva Rotación"
+      "createRotation": "Crear una nueva Rotación",
+      "save": "Guardar",
+  "cancel": "Cancelar"
     },
     "viewSelector": {
-      "placeholder": "Seleccionar Vista"
+       "week" : "Semana",
+      "day" : "Día"
     },
     "grid": {
       "userColumnHeader": "Usuario",
       "userRole": "Consultor",
       "noUsersFound": "No se encontraron usuarios que coincidan con sus criterios."
     },
-    "pendingChanges": {
-      "message": "Tiene cambios pendientes que deben guardarse.",
-      "saveButton": "Guardar Cambios",
-      "cancelButton": "Cancelar"
-    },
+  "pendingChanges": "Cambios Pendientes",
     "legend": {
       "onsite": "En sitio",
       "remote": "Remoto",
@@ -448,6 +459,308 @@
     "validation": {
       "projectRequired": "El proyecto es obligatorio.",
       "collaboratorRequired": "Se requiere al menos un colaborador."
+    }
+  },
+  "reportPage": {
+    "headerTitle": "Informes",
+    "searchPlaceholder": "Buscar informes...",
+    "dateRangePlaceholder": "Seleccionar rango de fechas",
+    "statusDropdownPlaceholder": "Todos los estados",
+    "statusDropdownDefaultText": "Todos los estados",
+    "clearFiltersButton": "Limpiar",
+    "viewReportButtonLabel": "Ver informe",
+    "noReportsMessage": "No hay informes para mostrar.",
+    "paginationSummary": "Mostrando de {{first}} a {{last}} de {{totalRecords}} entradas"
+  },
+  "calendarPage": {
+    "header": {
+      "title": "Calendario de Rotación",
+      "breadcrumb": "Calendario de Rotación"
+    },
+    "mainContent": {
+      "title": "Calendario de Rotación"
+    },
+    "filters": {
+      "searchPlaceholder": "Buscar",
+      "clientPlaceholder": "Cliente",
+      "projectPlaceholder": "Proyecto",
+      "factoryPlaceholder": "Fábrica",
+      "subFactoryPlaceholder": "Subfábrica",
+      "clearButton": "limpiar"
+    },
+    "buttons": {
+      "createNewRotation": "Crear nueva rotación",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar Cambios"
+    },
+    "viewMode": {
+      "selectViewPlaceholder": "Seleccionar Vista",
+      "options": {
+        "month": "Mes",
+        "week": "Semana",
+        "day": "Día"
+      }
+    },
+    "grid": {
+      "headerUser": "Usuario",
+      "userRoleConsultant": "Consultor",
+      "noUsersFound": "No se encontraron usuarios que coincidan con sus criterios."
+    },
+    "pendingChanges": {
+      "message": "Tiene cambios pendientes que deben guardarse."
+    },
+    "legend": {
+      "onSite": "En sitio",
+      "remote": "Remoto",
+      "offNoAssignment": "Ausente (Sin asignación)"
+    }
+  },"viewProjectDialog": {
+    "sections": {
+      "label": {
+        "title": "Etiqueta"
+      },
+      "client": {
+        "title": "Cliente",
+        "nameLabel": "nombre :",
+        "iceLabel": "ICE :",
+        "clientLabel": "etiqueta :",
+        "emailLabel": "correo electrónico :"
+      },
+      "duration": {
+        "title": "Duración"
+      },
+      "progress": {
+        "title": "Progreso"
+      }
+    },
+    "status": {
+        "active": "Activo",
+        "completed": "Completado",
+        "inactive": "Inactivo",
+        "cancelled": "Cancelado",
+        "upcoming": "Próximo"
+    }
+  },
+  "createProjectDialog": {
+    "header": "Crear nuevo proyecto",
+    "title": "Título",
+    "label": "Etiqueta",
+    "status": "Estado",
+    "selectStatusPlaceholder": "Seleccionar un estado",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de finalización",
+    "client": "Cliente",
+    "clientPlaceholder": "Cliente",
+    "footer": {
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    }
+  },
+  "editProjectDialog": {
+    "header": "Editar Proyecto",
+    "title": "Título",
+    "label": "Etiqueta",
+    "status": "Estado",
+    "selectStatusPlaceholder": "Seleccionar un estado",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de finalización",
+    "client": "Cliente",
+    "clientPlaceholder": "Cliente",
+    "footer": {
+      "cancel": "Cancelar",
+      "update": "Actualizar"
+    }
+  },
+  "reportDetailDialog": {
+    "labels": {
+      "title": "Título",
+      "date": "Fecha",
+      "status": "Estado",
+      "description": "Descripción"
+    },
+    "placeholders": {
+      "noDescription": "No hay descripción disponible."
+    },
+    "statusTypes": {
+      "pending": "Pendiente",
+      "opened": "En progreso",
+      "accepted": "Aceptado",
+      "rejected": "Rechazado"
+    },
+    "footer": {
+      "rejectButton": "Rechazar",
+      "rejectTooltip": "Marcar como rechazado",
+      "inProgressButton": "En progreso",
+      "inProgressTooltip": "Marcar como en progreso",
+      "acceptButton": "Aceptar",
+      "acceptTooltip": "Marcar como aceptado"
+    }
+  } ,"createRotationDialog": {
+    "header": "Crear Rotación",
+    "project": {
+      "label": "Seleccionar Proyecto",
+      "placeholder": "Seleccionar proyecto",
+      "validation": {
+        "required": "El proyecto es obligatorio."
+      }
+    },
+    "dates": {
+      "startLabel": "Fecha de Inicio",
+      "endLabel": "Fecha de Fin"
+    },
+    "collaborators": {
+      "label": "Seleccionar Colaboradores",
+      "placeholder": "Buscar y agregar colaboradores...",
+      "validation": {
+        "required": "Se requiere al menos un colaborador."
+      }
+    },
+    "rotationMode": {
+      "automatic": "Rotación Automática",
+      "custom": "Fechas Personalizadas"
+    },
+    "automaticRotation": {
+      "patternLabel": "Patrón de Rotación :",
+      "summary": "{{weeksValue}} semanas en remoto cada {{periodValue}} semanas"
+    },
+    "customRotation": {
+      "label": "Seleccionar fechas personalizadas",
+      "selectionTypes": {
+        "remote": "Remoto",
+        "onsite": "Presencial"
+      }
+    },
+    "footer": {
+      "cancel": "Cancelar",
+      "create": "Crear Rotación"
+    }
+  },
+  "notification_panel": {
+    "header": "Notificaciones",
+    "mark_all_as_read": "Marcar todo como leído",
+    "empty_state": "No tienes notificaciones.",
+    "view_calendar": "Ver calendario",
+    "view_report": "Ver informe",
+    "dismiss": "Descartar",
+    "view_all": "Ver todas las notificaciones"
+  },
+   "notification_page": {
+    "header": "Notificaciones",
+    "filters": {
+      "title": {
+        "label": "Título",
+        "placeholder": "Buscar por título..."
+      },
+      "status": {
+        "label": "Estado",
+        "placeholder": "Seleccionar estado"
+      },
+      "date": {
+        "label": "Creado el",
+        "placeholder": "Seleccionar fecha"
+      },
+      "clear_button": "Limpiar"
+    },
+    "tabs": {
+      "all": "Todas",
+      "urgent": "Urgentes",
+      "important": "Importantes",
+      "normal": "Normales"
+    },
+    "empty_states": {
+      "no_results_current_page": "No hay notificaciones en esta página.",
+      "all": "No tienes notificaciones.",
+      "urgent": "No tienes notificaciones urgentes.",
+      "important": "No tienes notificaciones importantes.",
+      "normal": "No tienes notificaciones normales.",
+      "default": "No hay elementos para mostrar."
+    },
+    "status": {
+      "urgent": "Urgente",
+      "important": "Importante",
+      "normal": "Normal",
+      "info": "Información",
+      "alert": "Alerta",
+      "request": "Solicitud"
+    },
+    "actions": {
+      "view_report": "Ver informes",
+      "view_calendar": "Ver calendario",
+      "dismiss": "Descartar"
+    }
+  }, "time": {
+    "ago": {
+      "just_now": "Ahora mismo",
+      "minutes_one": "Hace 1 minuto",
+      "minutes_other": "Hace {{count}} minutos",
+      "hours_one": "Hace 1 hora",
+      "hours_other": "Hace {{count}} horas",
+      "days_one": "Hace 1 día",
+      "days_other": "Hace {{count}} días"
+    }
+  },
+  "report": {
+    "create": {
+      "successSummary": "Informe Creado",
+      "successDetail": "Su informe ha sido enviado con éxito",
+      "errorSummary": "Error",
+      "errorDetail": "No se pudo crear el informe. Por favor, inténtelo de nuevo."
+    },
+    "loading": { 
+      "errorSummary": "Error de Carga",
+      "errorDetail": "No se pudieron cargar los informes. Por favor, inténtelo de nuevo más tarde."
+    }
+  },"error": { "validation": {
+      "summary": "Error de Validación",
+      "detail": "Por favor, revise todos los campos obligatorios"
+    },
+    "unexpected": {
+      "summary": "Error Inesperado",
+      "detail": "Se produjo un error inesperado. Por favor, inténtelo de nuevo más tarde."
+    }
+  }, "rotation": {
+    "create": {
+      "successSummary": "Rotación creada con éxito",
+      "failureSummary": "No se pudo crear la rotación. Por favor, inténtelo de nuevo."
+    
+    },
+   "update": {
+      "failureSummary": "Actualización Fallida",
+      "failureDetailDefault": "No se pudo actualizar el estado de la rotación",
+      "genericErrorSummary": "Actualización Fallida",
+      "genericErrorDetail": "Ocurrió un error al actualizar el estado de la rotación"
+    }
+  }, "calendar": {
+    "load": {
+      "errorSummary": "Error",
+      "errorDetail": "No se pudieron cargar los datos del calendario."
+    }
+  },"changes": {
+    "pending": {
+      "summary": "Cambio Pendiente",
+      "detail": "Haga clic en el botón Guardar Cambios para aplicar sus actualizaciones"
+    },"no_changes": {
+      "summary": "Sin Cambios",
+      "detail": "No hay cambios para guardar"
+    },
+    "saved": {
+      "summary": "Cambios Guardados",
+      "detail": "Horarios de rotación actualizados con éxito para {{count}} usuario(s)"
+    },
+    "cancelled": {
+      "summary": "Cambios Cancelados",
+      "detail": "Todos los cambios pendientes han sido descartados"
+    },
+    "discarded": {
+      "summary": "Cancelado",
+      "detail": "Los cambios han sido descartados."
+    }
+  },"project": {
+    "add": {
+      "successSummary": "Proyecto añadido con éxito"
+    },
+    "update": {
+      "successSummary": "Proyecto actualizado con éxito"
     }
   }
 }

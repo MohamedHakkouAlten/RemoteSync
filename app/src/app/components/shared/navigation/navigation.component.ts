@@ -67,6 +67,7 @@ export class NavigationComponent implements OnInit {
 
   ngOnInit(): void {
     // Subscribe to language changes
+    
     this.languageService.currentLanguage$.subscribe((lang) => {
       this.currentLanguage = lang;
       this.setupNavItems();
@@ -118,11 +119,7 @@ export class NavigationComponent implements OnInit {
         icon: 'pi pi-bell', // Reuse bell icon
         command: () => this.router.navigate([`/${this.currentLanguage}/remotesync/associate/notification`])
       },
-      {
-        label: 'navigation.settings', // Use translation key directly
-        icon: 'pi pi-cog', // Settings icon
-        command: () => this.openSettingsPage() // Changed from previous openSettings() which was for notification settings
-      },
+    
       {
         separator: true // Visual separator
       },

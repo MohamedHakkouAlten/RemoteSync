@@ -13,12 +13,15 @@ import { ProjectDTO } from '../../../dto/aio/project.dto';
 import { AssociateService } from '../../../services/associate.service';
 import { AuthFacadeService } from '../../../services/auth-facade.service';
 import { TranslateService } from '@ngx-translate/core';
-import { LanguageService } from '../../../services/language/language.service';
+import { LanguageService, SupportedLanguage } from '../../../services/language/language.service';
 
 // Import shared models and helpers
 import { CalendarHelpers } from '../utils/calendar-helpers';
 import { CalendarEvent, DashboardProjectDTO, DashboardReportDTO, DashboardStats } from '../../../dto/associate/dashboard.model';
 import { ReportDTO } from '../../../dto/aio/report.dto';
+import { UserService } from '../../../services/auth/user.service';
+import { format, Locale } from 'date-fns';
+import { es, fr } from 'date-fns/locale';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +30,31 @@ import { ReportDTO } from '../../../dto/aio/report.dto';
   standalone: false
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+
+    getTranslatedStatus(statusKey: string): string {
+        if (!statusKey) return '';
+        const formattedKey = statusKey.toLowerCase(); // Assuming keys in JSON are lowercase
+        // Construct the full translation key
+        const translationKey = `project_rc.statusTypes.${formattedKey}`;
+        // Get the translation, fallback to original if not found
+        return this.translateService.instant(translationKey, { defaultValue: statusKey.charAt(0).toUpperCase() + statusKey.slice(1).toLowerCase() });
+    }
+      getTranslatedReportStatus(status: ReportStatus): string {
+        if (!status) return '';
+    
+        const statusKey = status.toString().toLowerCase();
+        return this.translateService.instant(`report_rc.statusTypes.${statusKey}`);
+      }
+        formatDate(date: string|Date) {
+               const lang=this.getDateLang()
+        return (lang)?format(date, 'MMM d, yyyy',{locale:lang}):format(date, 'MMM d, yyyy')
+        }
+          getDateLang():Locale|null{
+            if(this.currentLanguage=='fr') return fr
+            else if(this.currentLanguage=='es') return es
+            return null
+          }
+
   // Expose enums to template
   public ProjectStatus = ProjectStatus;
   public ReportStatus = ReportStatus;
@@ -68,6 +96,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // Private properties
   private loadingTimeout: any = null;
   private subscriptions: Subscription[] = [];
+ currentLanguage: SupportedLanguage = 'en';
+
 
   constructor(
     private authFacadeService: AuthFacadeService,
@@ -75,7 +105,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private datePipe: DatePipe,
     private translateService: TranslateService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private userService:UserService
   ) {}
 
   /**
@@ -90,7 +121,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Subscribe to language changes to update translations when language changes
     this.subscriptions.push(
-      this.languageService.currentLanguage$.subscribe(() => {
+      this.languageService.currentLanguage$.subscribe((lang) => {
+        this.currentLanguage=lang
         this.updateTranslations();
       })
     );
@@ -275,15 +307,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Navigate to projects page
    */
   viewAllProjects(): void {
-    this.router.navigate(['/associate/projects']);
-  }
+  
+
+         this.router.navigate([`/${this.userService.getCurrentLanguage()}/remotesync/associate/project`])
+      
+       }
+  
+  
 
   /**
    * Navigate to reports page
    */
   viewAllReports(): void {
-    this.router.navigate(['/associate/reports']);
-  }
+   const userRoles =this.userService.getUserRoles()
+    
+         this.router.navigate([`/${this.userService.getCurrentLanguage()}/remotesync/associate/report`])
+      
+       }
+  
 
   /**
    * Maps a backend ProjectDTO to the enhanced UI DashboardProjectDTO
@@ -329,7 +370,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const end = new Date(project.deadLine);
         const diffTime = Math.abs(end.getTime() - start.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        duration = `${Math.ceil(diffDays / 7)} weeks`;
+        duration = `${Math.ceil(diffDays / 7)} ${this.translateService.instant("dashboard_associate.weeks")}`;
       }
     } catch (error) {
       console.error('Error calculating duration:', error);

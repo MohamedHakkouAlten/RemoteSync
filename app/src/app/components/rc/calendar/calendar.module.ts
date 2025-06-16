@@ -22,6 +22,7 @@ import { ToastModule } from 'primeng/toast';
 import { PaginatorModule } from 'primeng/paginator';
 import { DefaultLayoutComponent } from "../../shared/layout/default-layout.component";
 import { WebSocketService } from '../../../services/web-socket.service';
+import { LanguageService } from '../../../services/language/language.service';
 
 @NgModule({
   declarations: [
@@ -46,16 +47,19 @@ import { WebSocketService } from '../../../services/web-socket.service';
     NavigationComponent,
     InputIcon,
     IconField,
+    AutoCompleteModule,
     ThreeStateToggleComponent,
     RotationComponent,
-    DefaultLayoutComponent,
-    // Translation Support
-    TranslateModule.forChild()
+    ToastModule,
+    PaginatorModule,
+    TranslateModule,
+    DefaultLayoutComponent
 ],
 providers :[
     MessageService,
     TranslateService,
-    WebSocketService
+    WebSocketService,
+    LanguageService
 ]
 })
 export class CalendarModule { }

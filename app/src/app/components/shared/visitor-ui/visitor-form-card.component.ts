@@ -4,8 +4,8 @@ import { Component, Input } from '@angular/core';
   selector: 'app-visitor-form-card',
   standalone: false,
   template: `
-    <div class="form-card" [ngClass]="[alignClass, cardClass]">
-      <h1 class="card-title" *ngIf="title">{{ title }}</h1>
+    <div class="form-card " [ngClass]="[alignClass, cardClass]">
+      <h1 class="card-title !text-14" *ngIf="title">{{ title }}</h1>
       <p class="card-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
       <ng-content></ng-content>
     </div>

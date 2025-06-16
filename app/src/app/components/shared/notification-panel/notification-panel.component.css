@@ -8,9 +8,28 @@
     min-width: 17px!important;  /* Ensure minimum width */
     height: 17px!important;     /* Ensure minimum height */
   }
+  :host ::ng-deep .small-overlay-badge .p-badge .hidden-badge {
+  display: none !important;
+}
   :host ::ng-deep .custom-overlay-panel .p-overlaypanel-content {
     padding: 0 !important;
   }
   .custom-overlay-panel .p-overlaypanel-content {
     padding: 0 !important;
+  }
+  :host ::ng-deep .p-toast-message {
+ background: white !important;
+  }
+  :host ::ng-deep .p-icon {
+    color: gray;
+  }
+    :host ::ng-deep .p-toast {
+  margin-top:50px !important;
+    width: 30rem !important;
+      box-shadow: none !important;
+  }
+  :host ::ng-deep .p-toast-message-content {
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important;
+    justify-content: space-between;
+    border-left: 4px solid var(--color-primary);
   }

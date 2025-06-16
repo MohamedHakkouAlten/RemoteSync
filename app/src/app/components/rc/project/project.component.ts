@@ -17,15 +17,7 @@ export interface SelectOption {
     label: string;
     value: string | null;
 }
-export interface projectFilter {
-    filter?: 'projectLabel' | 'clientLabel' | "",
-    value?: string,
-    sort: 'label' | 'titre' | 'client' | 'status'
-    sortType: 1 | -1,
-    pageNumber: number,
-    pageSize: number,
 
-}
 export type ProjectStatusSeverity = 'info' | 'warn' | 'success' | 'danger';
 
 @Component({
@@ -82,6 +74,7 @@ export class ProjectComponent implements OnInit {
             this.searchItem.set(this.searchLabel)
             this.searchProjectInputChange$.next(this.searchLabel);
         }
+        console.log(this.filter())
     }
     onPageChange($event: TablePageEvent) {
         this.rowsSignal.set($event.rows);
@@ -220,8 +213,8 @@ currentLanguage: SupportedLanguage = 'en';
 
     getStatusSeverity(status: ProjectStatus): ProjectStatusSeverity {
         switch (status) {
-            case ProjectStatus.ACTIVE: return 'success';
-            case ProjectStatus.COMPLETED: return 'info';
+            case ProjectStatus.ACTIVE: return 'info';
+            case ProjectStatus.COMPLETED: return 'success';
             case ProjectStatus.INACTIVE: return 'warn';
             case ProjectStatus.CANCELLED: return 'danger';
             default: return 'info';
@@ -330,10 +323,11 @@ currentLanguage: SupportedLanguage = 'en';
         this.displayCreateProjectDialog = false
         this.rcService.createProject(project).subscribe(res => {
             if (res) {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: "project updated successfully"
-                })
+            this.messageService.add({
+      severity: 'success',
+      // Use a translation key for the summary
+      summary: this.translate.instant('project.add.successSummary')
+    });
                 this.allProjects = [res, ...this.allProjects.slice(0, this.allProjects.length)]
             }
         })
@@ -368,9 +362,10 @@ currentLanguage: SupportedLanguage = 'en';
         this.rcService.updateProject(project).subscribe(res => {
             if (res) {
                 this.messageService.add({
-                    severity: 'success',
-                    summary: "project updated successfully"
-                })
+      severity: 'success',
+      // Use a translation key for the summary
+      summary: this.translate.instant('project.update.successSummary')
+    });
                 this.allProjects = this.allProjects.map((p) => {
                     if (project.projectId == p.projectId) return res
                     return p

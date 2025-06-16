@@ -138,6 +138,12 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: { roles: ['RC', 'ADMIN'] }
   })),
+    ...supportedLanguages.map(lang => ({
+    path: `${lang}/remotesync/rc/notification`,
+    loadChildren: () => import('./components/associate/notifications/notifications.module').then(m => m.NotificationsModule),
+    canActivate: [RoleGuard],
+    data: { roles: ['ASSOCIATE', 'RC', 'ADMIN'] }
+  })),
   ...supportedLanguages.map(lang => ({
     path: `${lang}/remotesync/rc/calendar`,
     loadChildren: () => import('./components/rc/calendar/calendar.module').then(m => m.CalendarModule),

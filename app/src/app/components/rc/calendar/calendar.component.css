@@ -47,7 +47,7 @@
     background-color: var(--color-secondary);
     font-family: Inter;
     font-size: 14px;
-    width: 180px;
+    width: 230px;
     border-radius: var(--border-radius-sm) !important;
     transition: var(--transition-standard);
     box-shadow: var(--shadow-sm);
@@ -238,19 +238,19 @@ color: #6a7282 !important;
   }
 
   :host ::ng-deep .viewButton.p-select  {
-    color: white !important;
-    background-color: var(--color-primary);
-    border: 0 !important;
+    color: var(--color-primary) !important;
+    background-color:white;
+    border: 1px solid var(--color-primary) !important;
   }
   :host ::ng-deep .viewButton.p-select .p-select-label {
-    color: white !important;
+    color: var(--color-primary) !important;
     font-size: 14px;
     padding: 7 5px;
  
   }
 
   :host ::ng-deep .viewButton.p-select .p-select-dropdown  {
-    color: white !important;
+    color: var(--color-primary) !important;
     font-size: 12px;
   }
   :host ::ng-deep .p-select   {
@@ -262,4 +262,27 @@ color: #6a7282 !important;
 
     font-size: 12px;
   }
+:host ::ng-deep .p-togglebutton-content{
+  font-size: 15px !important;
+  padding: 2px 10px !important;
+  border-radius: 4px;
+font-weight: 400;
 
+
+  font-family: inter;
+}
+:host ::ng-deep .p-selectbutton {
+  padding: 10px;
+
+}
+ :host ::ng-deep .p-togglebutton{
+      background: var(--color-gray-100);
+      border: 0;
+  padding: 4px 5px !important;
+}
+
+
+:host ::ng-deep .p-togglebutton-checked .p-togglebutton-content{
+background: var(--color-primary) !important;
+color: white;
+}

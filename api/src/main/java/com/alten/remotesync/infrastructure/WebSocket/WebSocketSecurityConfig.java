@@ -21,9 +21,12 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
                .simpTypeMatchers(SimpMessageType.CONNECT).permitAll()
 
                 .simpSubscribeDestMatchers("/topic/rotation").hasAnyRole("RC","ADMIN","ASSOCIATE")
+                .simpSubscribeDestMatchers("/topic/RCNotification").hasAnyRole("RC","ADMIN")
+                .simpSubscribeDestMatchers("/user/**").hasAnyRole("RC","ADMIN","ASSOCIATE")
                 .simpSubscribeDestMatchers("/topic/chat").hasAnyRole("RC","ADMIN")
                 .simpDestMatchers("/app/chat").hasAnyRole("RC","ADMIN")
                 .anyMessage().denyAll();
+
     }
 
 

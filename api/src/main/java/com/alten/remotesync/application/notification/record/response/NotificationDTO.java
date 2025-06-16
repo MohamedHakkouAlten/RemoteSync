@@ -8,6 +8,7 @@ import java.util.UUID;
 public record NotificationDTO(
         UUID notificationId,
         String title,
+        Boolean isRead,
         String description,
         NotificationStatus status,
         LocalDateTime createdAt

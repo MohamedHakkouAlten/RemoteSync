@@ -1,8 +1,11 @@
+import { ReportStatus } from "../report-status.enum";
+
 export interface ReportFilter {
-  pageNumber: number;
-  pageSize: number;
-  title?: string;  // Changed from name to title
-  status?: string;
-  startDate?: string;
-  endDate?: string;
+  name: string,
+  status: ReportStatus | string,
+  startDate: string,
+  endDate: string,
+  pageNumber: number,
+  pageSize: number,
+
 }

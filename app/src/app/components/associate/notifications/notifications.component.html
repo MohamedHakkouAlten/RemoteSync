@@ -4,68 +4,70 @@
         <p-card styleClass="w-[85vw] shadow-md rounded-lg notification-card-fixed-height">
             <ng-template pTemplate="header">
                 <div class="flex justify-between items-center p-3 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-800">Notifications</h2>
+                    <h2 class="text-lg font-semibold text-gray-800">{{ 'notification_page.header' | translate }}</h2>
                 </div>
                 
                 <!-- Search Form -->
                 <div class="p-3 border-b border-gray-200 bg-gray-50">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                        <!-- Title Search - takes more space -->
+                        <!-- Title Search -->
                         <div class="md:col-span-4 flex flex-col">
-                            <label for="titleSearch" class="text-xs text-gray-600 mb-1 font-medium">Title</label>
+                            <label for="titleSearch" class="text-xs text-gray-600 mb-1 font-medium">{{ 'notification_page.filters.title.label' | translate }}</label>
                             <input id="titleSearch" type="text" pInputText [(ngModel)]="titleFilter" 
-                                placeholder="Search by title..." class="p-inputtext-sm w-full hover:!border-orange-500"
-                                (keyup.enter)="applyFilters()">
+                                [placeholder]="'notification_page.filters.title.placeholder' | translate" class="p-inputtext-sm w-full !text-[15px] hover:!border-orange-500"
+                                (input)="applyFilters()">
                         </div>
                         
                         <!-- Status Dropdown -->
                         <div class="md:col-span-3 flex flex-col">
-                            <label for="statusFilter" class="text-xs text-gray-600 mb-1 font-medium">Status</label>
+                            <label for="statusFilter" class="text-xs text-gray-600 mb-1 font-medium">{{ 'notification_page.filters.status.label' | translate }}</label>
                             <p-dropdown id="statusFilter" [options]="statusOptions" [(ngModel)]="statusFilter" 
-                                placeholder="Select Status" [showClear]="true" styleClass="w-full"
-                                (onChange)="applyFilters()"></p-dropdown>
+                                [placeholder]="'notification_page.filters.status.placeholder' | translate" [showClear]="true" styleClass="w-full !p-0"
+                                (onChange)="applyFilters()">
+                             <ng-template let-option pTemplate="item">
+    <span>{{ option.label | translate }}</span>
+  </ng-template>
+
+  <ng-template let-option pTemplate="selectedItem">
+    <span>{{ option.label | translate }}</span>
+  </ng-template>
+                            </p-dropdown>
                         </div>
                         
                         <!-- Date Filter -->
                         <div class="md:col-span-3 flex flex-col">
-                            <label for="dateFilter" class="text-xs text-gray-600 mb-1 font-medium">Created On</label>
+                            <label for="dateFilter" class="text-xs text-gray-600 mb-1 font-medium">{{ 'notification_page.filters.date.label' | translate }}</label>
                             <p-calendar id="dateFilter" [(ngModel)]="dateFilter" [showIcon]="true"
                                 dateFormat="yy-mm-dd" styleClass="w-full" [maxDate]="today"
-                                placeholder="Select Date" (onSelect)="applyFilters()"></p-calendar>
+                                [placeholder]="'notification_page.filters.date.placeholder' | translate" (onSelect)="applyFilters()"></p-calendar>
                         </div>
                         
                         <!-- Action Buttons -->
-                        <div class="md:col-span-2 flex justify-end gap-2">
-                            <button pButton type="button" icon="pi pi-search" label="Search" 
-                                class="p-button-sm w-full md:w-auto" (click)="applyFilters()"></button>
-                            <button pButton type="button" icon="pi pi-filter-slash" 
-                                class="p-button-sm p-button-outlined w-full md:w-auto" (click)="clearFilters()"
+                        <div class="md:col-span-2 gap-2">
+                            <button pButton type="button" icon="pi pi-filter-slash" [label]="'notification_page.filters.clear_button' | translate"
+                                class="p-button-sm p-button-outlined w-full md:w-auto !cursor-pointer" (click)="clearFilters()"
                                 [disabled]="!hasActiveFilters()"></button>
                         </div>
                     </div>
                 </div>
             </ng-template>
 
-            <!-- Using p-tabs for headers, binding value and listening to changes -->
-            <div class="flex flex-col flex-grow min-h-0"> <!-- Container for tabs + list -->
+            <div class="flex flex-col flex-grow min-h-0">
                 <p-tabs [(value)]="activeTabValue" (valueChange)="onTabChange($event)" styleClass="flex-shrink-0">
                     <p-tablist>
                         <ng-container *ngFor="let tab of tabs; trackBy: trackByTabValue">
                             <p-tab [value]="tab.value">
                                 <div class="flex items-center p-3 space-x-2">
-                                   <span>{{ tab.title }}</span>
-                                   <p-badge [value]="tab.countSignal()"></p-badge>
+                                   <!-- Assuming tab.title is a translation key like 'notification_page.tabs.all' -->
+                                   <span>{{ tab.title | translate }}</span>
+                                   <p-badge [value]="tab.count"></p-badge>
                                 </div>
                             </p-tab>
                         </ng-container>
                     </p-tablist>
                 </p-tabs>
 
-                <!-- Notification List Container -->
                 <div class="notification-list-container flex flex-col flex-grow min-h-0 pt-1">
-                    <div style="font-family: inter;" class="text-sm bg-secondary font-medium text-gray-500 px-3 py-1.5 mb-2 flex-shrink-0">Today</div>
-
-                    <!-- Scrollable notification list area -->
                     <div class="notification-items notification-list-scrollable flex-grow px-2">
                         <!-- Loading indicator -->
                         <div *ngIf="loading()" class="flex justify-center items-center py-10">
@@ -75,17 +77,17 @@
                         <!-- Empty state messages -->
                         <div *ngIf="!loading() && displayedNotifications().length === 0 && filteredNotifications().length > 0" 
                             class="text-center text-gray-500 py-6">
-                            No notifications on this page.
+                            {{ 'notification_page.empty_states.no_results_current_page' | translate }}
                         </div>
                         
                         <div *ngIf="!loading() && filteredNotifications().length === 0" 
                             class="text-center text-gray-500 py-6">
                             <ng-container [ngSwitch]="activeTabValue()">
-                                <ng-container *ngSwitchCase="'all'">You have no notifications.</ng-container>
-                                <ng-container *ngSwitchCase="'urgent'">You have no urgent notifications.</ng-container>
-                                <ng-container *ngSwitchCase="'important'">You have no important notifications.</ng-container>
-                                <ng-container *ngSwitchCase="'normal'">You have no normal notifications.</ng-container>
-                                <ng-container *ngSwitchDefault>No items to display.</ng-container>
+                                <ng-container *ngSwitchCase="'all'">{{ 'notification_page.empty_states.all' | translate }}</ng-container>
+                                <ng-container *ngSwitchCase="'urgent'">{{ 'notification_page.empty_states.urgent' | translate }}</ng-container>
+                                <ng-container *ngSwitchCase="'important'">{{ 'notification_page.empty_states.important' | translate }}</ng-container>
+                                <ng-container *ngSwitchCase="'normal'">{{ 'notification_page.empty_states.normal' | translate }}</ng-container>
+                                <ng-container *ngSwitchDefault>{{ 'notification_page.empty_states.default' | translate }}</ng-container>
                             </ng-container>
                         </div>
 
@@ -94,15 +96,14 @@
                             <div *ngFor="let notification of displayedNotifications(); trackBy: trackById"
                                  class="notification-item border border-gray-200 rounded-sm p-3 mb-2 bg-white"
                                  [class.unread]="!notification.isRead">
+                             
                                 <div class="flex items-start space-x-3">
-                                    <!-- Icon Container -->
                                     <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
                                          [ngClass]="{
                                             'bg-amber-100': notification.type === 'report',
                                             'bg-teal-100': notification.type === 'rotation',
                                             'bg-purple-100': notification.type === 'general'
                                          }">
-                                        <!-- Icon -->
                                         <ng-container [ngSwitch]="notification.type">
                                             <i *ngSwitchCase="'report'" class="text-lg pi pi-file text-amber-600"></i>
                                             <i *ngSwitchCase="'rotation'" class="text-lg pi pi-clock text-teal-600"></i>
@@ -111,44 +112,33 @@
                                         </ng-container>
                                     </div>
                                     
-                                    <!-- Main Content -->
                                     <div class="flex-grow">
-                                        <!-- Header -->
-                                        <div class="flex justify-between items-center mb-0.5">
+                                        <div class="flex justify-between items-center mb-4">
                                             <div class="flex items-center">
                                                 <h3 class="text-sm font-semibold text-gray-900">{{ notification.title }}</h3>
                                                 <span class="ml-2 px-2 py-0.5 text-xs rounded-full" [ngClass]="notification.statusClass">
                                                     {{ notification.status }}
                                                 </span>
                                             </div>
-                                            <span class="text-xs text-gray-500">{{ notification.timestamp }}</span>
+                                            <span class="text-sm text-gray-400">{{notification.timestamp}}</span>
                                         </div>
                                         
-                                        <!-- Sender -->
-                                        <div class="flex items-center space-x-1.5 mb-1.5">
-                                            <p-avatar [label]="notification.senderInitial" shape="circle" 
-                                                styleClass="text-white !text-xs w-5 h-5"></p-avatar>
-                                            <span class="text-xs text-gray-700">{{ notification.senderName }}</span>
-                                        </div>
-                                        
-                                        <!-- Message -->
-                                        <p class="text-xs text-gray-600 mb-2 leading-snug">
+                                        <p class="text-[13px] text-gray-600 mb-2 leading-snug">
                                             {{ notification.message }}
                                         </p>
                                         
-                                        <!-- Actions -->
                                         <div class="flex items-center space-x-1.5">
                                             <button *ngIf="notification.type === 'report'" pButton type="button" 
-                                                label="View Details" icon="pi pi-file" 
+                                                [label]="'notification_page.actions.view_report' | translate" icon="pi pi-file-import" 
                                                 style="border-radius: 3px;" 
                                                 class="!bg-primary !text-[12px] !border-0 !h-8 !px-2"
-                                                (click)="viewReport(notification.id)"></button>
+                                                (click)="viewReport(notification)"></button>
                                             <button *ngIf="notification.type === 'rotation'" pButton type="button" 
-                                                label="View Report" icon="pi pi-file-import"
+                                                [label]="'notification_page.actions.view_calendar' | translate" icon="pi pi-calendar"
                                                 style="border-radius: 3px;" 
                                                 class="!bg-primary !text-[12px] !border-0 !h-8 !px-2"
-                                                (click)="viewReport(notification.id)"></button>
-                                            <button pButton type="button" label="Dismiss" 
+                                                (click)="viewReport(notification)"></button>
+                                            <button *ngIf="!notification.isRead" pButton type="button" [label]="'notification_page.actions.dismiss' | translate"
                                                 class="!text-[12px] !border-0 !h-8 !px-2 !rounded-1 !text-[#374151] !bg-[#f3f4f6]"
                                                 style="border-radius: 3px;" 
                                                 (click)="dismissNotification(notification.id)"></button>

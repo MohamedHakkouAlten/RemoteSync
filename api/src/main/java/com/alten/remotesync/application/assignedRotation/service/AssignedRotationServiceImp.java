@@ -13,6 +13,7 @@ import com.alten.remotesync.application.assignedRotation.record.response.*;
 import com.alten.remotesync.application.client.mapper.ClientMapper;
 import com.alten.remotesync.application.client.record.response.ClientDTO;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
+import com.alten.remotesync.application.notification.mapper.NotificationMapper;
 import com.alten.remotesync.domain.assignedRotation.enumeration.RotationAssignmentStatus;
 import com.alten.remotesync.domain.assignedRotation.model.AssignedRotation;
 import com.alten.remotesync.domain.assignedRotation.model.embeddable.AssignedRotationId;
@@ -22,6 +23,9 @@ import com.alten.remotesync.domain.assignedRotation.repository.AssignedRotationD
 import com.alten.remotesync.domain.client.repository.ClientDomainRepository;
 import com.alten.remotesync.domain.customDate.model.CustomDate;
 import com.alten.remotesync.domain.factory.repository.FactoryDomainRepository;
+import com.alten.remotesync.domain.notification.enumeration.NotificationStatus;
+import com.alten.remotesync.domain.notification.model.Notification;
+import com.alten.remotesync.domain.notification.repository.NotificationDomainRepository;
 import com.alten.remotesync.domain.project.model.Project;
 import com.alten.remotesync.domain.project.repository.ProjectDomainRepository;
 import com.alten.remotesync.domain.rotation.enumeration.RotationStatus;
@@ -70,14 +74,15 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     private final AssignedRotationMapper assignedRotationMapper;
     private final ClientMapper clientMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
-
+    private final NotificationDomainRepository notificationDomainRepository;
+    private final NotificationMapper notificationMapper;
     private final MailUtility mailUtility;
 
     @Override
     public List<ClientDTO> getAssociateClients(GlobalDTO globalDTO) {
-        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllDistinctByUser_UserId(globalDTO.userId()).orElseThrow();
+        List<AssignedRotation> assignedRotations = assignedRotationDomainRepository.findAllDistinctByUser_UserIdAndProjectNotNull(globalDTO.userId()).orElseThrow();
 
-        return assignedRotations.stream().map(m -> m.getProject().getOwner()).toList().stream().map(clientMapper::toClientDTO).toList();
+        return assignedRotations.stream().map(m -> m.getProject().getOwner()).toList().stream().map(clientMapper::toClientDTO).collect(Collectors.toSet()).stream().toList();
     }
 
     @Override
@@ -447,6 +452,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     @Override
     @Transactional
     public RcAssignRotationUserDTO createRcAssignRotationAssociate(GlobalDTO globalDTO, RcAssignRotationUserDTO rcAssignRotationUserDTO) {
+        List<Notification> notifications = new ArrayList<>();
         User authenticatedRc = userDomainRepository.findById(globalDTO.userId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -505,6 +511,20 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
                     if (activeAssignedRotation.isPresent()) {
                         AssignedRotation overriddenAssignedRotation = activeAssignedRotation.get();
+
+                        if(dbProject!=null && overriddenAssignedRotation.getProject()!=null &&  overriddenAssignedRotation.getProject().getProjectId()!=dbProject.getProjectId()){
+                            System.out.println("called"+ dbProject +" "+ overriddenAssignedRotation);
+                            Notification projectNotification= Notification.builder()
+                                            .createdAt(LocalDateTime.now())
+                                                    .title("New Project Assignment")
+                                                            .description("you have been assigned to the project "+dbProject.getLabel())
+                                                                    .isRead(false)
+                                                                            .receiver(associate)
+                                                                                    .status(NotificationStatus.IMPORTANT)
+                                    .build();
+                            notifications.add(projectNotification);
+
+                        }
                         updateRotation(overriddenAssignedRotation, authenticatedRc);
                     }
 
@@ -518,6 +538,17 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                             .createdAt(LocalDateTime.now())
                             .createdBy(authenticatedRc)
                             .build());
+                    //Rotation notification
+                    Notification rotationNotification= Notification.builder()
+                            .createdAt(LocalDateTime.now())
+                            .title("New Rotation")
+                            .description("You have been assigned to a new rotation")
+                            .isRead(false)
+                            .receiver(associate)
+                            .status(NotificationStatus.URGENT)
+                            .build();
+                    notifications.add(rotationNotification);
+                    simpMessagingTemplate.convertAndSendToUser(rotationNotification.getReceiver().getUserId().toString(), "/topic/notification",notificationMapper.toNotificationDTO(rotationNotification));
                     // SENDING EMAIL
                     String subject = "New Rotation Assignment from " + this.mailUtility.applicationName;
                     // UPDATED CALL:
@@ -534,6 +565,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
             }
         }
         simpMessagingTemplate.convertAndSend("/topic/rotation","changed");
+        if(!notifications.isEmpty()) notificationDomainRepository.saveAll(notifications);
         return rcAssignRotationUserDTO;
     }
 
@@ -872,6 +904,17 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 .createdAt(LocalDateTime.now())
                 .createdBy(authenticatedRc)
                 .build());
+        Notification rotationNotification= Notification.builder()
+                .createdAt(LocalDateTime.now())
+                .title(" Rotation update")
+                .description("Your rotation has been updated")
+                .isRead(false)
+                .receiver(associate)
+                .status(NotificationStatus.URGENT)
+                .build();
+
+
+        notificationDomainRepository.save(rotationNotification);
 
         try {
             String subject = "Update to your " + this.mailUtility.applicationName + " Rotation";
@@ -881,6 +924,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
         } catch (Exception e) {
         }
         simpMessagingTemplate.convertAndSend("/topic/rotation",Map.of("code","ROTATION_UPDATED"));
+        simpMessagingTemplate.convertAndSendToUser(rotationNotification.getReceiver().getUserId().toString(), "/topic/notification",notificationMapper.toNotificationDTO(rotationNotification));
         return true;
     }
 

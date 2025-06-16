@@ -7,20 +7,21 @@
   </div>
 
   <!-- Left Column: Login Form -->
-  <div class="login-form-column">
+  <div class="login-form-column ">
     <div class="logo-container">
       <app-visitor-logo-block
-        [logoSrc]="'assets/alten-logo.png'"
-        [logoAlt]="'ALTEN Logo'"
-        [mainText]="'ALTEN'"
-        [subText]="'RemoteSync'"
-        [containerClass]="'standalone-logo'"
-      ></app-visitor-logo-block>
+      [logoSrc]="'assets/alten-logo.png'"
+      [logoAlt]="'ALTEN Logo'"
+      [mainText]="'ALTEN'"
+      [subText]="'RemoteSync'"
+      [containerClass]="'standalone-logo'"
+    ></app-visitor-logo-block>
     </div>
-    <div class="form-content-wrapper">
+    <h1 class="font-medium text-2xl pb-2" >{{'login.welcomeBack'| translate}}</h1>
+    <h2 class="text-gray-500 font-light">{{'login.signInToContinue' | translate}}</h2>
+    <div class="form-content-wrapper !h-[100px]">
       <app-visitor-form-card
-        [title]="'login.welcomeBack' | translate"
-        [subtitle]="'login.signInToContinue' | translate"
+
       >
         <form (ngSubmit)="signIn()" #loginForm="ngForm" novalidate>
           <!-- Username/Email Input Group -->
@@ -92,14 +93,14 @@
   <!-- Right Column: Branding -->
   <div class="branding-column">
     <div class="branding-content">
-      <h2>{{ "branding.trackPresence" | translate }}</h2>
-      <h3>{{ "branding.onSiteOrRemote" | translate }}</h3>
-      <p>{{ "branding.realTimeVisibility" | translate }}</p>
-      <div class="stats">
-        <p>{{ "branding.stats.clients" | translate }}</p>
-        <p>{{ "branding.stats.consultants" | translate }}</p>
-        <p>{{ "branding.stats.planning" | translate }}</p>
-      </div>
+        <h2 >{{ 'branding.trackPresence' | translate }}</h2>
+        <h3>{{ 'branding.onSiteOrRemote' | translate }}</h3>
+        <p>{{ 'branding.realTimeVisibility' | translate }}</p>
+        <div class="stats">
+            <p>{{ 'branding.stats.clients' | translate }}</p>
+            <p>{{ 'branding.stats.consultants' | translate }}</p>
+            <p>{{ 'branding.stats.planning' | translate }}</p>
+        </div>
     </div>
   </div>
 </div>

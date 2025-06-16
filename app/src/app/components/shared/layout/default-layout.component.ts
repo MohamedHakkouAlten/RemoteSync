@@ -19,10 +19,10 @@ import { Subscription } from 'rxjs';
         <ng-content></ng-content>
       </main>
 
-      <footer class="layout-footer" [ngClass]="footerClass">
+      <!-- <footer class="layout-footer" [ngClass]="footerClass">
         WE NEED FOOOTER HERE
         <ng-content select="[slot=footer]"></ng-content>
-      </footer>
+      </footer> -->
       
       <!-- Only show chat for RC or ADMIN roles -->
       <app-chat *ngIf="isRcOrAdmin"></app-chat>

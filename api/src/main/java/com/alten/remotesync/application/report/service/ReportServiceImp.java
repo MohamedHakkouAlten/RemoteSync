@@ -3,6 +3,7 @@ package com.alten.remotesync.application.report.service;
 import com.alten.remotesync.adapter.exception.report.ReportNotFoundException;
 import com.alten.remotesync.application.globalDTO.GlobalDTO;
 import com.alten.remotesync.application.globalDTO.PagedGlobalDTO;
+import com.alten.remotesync.application.notification.mapper.NotificationMapper;
 import com.alten.remotesync.application.report.mapper.ReportMapper;
 import com.alten.remotesync.application.report.record.request.AssociateReportDTO;
 import com.alten.remotesync.application.report.record.request.CreateAssociateReportDTO;
@@ -11,33 +12,63 @@ import com.alten.remotesync.application.report.record.request.*;
 import com.alten.remotesync.application.report.record.response.PagedReportDTO;
 import com.alten.remotesync.application.report.record.response.RcPagedReportDTO;
 import com.alten.remotesync.application.report.record.response.ReportDTO;
+import com.alten.remotesync.domain.notification.enumeration.NotificationStatus;
+import com.alten.remotesync.domain.notification.model.Notification;
+import com.alten.remotesync.domain.notification.repository.NotificationDomainRepository;
 import com.alten.remotesync.domain.report.enumeration.ReportStatus;
 import com.alten.remotesync.domain.report.model.Report;
 import com.alten.remotesync.domain.report.repository.ReportDomainRepository;
+import com.alten.remotesync.domain.user.model.User;
 import com.alten.remotesync.domain.user.repository.UserDomainRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class ReportServiceImp implements ReportService {
     private final ReportDomainRepository reportDomainRepository;
     private final UserDomainRepository userDomainRepository;
+    private final NotificationDomainRepository notificationDomainRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final NotificationMapper notificationMapper;
     private final ReportMapper reportMapper;
 
+    @Transactional
     @Override
     public ReportDTO createAssociateReport(GlobalDTO globalDTO, CreateAssociateReportDTO createAssociateReportDTO) {
         Report report=reportMapper.toAssociateReport(createAssociateReportDTO);
         report.setCreatedBy(userDomainRepository.findById(globalDTO.userId()).get());
         report.setStatus(ReportStatus.PENDING);
+        List<User> RCList=userDomainRepository.findAllByRoles_Authority("ROLE_RC").orElse(null);
+        System.out.println(RCList);
+        List<Notification> reportNotifications=new ArrayList<>();
+        Notification reportNotification = Notification.builder()
+                .createdAt(LocalDateTime.now())
+                .title("New Report")
+                .description(report.getDescription())
+                .isRead(false)
+                .status(NotificationStatus.URGENT)
+                .build();
+        if(RCList!=null) {
+            for(User user:RCList) {
+                reportNotification.setReceiver(user);
+                reportNotifications.add(reportNotification);
+            }
+        }
+        if(!reportNotifications.isEmpty()) notificationDomainRepository.saveAll(reportNotifications);
+        simpMessagingTemplate.convertAndSend("/topic/RCNotification",notificationMapper.toNotificationDTO(reportNotification));
         // SHOULD SET AUTOMATICALLY THE USER NOT MANUALLY @CreatedBy @LastModifiedBy ...etc
         return reportMapper.toReportDTO(reportDomainRepository.save(report)) ;
     }
@@ -93,6 +124,7 @@ public class ReportServiceImp implements ReportService {
         );
     }
 
+    @Transactional
     @Override
     public String updateReportStatus(RcUpdateReportDTO rcUpdateReportDTO) {
 
@@ -100,6 +132,17 @@ public class ReportServiceImp implements ReportService {
                 .orElseThrow(() -> new ReportNotFoundException("Report with ID " + rcUpdateReportDTO.reportId() + " not found"));
         report.setStatus(rcUpdateReportDTO.status());
         reportDomainRepository.save(report);
+        System.out.println(LocalDateTime.now());
+        Notification reportNotification= Notification.builder()
+                .createdAt(LocalDateTime.now())
+                .title("Report update")
+                .description("your report has been updated")
+                .isRead(false)
+                .receiver(report.getCreatedBy())
+                .status(NotificationStatus.URGENT)
+                .build();
+        notificationDomainRepository.save(reportNotification);
+        simpMessagingTemplate.convertAndSendToUser(reportNotification.getReceiver().getUserId().toString(), "/topic/notification",notificationMapper.toNotificationDTO(reportNotification));
         return "successful report update";
     }
 

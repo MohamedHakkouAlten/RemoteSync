@@ -103,7 +103,8 @@
     "december": "December"
   },
   "dashboard_associate": {
-    "title": "Associate Dashboard",
+    "weeks":"Weeks",
+    "title": "Dashboard",
     "welcome_message": "Welcome back,",
     "activity_overview": "Here's your latest activity overview.",
     "loading": "Loading dashboard...",
@@ -162,6 +163,15 @@
     "save": "Save"
   },
   "profile": {
+   "update": {
+      "errorSummary": "Error",
+      "errorDetail": "Failed to update profile. Please try again later."
+    },
+    "load": {
+      "errorSummary": "Error",
+      "errorDetail": "Failed to load profile data. Please try again later."
+    },
+
     "title": "My Profile",
     "subtitle": "Manage your personal information and account preferences",
     "complete": "complete",
@@ -282,7 +292,7 @@
   "project_rc": {
     "title": "Projects",
     "subtitle": "Overview of all active, upcoming, and completed projects",
-    "paginationSummary": "Showing {start} to {end} of {total} projects",
+    "paginationSummary": "Showing {{start}} to {{end}} of {{total}} projects",
     "summaryStats": {
       "totalProjects": "Total Projects:",
       "completed": "Completed:",
@@ -310,7 +320,9 @@
       "update": "Update",
       "editProject": "Edit Project",
       "viewProject": "View Project",
-      "progress": "Progress"
+      "progress": "Progress",
+      "summary": " project with {{progress}}% completion."
+  
     },
     "client": {
       "name": "Name",
@@ -332,7 +344,7 @@
         "view": "View",
         "delete": "Delete"
       },
-      "paginationSummary": "Showing {first} to {last} of {totalRecords} entries",
+      "paginationSummary": "Showing {{start}} to {{end}} of {{total}} entries",
       "emptyMessage": "No projects found matching your search criteria.",
       "loadingMessage": "Loading projects data..."
     },
@@ -345,7 +357,7 @@
     },
     "deleteConfirmation": {
       "header": "Confirm Delete",
-      "message": "Are you sure you want to delete the project '{titre}'?",
+      "message": "Are you sure you want to delete the project '{{title}}'?",
       "accept": "Yes, delete",
       "reject": "No, keep it",
       "success": "Project Deleted",
@@ -362,7 +374,7 @@
     "clear": "Clear",
     "viewReport": "View Report",
     "noReportsMessage": "There are no reports to display.",
-    "paginationSummary": "Showing {start}–{end} of {total} reports",
+    "paginationSummary": "Showing {{start}} to {{end}} of {{total}} reports",
     "summaryStats": {
       "totalReports": "Total Reports:",
       "accepted": "Completed:",
@@ -439,12 +451,16 @@
       "addRotation": "Add Rotation",
       "previousPeriod": "Previous Period",
       "nextPeriod": "Next Period",
-      "today": "Today"
+      "today": "Today",
+      "save": "Save",
+  "cancel": "Cancel"
     },
+    "pendingChanges": "Pending Changes",
+
     "viewSelector": {
-      "placeholder": "Select View",
+   
       "week": "Week",
-      "month": "Month"
+      "day": "Day"
     },
     "grid": {
       "associate": "Associate",
@@ -456,17 +472,13 @@
       "title": "No Rotations Found",
       "subtitle": "No rotation data available for the selected period or filters."
     },
-    "pendingChanges": {
-      "message": "You have pending changes that need to be saved.",
-      "saveButton": "Save Changes",
-      "cancelButton": "Cancel"
-    },
+
     "legend": {
       "title": "Legend",
       "onsite": "On-site",
       "onSite": "On-site",
       "remote": "Remote",
-      "off": "Off (No Assignment)",
+      "off": "Off",
       "today": "Today"
     },
     "pendingChangesDescription": "You have pending changes that need to be saved or discarded."
@@ -497,6 +509,310 @@
     "validation": {
       "projectRequired": "Project is required.",
       "collaboratorRequired": "At least one collaborator is required."
+    }
+  }
+,
+ "reportPage": {
+    "headerTitle": "Reports",
+    "searchPlaceholder": "Search reports...",
+    "dateRangePlaceholder": "Select date range",
+    "statusDropdownPlaceholder": "All Status",
+    "statusDropdownDefaultText": "All Status",
+    "clearFiltersButton": "Clear",
+    "viewReportButtonLabel": "View Report",
+    "noReportsMessage": "There are no reports to display.",
+    "paginationSummary": "Showing {{first}} to {{last}} of {{totalRecords}} entries"
+  },
+  "calendarPage": {
+    "header": {
+      "title": "Rotation Schedule",
+      "breadcrumb": "Rotation Schedule"
+    },
+    "mainContent": {
+      "title": "Rotation Schedule"
+    },
+    "filters": {
+      "searchPlaceholder": "Search",
+      "clientPlaceholder": "Client",
+      "projectPlaceholder": "Project",
+      "factoryPlaceholder": "Factory",
+      "subFactoryPlaceholder": "SubFactory",
+      "clearButton": "clear"
+    },
+    "buttons": {
+      "createNewRotation": "Create a new Rotation",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes"
+    },
+    "viewMode": {
+      "selectViewPlaceholder": "Select View",
+      "options": {
+        "month": "Month",
+        "week": "Week",
+        "day": "Day"
+      }
+    },
+    "grid": {
+      "headerUser": "User",
+      "userRoleConsultant": "Consultant",
+      "noUsersFound": "No users found matching your criteria."
+    },
+    "pendingChanges": {
+      "message": "You have pending changes that need to be saved."
+    },
+    "legend": {
+      "onSite": "On-site",
+      "remote": "Remote",
+      "offNoAssignment": "Off (No Assignment)"
+    }
+  },"viewProjectDialog": {
+    "sections": {
+      "label": {
+        "title": "Label"
+      },
+      "client": {
+        "title": "Client",
+        "nameLabel": "name :",
+        "iceLabel": "ICE :",
+        "clientLabel": "label :",
+        "emailLabel": "email :"
+      },
+      "duration": {
+        "title": "Duration"
+      },
+      "progress": {
+        "title": "Progress"
+      }
+    },
+    "status": {
+        "active": "Active",
+        "completed": "Completed",
+        "inactive": "Inactive",
+        "cancelled": "Cancelled",
+        "upcoming": "Upcoming"
+    }
+  }, "createProjectDialog": {
+    "header": "Create New Project",
+    "title": "Title",
+    "label": "Label",
+    "status": "Status",
+    "selectStatusPlaceholder": "Select a Status",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "client": "Client",
+    "clientPlaceholder": "Client",
+    "footer": {
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "editProjectDialog": {
+    "header": "Edit Project",
+    "title": "Title",
+    "label": "Label",
+    "status": "Status",
+    "selectStatusPlaceholder": "Select a Status",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "client": "Client",
+    "clientPlaceholder": "Client",
+    "footer": {
+      "cancel": "Cancel",
+      "update": "Update"
+    }
+  },"reportDetailDialog": {
+    "labels": {
+      "title": "Title",
+      "date": "Date",
+      "status": "Status",
+      "description": "Description"
+    },
+    "placeholders": {
+      "noDescription": "No description available."
+    },
+    "statusTypes": {
+      "pending": "Pending",
+      "opened": "In Progress",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "footer": {
+      "rejectButton": "Reject",
+      "rejectTooltip": "Mark as Rejected",
+      "inProgressButton": "In Progress",
+      "inProgressTooltip": "Mark as In Progress",
+      "acceptButton": "Accept",
+      "acceptTooltip": "Mark as Accepted"
+    }
+  },
+  "createRotationDialog": {
+    "header": "Create Rotation",
+    "project": {
+      "label": "Select Project",
+      "placeholder": "Select project",
+      "validation": {
+        "required": "Project is required."
+      }
+    },
+    "dates": {
+      "startLabel": "Start Date",
+      "endLabel": "End Date"
+    },
+    "collaborators": {
+      "label": "Select Collaborators",
+      "placeholder": "Search and add collaborators...",
+      "validation": {
+        "required": "At least one collaborator is required."
+      }
+    },
+    "rotationMode": {
+      "automatic": "Automatic Rotation",
+      "custom": "Custom Dates"
+    },
+    "automaticRotation": {
+      "patternLabel": "Rotation Pattern :",
+      "summary": "{{weeksValue}} remote weeks every {{periodValue}} weeks"
+    },
+    "customRotation": {
+      "label": "Select custom dates",
+      "selectionTypes": {
+        "remote": "Remote",
+        "onsite": "On-site"
+      }
+    },
+    "footer": {
+      "cancel": "Cancel",
+      "create": "Create Rotation"
+    }
+  },
+  
+  "notification_panel": {
+    "header": "Notifications",
+    "mark_all_as_read": "Mark all as read",
+    "empty_state": "You have no notifications.",
+    "view_calendar": "View Calendar",
+    "view_report": "View Report",
+    "dismiss": "Dismiss",
+    "view_all": "View All notifications"
+  
+}, "notification_page": {
+    "header": "Notifications",
+
+    "filters": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Search by title..."
+      },
+      "status": {
+        "label": "Status",
+        "placeholder": "Select Status"
+      },
+      "date": {
+        "label": "Created On",
+        "placeholder": "Select Date"
+      },
+      "clear_button": "Clear"
+    },
+    "tabs": {
+      "all": "All",
+      "urgent": "Urgent",
+      "important": "Important",
+      "normal": "Normal"
+    },
+        "status": {
+      "urgent": "Urgent",
+      "important": "Important",
+      "normal": "Normal",
+      "info": "Info",
+      "alert": "Alert",
+      "request": "Request"
+    },
+    "empty_states": {
+      "no_results_current_page": "No notifications on this page.",
+      "all": "You have no notifications.",
+      "urgent": "You have no urgent notifications.",
+      "important": "You have no important notifications.",
+      "normal": "You have no normal notifications.",
+      "default": "No items to display."
+    },
+    "actions": {
+      "view_report": "View Reports",
+      "view_calendar": "View Calendar",
+      "dismiss": "Dismiss"
+    }
+  },"time": {
+    "ago": {
+      "just_now": "Just now",
+      "minutes_one": "1 min ago",
+      "minutes_other": "{{count}} mins ago",
+      "hours_one": "1 hour ago",
+      "hours_other": "{{count}} hours ago",
+      "days_one": "1 day ago",
+      "days_other": "{{count}} days ago"
+    }
+  },  "report": {
+    "create": {
+      "successSummary": "Report Created",
+      "successDetail": "Your report has been submitted successfully",
+      "errorSummary": "Error",
+      "errorDetail": "Failed to create report. Please try again."
+    },
+    "loading": {  
+      "errorSummary": "Loading Error",
+      "errorDetail": "Reports could not be loaded. Please try again later."
+    }
+  },"error": {
+    
+    "unexpected": {
+      "summary": "Unexpected Error",
+      "detail": "An unexpected error occurred. Please try again later."
+    },  "validation": {
+      "summary": "Validation Error",
+      "detail": "Please check all required fields"
+    }
+  }, "rotation": {
+    "create": {
+      "successSummary": "Rotation created successfully",
+        "failureSummary": "Failed to create rotation. Please try again."
+    },
+   
+    "update": {
+      "failureSummary": "Update Failed",
+      "failureDetailDefault": "Failed to update rotation status",
+      "genericErrorSummary": "Update Failed",
+      "genericErrorDetail": "An error occurred while updating rotation status"
+    }
+  },"calendar": {
+    "load": {
+      "errorSummary": "Error",
+      "errorDetail": "Failed to load calendar data."
+    }
+  },"changes": {
+    "pending": {
+      "summary": "Change Pending",
+      "detail": "Click Save Changes button to apply your updates"
+    },"no_changes": {
+      "summary": "No Changes",
+      "detail": "No changes to save"
+    },"saved": {
+      "summary": "Changes Saved",
+      "detail": "Successfully updated rotation schedules for {{count}} user(s)"
+    },
+    "cancelled": {
+      "summary": "Changes Cancelled",
+      "detail": "All pending changes have been discarded"
+    },
+    
+    "discarded": {
+      "summary": "Cancelled",
+      "detail": "Changes have been discarded."
+    }
+  },"project": {
+    "add": {
+      "successSummary": "Project added successfully"
+    },
+    "update": {
+      "successSummary": "Project updated successfully"
     }
   }
 }
