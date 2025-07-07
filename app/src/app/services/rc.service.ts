@@ -68,8 +68,10 @@ export class RcService {
    * Get the RC dashboard data
    * @returns Observable with the RC dashboard data
    */
-  getRcDashboard(): Observable<ResponseWrapperDto<RcDashboardResponse>> {
-    return this.http.get<ResponseWrapperDto<RcDashboardResponse>>(`${this.apiUrl}/dashboard`);
+  getRcDashboard(pageSize:number=10): Observable<ResponseWrapperDto<RcDashboardResponse>> {
+    const params=new HttpParams()
+    .set("pageSize",pageSize)
+    return this.http.get<ResponseWrapperDto<RcDashboardResponse>>(`${this.apiUrl}/dashboard`,{params});
   }
 
   /**
@@ -116,8 +118,10 @@ export class RcService {
    * Get the initial calendar data for RC including client dropdown, factory dropdown, and recent rotations
    * @returns Observable with initial calendar data
    */
-  getRcInitialCalendar(): Observable<ResponseWrapperDto<RcInitialCalendarResponse>> {
-    return this.http.get<ResponseWrapperDto<RcInitialCalendarResponse>>(`${this.apiUrl}/initial-calendar`);
+  getRcInitialCalendar(pageSize:number=5): Observable<ResponseWrapperDto<RcInitialCalendarResponse>> {
+    const params=new HttpParams()
+    .set("pageSize",pageSize)
+    return this.http.get<ResponseWrapperDto<RcInitialCalendarResponse>>(`${this.apiUrl}/initial-calendar`,{params});
   }
 
   /**

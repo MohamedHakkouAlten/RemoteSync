@@ -24,7 +24,7 @@ public interface AssignedRotationService {
     PagedAssignedRotationDTO getUsersRotationByClient(UUID clientId, int page, int size);
     RcAssignRotationUserDTO createRcAssignRotationAssociate(GlobalDTO globalDTO, RcAssignRotationUserDTO rcAssignRotationUserDTO);
     RcCountCurrentAssociateOnSiteDTO getRcCountCurrentAssociateOnSite();
-    List<RcRecentAssociateRotations> getRcRecentAssociateRotations();
+    List<RcRecentAssociateRotations> getRcRecentAssociateRotations(Integer pageSize);
     PagedRcRecentAssociateRotations getRcAllRecentAssociateRotations(PagedRotationsSearchDTO pagedRotationsSearchDTO);
 
     Boolean updateRcAssignedRotationAssociate(GlobalDTO globalDTO, RcUpdateAssociateRotationDTO rcUpdateAssociateRotationDTO);

@@ -117,6 +117,7 @@
           [rowsPerPageOptions]="[10, 25, 50]"
           styleClass="p-datatable-sm custom-table"
           responsiveLayout="scroll"
+          [paginatorDropdownAppendTo]="'body'"
           (onPage)="loadData($event)" [lazy]="true">
 
           <ng-template pTemplate="header">

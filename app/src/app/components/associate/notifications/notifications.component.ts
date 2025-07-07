@@ -220,7 +220,7 @@ export class NotificationsComponent implements OnInit {
   private mapNotificationDto(dto: NotificationDTO): Notification {
     // Determine notification type based on status
     let type: 'report' | 'rotation' | 'general' = 'general';
-    if (dto.title.toLocaleLowerCase().includes("report")) {
+    if (dto.title.toLocaleLowerCase().includes("port")) {
       type = 'report';
     } else if (dto.title.toLocaleLowerCase().includes("rotation")) {
       type = 'rotation';

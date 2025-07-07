@@ -104,7 +104,7 @@ currentLanguage: SupportedLanguage = 'en';
       this.currentLanguage = lang;
     });
     // Fetch RC dashboard data from the new endpoint
-    this.rcService.getRcDashboard().subscribe({
+    this.rcService.getRcDashboard(10).subscribe({
       next: (res: ResponseWrapperDto<RcDashboardResponse>) => {
         // Make sure we have valid data
         if (!res || !res.data) {

@@ -59,7 +59,7 @@ public class RcController {
 
     @GetMapping("/rc/dashboard")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getRcDashboard(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<?> getRcDashboard(@AuthenticationPrincipal UserPrincipal userPrincipal,@RequestParam Integer pageSize) {
         RcProjectsCountDTO rcCompletedRcProjectsCountDTO = projectService.getRcCountProjectByStatus(ProjectStatus.COMPLETED);
         RcProjectsCountDTO rcActiveRcProjectsCountDTO = projectService.getRcCountProjectByStatus(ProjectStatus.ACTIVE);
         RcFactoriesCountDTO rcFactoriesCountDTO = factoryService.getRcTotalFactoriesCount();
@@ -68,7 +68,7 @@ public class RcController {
         ProjectDTO longestDurationProjectDTO = projectService.getRcLongestDurationProject();
         ProjectLargestMembersDTO largestTeamProjectDTO = projectService.getRcLargestTeamProject();
         PagedReportDTO pendingReports = reportService.getRcPendingReports();
-        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations();
+        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations(pageSize);
 
         Map<String, Object> data = new HashMap<>();
         data.put("completedProjectsCount", rcCompletedRcProjectsCountDTO.projectsCount());
@@ -109,10 +109,10 @@ public class RcController {
 
     @GetMapping("/rc/initial-calendar")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getRcInitialCalendar(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<?> getRcInitialCalendar(@AuthenticationPrincipal UserPrincipal userPrincipal,@RequestParam Integer pageSize) {
         List<ClientDropDownDTO> clientDropDownDTOS = clientService.getRcAllClients();
         List<FactoryDropDownDTO> factoryDropDownDTOS = factoryService.getRcAllFactories();
-        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations();
+        List<RcRecentAssociateRotations> recentAssociateRotations = assignedRotationService.getRcRecentAssociateRotations(pageSize);
 
         Map<String, Object> data = new HashMap<>();
         data.put("clientDropDown", clientDropDownDTOS);

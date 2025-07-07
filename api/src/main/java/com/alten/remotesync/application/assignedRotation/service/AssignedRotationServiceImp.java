@@ -87,43 +87,46 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
 
     @Override
     public OnSiteWeeksDTO getAssociateOnSiteWeeks(GlobalDTO globalDTO) {
-        AssignedRotation assignedRotation = assignedRotationDomainRepository
-                .findByUser_UserIdAndRotationAssignmentStatus(globalDTO.userId(), RotationAssignmentStatus.ACTIVE).orElseThrow();
+        Optional<AssignedRotation> isAssignedRotation = assignedRotationDomainRepository
+                .findByUser_UserIdAndRotationAssignmentStatus(globalDTO.userId(), RotationAssignmentStatus.ACTIVE);
+        if(isAssignedRotation.isPresent()) {
+            AssignedRotation assignedRotation=isAssignedRotation.get();
+            Integer countOnSiteWeeks = 0;
+            List<LocalDate> onSiteDates = new ArrayList<>();
 
-        Integer countOnSiteWeeks = 0;
-        List<LocalDate> onSiteDates = new ArrayList<>();
+            Rotation rotation = assignedRotation.getRotation();
+            LocalDate startDate = rotation.getStartDate();
+            LocalDate endDate = rotation.getEndDate();
 
-        Rotation rotation = assignedRotation.getRotation();
-        LocalDate startDate = rotation.getStartDate();
-        LocalDate endDate = rotation.getEndDate();
+            int cycleLengthWeeks = rotation.getCycleLengthWeeks();       // e.g. 4
+            int remoteWeeksPerCycle = rotation.getRemoteWeeksPerCycle(); // e.g. 3
+            int onSiteWeeksPerCycle = cycleLengthWeeks - remoteWeeksPerCycle;
 
-        int cycleLengthWeeks = rotation.getCycleLengthWeeks();       // e.g. 4
-        int remoteWeeksPerCycle = rotation.getRemoteWeeksPerCycle(); // e.g. 3
-        int onSiteWeeksPerCycle = cycleLengthWeeks - remoteWeeksPerCycle;
+            // Go through each week between start and end
+            LocalDate currentWeekStart = startDate.with(DayOfWeek.MONDAY);
+            LocalDate endWeekStart = endDate.with(DayOfWeek.MONDAY);
 
-        // Go through each week between start and end
-        LocalDate currentWeekStart = startDate.with(DayOfWeek.MONDAY);
-        LocalDate endWeekStart = endDate.with(DayOfWeek.MONDAY);
+            while (!currentWeekStart.isAfter(endWeekStart)) {
+                // Determine which week of the cycle this is
+                long weeksSinceStart = ChronoUnit.WEEKS.between(startDate.with(DayOfWeek.MONDAY), currentWeekStart);
+                int weekInCycle = (int) (weeksSinceStart % cycleLengthWeeks);
 
-        while (!currentWeekStart.isAfter(endWeekStart)) {
-            // Determine which week of the cycle this is
-            long weeksSinceStart = ChronoUnit.WEEKS.between(startDate.with(DayOfWeek.MONDAY), currentWeekStart);
-            int weekInCycle = (int) (weeksSinceStart % cycleLengthWeeks);
+                // If it's not a remote week => it's on-site
+                if (weekInCycle >= remoteWeeksPerCycle) {
+                    countOnSiteWeeks++;
 
-            // If it's not a remote week => it's on-site
-            if (weekInCycle >= remoteWeeksPerCycle) {
-                countOnSiteWeeks++;
-
-                for (int i = 0; i < 5; i++) {
-                    LocalDate dayOfWeek = currentWeekStart.plusDays(i);
-                    onSiteDates.add(dayOfWeek);
+                    for (int i = 0; i < 5; i++) {
+                        LocalDate dayOfWeek = currentWeekStart.plusDays(i);
+                        onSiteDates.add(dayOfWeek);
+                    }
                 }
+
+                currentWeekStart = currentWeekStart.plusWeeks(1);
             }
 
-            currentWeekStart = currentWeekStart.plusWeeks(1);
+            return new OnSiteWeeksDTO(countOnSiteWeeks, onSiteDates);
         }
-
-        return new OnSiteWeeksDTO(countOnSiteWeeks, onSiteDates);
+        return null;
     }
 
     @Override
@@ -632,8 +635,8 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
     }
 
     @Override
-    public List<RcRecentAssociateRotations> getRcRecentAssociateRotations() {
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+    public List<RcRecentAssociateRotations> getRcRecentAssociateRotations(Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.by("createdAt").descending());
         List<AssignedRotation> assignments = assignedRotationDomainRepository.findAllByRotationAssignmentStatus(RotationAssignmentStatus.ACTIVE, pageRequest).getContent();
 
         List<RcRecentAssociateRotations> results = new ArrayList<>();

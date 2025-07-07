@@ -64,7 +64,7 @@ public class AssociateController {
         data.put("reportsCount", reportsCount);
         data.put("currentProject", projectDTO);
         data.put("oldProjects", pagedOldProjectSearchDTO.projectDTOS());
-        data.put("onSiteWeeks", onSiteWeeksDTO.onSiteDates());
+        if(onSiteWeeksDTO!=null)data.put("onSiteWeeks", onSiteWeeksDTO.onSiteDates());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

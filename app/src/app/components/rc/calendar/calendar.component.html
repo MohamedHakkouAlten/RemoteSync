@@ -1,32 +1,33 @@
 <app-default-layout>
   <div class="p-6 md:p-8 bg-gray-50 min-h-screen">
     <p-toast position="top-center" styleClass="w-full md:w-auto z-50"></p-toast>
-      <!-- Header Section -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-          <i class="pi pi-calendar text-primary"></i> {{ 'calendar_rc.title' | translate }}</h1>
-        <nav class="text-sm text-gray-500 mt-2 flex items-center">
-          <i class="pi pi-home mr-2 text-gray-400"></i>
-          <span>{{ 'calendar_rc.title' | translate }} <i class="pi pi-chevron-right !text-[11px] pl-3 pr-3"></i></span>
-        </nav>
-      </div>
+    <!-- Header Section -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+        <i class="pi pi-calendar text-primary"></i> {{ 'calendar_rc.title' | translate }}
+      </h1>
+      <nav class="text-sm text-gray-500 mt-2 flex items-center">
+        <i class="pi pi-home mr-2 text-gray-400"></i>
+        <span>{{ 'calendar_rc.title' | translate }} <i class="pi pi-chevron-right !text-[11px] pl-3 pr-3"></i></span>
+      </nav>
+    </div>
 
-      <!-- Main Content Card -->
-      <div class="bg-white p-5 sm:p-7 shadow-sm rounded-xl ">
-        <!-- Top Controls Row -->
-        <div class="flex flex-col justify-between space-y-4">
-          <!-- Title and Controls Row -->
-          <div class="flex justify-between items-start">
+    <!-- Main Content Card -->
+    <div class="bg-white p-5 sm:p-7 shadow-sm rounded-xl ">
+      <!-- Top Controls Row -->
+      <div class="flex flex-col justify-between space-y-4">
+        <!-- Title and Controls Row -->
+        <div class="flex justify-between items-start">
 
-            <div class="flex flex-col gap-3">
-              <div class="flex justify-between">
+          <div class="flex flex-col gap-3">
+            <div class="flex justify-between">
 
-         
+
               <h2 class="text-xl font-bold text-gray-700 flex items-center gap-2 hidden sm:flex">
                 <span class="gradient-text">{{ 'calendar_rc.title' | translate }}</span>
-              
+
               </h2>
-                
+
               <!-- Create Rotation Button with enhanced styling -->
               <button pButton type="button" [label]="'calendar_rc.buttons.createRotation' | translate"
                 style="font-family: Inter !important;"
@@ -35,98 +36,101 @@
                 <i class="pi pi-plus"></i>
               </button>
 
-       
+
             </div>
 
-              <div class="flex flex-row justify-between  items-center gap-3 flex-grow">
-                <!-- Filters Section with modern design -->
-                <div class="space-y-4">
-                  <!-- Search and filters in a card -->
-                  <div class="bg-white border border-gray-200 rounded-xl p-4 ">
-                    <h3 class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                      <i class="pi pi-filter text-primary"></i>
-                      {{ 'calendar_rc.filters.title' | translate }}
-                    </h3>
+            <div class="flex flex-row justify-between  items-center gap-3 flex-grow">
+              <!-- Filters Section with modern design -->
+              <div class="space-y-4">
+                <!-- Search and filters in a card -->
+                <div class="bg-white border border-gray-200 rounded-xl p-4 ">
+                  <h3 class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                    <i class="pi pi-filter text-primary"></i>
+                    {{ 'calendar_rc.filters.title' | translate }}
+                  </h3>
 
-                    <div class="flex flex-wrap gap-3 items-center">
-                      <!-- Search Users -->
-                      <div class="relative  overflow-hidden  transition-all ">
-                        <p-iconfield>
-                          <p-inputicon styleClass="pi pi-search !top-[52%] !text-[14px] !text-primary " />
-                          <input type="text" style="font-family: Inter;" [(ngModel)]="searchValue" (input)="onSearchInput()"
-                            class="!border-0  !bg-secondary !min-w-[255px] !text-sm !py-2.5 !pl-8"
-                            pInputText [placeholder]="'calendar_rc.search' | translate" />
-                        </p-iconfield>
-                      </div>
-
-                      <!-- Client Filter -->
-                      <div class="relative  transition-all ">
-                        <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
-                          <i class="pi pi-user text-primary !text-base"></i>
-                          <p-dropdown [(ngModel)]="selectedClient" (onChange)="fetchUserRotationsByClient($event)" [options]="clients()"
-                            optionLabel="label" [placeholder]="'calendar_rc.filters.client' | translate" [showClear]="true"
-                            styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full"
-                            [filter]="true" filterBy="label" [autoDisplayFirst]="false">
-                          </p-dropdown>
-                        </div>
-                      </div>
-
-                      <!-- Project Filter -->
-                      <div class="relative   transition-all h">
-                        <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
-                          <i class="pi pi-briefcase text-primary !text-base"></i>
-                          <p-dropdown [(ngModel)]="selectedProject" (onChange)="fetchUserRotationsByProject($event)" [options]="projects()"
-                            optionLabel="label" [placeholder]="'calendar_rc.filters.project' | translate" [showClear]="true"
-                            styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full"
-                            [filter]="true" filterBy="label" [autoDisplayFirst]="false">
-                          </p-dropdown>
-                        </div>
-                      </div>
-
-                      <!-- Factory Filter -->
-                      <div class="relative   transition-all ">
-                        <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
-                          <i class="pi pi-map-marker text-primary !text-base"></i>
-                          <p-dropdown [(ngModel)]="selectedFactory" (onChange)="fetchUserRotationsByFactory($event)" [options]="factories()"
-                            optionLabel="label" [placeholder]="'calendar_rc.filters.factory' | translate" [showClear]="true"
-                            styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full"
-                            [filter]="true" filterBy="label" [autoDisplayFirst]="false">
-                          </p-dropdown>
-                        </div>
-                      </div>
-
-                      <!-- Sub-Factory Filter -->
-                      <div class="relative   transition-all ">
-                        <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
-                          <i class="pi pi-building text-primary !text-base"></i>
-                          <p-dropdown [(ngModel)]="selectedSubFactory" (onChange)="fetchUserRotationsBySubFactory($event)" [options]="subFactories()"
-                            optionLabel="label" [placeholder]="'calendar_rc.filters.subfactory' | translate" [showClear]="true"
-                            styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full"
-                            [filter]="true" filterBy="label" [autoDisplayFirst]="false">
-                          </p-dropdown>
-                        </div>
-                      </div>
-
-                      <!-- Clear Filters Button -->
-                      <button
-                        style="font-family: inter;"
-                        class="flex items-center cursor-pointer justify-between gap-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 py-2 px-4 text-[13px] text-gray-700  hover:shadow"
-                        (click)="clearFilters()"
-                      >
-                        <i class="pi pi-filter-slash text-gray-500"></i>
-                        <span class="tracking-wider">{{ 'calendar_rc.filters.clear' | translate }}</span>
-                      </button>
+                  <div class="flex flex-wrap gap-3 items-center">
+                    <!-- Search Users -->
+                    <div class="relative  overflow-hidden  transition-all ">
+                      <p-iconfield>
+                        <p-inputicon styleClass="pi pi-search !top-[52%] !text-[14px] !text-primary " />
+                        <input type="text" style="font-family: Inter;" [(ngModel)]="searchValue"
+                          (input)="onSearchInput()"
+                          class="!border-0  !bg-secondary !min-w-[255px] !text-sm !py-2.5 !pl-8" pInputText
+                          [placeholder]="'calendar_rc.search' | translate" />
+                      </p-iconfield>
                     </div>
+
+                    <!-- Client Filter -->
+                    <div class="relative  transition-all ">
+                      <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
+                        <i class="pi pi-user text-primary !text-base"></i>
+                        <p-dropdown [(ngModel)]="selectedClient" (onChange)="fetchUserRotationsByClient($event)"
+                          [options]="clients()" optionLabel="label"
+                          [placeholder]="'calendar_rc.filters.client' | translate" [showClear]="true"
+                          styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" [filter]="true"
+                          filterBy="label" [autoDisplayFirst]="false">
+                        </p-dropdown>
+                      </div>
+                    </div>
+
+                    <!-- Project Filter -->
+                    <div class="relative   transition-all h">
+                      <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
+                        <i class="pi pi-briefcase text-primary !text-base"></i>
+                        <p-dropdown [(ngModel)]="selectedProject" (onChange)="fetchUserRotationsByProject($event)"
+                          [options]="projects()" optionLabel="label"
+                          [placeholder]="'calendar_rc.filters.project' | translate" [showClear]="true"
+                          styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" [filter]="true"
+                          filterBy="label" [autoDisplayFirst]="false">
+                        </p-dropdown>
+                      </div>
+                    </div>
+
+                    <!-- Factory Filter -->
+                    <div class="relative   transition-all ">
+                      <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
+                        <i class="pi pi-map-marker text-primary !text-base"></i>
+                        <p-dropdown [(ngModel)]="selectedFactory" (onChange)="fetchUserRotationsByFactory($event)"
+                          [options]="factories()" optionLabel="label"
+                          [placeholder]="'calendar_rc.filters.factory' | translate" [showClear]="true"
+                          styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" [filter]="true"
+                          filterBy="label" [autoDisplayFirst]="false">
+                        </p-dropdown>
+                      </div>
+                    </div>
+
+                    <!-- Sub-Factory Filter -->
+                    <div class="relative   transition-all ">
+                      <div class="flex min-w-[220px] items-center pl-2 !bg-secondary ">
+                        <i class="pi pi-building text-primary !text-base"></i>
+                        <p-dropdown [(ngModel)]="selectedSubFactory" (onChange)="fetchUserRotationsBySubFactory($event)"
+                          [options]="subFactories()" optionLabel="label"
+                          [placeholder]="'calendar_rc.filters.subfactory' | translate" [showClear]="true"
+                          styleClass="border-0 filterDropDown !bg-secondary !text-sm w-full" [filter]="true"
+                          filterBy="label" [autoDisplayFirst]="false">
+                        </p-dropdown>
+                      </div>
+                    </div>
+
+                    <!-- Clear Filters Button -->
+                    <button style="font-family: inter;"
+                      class="flex items-center cursor-pointer justify-between gap-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 py-2 px-4 text-[13px] text-gray-700  hover:shadow"
+                      (click)="clearFilters()">
+                      <i class="pi pi-filter-slash text-gray-500"></i>
+                      <span class="tracking-wider">{{ 'calendar_rc.filters.clear' | translate }}</span>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-         
-
           </div>
-<div class="flex flex-col mb-0">
-                        <!-- View Mode Selector with improved styling -->
-             
+
+
+        </div>
+        <div class="flex flex-col mb-0">
+          <!-- View Mode Selector with improved styling -->
+
 
           <!-- Calendar Navigation with modern styling -->
           <div class="bg-white rounded-xl flex items-center justify-between   px-4  ">
@@ -135,7 +139,7 @@
               (click)="previousPeriod()"></button>
 
             <div class="flex items-center gap-2">
-            <i class="pi pi-calendar-plus text-primary text-lg"></i>
+              <i class="pi pi-calendar-plus text-primary text-lg"></i>
               <span class="text-base font-medium text-gray-800">{{ currentDateRangeLabel() }}</span>
             </div>
 
@@ -143,151 +147,156 @@
               class="p-button-rounded p-button-text !text-gray-700 hover:!bg-gray-100 transition-colors"
               (click)="nextPeriod()"></button>
           </div>
-           <div class="bg-white flex justify-between p-1">
-                <div class="flex flex-wrap items-center gap-6 text-sm">
-                <div class="flex items-center space-x-2">
-                  <span class="w-3 h-3 rounded-full bg-orange-500  flex items-center justify-center">
-                  
-                  </span>
-                  <span class="text-gray-700">{{ 'calendar_rc.legend.onSite' | translate }}</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span class="w-3 h-3 rounded-full bg-blue-500  flex items-center justify-center">
-                 
-                  </span>
-                  <span class="text-gray-700">{{ 'calendar_rc.legend.remote' | translate }}</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span class="w-3 h-3 rounded-full bg-gray-300 "></span>
-                  <span class="text-gray-700">{{ 'calendar_rc.legend.off' | translate }}</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <span class="w-3 h-3 rounded  bg-blue-100 "></span>
-                  <span class="text-gray-700">{{ 'calendar_rc.legend.today' | translate }}</span>
+          <div class="bg-white flex justify-between p-1">
+            <div class="flex flex-wrap items-center gap-6 text-sm">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-orange-500  flex items-center justify-center">
+
+                </span>
+                <span class="text-gray-700">{{ 'calendar_rc.legend.onSite' | translate }}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-blue-500  flex items-center justify-center">
+
+                </span>
+                <span class="text-gray-700">{{ 'calendar_rc.legend.remote' | translate }}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-gray-300 "></span>
+                <span class="text-gray-700">{{ 'calendar_rc.legend.off' | translate }}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded  bg-blue-100 "></span>
+                <span class="text-gray-700">{{ 'calendar_rc.legend.today' | translate }}</span>
+              </div>
+            </div>
+            <p-selectButton
+              [options]="[{ label: 'calendar_rc.viewSelector.day' | translate , value: 'day' },{ label: 'calendar_rc.viewSelector.week' | translate, value: 'week' }]"
+              [(ngModel)]="selectionType" (onChange)="onViewModeChange()" optionLabel="label" optionValue="value" />
+          </div>
+
+        </div>
+        <!-- Calendar Grid with enhanced styling -->
+        <div class="overflow-x-auto rounded-xl mt-0 border border-gray-100">
+          <div class="min-w-[800px]">
+            <!-- Enhanced Header Row -->
+            <div
+              class="flex flex-row items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
+              <!-- User Label Column -->
+              <div class="w-[180px] flex-shrink-0 pl-2">
+                <h1 class="font-semibold text-gray-700 text-sm flex items-center gap-2">
+                  <i class="pi pi-users text-primary"></i>
+                  {{ 'calendar_rc.grid.userColumnHeader' | translate }}
+                </h1>
+              </div>
+
+              <!-- Container for Date Columns -->
+              <div class="flex flex-row flex-grow gap-x-2">
+                <!-- Date Column Headers with enhanced styling -->
+                <div *ngFor="let date of displayedDates(); let i = index"
+                  class="min-w-[80px] flex-grow basis-[80px] font-medium text-sm text-center">
+                  <div
+                    [ngClass]="{'bg-blue-50 rounded-lg py-1': (isToday(date) && selectionType=='day')|| (isWeek(date) && selectionType=='week')}">
+
+                    <div class="font-semibold text-gray-700">{{ formatDay(date) }}</div>
+                    <div class="text-xs text-gray-500 mt-1">{{ formatDateHeader(date) }}</div>
+                  </div>
                 </div>
               </div>
-          <p-selectButton 
-        [options]="[{ label: 'calendar_rc.viewSelector.day' | translate , value: 'day' },{ label: 'calendar_rc.viewSelector.week' | translate, value: 'week' }]" 
-        [(ngModel)]="selectionType" 
-        (onChange)="onViewModeChange()"
-        optionLabel="label" 
-        optionValue="value" />
-              </div>
-   
-</div>
-          <!-- Calendar Grid with enhanced styling -->
-          <div class="overflow-x-auto rounded-xl mt-0 border border-gray-100">
-            <div class="min-w-[800px]">
-              <!-- Enhanced Header Row -->
-              <div class="flex flex-row items-center gap-x-2 px-4 py-2 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
-                <!-- User Label Column -->
-                <div class="w-[180px] flex-shrink-0 pl-2">
-                  <h1 class="font-semibold text-gray-700 text-sm flex items-center gap-2">
-                    <i class="pi pi-users text-primary"></i>
-                    {{ 'calendar_rc.grid.userColumnHeader' | translate }}
+            </div>
+
+            <!-- Enhanced User Rows with hover effect -->
+            <div *ngFor="let rotation of userRotations(); let i = index"
+              class="flex flex-row items-center gap-x-2 px-4 py-3 border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors">
+
+              <!-- User Info Cell with enhanced styling -->
+              <div class="w-[180px] flex-shrink-0 flex items-center space-x-3 pl-2">
+                <p-avatar icon="pi pi-user" styleClass=" border border-gray-100" shape="circle"
+                  size="normal"></p-avatar>
+                <div>
+                  <h1 class="font-medium text-gray-800 text-[13px]">{{ rotation.fullName }}</h1>
+                  <h1 class="text-xs text-gray-500 flex items-center gap-1">
+
+                    {{ 'calendar_rc.grid.userRole' | translate }}
                   </h1>
                 </div>
-
-                <!-- Container for Date Columns -->
-                <div class="flex flex-row flex-grow gap-x-2">
-                  <!-- Date Column Headers with enhanced styling -->
-                  <div *ngFor="let date of displayedDates(); let i = index"
-                    class="min-w-[80px] flex-grow basis-[80px] font-medium text-sm text-center">
-                    <div [ngClass]="{'bg-blue-50 rounded-lg py-1': isToday(date)}">
-                      <div class="font-semibold text-gray-700">{{ formatDay(date) }}</div>
-                      <div class="text-xs text-gray-500 mt-1">{{ formatDateHeader(date) }}</div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              <!-- Enhanced User Rows with hover effect -->
-              <div *ngFor="let rotation of userRotations(); let i = index"
-                class="flex flex-row items-center gap-x-2 px-4 py-3 border-b border-gray-100 bg-white hover:bg-gray-50 transition-colors">
+              <!-- Status Cell Container with enhanced styling -->
+              <div class="flex flex-row flex-grow gap-x-2">
+                <!-- Enhanced Status Cells -->
+                <div *ngFor="let date of displayedDates()"
+                  class="min-w-[80px] flex-grow basis-[80px] flex justify-center items-center py-2"
+                  [ngClass]="{'bg-blue-50/30': (isToday(date) && selectionType=='day')|| (isWeek(date) && selectionType=='week')}">
 
-                <!-- User Info Cell with enhanced styling -->
-                <div class="w-[180px] flex-shrink-0 flex items-center space-x-3 pl-2">
-                  <p-avatar icon="pi pi-user" styleClass=" border border-gray-100" shape="circle" size="normal"></p-avatar>
-                  <div>
-                    <h1 class="font-medium text-gray-800 text-[13px]">{{ rotation.fullName }}</h1>
-                    <h1 class="text-xs text-gray-500 flex items-center gap-1">
-           
-                      {{ 'calendar_rc.grid.userRole' | translate }}
-                    </h1>
+                  <!-- Three State Toggle with enhanced wrapper -->
+
+                  @if (isPastDate(date)) {
+
+                  <app-three-state-toggle [value]="getRemoteState(rotation, date)">
+                  </app-three-state-toggle>
+
+                  }@else {
+                  <div class="p-1 rounded-lg transition-all transform hover:scale-105">
+                    <app-three-state-toggle (valueChange)="updateRemoteState(rotation, date, $event)"
+                      [value]="getRemoteState(rotation, date)">
+                    </app-three-state-toggle>
                   </div>
-                </div>
+                  }
 
-                <!-- Status Cell Container with enhanced styling -->
-                <div class="flex flex-row flex-grow gap-x-2">
-                  <!-- Enhanced Status Cells -->
-                  <div *ngFor="let date of displayedDates()"
-                    class="min-w-[80px] flex-grow basis-[80px] flex justify-center items-center py-2"
-                    [ngClass]="{'bg-blue-50/30': isToday(date)}">
 
-                    <!-- Three State Toggle with enhanced wrapper -->
-                    <div class="p-1 rounded-lg transition-all transform hover:scale-105">
-                      <app-three-state-toggle
-                        (valueChange)="updateRemoteState(rotation, date, $event)"
-                        [value]="getRemoteState(rotation, date)">
-                      </app-three-state-toggle>
-                    </div>
-                  </div>
+
+
                 </div>
               </div>
-
-              <!-- Enhanced Empty State -->
-              <div *ngIf="userRotations().length===0" class="text-center py-12 bg-gray-50">
-                <div class="flex flex-col items-center justify-center gap-3">
-                  <i class="pi pi-search text-4xl text-gray-300"></i>
-                  <p class="text-gray-500 font-medium">{{ 'calendar_rc.grid.noUsersFound' | translate }}</p>
-                  <p class="text-gray-400 text-sm">{{ 'calendar_rc.grid.tryDifferentFilters' | translate }}</p>
-                </div>
-              </div>
-
             </div>
+
+            <!-- Enhanced Empty State -->
+            <div *ngIf="userRotations().length===0" class="text-center py-12 bg-gray-50">
+              <div class="flex flex-col items-center justify-center gap-3">
+                <i class="pi pi-search text-4xl text-gray-300"></i>
+                <p class="text-gray-500 font-medium">{{ 'calendar_rc.grid.noUsersFound' | translate }}</p>
+                <p class="text-gray-400 text-sm">{{ 'calendar_rc.grid.tryDifferentFilters' | translate }}</p>
+              </div>
+            </div>
+
           </div>
-          <!-- Pending Changes Actions Bar (only visible when there are changes) -->
-          <div *ngIf="hasPendingChanges()"
-            class="mt-6 p-4 bg-gradient-to-r from-orange-300 to-orange-100 rounded-md  
+        </div>
+        <!-- Pending Changes Actions Bar (only visible when there are changes) -->
+        <div *ngIf="hasPendingChanges()"
+          class="mt-6 p-4 bg-gradient-to-r from-orange-300 to-orange-100 rounded-md  
             flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 animate__animated animate__fadeIn">
-            <div class="flex items-center">
-              <i class="pi pi-info-circle text-orange-600 text-lg mr-2"></i>
-              <div>
-                <h3 class="font-medium text-orange-800">{{ 'calendar_rc.pendingChanges' | translate }}</h3>
-                <p class="text-sm text-orange-600">{{ 'calendar_rc.pendingChangesDescription' | translate }}</p>
-              </div>
-            </div>
-            <div class="flex space-x-3 self-end sm:self-auto">
-              <button pButton type="button"
-                label="{{ 'calendar_rc.buttons.cancel' | translate }}"
-                icon="pi pi-times"
-                class="p-button-sm p-button-text !text-primary p-button-secondary hover:bg-blue-200/30 transition-colors"
-                (click)="cancelChanges()"></button>
-              <button pButton type="button"
-                label="{{ 'calendar_rc.buttons.save' | translate }}"
-                icon="pi pi-check"
-                class="p-button-sm p-button-primary !bg-primary !border-0 shadow-sm hover:shadow transition-all"
-                (click)="saveChanges()"></button>
+          <div class="flex items-center">
+            <i class="pi pi-info-circle text-orange-600 text-lg mr-2"></i>
+            <div>
+              <h3 class="font-medium text-orange-800">{{ 'calendar_rc.pendingChanges' | translate }}</h3>
+              <p class="text-sm text-orange-600">{{ 'calendar_rc.pendingChangesDescription' | translate }}</p>
             </div>
           </div>
+          <div class="flex space-x-3 self-end sm:self-auto">
+            <button pButton type="button" label="{{ 'calendar_rc.buttons.cancel' | translate }}" icon="pi pi-times"
+              class="p-button-sm p-button-text !text-primary p-button-secondary hover:bg-blue-200/30 transition-colors"
+              (click)="cancelChanges()"></button>
+            <button pButton type="button" label="{{ 'calendar_rc.buttons.save' | translate }}" icon="pi pi-check"
+              class="p-button-sm p-button-primary !bg-primary !border-0 shadow-sm hover:shadow transition-all"
+              (click)="saveChanges()"></button>
+          </div>
+        </div>
 
-   
 
 
 
-            <!-- Enhanced Paginator -->
-            <div class="mt-1">
-              <p-paginator
-                [rows]="pageSize()"
-                [totalRecords]="totalRecords()"
-                [first]="first"
-                (onPageChange)="onPageChange($event)"
-                [rowsPerPageOptions]="[5, 20, 30]"
-                styleClass="p-0 bg-transparent border-none  ">
-              </p-paginator>
-            </div>
-        </div> <!-- End Content Card -->
-      </div>
-      <app-rotation [showModal]="showRotationModal" (rotationCreated)="createRotation($event)" (modalClosed)="onRotationModalClosed()"></app-rotation>
+
+        <!-- Enhanced Paginator -->
+        <div class="mt-1">
+          <p-paginator [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first"
+            (onPageChange)="onPageChange($event)" [rowsPerPageOptions]="[5, 20, 30]"
+            styleClass="p-0 bg-transparent border-none  ">
+          </p-paginator>
+        </div>
+      </div> <!-- End Content Card -->
+    </div>
+    <app-rotation [showModal]="showRotationModal" (rotationCreated)="createRotation($event)"
+      (modalClosed)="onRotationModalClosed()"></app-rotation>
   </div>
 </app-default-layout>

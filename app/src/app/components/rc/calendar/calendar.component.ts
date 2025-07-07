@@ -1,5 +1,5 @@
 import { Component, computed, OnInit, signal } from '@angular/core';
-import { startOfWeek, addWeeks, format, addDays, subWeeks, weeksToDays, Locale } from 'date-fns';
+import { startOfWeek, addWeeks, format, addDays, subWeeks, weeksToDays, Locale, isEqual, isBefore } from 'date-fns';
 import { AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { ToggleState } from '../../shared/three-state-toggle/three-state-toggle.component';
 import { MessageService } from 'primeng/api';
@@ -183,7 +183,7 @@ setUpViewModes(){
    * Load initial calendar data including client dropdown, factory dropdown, and recent rotations
    */
   loadInitialCalendarData() {
-    this.rcService.getRcInitialCalendar().subscribe({
+    this.rcService.getRcInitialCalendar(this.pageSize()).subscribe({
       next: (response) => {
         if (response && response.data) {
           console.log('Initial calendar data:', response.data);
@@ -645,7 +645,13 @@ this.selectedViewMode.set(this.selectionType)
       date.getFullYear() === today.getFullYear()
     );
   }
+  isWeek(date:Date):boolean{
 
+return isEqual(startOfWeek(new Date()),startOfWeek(date))
+  }
+  isPastDate(date:Date):boolean{
+    return isBefore(date,new Date())
+  }
   /**
    * Format date as key for rotation lookup
    */
