@@ -4,145 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="589a8712-f6b0-41f3-b741-ce4a6e235c04" name="Changes" comment="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing">
+    <list default="true" id="589a8712-f6b0-41f3-b741-ce4a6e235c04" name="Changes" comment="feat: major feature expansion including chat module, calendar improvements, and dashboard enhancements&#10;&#10;- Added chat module with WebSocket integration (frontend &amp; backend)&#10;- Improved calendar UI and logic with new DTOs and services&#10;- Enhanced dashboard components and models for better reporting&#10;- Updated security, JWT, and authentication configuration&#10;- Added exception handling and email utility support&#10;- Refactored components and modules for better structure and maintainability">
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_10_25_[Changes]/shelved.patch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_07_2025_10_25__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/Jen" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/RemoteSyncApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/RemoteSyncApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/exception/GlobalExceptionHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AssociateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AssociateController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/HelloWorld.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/websocket/TEST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/RcController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/adapter/rest/RcController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/assignedRotation/service/AssignedRotationServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/project/service/ProjectServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/user/service/UserServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/assignedRotation/enumeration/RotationAssignmentStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/assignedRotation/enumeration/RotationAssignmentStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/repository/ProjectDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/project/repository/ProjectDomainRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/repository/UserDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/repository/UserDomainRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/services/UserDetailsServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/user/services/UserDetailsServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/infrastructure/AuditConfig/AuditingConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/infrastructure/AuditConfig/AuditorAwareImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/infrastructure/WebSocket/WebSocketSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/infrastructure/WebSocket/WebSocketSecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/TEST.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/kernel/security/jwt/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/response/RcPagedReportDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/record/response/RcPagedReportDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/application/report/service/ReportServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/report/repository/ReportDomainRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/com/alten/remotesync/domain/report/repository/ReportDomainRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/src/main/resources/application-dev.properties" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/resources/application-dev.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/angular.json.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/angular.json.new" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/public/assets/i18n/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/public/assets/i18n/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/public/assets/i18n/es.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/public/assets/i18n/es.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/public/assets/i18n/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/public/assets/i18n/fr.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/app-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/calendar/calendar.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts.bak" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.component.ts.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/dashboard/dashboard.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/models/calendar.model.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/models/dashboard.model.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/models/interfaces.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/models/report.model.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/notifications/notifications.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/project/project.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/project/project.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/report/report.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/report/report.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/utils/calendar-helpers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/utils/calendar-helpers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/associate/utils/ui-helpers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/associate/utils/ui-helpers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/calendar/calendar.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/dashboard/dashboard.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/add-project/add-project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/add-project/add-project.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/add-project/add-project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/add-project/add-project.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/edit-project/edit-project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/edit-project/edit-project.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/edit-project/edit-project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/edit-project/edit-project.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/project.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/project.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/project/view-project/view-project.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/report/report.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/report/report.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/rc/rotation/rotation.component.ts.bak" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/layout/default-layout.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/layout/default-layout.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/navigation/navigation.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/notification-panel/notification-panel.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/profile/profile.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/rc-ui/update-report/update-report.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/shared-ui/user-avatar/user-avatar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/shared/three-state-toggle/three-state-toggle.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/shared/three-state-toggle/three-state-toggle.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password-routing.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/forgot-password/forgot-password.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/login/login.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/components/visitor/reset-password/reset-password.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/components/visitor/reset-password/reset-password.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/associate/create-report.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/associate/create-report.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/associate/current-rotations.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/associate/current-rotations.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/associate/dashboard.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/associate/dashboard.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/associate/project.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/associate/project.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/auth/resetpassword.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/auth/resetpassword.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/client.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/create-associate-report.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/create-associate-report.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/dashboard.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/dashboard.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/initial-projects.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/initial-projects.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/notification-status.enum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/notification-status.enum.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/notification.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/notification.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/paged-global-id.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/paged-global-id.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/paged-notification-search.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/paged-project.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/paged-report-search.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/paged-report.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/profile.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/profile.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/project-status.enum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/project-status.enum.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/project.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/projects-count.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/projects-count.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/report-status.enum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/report-status.enum.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/report-type.enum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/report-type.enum.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/report.dto.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/dto/user.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/user.dto.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/models/rc.model.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/models/rc.model.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/associate.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/associate.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/auth-facade.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/auth-facade.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/auth/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/auth/auth.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/auth/user.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/auth/user.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/rc.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/rc.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/app/services/web-socket.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/services/web-socket.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/environments/environment.prod.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/environments/environment.prod.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/environments/environment.stage.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/environments/environment.stage.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/environments/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/environments/environment.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conception/RotationUML.mdj" beforeDir="false" afterPath="$PROJECT_DIR$/conception/RotationUML.mdj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/app/dto/response-wrapper.dto.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/app/dto/response-wrapper.dto.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,11 +101,31 @@
       <option name="project" value="LOCAL" />
       <updated>1748623659145</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat: major feature expansion including chat module, calendar improvements, and dashboard enhancements&#10;&#10;- Added chat module with WebSocket integration (frontend &amp; backend)&#10;- Improved calendar UI and logic with new DTOs and services&#10;- Enhanced dashboard components and models for better reporting&#10;- Updated security, JWT, and authentication configuration&#10;- Added exception handling and email utility support&#10;- Refactored components and modules for better structure and maintainability">
+      <option name="closed" value="true" />
+      <created>1749560906497</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1749560906497</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: major platform enhancements including dashboard, calendar, and report modules&#10;&#10;- Implemented associate dashboard with metrics and visual insights&#10;- Integrated calendar view with support for current rotations&#10;- Added multiple new DTOs and mappers for modular backend communication&#10;- Introduced new Angular modules and services for associate interaction&#10;- Refactored existing services and repositories for better separation of concerns&#10;- Added missing translations in `en.json` and `fr.json`&#10;- Updated backend with SQL migrations for rotation and reporting enhancements&#10;- Restructured frontend Angular project with better organization and routing" />
+    <MESSAGE value="feat: major feature expansion including chat module, calendar improvements, and dashboard enhancements&#10;&#10;- Added chat module with WebSocket integration (frontend &amp; backend)&#10;- Improved calendar UI and logic with new DTOs and services&#10;- Enhanced dashboard components and models for better reporting&#10;- Updated security, JWT, and authentication configuration&#10;- Added exception handling and email utility support&#10;- Refactored components and modules for better structure and maintainability" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: major feature expansion including chat module, calendar improvements, and dashboard enhancements&#10;&#10;- Added chat module with WebSocket integration (frontend &amp; backend)&#10;- Improved calendar UI and logic with new DTOs and services&#10;- Enhanced dashboard components and models for better reporting&#10;- Updated security, JWT, and authentication configuration&#10;- Added exception handling and email utility support&#10;- Refactored components and modules for better structure and maintainability" />
   </component>
 </project>

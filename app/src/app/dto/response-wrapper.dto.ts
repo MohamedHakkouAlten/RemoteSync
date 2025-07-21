@@ -27,7 +27,10 @@ export interface PagedRotation extends PagedData {
 export interface PagedReports extends PagedData{
  
   reports :RCReport[]
-
+  totalCompleted: number
+  totalPending: number
+  totalInProgress: number
+  totalRejected: number
 
 }
 export interface PagedProject extends PagedData{

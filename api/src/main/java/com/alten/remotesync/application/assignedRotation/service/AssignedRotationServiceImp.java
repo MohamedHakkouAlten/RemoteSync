@@ -560,7 +560,7 @@ public class AssignedRotationServiceImp implements AssignedRotationService {
                 } catch (IncorrectResultSizeDataAccessException e) {
                     // Log the error with more details
                     throw new RuntimeException("Error processing rotation for associate: " + e.getMessage(), e);
-                } catch (MessagingException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             } catch (UserNotFoundException e) {

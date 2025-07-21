@@ -437,60 +437,41 @@ public class RcController {
 
     @GetMapping("/rc/rotations/byName")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotationByName(
-            @ModelAttribute  UsersRotationsByNameDTO usersRotationsByNameDTO
-            ) {
-        System.out.println(usersRotationsByNameDTO);
-
+    public ResponseEntity<?> getUsersActiveRotationByName(@ModelAttribute  UsersRotationsByNameDTO usersRotationsByNameDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(assignedRotationService.getUsersActiveRotationsByName(usersRotationsByNameDTO), HttpStatus.OK));
     }
     @GetMapping("/rc/rotations/byProject")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotationByProject(
-  @ModelAttribute UsersRotationsByProjectDTO usersRotationsByProjectDTO
-            ) {
-
-        PagedRotationsDTO response = assignedRotationService.getUsersActiveRotationsByProject(usersRotationsByProjectDTO);
+    public ResponseEntity<?> getUsersActiveRotationByProject(@ModelAttribute UsersRotationsByProjectDTO usersRotationsByProjectDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(response, HttpStatus.OK));
+                .body(ResponseWrapper.success(assignedRotationService.getUsersActiveRotationsByProject(usersRotationsByProjectDTO), HttpStatus.OK));
     }
     @GetMapping("/rc/rotations/byClient")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotationByClient(
-
-            @ModelAttribute UsersRotationsByClientDTO usersRotationsByClientDTO
-    ) {
-        PagedRotationsDTO response = assignedRotationService.getUsersActiveRotationsByClient(usersRotationsByClientDTO);
+    public ResponseEntity<?> getUsersActiveRotationByClient(@ModelAttribute UsersRotationsByClientDTO usersRotationsByClientDTO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ResponseWrapper.success(response, HttpStatus.OK));
+                .body(ResponseWrapper.success(assignedRotationService.getUsersActiveRotationsByClient(usersRotationsByClientDTO), HttpStatus.OK));
     }
+
     @GetMapping("/rc/rotations/byFactory")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotationByFactory(
-
-            @ModelAttribute UsersRotationsByFactoryDTO usersRotationsByFactoryDTO
-    ) {
+    public ResponseEntity<?> getUsersActiveRotationByFactory(@ModelAttribute UsersRotationsByFactoryDTO usersRotationsByFactoryDTO) {
         PagedRotationsDTO response = assignedRotationService.getUsersActiveRotationsByFactory(usersRotationsByFactoryDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
+
     @GetMapping("/rc/rotations/bySubFactory")
     @PreAuthorize("hasAuthority('RC:READ')")
-    public ResponseEntity<?> getUsersActiveRotationBySubFactory(
-
-            @ModelAttribute UsersRotationsBySubFactoryDTO usersRotationsBySubFactoryDTO
-    ) {
+    public ResponseEntity<?> getUsersActiveRotationBySubFactory(@ModelAttribute UsersRotationsBySubFactoryDTO usersRotationsBySubFactoryDTO) {
         PagedRotationsDTO response = assignedRotationService.getUsersActiveRotationsBySubFactory(usersRotationsBySubFactoryDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ResponseWrapper.success(response, HttpStatus.OK));
     }
-
-
-
 }

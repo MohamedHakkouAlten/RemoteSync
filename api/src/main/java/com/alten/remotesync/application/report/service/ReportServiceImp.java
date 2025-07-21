@@ -151,8 +151,14 @@ public class ReportServiceImp implements ReportService {
     public RcPagedReportDTO getRCPendingReports(PagedGlobalDTO pagedGlobalDTO) {
         Page<Report> pagedReports= reportDomainRepository.findAllByStatus(PageRequest.of(0,6),ReportStatus.PENDING).orElseThrow(()->new ReportNotFoundException("no reports were found"));
 
+        Long totalCompletedReports = reportDomainRepository.countAllByStatus(ReportStatus.ACCEPTED);
+        Long totalPendingReports = reportDomainRepository.countAllByStatus(ReportStatus.PENDING);
+        Long totalInProgressReports = reportDomainRepository.countAllByStatus(ReportStatus.OPENED);
+        Long totalRejectedReports = reportDomainRepository.countAllByStatus(ReportStatus.REJECTED);
+
         return new RcPagedReportDTO( pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(), pagedReports.getTotalPages(),
-                pagedReports.getTotalElements(), pagedGlobalDTO.pageNumber(), pagedGlobalDTO.pageSize()
+                pagedReports.getTotalElements(), pagedGlobalDTO.pageNumber(), pagedGlobalDTO.pageSize(),
+                totalCompletedReports, totalPendingReports, totalInProgressReports, totalRejectedReports
                 );
     }
 
@@ -213,12 +219,17 @@ public class ReportServiceImp implements ReportService {
                         PageRequest.of(pagedGlobalDTO.pageNumber(), (pagedGlobalDTO.pageSize() != null) ? pagedGlobalDTO.pageSize() : 10))
                 .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
 
+        Long totalCompletedReports = reportDomainRepository.countAllByStatus(ReportStatus.ACCEPTED);
+        Long totalPendingReports = reportDomainRepository.countAllByStatus(ReportStatus.PENDING);
+        Long totalInProgressReports = reportDomainRepository.countAllByStatus(ReportStatus.OPENED);
+        Long totalRejectedReports = reportDomainRepository.countAllByStatus(ReportStatus.REJECTED);
 
         return new RcPagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
                 pagedReports.getTotalPages(),
                 pagedReports.getTotalElements(),
                 pagedGlobalDTO.pageNumber() + 1,
-                pagedGlobalDTO.pageSize()
+                pagedGlobalDTO.pageSize(),
+                totalCompletedReports, totalPendingReports, totalInProgressReports, totalRejectedReports
         );
     }
 
@@ -237,11 +248,18 @@ public class ReportServiceImp implements ReportService {
             pagedReports = reportDomainRepository.findAllByStatus(pageRequest, reportFilterDTO.status()).orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
         else pagedReports = reportDomainRepository.findAllBy(pageRequest)
                     .orElseThrow(() -> new ReportNotFoundException("Report Not Found"));
+
+        Long totalCompletedReports = reportDomainRepository.countAllByStatus(ReportStatus.ACCEPTED);
+        Long totalPendingReports = reportDomainRepository.countAllByStatus(ReportStatus.PENDING);
+        Long totalInProgressReports = reportDomainRepository.countAllByStatus(ReportStatus.OPENED);
+        Long totalRejectedReports = reportDomainRepository.countAllByStatus(ReportStatus.REJECTED);
+
         return new RcPagedReportDTO(pagedReports.getContent().stream().map(reportMapper::toReportDTO).toList(),
                 pagedReports.getTotalPages(),
                 pagedReports.getTotalElements(),
                 reportFilterDTO.pageNumber() + 1,
-                reportFilterDTO.pageSize()
+                reportFilterDTO.pageSize(),
+                totalCompletedReports, totalPendingReports, totalInProgressReports, totalRejectedReports
         );
     }
 }

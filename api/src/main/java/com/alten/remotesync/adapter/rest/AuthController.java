@@ -38,7 +38,6 @@ public class AuthController {
                         HttpStatus.OK));
     }
 
-    //
     @PostMapping("/recover-password")
     public ResponseEntity<?> recoverPassword(@RequestBody @Valid RecoverPasswordDTO recoverPasswordDTO) throws MessagingException {
         return ResponseEntity.status(HttpStatus.OK)

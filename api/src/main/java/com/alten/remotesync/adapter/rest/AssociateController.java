@@ -91,7 +91,6 @@ public class AssociateController {
     @GetMapping({"/associate/projects/old"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ')")
     public ResponseEntity<?> associateOldProjects(@AuthenticationPrincipal UserPrincipal userPrincipal, @Valid @ModelAttribute PagedProjectSearchDTO pagedProjectSearchDTO) {
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                     .body(ResponseWrapper.success(projectService.getAssociateOldProjects(
@@ -139,6 +138,7 @@ public class AssociateController {
                 .body(ResponseWrapper.success(notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(pagedNotificationSearchDTO.pageNumber(), pagedNotificationSearchDTO.pageSize(), pagedNotificationSearchDTO.title(), pagedNotificationSearchDTO.status(), pagedNotificationSearchDTO.createdAt(), userPrincipal.userId())),
                         HttpStatus.OK));
     }
+
     @GetMapping({"/associate/notifications/initialize"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
     public ResponseEntity<?> initialAssociateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
@@ -153,6 +153,7 @@ public class AssociateController {
                 .body(ResponseWrapper.success(initialNotificationsDTO,
                         HttpStatus.OK));
     }
+
     @GetMapping({"/associate/notifications/panel"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
     public ResponseEntity<?> panelAssociateNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute PagedNotificationSearchDTO pagedNotificationSearchDTO) {
@@ -160,31 +161,29 @@ public class AssociateController {
                 notificationService.getAssociateNotifications(new PagedNotificationSearchDTO(0,20, null, null, null, userPrincipal.userId())),
                 notificationService.countUnreadNotifications(userPrincipal.userId())) ;
 
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success(initialNotificationsDTO,
                         HttpStatus.OK));
     }
+
     @PutMapping({"/associate/notifications/update"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
     public ResponseEntity<?> setNotificationAsRead(@RequestBody String notificationId) {
-
-
        notificationService.setNotificationAsRead(notificationId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success("the notification was set to read successfully",
                         HttpStatus.OK));
     }
+
     @PutMapping({"/associate/notifications/markAllRead"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ','RC:READ')")
     public ResponseEntity<?> markAllNotificationAsRead(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-
-
         notificationService.markAllNotificationAsRead(userPrincipal.userId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseWrapper.success("all notification was set to read successfully",
                         HttpStatus.OK));
     }
+
     @GetMapping({"/associate/my-profile", "/rc/my-profile"})
     @PreAuthorize("hasAnyAuthority('ASSOCIATE:READ', 'RC:READ')")
     public ResponseEntity<?> associateProfile(@AuthenticationPrincipal UserPrincipal userPrincipal) {

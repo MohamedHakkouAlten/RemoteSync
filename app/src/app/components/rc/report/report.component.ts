@@ -43,8 +43,11 @@ export class ReportComponent implements OnInit {
     totalElements: 0,
     totalPages: 0,
     pageSize: 0,
-    currentPage: 0
-
+    currentPage: 0,
+    totalCompleted: 0,
+    totalPending: 0,
+    totalInProgress: 0,
+    totalRejected: 0
   });
 
   filter = computed((): ReportFilter => {
@@ -54,7 +57,7 @@ export class ReportComponent implements OnInit {
       name: this.searchTerm(),
       startDate: this.startDate(),
       endDate: this.endDate(),
-      status: this.selectedStatus()
+      status: this.selectedStatus(),
     };
   });
   
@@ -90,19 +93,19 @@ export class ReportComponent implements OnInit {
 
   // --- Status Counts ---
   acceptedReportsCount = computed(() => {
-    return this.allReports().reports.filter(report => report.status === ReportStatus.ACCEPTED).length;
+    return this.allReports().totalCompleted;
   });
   
   pendingReportsCount = computed(() => {
-    return this.allReports().reports.filter(report => report.status === ReportStatus.PENDING).length;
+    return this.allReports().totalPending;
   });
   
   openedReportsCount = computed(() => {
-    return this.allReports().reports.filter(report => report.status === ReportStatus.OPENED).length;
+    return this.allReports().totalInProgress;
   });
   
   rejectedReportsCount = computed(() => {
-    return this.allReports().reports.filter(report => report.status === ReportStatus.REJECTED).length;
+    return this.allReports().totalRejected;
   });
   
 

@@ -7,6 +7,10 @@ public record RcPagedReportDTO(
         Integer totalPages,
         Long totalElements,
         Integer currentPage,
-        Integer pageSize
+        Integer pageSize,
+        Long totalCompleted,
+        Long totalPending,
+        Long totalInProgress,
+        Long totalRejected
 ) {
 }

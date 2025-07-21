@@ -30,4 +30,6 @@ public interface ReportDomainRepository extends JpaRepository<Report, UUID>, Jpa
             WHERE LOWER(CONCAT(ur.firstName, ' ', ur.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))
             """)
     Optional<Page<Report>> findAllByName(Pageable pageable, String name);
+
+    Long countAllByStatus(ReportStatus status);
 }
